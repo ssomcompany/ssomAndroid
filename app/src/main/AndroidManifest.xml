@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ssomcompany.ssomclient" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.REGISTER" />
+    <uses-permission android:name="com.ssomcompany.ssomclient.permission.C2D_MESSAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,12 +23,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".push.PushReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <action android:name="com.google.android.c2dm.intent.REGISTER" />
+
+                <category android:name="com.ssomcompany.ssomclient" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".push.PushManageService"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.ssomcompany.ssomclient.MainActivity" />
+                <action android:name="com.ssomcompany.ssomclient.push.pushReceiver" />
+                <category android:name="com.ssomcompany.ssomclient" />
+            </intent-filter>
+        </service>
     </application>
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="com.google.android.c2dm.permission.REGISTER" />
-    <uses-permission android:name="com.ssomcompany.ssomclient.permission.C2D_MESSAGE" />
 
 </manifest>
