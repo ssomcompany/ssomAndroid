@@ -22,6 +22,7 @@ public class PushManageService extends Service {
         Log.i("kshgizmo","pushManageService on create");
         super.onCreate();
         gcm = GoogleCloudMessaging.getInstance(getBaseContext());
+        register();
     }
 
     @Override

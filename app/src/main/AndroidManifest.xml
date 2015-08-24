@@ -26,6 +26,7 @@
 
         <receiver
             android:name=".push.PushReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
@@ -40,7 +41,8 @@
         <service
             android:name=".push.PushManageService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true"
+            android:label="com.ssomcompany.ssomclient.push.PushManageService">
             <intent-filter>
                 <action android:name="com.ssomcompany.ssomclient.MainActivity" />
                 <action android:name="com.ssomcompany.ssomclient.push.pushReceiver" />
