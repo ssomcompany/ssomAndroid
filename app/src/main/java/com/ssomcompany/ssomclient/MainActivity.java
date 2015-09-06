@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-
+    private String selectedView = "map";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,23 +64,22 @@ public class MainActivity extends AppCompatActivity
         });
         final TextView mapBtn = (TextView) tb.findViewById(R.id.toggle_s_map);
         final TextView listBtn = (TextView) tb.findViewById(R.id.toggle_s_list);
+        View toggleView = tb.findViewById(R.id.toggle_bg);
+        toggleView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(selectedView.equals("map")){
+                    mapBtn.setVisibility(View.INVISIBLE);
+                    listBtn.setVisibility(View.VISIBLE);
+                    selectedView = "list";
+                }else{
+                    selectedView = "map";
+                    mapBtn.setVisibility(View.VISIBLE);
+                    listBtn.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
         final Activity activity = this;
-        mapBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(activity,"click map",Toast.LENGTH_SHORT).show();
-                listBtn.setVisibility(View.INVISIBLE);
-                mapBtn.setVisibility(View.VISIBLE);
-            }
-        });
-        listBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(activity,"click list",Toast.LENGTH_SHORT).show();
-                mapBtn.setVisibility(View.INVISIBLE);
-                listBtn.setVisibility(View.VISIBLE);
-            }
-        });
     }
 
     @Override

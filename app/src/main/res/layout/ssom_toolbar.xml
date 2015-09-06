@@ -23,13 +23,14 @@
             android:layout_marginLeft="25dp"
             android:layout_marginTop="47dp"
             android:src="@drawable/icon_top_menu"/>
-        <ImageView
+        <LinearLayout
             android:id="@+id/toggle_bg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="40dp"
-            android:src="@drawable/toggle_bg_w"/>
+            android:padding="2dp"
+            android:background="@drawable/toggle_bg_w">
         <TextView
             android:id="@+id/toggle_s_map"
             android:layout_width="wrap_content"
@@ -53,7 +54,7 @@
             android:textColor="@android:color/white"
             android:gravity="center"
             android:visibility="invisible"/>
-
+    </LinearLayout>
         <ImageView
             android:id="@+id/chat"
             android:layout_width="wrap_content"
