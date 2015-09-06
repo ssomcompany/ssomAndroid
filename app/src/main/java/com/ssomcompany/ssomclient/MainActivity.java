@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,9 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ssomcompany.ssomclient.push.PushManageService;
-
-import net.daum.mf.map.api.MapLayout;
-import net.daum.mf.map.api.MapView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -138,12 +134,6 @@ public class MainActivity extends AppCompatActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            MapLayout mapLayout = new MapLayout(getActivity());
-            MapView mapView = mapLayout.getMapView();
-            mapView.setDaumMapApiKey("8b73ecf20fcb8043463304900499e9e1");
-
-            ViewGroup mapViewContainer = (ViewGroup) rootView.findViewById(R.id.customView);
-            mapViewContainer.addView(mapView);
             return rootView;
         }
 
