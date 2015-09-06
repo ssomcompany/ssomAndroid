@@ -2,14 +2,12 @@ package com.ssomcompany.ssomclient;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ssomcompany.ssomclient.push.PushManageService;
 
@@ -39,6 +39,18 @@ public class MainActivity extends AppCompatActivity
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
 
         //set up the toolbar
+        initToolbar();
+
+        // Set up the drawer.
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer,
+                (DrawerLayout) findViewById(R.id.drawer_layout));
+
+
+        startService(new Intent(this, PushManageService.class));
+    }
+
+    private void initToolbar() {
         Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(tb);
 
@@ -50,13 +62,25 @@ public class MainActivity extends AppCompatActivity
                 drawer.openDrawer(Gravity.LEFT);
             }
         });
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
-
-
-        startService(new Intent(this, PushManageService.class));
+        final TextView mapBtn = (TextView) tb.findViewById(R.id.toggle_s_map);
+        final TextView listBtn = (TextView) tb.findViewById(R.id.toggle_s_list);
+        final Activity activity = this;
+        mapBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(activity,"click map",Toast.LENGTH_SHORT).show();
+                listBtn.setVisibility(View.INVISIBLE);
+                mapBtn.setVisibility(View.VISIBLE);
+            }
+        });
+        listBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(activity,"click list",Toast.LENGTH_SHORT).show();
+                mapBtn.setVisibility(View.INVISIBLE);
+                listBtn.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
