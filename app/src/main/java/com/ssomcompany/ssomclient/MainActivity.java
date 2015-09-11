@@ -18,11 +18,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ssomcompany.ssomclient.post.PostContent;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,SsomListFragment.OnFragmentInteractionListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity
     private void initToolbar() {
         Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(tb);
-
+        final FragmentManager fragmentManager = getSupportFragmentManager();
         final DrawerLayout drawer  = (DrawerLayout) findViewById(R.id.drawer_layout);
         ImageView lnbMenu = (ImageView) tb.findViewById(R.id.lnb_menu_btn);
         lnbMenu.setOnClickListener(new View.OnClickListener() {
@@ -68,11 +69,16 @@ public class MainActivity extends AppCompatActivity
         toggleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(selectedView.equals("map")){
+                if (selectedView.equals("map")) {
                     mapBtn.setVisibility(View.INVISIBLE);
                     listBtn.setVisibility(View.VISIBLE);
                     selectedView = "list";
-                }else{
+                    Fragment fragment = SsomListFragment.newInstance("1", "2");
+                    fragmentManager.beginTransaction().
+                            replace(R.id.container,fragment)
+                            //.replace(R.id.container, SsomListFragment.newInstance("1","2"))
+                            .commit();
+                } else {
                     selectedView = "map";
                     mapBtn.setVisibility(View.VISIBLE);
                     listBtn.setVisibility(View.INVISIBLE);
@@ -86,6 +92,7 @@ public class MainActivity extends AppCompatActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
+        Toast.makeText(this,"position "+position,Toast.LENGTH_SHORT).show();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
@@ -128,6 +135,11 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(String id) {
+        Toast.makeText(this, "item click : "+id,Toast.LENGTH_SHORT).show();
     }
 
     /**
