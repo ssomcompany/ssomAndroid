@@ -23,7 +23,7 @@ import com.ssomcompany.ssomclient.push.PushManageService;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks,SsomListFragment.OnFragmentInteractionListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,SsomListFragment.OnPostItemInteractionListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -138,8 +138,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(String id) {
-        Toast.makeText(this, "item click : "+id,Toast.LENGTH_SHORT).show();
+    public void onPostItemClick(String id) {
+        Toast.makeText(this, "item click : "+ PostContent.ITEMS.get(Integer.valueOf(id)-1),Toast.LENGTH_SHORT).show();
     }
 
     /**

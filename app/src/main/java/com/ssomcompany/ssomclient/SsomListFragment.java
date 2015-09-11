@@ -20,7 +20,7 @@ import com.ssomcompany.ssomclient.post.PostContent;
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnPostItemInteractionListener}
  * interface.
  */
 public class SsomListFragment extends Fragment implements AbsListView.OnItemClickListener {
@@ -34,7 +34,7 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnPostItemInteractionListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -97,10 +97,10 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnPostItemInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnPostItemInteractionListener");
         }
     }
 
@@ -115,7 +115,7 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(PostContent.ITEMS.get(position).id);
+            mListener.onPostItemClick(PostContent.ITEMS.get(position).id);
         }
     }
 
@@ -142,9 +142,9 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnPostItemInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
+        public void onPostItemClick(String id);
     }
 
 }
