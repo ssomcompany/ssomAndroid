@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="94dp"
+    android:minHeight="94dp"
+    >
 
     <ImageView
+        android:id="@+id/icon_list_r"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@drawable/icon_list_st_r"
+        android:layout_marginLeft="8dp"/>
+    <ImageView
+        android:id="@+id/icon_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="55dp"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/icon_rice_st_b"
+        />
     <TextView
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="test"/>
-</LinearLayout>
+</RelativeLayout>

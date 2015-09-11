@@ -13,6 +13,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.post.PostContent;
+import com.ssomcompany.ssomclient.post.PostItemListAdapter;
 
 /**
  * A fragment representing a list of Items.
@@ -73,9 +74,7 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        // TODO: Change Adapter to display your content
-        mAdapter = new ArrayAdapter<PostContent.PostItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, PostContent.ITEMS);
+        mAdapter = new PostItemListAdapter(getActivity());
     }
 
     @Override
