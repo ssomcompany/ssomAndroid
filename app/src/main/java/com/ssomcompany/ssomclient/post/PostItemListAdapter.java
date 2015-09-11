@@ -45,7 +45,7 @@ public class PostItemListAdapter extends BaseAdapter{
             convertView = mInflater.inflate(R.layout.ssom_list_item, null);
         }
 
-        TextView txtTitle = (TextView) convertView.findViewById(R.id.texItem);
+        TextView txtTitle = (TextView) convertView.findViewById(R.id.content);
 
         PostContent.PostItem row_pos = PostContent.ITEMS.get(position);
         // setting the image resource and title
