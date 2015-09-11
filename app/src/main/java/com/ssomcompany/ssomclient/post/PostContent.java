@@ -18,9 +18,9 @@ import java.util.Map;
 
     static {
         // Add 3 sample items.
-        addItem(new PostItem("1", "아 완전 심심하다 집에 가긴 싫고 ㅠㅠ 여자 넷이 있는데 "));
-        addItem(new PostItem("2", "Item 2"));
-        addItem(new PostItem("3", "Item 3"));
+        addItem(new PostItem("1", "아 완전 심심하다 집에 가긴 싫고 ㅠㅠ 여자 넷이 있는데 놀아줄 사람 진짜 없는거니??? ㅋㅋㅋ 우리 빙수만 먹다 집에 갈듯"));
+        addItem(new PostItem("2", "완전 맛있는 족발집에서 소주 한잔 하실분 모십니다. 매너 좋은 남자들 있구요! 편하게 얘기 하실분 대 환영입니다."));
+        addItem(new PostItem("3", "달다구리 \n 먹고시퐁..."));
     }
 
     private static void addItem(PostItem item) {

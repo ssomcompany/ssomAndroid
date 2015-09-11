@@ -23,7 +23,20 @@
         />
     <TextView
         android:id="@+id/content"
-        android:layout_width="match_parent"
+        android:layout_width="180dp"
         android:layout_height="match_parent"
-        android:text="test"/>
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="90dp"
+        android:textSize="16sp"
+        android:lines="3"
+        />
+    <TextView
+        android:id="@+id/info"
+        android:layout_width="180dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="90dp"
+        android:textSize="13sp"
+        android:lines="1"
+        android:text="방금전 , 21~25살 4명 있어요, 300m"/>
 </RelativeLayout>
