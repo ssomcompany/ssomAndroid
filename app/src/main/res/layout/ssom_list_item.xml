@@ -39,4 +39,22 @@
         android:textSize="13sp"
         android:lines="1"
         android:text="방금전 , 21~25살 4명 있어요, 300m"/>
+    <ImageView
+        android:id="@+id/chat_on_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/icon_chat_on"
+        android:layout_marginTop="7dp"
+        android:layout_marginRight="7dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="대화중"
+        android:textColor="@android:color/holo_red_light"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="7dp"
+        android:layout_marginRight="15dp"/>
 </RelativeLayout>
