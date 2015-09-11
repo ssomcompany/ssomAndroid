@@ -1,14 +1,12 @@
 package com.ssomcompany.ssomclient.post;
 
-import com.ssomcompany.ssomclient.R;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by cellz on 2015. 9. 11..
+ * Created by kshgizmo on 2015. 9. 11..
  */
     public class PostContent {
 
@@ -27,7 +25,10 @@ import java.util.Map;
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
     }
-
+    public static void init(){
+        ITEMS.clear();
+        ITEM_MAP.clear();
+    }
     public static class PostItem {
         public String id;
         public String content;
