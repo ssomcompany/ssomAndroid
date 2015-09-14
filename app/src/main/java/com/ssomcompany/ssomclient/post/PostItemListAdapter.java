@@ -6,14 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
 
 /**
- * Created by cellz on 2015. 9. 11..
+ * Created by kshgizmo on 2015. 9. 11..
  */
 public class PostItemListAdapter extends BaseAdapter{
 
