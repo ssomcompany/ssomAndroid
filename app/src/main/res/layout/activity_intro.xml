@@ -15,6 +15,7 @@
         android:layout_centerVertical="true"
         android:src="@drawable/logo_main_ssom"/>
     <ImageView
+        android:id="@+id/btn_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
