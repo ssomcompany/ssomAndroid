@@ -3,7 +3,7 @@
     package="com.ssomcompany.ssomclient" >
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -15,27 +15,18 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:windowNoTitle="true"
-        android:windowActionBar="false">
-    <activity android:name=".IntroActivity">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
+        android:windowActionBar="false"
+        android:windowNoTitle="true" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
-            >
-
+            android:label="@string/app_name" >
         </activity>
 
         <receiver
             android:name=".push.PushReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
@@ -49,13 +40,24 @@
             android:name=".push.PushManageService"
             android:enabled="true"
             android:exported="true"
-            android:label="com.ssomcompany.ssomclient.push.PushManageService">
+            android:label="com.ssomcompany.ssomclient.push.PushManageService" >
             <intent-filter>
                 <action android:name="com.ssomcompany.ssomclient.MainActivity" />
                 <action android:name="com.ssomcompany.ssomclient.push.pushReceiver" />
+
                 <category android:name="com.ssomcompany.ssomclient" />
             </intent-filter>
         </service>
+
+        <activity
+            android:name=".Intro2Activity"
+            android:label="@string/title_activity_intro2" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

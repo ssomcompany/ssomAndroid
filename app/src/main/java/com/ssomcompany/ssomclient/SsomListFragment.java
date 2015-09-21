@@ -8,8 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ssomcompany.ssomclient.post.PostContent;
 import com.ssomcompany.ssomclient.post.PostItemListAdapter;
@@ -87,6 +89,14 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
+
+        ImageView btn_write = (ImageView) view.findViewById(R.id.btn_write);
+        btn_write.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(),"start write activity",Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return view;
     }

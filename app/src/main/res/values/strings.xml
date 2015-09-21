@@ -13,4 +13,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="project_number">189266416861</string>
+    <string name="title_activity_intro2">Intro2Activity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>
