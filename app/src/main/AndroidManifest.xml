@@ -62,6 +62,11 @@
             android:name=".WriteActivity"
             android:label="@string/title_activity_write" >
         </activity>
+        <activity
+            android:name=".DetailActivity"
+            android:label="@string/title_activity_detail"
+            android:theme="@android:style/Theme.Translucent">
+        </activity>
     </application>
 
 </manifest>
