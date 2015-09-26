@@ -1,6 +1,7 @@
 package com.ssomcompany.ssomclient;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -95,6 +96,9 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(),"start write activity",Toast.LENGTH_SHORT).show();
+                Intent i = new Intent();
+                i.setClass(getContext(), WriteActivity.class);
+                startActivity(i);
             }
         });
 
