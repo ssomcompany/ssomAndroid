@@ -108,6 +108,15 @@
         />
     </RelativeLayout>
     //카테고리 끝
+    <EditText
+        android:id="@+id/message"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="318dp"
+        android:textSize="16sp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:hint="함께 하고 싶은 아이템을 고르고\n나를 어필할수있는\n한 마디를 남겨보세요!"/>
     <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -123,6 +132,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="477dp"/>
     <ImageView
+        android:id="@+id/btn_write_post"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -131,6 +141,7 @@
         android:src="@drawable/btn_write_ok" />
 
     <ImageView
+        android:id="@+id/btn_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

@@ -18,6 +18,8 @@ public class PostItemListAdapter extends BaseAdapter{
     private Context context;
     public PostItemListAdapter(Context context){
         this.context = context;
+        PostContent.init(context);
+        this.notifyDataSetChanged();
     }
 
     @Override

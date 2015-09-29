@@ -1,5 +1,24 @@
 package com.ssomcompany.ssomclient.post;
 
+import android.content.Context;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.ssomcompany.ssomclient.R;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,29 +32,46 @@ import java.util.Map;
     public static List<PostItem> ITEMS = new ArrayList<PostItem>();
     public static Map<String, PostItem> ITEM_MAP = new HashMap<String, PostItem>();
 
-
-    static {
-        // Add 3 sample items.
-        addItem(new PostItem("1", "아 완전 심심하다 집에 가긴 싫고 ㅠㅠ 여자 넷이 있는데 놀아줄 사람 진짜 없는거니??? ㅋㅋㅋ 우리 빙수만 먹다 집에 갈듯"));
-        addItem(new PostItem("2", "완전 맛있는 족발집에서 소주 한잔 하실분 모십니다. 매너 좋은 남자들 있구요! 편하게 얘기 하실분 대 환영입니다."));
-        addItem(new PostItem("3", "달다구리 \n 먹고시퐁..."));
-    }
-
     private static void addItem(PostItem item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+        ITEM_MAP.put(item.postId, item);
     }
-    public static void init(){
+    public static void init(final Context context){
         ITEMS.clear();
         ITEM_MAP.clear();
+
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url = "http://54.64.154.188/posts";
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET,url,null,new Response.Listener<JSONArray>(){
+            @Override
+            public void onResponse(JSONArray jsonArray) {
+                try {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject obj = (JSONObject)jsonArray.get(i);
+                        PostItem item = new PostItem((String)obj.get("postId"),(String)obj.get("content"));
+                        PostContent.addItem(item);
+                    }
+                }catch (Exception e){
+                    Toast.makeText(context,e.getMessage(),Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(context,PostContent.ITEMS.toString(),Toast.LENGTH_SHORT).show();
+            }
+        },new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(context,volleyError.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(jsonArrayRequest);
     }
     public static class PostItem {
-        public String id;
+        public String postId;
+        public String userId;
         public String content;
         public String imgResource;
 
-        public PostItem(String id, String content) {
-            this.id = id;
+        public PostItem(String postId, String content) {
+            this.postId = postId;
             this.content = content;
         }
 
