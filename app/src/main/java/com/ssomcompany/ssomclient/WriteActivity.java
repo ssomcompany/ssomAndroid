@@ -58,6 +58,7 @@ public class WriteActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(JSONObject jsonObject) {
                             Toast.makeText(getApplicationContext(), jsonObject.toString(), Toast.LENGTH_SHORT).show();
+                            onBackPressed();
                         }
                     }, new Response.ErrorListener() {
                         @Override
