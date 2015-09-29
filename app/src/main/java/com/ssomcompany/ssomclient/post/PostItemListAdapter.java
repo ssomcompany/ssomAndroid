@@ -18,8 +18,7 @@ public class PostItemListAdapter extends BaseAdapter{
     private Context context;
     public PostItemListAdapter(Context context){
         this.context = context;
-        PostContent.init(context);
-        this.notifyDataSetChanged();
+        PostContent.init(this);
     }
 
     @Override
@@ -52,5 +51,9 @@ public class PostItemListAdapter extends BaseAdapter{
         txtTitle.setText(row_pos.toString());
 
         return convertView;
+    }
+
+    public Context getContext() {
+        return context;
     }
 }

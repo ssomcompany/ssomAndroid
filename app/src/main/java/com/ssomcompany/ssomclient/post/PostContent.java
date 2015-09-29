@@ -36,11 +36,11 @@ import java.util.Map;
         ITEMS.add(item);
         ITEM_MAP.put(item.postId, item);
     }
-    public static void init(final Context context){
+    public static void init(final PostItemListAdapter adapter){
         ITEMS.clear();
         ITEM_MAP.clear();
 
-        RequestQueue queue = Volley.newRequestQueue(context);
+        RequestQueue queue = Volley.newRequestQueue(adapter.getContext());
         String url = "http://54.64.154.188/posts";
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET,url,null,new Response.Listener<JSONArray>(){
             @Override
@@ -51,15 +51,16 @@ import java.util.Map;
                         PostItem item = new PostItem((String)obj.get("postId"),(String)obj.get("content"));
                         PostContent.addItem(item);
                     }
+                    adapter.notifyDataSetChanged();
                 }catch (Exception e){
-                    Toast.makeText(context,e.getMessage(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(adapter.getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(context,PostContent.ITEMS.toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(adapter.getContext(),PostContent.ITEMS.toString(),Toast.LENGTH_SHORT).show();
             }
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(context,volleyError.getMessage(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(adapter.getContext(),volleyError.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
         queue.add(jsonArrayRequest);

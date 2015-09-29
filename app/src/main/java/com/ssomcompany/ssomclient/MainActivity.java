@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPostItemClick(String id) {
-        Toast.makeText(this, "item click : "+ PostContent.ITEMS.get(Integer.valueOf(id)-1),Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "item click : "+ PostContent.ITEM_MAP.get(id),Toast.LENGTH_SHORT).show();
     }
 
     /**
