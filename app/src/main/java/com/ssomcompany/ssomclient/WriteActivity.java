@@ -1,5 +1,6 @@
 package com.ssomcompany.ssomclient;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -27,8 +28,59 @@ public class WriteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_write);
         initWrite();
         initCancel();
+        initCategory();
 
     }
+    private void initCategory(){
+        ImageView rice = (ImageView) findViewById(R.id.category_rice);
+        ImageView beer = (ImageView) findViewById(R.id.category_beer);
+        ImageView coffee = (ImageView) findViewById(R.id.category_coffee);
+        ImageView any = (ImageView) findViewById(R.id.category_any);
+        rice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectCategory(R.id.category_rice);
+            }
+        });
+        beer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectCategory(R.id.category_beer);
+            }
+        });
+        coffee.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectCategory(R.id.category_coffee);
+            }
+        });
+        any.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectCategory(R.id.category_any);
+            }
+        });
+
+
+    }
+    int ids[] = {R.id.category_rice,R.id.category_beer,R.id.category_coffee,R.id.category_any};
+    int pressImages[] = {R.drawable.icon_rice_press,R.drawable.icon_beer_press,R.drawable.icon_cof_press,R.drawable.icon_all_perss};
+    int disImages[] = {R.drawable.icon_rice_dis,R.drawable.icon_beer_dis,R.drawable.icon_cof_dis,R.drawable.icon_all_dis};
+    private void selectCategory(int categoryId) {
+        Toast.makeText(getApplicationContext(),"select "+categoryId,Toast.LENGTH_SHORT).show();
+        for (int i=0;i<ids.length;i++) {
+            if(categoryId == ids[i]){
+                //select
+                ImageView selImage = (ImageView) findViewById(ids[i]);
+                selImage.setImageResource(pressImages[i]);
+            }else{
+                //deselect
+                ImageView disImage = (ImageView) findViewById(ids[i]);
+                disImage.setImageResource(disImages[i]);
+            }
+        }
+    }
+
     private void initCancel(){
         ImageView btnCancel = (ImageView) findViewById(R.id.btn_cancel);
         btnCancel.setOnClickListener(new View.OnClickListener() {
