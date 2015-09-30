@@ -1,0 +1,112 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context="com.ssomcompany.ssomclient.DetailFragment"
+    android:background="#B0000000"
+    >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/bg_fullview_f_l"
+        android:layout_marginTop="25dp"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/bg_fullview_f_r"
+        android:layout_marginTop="25dp"
+        android:layout_alignParentRight="true"/>
+    <RelativeLayout
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="26dp"
+        android:layout_marginRight="26dp"
+        android:layout_marginBottom="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="7dp"
+        android:background="@drawable/bg_fullview_main_w"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/full_photo_st_b"
+            android:layout_marginTop="18dp"
+            android:layout_centerHorizontal="true"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bg_fullview_main_b"/>
+        <TextView
+            android:id="@+id/detail_info_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="156dp"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:lineSpacingExtra="6sp"
+            android:textColor="#929292"
+            android:text="우리는 21~25살 2명이에요\n술 쏜다!!\n나와의 거리 1km"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_ssom_heart"
+            android:layout_marginTop="240dp"
+            android:layout_centerHorizontal="true"
+            />
+        <TextView
+            android:id="@+id/detail_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="285dp"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:lineSpacingExtra="8sp"
+            android:textColor="#C0C0C0"
+            android:text="He say - 방금전"/>
+        <TextView
+            android:id="@+id/detail_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="315dp"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:lineSpacingExtra="8sp"
+            android:textColor="#000000"
+            android:text="There are no content"/>
+        <RelativeLayout
+            android:id="@+id/btn_ssom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_ssom_wide_r"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="10dp"
+            >
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="27sp"
+                    android:textColor="#ffffff"
+                    android:text="쏨 타기"/>
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/btn_write_cancle"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="7dp"
+            android:layout_marginBottom="5dp"/>
+    </RelativeLayout>
+
+</RelativeLayout>

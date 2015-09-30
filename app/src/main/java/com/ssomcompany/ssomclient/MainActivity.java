@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,7 +24,7 @@ import com.ssomcompany.ssomclient.push.PushManageService;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks,SsomListFragment.OnPostItemInteractionListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,SsomListFragment.OnPostItemInteractionListener,DetailFragment.OnFragmentInteractionListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -76,7 +77,6 @@ public class MainActivity extends AppCompatActivity
                     Fragment fragment = SsomListFragment.newInstance("1", "2");
                     fragmentManager.beginTransaction().
                             replace(R.id.container,fragment)
-                            //.replace(R.id.container, SsomListFragment.newInstance("1","2"))
                             .commit();
                 } else {
                     selectedView = "map";
@@ -139,11 +139,18 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPostItemClick(String id) {
-        Toast.makeText(this, "item click : "+ PostContent.ITEM_MAP.get(id),Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent();
-        intent.setClass(getApplicationContext(),DetailActivity.class);
-        intent.putExtra("content",PostContent.ITEM_MAP.get(id).content);
-        startActivity(intent);
+        Toast.makeText(this, "item click : " + PostContent.ITEM_MAP.get(id), Toast.LENGTH_SHORT).show();
+        Fragment fragment = DetailFragment.newInstance(PostContent.ITEM_MAP.get(id).content, "2");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().
+                add(R.id.container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Toast.makeText(getApplicationContext(),"onFragmentInteraction",Toast.LENGTH_SHORT).show();
     }
 
     /**

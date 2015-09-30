@@ -18,4 +18,5 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_write">WriteActivity</string>
     <string name="title_activity_detail">DetailActivity</string>
+
 </resources>
