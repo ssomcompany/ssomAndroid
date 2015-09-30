@@ -19,17 +19,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.ssomcompany.ssomclient.post.PostContent;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks,SsomListFragment.OnPostItemInteractionListener,DetailFragment.OnFragmentInteractionListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,SsomListFragment.OnPostItemInteractionListener,DetailFragment.OnFragmentInteractionListener,OnMapReadyCallback {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
+
+    private GoogleMap map;
 
     private String selectedView = "map";
     @Override
@@ -67,6 +72,7 @@ public class MainActivity extends AppCompatActivity
         final TextView mapBtn = (TextView) tb.findViewById(R.id.toggle_s_map);
         final TextView listBtn = (TextView) tb.findViewById(R.id.toggle_s_list);
         View toggleView = tb.findViewById(R.id.toggle_bg);
+        final OnMapReadyCallback mapListener = this;
         toggleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,6 +86,11 @@ public class MainActivity extends AppCompatActivity
                             .commit();
                 } else {
                     selectedView = "map";
+                    SupportMapFragment mapFragment = new SupportMapFragment();
+                    fragmentManager.beginTransaction().
+                            replace(R.id.container,mapFragment)
+                            .commit();
+                    mapFragment.getMapAsync(mapListener);
                     mapBtn.setVisibility(View.VISIBLE);
                     listBtn.setVisibility(View.INVISIBLE);
                 }
@@ -152,6 +163,11 @@ public class MainActivity extends AppCompatActivity
     public void onFragmentInteraction(Uri uri) {
         Toast.makeText(getApplicationContext(),"onFragmentInteraction",Toast.LENGTH_SHORT).show();
         onBackPressed();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.map = googleMap;
     }
 
     /**
