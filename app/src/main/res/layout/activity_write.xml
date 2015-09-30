@@ -84,23 +84,27 @@
         android:background="#d3d3d3"
         android:layout_marginTop="248dp">
     <ImageView
+        android:id="@+id/category_rice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="7dp"
         android:src="@drawable/icon_rice_dis" />
     <ImageView
+        android:id="@+id/category_coffee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/icon_cof_dis"
         android:layout_marginLeft="95.5dp"
         />
     <ImageView
+        android:id="@+id/category_beer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/icon_beer_dis"
         android:layout_marginLeft="184dp"
         />
     <ImageView
+        android:id="@+id/category_any"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/icon_all_perss"
