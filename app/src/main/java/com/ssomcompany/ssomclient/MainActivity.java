@@ -140,6 +140,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPostItemClick(String id) {
         Toast.makeText(this, "item click : "+ PostContent.ITEM_MAP.get(id),Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent();
+        intent.setClass(getApplicationContext(),DetailActivity.class);
+        intent.putExtra("content",PostContent.ITEM_MAP.get(id).content);
+        startActivity(intent);
     }
 
     /**

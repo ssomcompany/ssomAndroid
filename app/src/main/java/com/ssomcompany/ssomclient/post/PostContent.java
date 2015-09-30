@@ -1,20 +1,13 @@
 package com.ssomcompany.ssomclient.post;
 
-import android.content.Context;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.ssomcompany.ssomclient.R;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,8 +22,8 @@ import java.util.Map;
  */
     public class PostContent {
 
-    public static List<PostItem> ITEMS = new ArrayList<PostItem>();
-    public static Map<String, PostItem> ITEM_MAP = new HashMap<String, PostItem>();
+    public static List<PostItem> ITEMS = new ArrayList<>();
+    public static Map<String, PostItem> ITEM_MAP = new HashMap<>();
 
     private static void addItem(PostItem item) {
         ITEMS.add(item);
