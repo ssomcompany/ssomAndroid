@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -59,6 +60,13 @@ public class DetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         TextView content = (TextView) view.findViewById(R.id.detail_content);
         content.setText(this.content);
+        ImageView btnClose = (ImageView) view.findViewById(R.id.close_detail_btn);
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onButtonPressed(null);
+            }
+        });
         return view;
     }
 

@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
         Toast.makeText(getApplicationContext(),"onFragmentInteraction",Toast.LENGTH_SHORT).show();
+        onBackPressed();
     }
 
     /**
