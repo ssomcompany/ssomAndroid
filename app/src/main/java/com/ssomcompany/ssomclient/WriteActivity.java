@@ -23,6 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.BaseVolleyRequest;
 import com.ssomcompany.ssomclient.network.UniqueIdGenUtil;
 import com.ssomcompany.ssomclient.post.RoundImage;
@@ -70,24 +71,7 @@ public class WriteActivity extends AppCompatActivity {
             }
         });
     }
-    private RoundImage getCircleBitmap(Bitmap bitmap){
-        int viewHeight = 532;
-        float width = bitmap.getWidth();
-        float height = bitmap.getHeight();
-        Log.i("kshgizmo","before : "+width + "/ "+height);
-        // Calculate image's size by maintain the image's aspect ratio
 
-        float percente = width / 100;
-        float scale = viewHeight / percente;
-        width *= (scale / 100);
-        height *= (scale / 100);
-
-        Log.i("kshgizmo","after : "+width + "/ "+height);
-        // Resizing image
-        Bitmap bitmapimg = Bitmap.createScaledBitmap(bitmap, (int) width, (int) width, true);
-
-        return new RoundImage(bitmapimg);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -96,7 +80,7 @@ public class WriteActivity extends AppCompatActivity {
             imageBitmap = (Bitmap) extras.get("data");
             ImageView mImageView = (ImageView) findViewById(R.id.write_photo);
 
-            mImageView.setImageDrawable(getCircleBitmap(imageBitmap));
+            mImageView.setImageDrawable(Util.getCircleBitmap(imageBitmap, 532)); //TODO 532pixel to dp
         }
     }
     private void initCategory(){

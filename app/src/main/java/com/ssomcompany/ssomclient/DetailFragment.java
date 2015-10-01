@@ -1,15 +1,23 @@
 package com.ssomcompany.ssomclient;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.NetworkImageView;
+import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.common.VolleyUtil;
 
 
 /**
@@ -23,10 +31,10 @@ import android.widget.TextView;
 public class DetailFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "conent";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM2 = "imageUrl";
 
     private String content;
-    private String mParam2;
+    private String imageUrl;
 
     private OnFragmentInteractionListener mListener;
 
@@ -49,17 +57,32 @@ public class DetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             content = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            imageUrl = getArguments().getString(ARG_PARAM2);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         TextView content = (TextView) view.findViewById(R.id.detail_content);
         content.setText(this.content);
+        final ImageView fullPhoto = (ImageView) view.findViewById(R.id.full_photo);
+        ImageRequest imageRequest = new ImageRequest(imageUrl, new Response.Listener<Bitmap>() {
+            @Override
+            public void onResponse(Bitmap bitmap) {
+                fullPhoto.setImageDrawable(Util.getCircleBitmap(bitmap,428));
+            }
+        },144, 256, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888
+                , new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        VolleyUtil.getInstance(getContext()).getRequestQueue().add(imageRequest);
         ImageView btnClose = (ImageView) view.findViewById(R.id.close_detail_btn);
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPostItemClick(String id) {
         Toast.makeText(this, "item click : " + PostContent.ITEM_MAP.get(id), Toast.LENGTH_SHORT).show();
-        Fragment fragment = DetailFragment.newInstance(PostContent.ITEM_MAP.get(id).content, "2");
+        Fragment fragment = DetailFragment.newInstance(PostContent.ITEM_MAP.get(id).content, PostContent.ITEM_MAP.get(id).getImage());
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().
                 add(R.id.container, fragment)

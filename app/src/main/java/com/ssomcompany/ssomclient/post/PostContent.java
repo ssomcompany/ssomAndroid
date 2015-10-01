@@ -1,5 +1,6 @@
 package com.ssomcompany.ssomclient.post;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -41,7 +42,9 @@ import java.util.Map;
                 try {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject obj = (JSONObject)jsonArray.get(i);
+                        Log.i("kshgizmo",obj.toString());
                         PostItem item = new PostItem((String)obj.get("postId"),(String)obj.get("content"));
+                        item.imgResource = (String)(obj.get("imageUrl"));
                         PostContent.addItem(item);
                     }
                     adapter.notifyDataSetChanged();

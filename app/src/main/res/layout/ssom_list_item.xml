@@ -13,6 +13,12 @@
         android:src="@drawable/icon_list_st_r"
         android:layout_marginLeft="8dp"/>
     <ImageView
+        android:id="@+id/icon_list_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"/>
+    <ImageView
         android:id="@+id/icon_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
