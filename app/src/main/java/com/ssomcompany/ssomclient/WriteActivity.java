@@ -24,10 +24,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.ssomcompany.ssomclient.network.PhotoMultipartRequest;
 import com.ssomcompany.ssomclient.network.UniqueIdGenUtil;
 import com.ssomcompany.ssomclient.post.RoundImage;
 
 import org.json.JSONObject;
+
+import java.io.File;
 
 public class WriteActivity extends AppCompatActivity {
 
@@ -142,7 +145,7 @@ public class WriteActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"cancel write",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "cancel write", Toast.LENGTH_SHORT).show();
                 onBackPressed();
             }
         });
@@ -152,35 +155,55 @@ public class WriteActivity extends AppCompatActivity {
         btnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    RequestQueue queue = Volley.newRequestQueue(getApplication());
-                    String url = "http://54.64.154.188/posts";
-                    EditText messageBox = (EditText) findViewById(R.id.message);
-                    final String text = messageBox.getText().toString();
-                    JSONObject jsonBody = new JSONObject();
-                    jsonBody.put("postId", "" + System.currentTimeMillis());
-                    jsonBody.put("userId", UniqueIdGenUtil.getId(getApplicationContext()));
-                    jsonBody.put("content", text);
-
-                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject jsonObject) {
-                            Toast.makeText(getApplicationContext(), jsonObject.toString(), Toast.LENGTH_SHORT).show();
-                            onBackPressed();
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-                            Toast.makeText(getApplicationContext(), volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    queue.add(jsonObjectRequest);
-                }catch(Exception e){
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
+//                uploadImage();
+                creatPost();
             }
         });
     }
+    private void uploadImage(File imageFile){
+        RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
+        PhotoMultipartRequest imageUploadReq = new PhotoMultipartRequest("http://54.64.154.188/files", new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        },new Response.Listener<JSONObject>(){
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+
+            }
+        },  imageFile);
+        mQueue.add(imageUploadReq);
+    }
+    private void creatPost() {
+        try {
+            RequestQueue queue = Volley.newRequestQueue(getApplication());
+            String url = "http://54.64.154.188/posts";
+            EditText messageBox = (EditText) findViewById(R.id.message);
+            final String text = messageBox.getText().toString();
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put("postId", "" + System.currentTimeMillis());
+            jsonBody.put("userId", UniqueIdGenUtil.getId(getApplicationContext()));
+            jsonBody.put("content", text);
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+                    Toast.makeText(getApplicationContext(), jsonObject.toString(), Toast.LENGTH_SHORT).show();
+                    onBackPressed();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Toast.makeText(getApplicationContext(), volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+            queue.add(jsonObjectRequest);
+        }catch(Exception e){
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
