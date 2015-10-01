@@ -90,6 +90,7 @@ public class DetailFragment extends Fragment {
                 onButtonPressed(null);
             }
         });
+        view.setClickable(true);
         return view;
     }
 
