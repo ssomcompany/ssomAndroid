@@ -1,7 +1,16 @@
 package com.ssomcompany.ssomclient;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.ssomcompany.ssomclient.network.UniqueIdGenUtil;
+import com.ssomcompany.ssomclient.post.RoundImage;
 
 import org.json.JSONObject;
 
@@ -28,7 +38,54 @@ public class WriteActivity extends AppCompatActivity {
         initWrite();
         initCancel();
         initCategory();
+        initCamera();
 
+    }
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    private void initCamera(){
+        ImageView camera = (ImageView) findViewById(R.id.write_camera);
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
+            }
+        });
+    }
+    private RoundImage getCircleBitmap(Bitmap bitmap){
+        int viewHeight = 532;
+        float width = bitmap.getWidth();
+        float height = bitmap.getHeight();
+        Log.i("kshgizmo","before : "+width + "/ "+height);
+        // Calculate image's size by maintain the image's aspect ratio
+
+        float percente = width / 100;
+        float scale = viewHeight / percente;
+        width *= (scale / 100);
+        height *= (scale / 100);
+
+        Log.i("kshgizmo","after : "+width + "/ "+height);
+        // Resizing image
+        Bitmap bitmapimg = Bitmap.createScaledBitmap(bitmap, (int) width, (int) width, true);
+
+        return new RoundImage(bitmapimg);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            ImageView mImageView = (ImageView) findViewById(R.id.write_photo);
+
+            mImageView.setImageDrawable(getCircleBitmap(imageBitmap));
+        }
     }
     private void initCategory(){
         ImageView rice = (ImageView) findViewById(R.id.category_rice);
