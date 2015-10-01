@@ -15,8 +15,8 @@
         android:id="@+id/write_photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="95dp"
+        android:layout_marginLeft="47dp"
+        android:layout_marginTop="92dp"
         android:scaleType="centerCrop"
         android:layout_gravity="center"
         android:src="@drawable/icon_wirte_photo_emp" />

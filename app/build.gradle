@@ -3,7 +3,11 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.0"
-
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
     defaultConfig {
         applicationId "com.ssomcompany.ssomclient"
         minSdkVersion 15
@@ -25,8 +29,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:7.3.0'
     compile 'com.google.android.gms:play-services:8.1.0'
     compile 'com.android.support:support-v4:23.0.1'
-    compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5'
-    compile (group: 'org.apache.httpcomponents' , name: 'httpmime' , version: '4.3.5') {
-        exclude module: 'org.apache.httpcomponents:httpclient'
-    }
+    compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
+    compile "org.apache.httpcomponents:httpmime:4.3.1"
+    compile 'com.google.code.gson:gson:2.2.4'
 }

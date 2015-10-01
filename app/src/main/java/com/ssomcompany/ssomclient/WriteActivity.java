@@ -2,13 +2,9 @@ package com.ssomcompany.ssomclient;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresPermission;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -18,19 +14,31 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.ssomcompany.ssomclient.network.PhotoMultipartRequest;
+import com.google.gson.Gson;
+import com.ssomcompany.ssomclient.network.BaseVolleyRequest;
 import com.ssomcompany.ssomclient.network.UniqueIdGenUtil;
 import com.ssomcompany.ssomclient.post.RoundImage;
 
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Map;
 
 public class WriteActivity extends AppCompatActivity {
 
@@ -45,7 +53,7 @@ public class WriteActivity extends AppCompatActivity {
 
     }
     static final int REQUEST_IMAGE_CAPTURE = 1;
-
+    private Bitmap imageBitmap;
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -80,11 +88,12 @@ public class WriteActivity extends AppCompatActivity {
 
         return new RoundImage(bitmapimg);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageBitmap = (Bitmap) extras.get("data");
             ImageView mImageView = (ImageView) findViewById(R.id.write_photo);
 
             mImageView.setImageDrawable(getCircleBitmap(imageBitmap));
@@ -155,27 +164,89 @@ public class WriteActivity extends AppCompatActivity {
         btnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                uploadImage();
-                creatPost();
+                uploadImage();
+                //creatPost();
             }
         });
     }
-    private void uploadImage(File imageFile){
-        RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
-        PhotoMultipartRequest imageUploadReq = new PhotoMultipartRequest("http://54.64.154.188/files", new Response.ErrorListener(){
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
 
-            }
-        },new Response.Listener<JSONObject>(){
-            @Override
-            public void onResponse(JSONObject jsonObject) {
 
+    private DataOutputStream dos = null;
+    private void uploadImage(){
+        final String twoHyphens = "--";
+        final String lineEnd = "\r\n";
+        final String url = "http://54.64.154.188/file/upload";
+        final String boundary = "apiclient-" + System.currentTimeMillis();
+        final String mimeType = "multipart/form-data;boundary=" + boundary;
+        final int maxBufferSize = 1024 * 1024;
+
+        BaseVolleyRequest baseVolleyRequest = new BaseVolleyRequest(Request.Method.POST, url, new Response.Listener<NetworkResponse>() {
+            @Override
+            public void onResponse(NetworkResponse response) {
+                String jsonData = new String(response.data);
+                Gson gson = new Gson();
+                Map<String,String> data = gson.fromJson(jsonData,Map.class);
+                String fileId = data.get("fileId");
+                creatPost(fileId);
+                Toast.makeText(WriteActivity.this, "upload complete : "+fileId, Toast.LENGTH_SHORT).show();
             }
-        },  imageFile);
-        mQueue.add(imageUploadReq);
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("kshgizmo",error.toString());
+            }
+        }) {
+            @Override
+            public String getBodyContentType() {
+                return mimeType;
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                imageBitmap.compress(Bitmap.CompressFormat.PNG, 1, byteArrayOutputStream);
+                byte[] bitmapData = byteArrayOutputStream.toByteArray();
+                int bytesRead, bytesAvailable, bufferSize;
+                byte[] buffer;
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                dos = new DataOutputStream(bos);
+                try {
+                    dos.writeBytes(twoHyphens + boundary + lineEnd);
+                    dos.writeBytes("Content-Disposition: form-data; name=\"pict\";filename=\""
+                            + "ssom_upload_from_camera.png" + "\"" + lineEnd);
+                    dos.writeBytes(lineEnd);
+                    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(bitmapData);
+                    bytesAvailable = fileInputStream.available();
+
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    buffer = new byte[bufferSize];
+
+                    // read file and write it into form...
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                    while (bytesRead > 0) {
+                        dos.write(buffer, 0, bufferSize);
+                        bytesAvailable = fileInputStream.available();
+                        bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                    }
+
+                    // send multipart form data necesssary after file data...
+                    dos.writeBytes(lineEnd);
+                    dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                    return bos.toByteArray();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return bitmapData;
+            }
+        };
+        RequestQueue queue = Volley.newRequestQueue(getApplication());
+        queue.add(baseVolleyRequest);
     }
-    private void creatPost() {
+    private void creatPost(String fileId) {
         try {
             RequestQueue queue = Volley.newRequestQueue(getApplication());
             String url = "http://54.64.154.188/posts";
@@ -185,11 +256,12 @@ public class WriteActivity extends AppCompatActivity {
             jsonBody.put("postId", "" + System.currentTimeMillis());
             jsonBody.put("userId", UniqueIdGenUtil.getId(getApplicationContext()));
             jsonBody.put("content", text);
+            jsonBody.put("imageUrl","http://54.64.154.188/file/images/"+fileId);
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject jsonObject) {
-                    Toast.makeText(getApplicationContext(), jsonObject.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "create post : "+jsonObject.toString(), Toast.LENGTH_SHORT).show();
                     onBackPressed();
                 }
             }, new Response.ErrorListener() {
