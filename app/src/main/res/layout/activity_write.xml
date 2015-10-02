@@ -125,16 +125,31 @@
         android:textSize="16sp"
         android:gravity="center"
         android:hint="함께 하고 싶은 아이템을 고르고\n나를 어필할수있는\n한 마디를 남겨보세요!"/>
-    <TextView
+    <LinearLayout
         android:id="@+id/write_text_user_count"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textSize="16sp"
-    android:text="2 명이 기다리고 있어요."
-    android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_below="@id/message"
         android:layout_marginTop="15dp"
-    />
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/text_user_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#e70033"
+            android:text="2"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#636363"
+            android:text=" 명이 기다리고 있어요"
+            />
+    </LinearLayout>
     <SeekBar
     android:id="@+id/write_seekBar_user_count"
     android:layout_width="187dp"
@@ -143,17 +158,38 @@
         android:layout_below="@id/write_text_user_count"
         android:layout_marginTop="13dp"
     android:max="10"/>
-
-    <TextView
+    <LinearLayout
         android:id="@+id/write_text_age"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:text="나이는 25 ~ 26 살 이에요"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/write_seekBar_user_count"
         android:layout_marginTop="20dp"
-        />
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#636363"
+            android:text="나이는 "
+            />
+        <TextView
+            android:id="@+id/text_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#e70033"
+            android:text="25~26"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#636363"
+            android:text=" 살 이에요"
+            />
+    </LinearLayout>
+
     <SeekBar
         android:id="@+id/write_seekBar_age"
         android:layout_width="187dp"
