@@ -50,9 +50,9 @@ public class WriteActivity extends AppCompatActivity {
     }
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    int minAge;
-    int maxAge;
-    int count;
+    int minAge = 20;
+    int maxAge = 21;
+    int count = 1;
     private Bitmap imageBitmap;
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
