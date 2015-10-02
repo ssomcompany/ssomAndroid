@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -44,9 +46,13 @@ public class WriteActivity extends AppCompatActivity {
         initCancel();
         initCategory();
         initCamera();
-
+        initSeekbar();
     }
+
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    int minAge;
+    int maxAge;
+    int count;
     private Bitmap imageBitmap;
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -54,7 +60,47 @@ public class WriteActivity extends AppCompatActivity {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
+    private void initSeekbar() {
+        final TextView ageTextView = (TextView) findViewById(R.id.text_age);
+        final TextView userCountTextView = (TextView) findViewById(R.id.text_user_count);
+        SeekBar ageSeekbar = (SeekBar) findViewById(R.id.write_seekBar_age);
+        ageSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                minAge = progress+20;
+                maxAge =progress+21;
+                ageTextView.setText(minAge+"~"+maxAge);
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        SeekBar userCountSeekbar = (SeekBar) findViewById(R.id.write_seekBar_user_count);
+        userCountSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                count = progress+1;
+                userCountTextView.setText(String.valueOf(count));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
     private void initCamera(){
         ImageView camera = (ImageView) findViewById(R.id.write_camera);
         camera.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +154,8 @@ public class WriteActivity extends AppCompatActivity {
 
 
     }
+    String currentCategory ="any";
+    String category[] = {"rice","beer","coffee","any"};
     int ids[] = {R.id.category_rice,R.id.category_beer,R.id.category_coffee,R.id.category_any};
     int pressImages[] = {R.drawable.icon_rice_press,R.drawable.icon_beer_press,R.drawable.icon_cof_press,R.drawable.icon_all_perss};
     int disImages[] = {R.drawable.icon_rice_dis,R.drawable.icon_beer_dis,R.drawable.icon_cof_dis,R.drawable.icon_all_dis};
@@ -118,6 +166,7 @@ public class WriteActivity extends AppCompatActivity {
                 //select
                 ImageView selImage = (ImageView) findViewById(ids[i]);
                 selImage.setImageResource(pressImages[i]);
+                currentCategory = category[i];
             }else{
                 //deselect
                 ImageView disImage = (ImageView) findViewById(ids[i]);
@@ -234,6 +283,10 @@ public class WriteActivity extends AppCompatActivity {
             jsonBody.put("userId", UniqueIdGenUtil.getId(getApplicationContext()));
             jsonBody.put("content", text);
             jsonBody.put("imageUrl","http://54.64.154.188/file/images/"+fileId);
+            jsonBody.put("category",currentCategory);
+            jsonBody.put("minAge",minAge);
+            jsonBody.put("maxAge",maxAge);
+            jsonBody.put("count",count);
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
                 @Override
