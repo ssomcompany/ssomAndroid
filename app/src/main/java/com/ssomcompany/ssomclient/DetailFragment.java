@@ -87,11 +87,14 @@ public class DetailFragment extends Fragment {
         ImageView categoryIcon = (ImageView) view.findViewById(R.id.full_category);
         TextView categoryText = (TextView) view.findViewById(R.id.full_text_category);
         categoryIcon.setImageResource(CategoryUtil.getCategoryIconId(item.category));
-        categoryText.setText(CategoryUtil.getCategoryDescription(item.category));
+        categoryText.setText("\n" + CategoryUtil.getCategoryDescription(item.category));
 
         //age
-
+        TextView ageTextView  = (TextView) view.findViewById(R.id.full_text_age);
+        ageTextView.setText(item.minAge+"~"+item.maxAge);
         //userCount
+        TextView userCountTextView = (TextView) view.findViewById(R.id.full_text_user_count);
+        userCountTextView.setText(""+item.userCount);
 
         ImageView btnClose = (ImageView) view.findViewById(R.id.close_detail_btn);
         btnClose.setOnClickListener(new View.OnClickListener() {
