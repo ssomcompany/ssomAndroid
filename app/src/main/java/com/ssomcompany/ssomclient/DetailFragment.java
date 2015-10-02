@@ -13,11 +13,11 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.NetworkImageView;
+import com.ssomcompany.ssomclient.common.CategoryUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
+import com.ssomcompany.ssomclient.post.PostContent;
 
 
 /**
@@ -30,20 +30,17 @@ import com.ssomcompany.ssomclient.common.VolleyUtil;
  */
 public class DetailFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "conent";
-    private static final String ARG_PARAM2 = "imageUrl";
+    private static final String ARG_PARAM1 = "postId";
 
-    private String content;
-    private String imageUrl;
+    private String postId;
 
     private OnFragmentInteractionListener mListener;
 
 
-    public static DetailFragment newInstance(String param1, String param2) {
+    public static DetailFragment newInstance(String postId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM1, postId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,20 +53,23 @@ public class DetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            content = getArguments().getString(ARG_PARAM1);
-            imageUrl = getArguments().getString(ARG_PARAM2);
+            postId = getArguments().getString(ARG_PARAM1);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        PostContent.PostItem item  = PostContent.ITEM_MAP.get(postId);
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        //content
         TextView content = (TextView) view.findViewById(R.id.detail_content);
-        content.setText(this.content);
+        content.setText(item.content);
+
+        //image
         final ImageView fullPhoto = (ImageView) view.findViewById(R.id.full_photo);
-        ImageRequest imageRequest = new ImageRequest(imageUrl, new Response.Listener<Bitmap>() {
+        ImageRequest imageRequest = new ImageRequest(item.getImage(), new Response.Listener<Bitmap>() {
             @Override
             public void onResponse(Bitmap bitmap) {
                 fullPhoto.setImageDrawable(Util.getCircleBitmap(bitmap,428));
@@ -83,6 +83,16 @@ public class DetailFragment extends Fragment {
             }
         });
         VolleyUtil.getInstance(getContext()).getRequestQueue().add(imageRequest);
+        //category
+        ImageView categoryIcon = (ImageView) view.findViewById(R.id.full_category);
+        TextView categoryText = (TextView) view.findViewById(R.id.full_text_category);
+        categoryIcon.setImageResource(CategoryUtil.getCategoryIconId(item.category));
+        categoryText.setText(CategoryUtil.getCategoryDescription(item.category));
+
+        //age
+
+        //userCount
+
         ImageView btnClose = (ImageView) view.findViewById(R.id.close_detail_btn);
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
