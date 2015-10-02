@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="86dp"
+    android:layout_height="61dp"
     android:background="@android:color/white"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:contentInsetLeft="0dp"
@@ -13,7 +13,7 @@
     >
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="86dp"
+        android:layout_height="61dp"
         android:id="@+id/custom_action_bar">
 
         <ImageView
@@ -21,14 +21,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
-            android:layout_marginTop="47dp"
+            android:layout_marginTop="22dp"
             android:src="@drawable/icon_top_menu"/>
         <LinearLayout
             android:id="@+id/toggle_bg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="15dp"
             android:padding="2dp"
             android:background="@drawable/toggle_bg_w">
         <TextView
@@ -59,7 +59,7 @@
             android:id="@+id/chat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="39dp"
+            android:layout_marginTop="14dp"
             android:layout_marginRight="15dp"
             android:layout_alignParentRight="true"
             android:src="@drawable/icon_chat_black"/>
@@ -67,7 +67,7 @@
             android:id="@+id/chat_on"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="39dp"
+            android:layout_marginTop="14dp"
             android:layout_marginRight="15dp"
             android:layout_alignParentRight="true"
             android:src="@drawable/icon_chat_on"/>
@@ -76,7 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="30dp"
-            android:layout_marginTop="39dp"
+            android:layout_marginTop="14dp"
             android:layout_toLeftOf="@id/chat_on"
             android:src="@drawable/icon_heart_black"/>
         <View

@@ -9,7 +9,7 @@
         <include layout="@layout/ssom_toolbar"/>
     </LinearLayout>
     <FrameLayout android:id="@+id/container" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:layout_marginTop="86dp"/>
+        android:layout_height="match_parent" android:layout_marginTop="61dp"/>
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
 
