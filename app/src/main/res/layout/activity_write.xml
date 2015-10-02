@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="132dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="25dp"
         android:src="@drawable/title_wirte_type" />
 
     <ImageView
@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="47dp"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="67dp"
         android:scaleType="centerCrop"
         android:layout_gravity="center"
         android:src="@drawable/icon_wirte_photo_emp" />
@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="44dp"
-        android:layout_marginTop="89dp"
+        android:layout_marginTop="64dp"
         android:src="@drawable/icon_wirte_st_b" />
 
     <ImageView
@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="140dp"
-        android:layout_marginTop="185dp"
+        android:layout_marginTop="160dp"
         android:src="@drawable/icon_wirte_photo" />
 
     <ImageView
@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="216dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="103dp"
         android:src="@drawable/toggle_write_bg_w" />
 
     <ImageView
@@ -83,10 +83,11 @@
         android:src="@drawable/icon_target_w" />
     //밥, 술 차 아무거나
     <RelativeLayout
+        android:id="@+id/write_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#d3d3d3"
-        android:layout_marginTop="248dp">
+        android:layout_marginTop="223dp">
     <ImageView
         android:id="@+id/category_rice"
         android:layout_width="wrap_content"
@@ -118,35 +119,73 @@
     //카테고리 끝
     <EditText
         android:id="@+id/message"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="318dp"
+        android:layout_below="@id/write_category"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
         android:textSize="16sp"
-        android:layout_centerHorizontal="true"
         android:gravity="center"
         android:hint="함께 하고 싶은 아이템을 고르고\n나를 어필할수있는\n한 마디를 남겨보세요!"/>
     <TextView
+        android:id="@+id/write_text_user_count"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textSize="16sp"
     android:text="2 명이 기다리고 있어요."
     android:layout_centerHorizontal="true"
-    android:layout_marginTop="409dp"/>
+        android:layout_below="@id/message"
+        android:layout_marginTop="15dp"
+    />
+    <SeekBar
+    android:id="@+id/write_seekBar_user_count"
+    android:layout_width="187dp"
+        android:layout_centerHorizontal="true"
+    android:layout_height="wrap_content"
+        android:layout_below="@id/write_text_user_count"
+        android:layout_marginTop="13dp"
+    android:max="10"/>
+
     <TextView
+        android:id="@+id/write_text_age"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:text="나이는 25 ~ 26 살 이에요"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="477dp"/>
-    <ImageView
+        android:layout_below="@id/write_seekBar_user_count"
+        android:layout_marginTop="20dp"
+        />
+    <SeekBar
+        android:id="@+id/write_seekBar_age"
+        android:layout_width="187dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/write_text_age"
+        android:layout_marginTop="13dp"
+        android:max="10"/>
+    <RelativeLayout
         android:id="@+id/btn_write_post"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="108dp"
         android:layout_marginBottom="20dp"
-        android:src="@drawable/btn_write_ok" />
+        android:background="@drawable/btn_write_ok"
+        android:gravity="center">
+        <ImageView
+            android:id="@+id/write_icon_heart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_heart_w"/>
+        <TextView
+            android:layout_toRightOf="@id/write_icon_heart"
+            android:layout_marginLeft="9dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:text="등록하기"/>
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/btn_cancel"

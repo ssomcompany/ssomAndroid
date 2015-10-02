@@ -137,7 +137,7 @@ public class WriteActivity extends AppCompatActivity {
         });
     }
     private void initWrite() {
-        ImageView btnWrite = (ImageView) findViewById(R.id.btn_write_post);
+        View btnWrite = findViewById(R.id.btn_write_post);
         btnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
