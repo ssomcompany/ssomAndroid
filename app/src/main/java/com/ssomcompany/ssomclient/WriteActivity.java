@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.RequiresPermission;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -26,19 +25,13 @@ import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.BaseVolleyRequest;
 import com.ssomcompany.ssomclient.network.UniqueIdGenUtil;
-import com.ssomcompany.ssomclient.post.RoundImage;
 
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Map;
 
 public class WriteActivity extends AppCompatActivity {
