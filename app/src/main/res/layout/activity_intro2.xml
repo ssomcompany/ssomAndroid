@@ -5,24 +5,36 @@
     tools:context="com.ssomcompany.ssomclient.Intro2Activity">
 
     <ImageView
+        android:id="@+id/intro_slogan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="76dp"
+        android:layout_marginTop="51dp"
         android:src="@drawable/type_slogan_white"/>
     <ImageView
+        android:id="@+id/intro_main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_below="@id/intro_slogan"
+        android:layout_marginTop="50dp"
         android:src="@drawable/logo_main_ssom"/>
     <ImageView
         android:id="@+id/btn_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="18dp"
+        android:layout_below="@id/intro_main"
+        android:layout_marginTop="232dp"
         android:src="@drawable/btn_main_start"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Service \u0026 Design by 쏨컴패니 2015. All right reserved"
+        android:textSize="12sp"
+        android:textColor="#c2c2c2"
+        android:layout_below="@id/btn_start"
+        android:layout_marginTop="18dp"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
