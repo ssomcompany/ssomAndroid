@@ -12,13 +12,10 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageRequest;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by kshgizmo on 2015. 9. 11..
@@ -73,17 +70,39 @@ public class PostItemListAdapter extends BaseAdapter{
         });
         VolleyUtil.getInstance(getContext()).getRequestQueue().add(imageRequest);
 
+        //age
         TextView ageTextView = (TextView) convertView.findViewById(R.id.list_text_age);
         ageTextView.setText(row_pos.minAge+"~"+row_pos.maxAge);
+        //user count
         TextView userCountTextView = (TextView) convertView.findViewById(R.id.list_text_user_count);
         userCountTextView.setText(""+row_pos.userCount);
+        //distance
         TextView distanceTextView = (TextView) convertView.findViewById(R.id.list_text_distance);
         distanceTextView.setText("300m"); //TODO change to real data
+        //category
+        int iconId = getListItemIcon(row_pos.category);
+        if(iconId!=-1){
+            ImageView iconCategoty = (ImageView) convertView.findViewById(R.id.icon_category);
+            iconCategoty.setImageResource(iconId);
+        }
 
 
         return convertView;
     }
+    private int getListItemIcon(String category) {
+        switch (category){
+            case "rice":
+                return R.drawable.icon_rice_st_b;
+            case "beer":
+                return R.drawable.icon_beer_st_b;
+            case "coffee":
+                return R.drawable.icon_cof_st_b;
+            case "any" :
+            default:
+                return -1;
+        }
 
+    }
     public Context getContext() {
         return context;
     }
