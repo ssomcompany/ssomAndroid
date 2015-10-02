@@ -50,6 +50,7 @@ import java.util.Map;
                         item.maxAge = (int) obj.get("maxAge");
                         item.userCount = (int) obj.get("userCount");
                         item.userId = (String) obj.get("userId");
+                        item.ssom = (String) obj.get("ssom");
                         PostContent.addItem(item);
                     }
                     adapter.notifyDataSetChanged();
@@ -75,6 +76,7 @@ import java.util.Map;
         public int minAge;
         public int maxAge;
         public int userCount;
+        public String ssom;
 
 
         public PostItem(String postId, String content) {
