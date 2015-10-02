@@ -6,18 +6,19 @@
     >
 
     <ImageView
+        android:id="@+id/icon_list_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"/>
+    <ImageView
         android:id="@+id/icon_list_r"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:src="@drawable/icon_list_st_r"
         android:layout_marginLeft="8dp"/>
-    <ImageView
-        android:id="@+id/icon_list_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="8dp"/>
+
     <ImageView
         android:id="@+id/icon_category"
         android:layout_width="wrap_content"
@@ -27,24 +28,71 @@
         android:layout_alignParentTop="true"
         android:src="@drawable/icon_rice_st_b"
         />
+
+    <LinearLayout
+        android:id="@+id/list_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="30.2dp"
+        android:layout_toRightOf="@id/icon_list_r">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:lines="1"
+            android:textColor="#929292"
+            android:text="방금전 ,"/>
+        <TextView
+            android:id="@+id/list_text_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:lines="1"
+            android:textColor="#e70033"
+            android:text=" 21~25"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:lines="1"
+            android:textColor="#929292"
+            android:text="살 "/>
+        <TextView
+            android:id="@+id/list_text_user_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:lines="1"
+            android:textColor="#e70033"
+            android:text="4"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:lines="1"
+            android:textColor="#929292"
+            android:text="명 있어요,  "/>
+        <TextView
+            android:id="@+id/list_text_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:lines="1"
+            android:textColor="#e70033"
+            android:text="300m"/>
+    </LinearLayout>
     <TextView
         android:id="@+id/content"
-        android:layout_width="180dp"
-        android:layout_height="match_parent"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="90dp"
-        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="30.7dp"
+        android:layout_below="@id/list_info"
+        android:layout_toRightOf="@id/icon_list_r"
+        android:textSize="12sp"
         android:lines="3"
         />
-    <TextView
-        android:id="@+id/info"
-        android:layout_width="180dp"
-        android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="90dp"
-        android:textSize="13sp"
-        android:lines="1"
-        android:text="방금전 , 21~25살 4명 있어요, 300m"/>
     <ImageView
         android:id="@+id/chat_on_list"
         android:layout_width="wrap_content"
@@ -58,6 +106,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="대화중"
+        android:textSize="10sp"
         android:textColor="@android:color/holo_red_light"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"

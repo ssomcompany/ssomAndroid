@@ -45,6 +45,11 @@ import java.util.Map;
                         Log.i("kshgizmo",obj.toString());
                         PostItem item = new PostItem((String)obj.get("postId"),(String)obj.get("content"));
                         item.imgResource = (String)(obj.get("imageUrl"));
+                        item.category  = (String) obj.get("category");
+                        item.minAge = (int) obj.get("minAge");
+                        item.maxAge = (int) obj.get("maxAge");
+                        item.userCount = (int) obj.get("userCount");
+                        item.userId = (String) obj.get("userId");
                         PostContent.addItem(item);
                     }
                     adapter.notifyDataSetChanged();
@@ -66,6 +71,11 @@ import java.util.Map;
         public String userId;
         public String content;
         public String imgResource;
+        public String category;
+        public int minAge;
+        public int maxAge;
+        public int userCount;
+
 
         public PostItem(String postId, String content) {
             this.postId = postId;

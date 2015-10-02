@@ -18,6 +18,8 @@ import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
 
+import org.w3c.dom.Text;
+
 /**
  * Created by kshgizmo on 2015. 9. 11..
  */
@@ -50,15 +52,11 @@ public class PostItemListAdapter extends BaseAdapter{
                     .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             convertView = mInflater.inflate(R.layout.ssom_list_item, null);
         }
-
-
-
         TextView txtTitle = (TextView) convertView.findViewById(R.id.content);
-
         PostContent.PostItem row_pos = PostContent.ITEMS.get(position);
         // setting the image resource and title
         txtTitle.setText(row_pos.toString());
-
+        //TODO replace ImageRequest to ImageLoader for performance
         final ImageView image = (ImageView) convertView.findViewById(R.id.icon_list_image);
         ImageRequest imageRequest = new ImageRequest(row_pos.getImage(), new Response.Listener<Bitmap>() {
             @Override
@@ -74,6 +72,15 @@ public class PostItemListAdapter extends BaseAdapter{
             }
         });
         VolleyUtil.getInstance(getContext()).getRequestQueue().add(imageRequest);
+
+        TextView ageTextView = (TextView) convertView.findViewById(R.id.list_text_age);
+        ageTextView.setText(row_pos.minAge+"~"+row_pos.maxAge);
+        TextView userCountTextView = (TextView) convertView.findViewById(R.id.list_text_user_count);
+        userCountTextView.setText(""+row_pos.userCount);
+        TextView distanceTextView = (TextView) convertView.findViewById(R.id.list_text_distance);
+        distanceTextView.setText("300m"); //TODO change to real data
+
+
         return convertView;
     }
 
