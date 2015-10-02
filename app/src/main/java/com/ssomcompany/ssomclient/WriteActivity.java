@@ -119,7 +119,7 @@ public class WriteActivity extends AppCompatActivity {
             imageBitmap = (Bitmap) extras.get("data");
             ImageView mImageView = (ImageView) findViewById(R.id.write_photo);
 
-            mImageView.setImageDrawable(Util.getCircleBitmap(imageBitmap, 532)); //TODO 532pixel to dp
+            mImageView.setImageDrawable(Util.getCircleBitmap(imageBitmap, 535)); //TODO 535pixel to dp
         }
     }
     private void initCategory(){
