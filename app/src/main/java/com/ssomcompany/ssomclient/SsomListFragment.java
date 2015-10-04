@@ -99,16 +99,6 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
 
-        ImageView btn_write = (ImageView) view.findViewById(R.id.btn_write);
-        btn_write.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "start write activity", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent();
-                i.setClass(getContext(), WriteActivity.class);
-                startActivity(i);
-            }
-        });
         return view;
     }
 

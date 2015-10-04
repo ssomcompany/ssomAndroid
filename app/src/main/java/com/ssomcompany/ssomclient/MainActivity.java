@@ -1,7 +1,13 @@
 package com.ssomcompany.ssomclient;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,24 +25,28 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.ssomcompany.ssomclient.post.PostContent;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks,SsomListFragment.OnPostItemInteractionListener,DetailFragment.OnFragmentInteractionListener,OnMapReadyCallback {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnFragmentInteractionListener, OnMapReadyCallback {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    private GoogleMap map;
-
+    private GoogleMap mMap;
+    private LocationManager mLocationManager;
     private String selectedView = "map";
+    private ImageView mBtnMapMyLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +71,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(tb);
         final FragmentManager fragmentManager = getSupportFragmentManager();
-        final DrawerLayout drawer  = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ImageView lnbMenu = (ImageView) tb.findViewById(R.id.lnb_menu_btn);
         lnbMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +83,20 @@ public class MainActivity extends AppCompatActivity
         final TextView listBtn = (TextView) tb.findViewById(R.id.toggle_s_list);
         View toggleView = tb.findViewById(R.id.toggle_bg);
         final OnMapReadyCallback mapListener = this;
+        final Context context = this;
+
+        ImageView btn_write = (ImageView) findViewById(R.id.btn_write);
+        btn_write.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "start write activity", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent();
+                i.setClass(context, WriteActivity.class);
+                startActivity(i);
+            }
+        });
+        mBtnMapMyLocation = (ImageView) findViewById(R.id.map_current_location);
+
         toggleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,15 +104,16 @@ public class MainActivity extends AppCompatActivity
                     mapBtn.setVisibility(View.INVISIBLE);
                     listBtn.setVisibility(View.VISIBLE);
                     selectedView = "list";
+                    mBtnMapMyLocation.setVisibility(View.INVISIBLE);
                     Fragment fragment = SsomListFragment.newInstance("1", "2");
                     fragmentManager.beginTransaction().
-                            replace(R.id.container,fragment)
+                            replace(R.id.container, fragment)
                             .commit();
                 } else {
                     selectedView = "map";
                     SupportMapFragment mapFragment = new SupportMapFragment();
                     fragmentManager.beginTransaction().
-                            replace(R.id.container,mapFragment)
+                            replace(R.id.container, mapFragment)
                             .commit();
                     mapFragment.getMapAsync(mapListener);
                     mapBtn.setVisibility(View.VISIBLE);
@@ -96,7 +121,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-        final Activity activity = this;
     }
 
     @Override
@@ -167,7 +191,39 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        this.map = googleMap;
+        this.mMap = googleMap;
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.getUiSettings().setRotateGesturesEnabled(false);
+
+        mMap.setMyLocationEnabled(true);
+        mBtnMapMyLocation.setVisibility(View.VISIBLE);
+
+//        initLocationUsingLocationManager();
+        final Context context = this;
+        mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "mylocation setting", Toast.LENGTH_SHORT).show();
+                Location location = mMap.getMyLocation();
+                if (location != null) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+                }
+            }
+        });
+    }
+
+    private void initLocationUsingLocationManager() {
+        mLocationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+//        String bestProvider = mLocationManager.getBestProvider(criteria,false);
+        String bestProvider = LocationManager.NETWORK_PROVIDER;
+        Location location = mLocationManager.getLastKnownLocation(bestProvider);
+        Toast.makeText(this,location.getLatitude()+"/"+location.getLongitude(),Toast.LENGTH_SHORT).show();
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+
+
     }
 
     /**
