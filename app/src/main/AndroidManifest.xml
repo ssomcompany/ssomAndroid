@@ -33,7 +33,7 @@
         android:theme="@style/AppTheme"
         android:windowActionBar="false"
         android:windowNoTitle="true" >
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBYMCAFKH4mLDTrkuGNslY0ccEHPLjgRAc"/>
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="@string/map_debug_key"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
