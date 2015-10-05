@@ -3,11 +3,9 @@ package com.ssomcompany.ssomclient;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,7 +27,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.post.PostContent;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
@@ -211,6 +212,22 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                addMarker(latLng);
+            }
+        });
+        
+
+    }
+    private void addMarker(LatLng location) {
+        mMap.addMarker(new MarkerOptions()
+                .position(location)
+                .title("test marker").draggable(false).icon(getMarkerImage()));
+    }
+    private BitmapDescriptor getMarkerImage(){
+        return BitmapDescriptorFactory.fromResource(R.drawable.icon_sell_red);
     }
 
     private void initLocationUsingLocationManager() {

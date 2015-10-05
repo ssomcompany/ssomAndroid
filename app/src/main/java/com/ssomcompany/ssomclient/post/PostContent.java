@@ -77,6 +77,8 @@ import java.util.Map;
         public int maxAge;
         public int userCount;
         public String ssom;
+        public float lat;
+        public float lng;
 
 
         public PostItem(String postId, String content) {
