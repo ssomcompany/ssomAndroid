@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity
     private LocationManager mLocationManager;
     private String selectedView = "map";
     private ImageView mBtnMapMyLocation;
+    private ImageView btn_write;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity
         final OnMapReadyCallback mapListener = this;
         final Context context = this;
 
-        ImageView btn_write = (ImageView) findViewById(R.id.btn_write);
+        btn_write = (ImageView) findViewById(R.id.btn_write);
         btn_write.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -176,6 +177,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPostItemClick(String id) {
         Toast.makeText(this, "item click : " + PostContent.ITEM_MAP.get(id), Toast.LENGTH_SHORT).show();
+        setWriteBtn(false);
         Fragment fragment = DetailFragment.newInstance(PostContent.ITEM_MAP.get(id).postId);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().
@@ -183,7 +185,13 @@ public class MainActivity extends AppCompatActivity
                 .addToBackStack(null)
                 .commit();
     }
-
+    public void setWriteBtn(boolean on){
+        if(on){
+            btn_write.setVisibility(View.VISIBLE);
+        }else{
+            btn_write.setVisibility(View.INVISIBLE);
+        }
+    }
     @Override
     public void onFragmentInteraction(Uri uri) {
         Toast.makeText(getApplicationContext(),"onFragmentInteraction",Toast.LENGTH_SHORT).show();

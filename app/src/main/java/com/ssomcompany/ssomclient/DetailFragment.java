@@ -100,22 +100,24 @@ public class DetailFragment extends Fragment {
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onButtonPressed(null);
+                onCloseButtonPressed(null);
             }
         });
         view.setClickable(true);
         return view;
     }
 
-    public void onButtonPressed(Uri uri) {
+    public void onCloseButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
 
+    private MainActivity activity;
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        this.activity  = (MainActivity) activity;
         try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
@@ -128,6 +130,7 @@ public class DetailFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        activity.setWriteBtn(true);
     }
 
     /**
