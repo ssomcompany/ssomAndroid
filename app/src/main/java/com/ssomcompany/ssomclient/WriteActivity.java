@@ -38,6 +38,11 @@ import java.util.Map;
 
 public class WriteActivity extends AppCompatActivity {
 
+    private String ssomType = "ssom";
+    private View ssomTypeSsom;
+    private View ssomTypeSsoseyo;
+    private ImageView iconSt;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +60,7 @@ public class WriteActivity extends AppCompatActivity {
         View view = findViewById(R.id.write_ssom);
         ssomTypeSsom = findViewById(R.id.write_ssom_ssom);
         ssomTypeSsoseyo = findViewById(R.id.write_ssom_ssoseyo);
+        iconSt = (ImageView) findViewById(R.id.write_icon_st);
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,18 +69,18 @@ public class WriteActivity extends AppCompatActivity {
             }
         });
     }
-    private String ssomType = "ssom";
-    private View ssomTypeSsom;
-    private View ssomTypeSsoseyo;
+
     private void toggleSsomType() {
         if(ssomType.equals("ssom")){
             ssomType = "ssoseyo";
             ssomTypeSsom.setVisibility(View.INVISIBLE);
             ssomTypeSsoseyo.setVisibility(View.VISIBLE);
+            iconSt.setImageResource(R.drawable.icon_wirte_st_r);
         }else{
             ssomType= "ssom";
             ssomTypeSsom.setVisibility(View.VISIBLE);
             ssomTypeSsoseyo.setVisibility(View.INVISIBLE);
+            iconSt.setImageResource(R.drawable.icon_wirte_st_b);
         }
     }
 

@@ -291,7 +291,13 @@ public class MainActivity extends AppCompatActivity
             mergedBitmap = Bitmap.createBitmap(188, 237, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(mergedBitmap);
             Resources res = getResources();
-            Bitmap iconBitmap = BitmapFactory.decodeResource(res, R.drawable.icon_sell_red);
+            Bitmap iconBitmap =  null;
+            if("ssom".equals(ssom)){
+                iconBitmap = BitmapFactory.decodeResource(res, R.drawable.icon_buy_black);
+            }else{
+                iconBitmap = BitmapFactory.decodeResource(res, R.drawable.icon_sell_red);
+            }
+
             Drawable iconDrawable = new BitmapDrawable(iconBitmap);
             Drawable imageDrawable = new RoundImage(imageBitmap);
 

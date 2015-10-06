@@ -94,7 +94,15 @@ public class DetailFragment extends Fragment {
         ageTextView.setText(item.minAge+"~"+item.maxAge);
         //userCount
         TextView userCountTextView = (TextView) view.findViewById(R.id.full_text_user_count);
-        userCountTextView.setText(""+item.userCount);
+        userCountTextView.setText("" + item.userCount);
+
+        ImageView fullPhotoSt = (ImageView) view.findViewById(R.id.full_photo_st_b);
+        if("ssom".equals(item.ssom)){
+            fullPhotoSt.setImageResource(R.drawable.full_photo_st_b);
+        }else{
+            fullPhotoSt.setImageResource(R.drawable.full_photo_st_r);
+        }
+
 
         ImageView btnClose = (ImageView) view.findViewById(R.id.close_detail_btn);
         btnClose.setOnClickListener(new View.OnClickListener() {

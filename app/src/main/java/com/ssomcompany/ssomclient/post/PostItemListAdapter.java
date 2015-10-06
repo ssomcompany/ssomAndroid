@@ -71,6 +71,15 @@ public class PostItemListAdapter extends BaseAdapter{
         });
         VolleyUtil.getInstance(getContext()).getRequestQueue().add(imageRequest);
 
+        //icon
+        ImageView iconView = (ImageView) convertView.findViewById(R.id.icon_list_r);
+        if("ssom".equals(row_pos.ssom)){
+            iconView.setImageResource(R.drawable.icon_list_st_b);
+        }else{
+            iconView.setImageResource(R.drawable.icon_list_st_r);
+        }
+
+
         //age
         TextView ageTextView = (TextView) convertView.findViewById(R.id.list_text_age);
         ageTextView.setText(row_pos.minAge+"~"+row_pos.maxAge);
