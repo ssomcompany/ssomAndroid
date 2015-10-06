@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mapBtn;
     private TextView listBtn;
     private FragmentManager fragmentManager;
-
+    private Location pastLocation;
     private int postItemIndexForMapFragment =0; // TODO: 2015. 10. 6. temporary variable for putting marker on random location
 
     @Override
@@ -227,6 +227,10 @@ public class MainActivity extends AppCompatActivity
 
         mMap.setMyLocationEnabled(true);
         mBtnMapMyLocation.setVisibility(View.VISIBLE);
+        if(pastLocation!=null){
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(pastLocation.getLatitude(), pastLocation.getLongitude())));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+        }
         mMap.setOnMyLocationChangeListener(this);
 //        initLocationUsingLocationManager();
         final Context context = this;
@@ -303,10 +307,11 @@ public class MainActivity extends AppCompatActivity
     private boolean isFirstTimeChangeLocation;
     @Override
     public void onMyLocationChange(Location location) {
-        if(isFirstTimeChangeLocation){
+        if(isFirstTimeChangeLocation && pastLocation==null){
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
             isFirstTimeChangeLocation = false;
+            pastLocation = location;
         }
     }
 
