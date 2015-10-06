@@ -37,6 +37,7 @@
         android:src="@drawable/icon_wirte_photo" />
 
     <RelativeLayout
+        android:id="@+id/write_ssom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="216dp"
@@ -47,7 +48,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/toggle_write_bg_w" />
 
-        <ImageView
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/targetbackground"
@@ -55,35 +56,52 @@
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
-            android:src="@drawable/toggle_write_black" />
+            android:background="@drawable/toggle_write_black" >
+            <ImageView
+                android:id="@+id/write_icon_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="19dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_check_w" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="내가 쏨"
+                android:textColor="#ffffff"
+                android:layout_marginLeft="5dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/write_icon_check"/>
+            </RelativeLayout>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/targetbackground"
-            android:layout_alignTop="@id/targetbackground"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="19dp"
-            android:layout_marginTop="12dp"
-            android:src="@drawable/icon_check_w" />
 
-        <ImageView
+
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/targetbackground"
             android:layout_alignLeft="@id/targetbackground"
             android:layout_marginBottom="2dp"
             android:layout_marginLeft="2dp"
-            android:src="@drawable/toggle_write_red" />
+            android:background="@drawable/toggle_write_red" >
+            <ImageView
+                android:id="@+id/write_icon_target"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="19dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_target_w" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="쏘세요"
+                android:textColor="#ffffff"
+                android:layout_marginLeft="5dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/write_icon_target"/>
+        </RelativeLayout>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/targetbackground"
-            android:layout_alignLeft="@id/targetbackground"
-            android:layout_marginBottom="12dp"
-            android:layout_marginLeft="19dp"
-            android:src="@drawable/icon_target_w" />
+
     </RelativeLayout>
 
 
