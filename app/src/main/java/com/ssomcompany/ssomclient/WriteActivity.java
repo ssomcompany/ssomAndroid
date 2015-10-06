@@ -316,6 +316,7 @@ public class WriteActivity extends AppCompatActivity {
             jsonBody.put("minAge",minAge);
             jsonBody.put("maxAge",maxAge);
             jsonBody.put("userCount",count);
+            jsonBody.put("ssom",ssomType);
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
                 @Override
