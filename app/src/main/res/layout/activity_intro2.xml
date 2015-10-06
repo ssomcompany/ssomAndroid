@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="51dp"
+        android:layout_marginTop="76dp"
         android:src="@drawable/type_slogan_white"/>
     <ImageView
         android:id="@+id/intro_main"

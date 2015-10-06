@@ -39,7 +39,6 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
 import com.ssomcompany.ssomclient.post.PostContent;
 import com.ssomcompany.ssomclient.post.RoundImage;
@@ -47,7 +46,9 @@ import com.ssomcompany.ssomclient.push.PushManageService;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnFragmentInteractionListener, OnMapReadyCallback {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+        SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnFragmentInteractionListener,
+        OnMapReadyCallback,GoogleMap.OnMyLocationChangeListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -59,6 +60,10 @@ public class MainActivity extends AppCompatActivity
     private String selectedView = "map";
     private ImageView mBtnMapMyLocation;
     private ImageView btn_write;
+    private TextView mapBtn;
+    private TextView listBtn;
+    private FragmentManager fragmentManager;
+
     private int postItemIndexForMapFragment =0; // TODO: 2015. 10. 6. temporary variable for putting marker on random location
 
     @Override
@@ -77,14 +82,14 @@ public class MainActivity extends AppCompatActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-
+        startMapFragment();
         startService(new Intent(this, PushManageService.class));
     }
 
     private void initToolbar() {
         Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(tb);
-        final FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager();
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ImageView lnbMenu = (ImageView) tb.findViewById(R.id.lnb_menu_btn);
         lnbMenu.setOnClickListener(new View.OnClickListener() {
@@ -93,10 +98,9 @@ public class MainActivity extends AppCompatActivity
                 drawer.openDrawer(Gravity.LEFT);
             }
         });
-        final TextView mapBtn = (TextView) tb.findViewById(R.id.toggle_s_map);
-        final TextView listBtn = (TextView) tb.findViewById(R.id.toggle_s_list);
+        mapBtn = (TextView) tb.findViewById(R.id.toggle_s_map);
+        listBtn = (TextView) tb.findViewById(R.id.toggle_s_list);
         View toggleView = tb.findViewById(R.id.toggle_bg);
-        final OnMapReadyCallback mapListener = this;
         final Context context = this;
 
         btn_write = (ImageView) findViewById(R.id.btn_write);
@@ -115,35 +119,41 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if (selectedView.equals("map")) {
-                    mapBtn.setVisibility(View.INVISIBLE);
-                    listBtn.setVisibility(View.VISIBLE);
-                    selectedView = "list";
-                    mBtnMapMyLocation.setVisibility(View.INVISIBLE);
-                    Fragment fragment = SsomListFragment.newInstance("1", "2");
-                    fragmentManager.beginTransaction().
-                            replace(R.id.container, fragment)
-                            .commit();
+                    startListFragment();
                 } else {
-                    selectedView = "map";
-                    postItemIndexForMapFragment = 0;
-                    SupportMapFragment mapFragment = new SupportMapFragment();
-                    PostContent.init(context, null);
-                    fragmentManager.beginTransaction().
-                            replace(R.id.container, mapFragment)
-                            .commit();
-                    mapFragment.getMapAsync(mapListener);
-                    mapBtn.setVisibility(View.VISIBLE);
-                    listBtn.setVisibility(View.INVISIBLE);
+                    startMapFragment();
                 }
             }
         });
+    }
+    private void startMapFragment(){
+        selectedView = "map";
+        postItemIndexForMapFragment = 0;
+        SupportMapFragment mapFragment = new SupportMapFragment();
+        PostContent.init(this, null);
+        fragmentManager.beginTransaction().
+                replace(R.id.container, mapFragment)
+                .commit();
+        mapFragment.getMapAsync(this);
+        mapBtn.setVisibility(View.VISIBLE);
+        listBtn.setVisibility(View.INVISIBLE);
+        isFirstTimeChangeLocation = true;
+    }
+    private void startListFragment() {
+        mapBtn.setVisibility(View.INVISIBLE);
+        listBtn.setVisibility(View.VISIBLE);
+        selectedView = "list";
+        mBtnMapMyLocation.setVisibility(View.INVISIBLE);
+        Fragment fragment = SsomListFragment.newInstance("1", "2");
+        fragmentManager.beginTransaction().
+                replace(R.id.container, fragment)
+                .commit();
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Toast.makeText(this,"position "+position,Toast.LENGTH_SHORT).show();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
@@ -220,7 +230,7 @@ public class MainActivity extends AppCompatActivity
 
         mMap.setMyLocationEnabled(true);
         mBtnMapMyLocation.setVisibility(View.VISIBLE);
-
+        mMap.setOnMyLocationChangeListener(this);
 //        initLocationUsingLocationManager();
         final Context context = this;
         mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
@@ -292,6 +302,15 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception e) {
         }
         return BitmapDescriptorFactory.fromBitmap(mergedBitmap);
+    }
+    private boolean isFirstTimeChangeLocation;
+    @Override
+    public void onMyLocationChange(Location location) {
+        if(isFirstTimeChangeLocation){
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+            isFirstTimeChangeLocation = false;
+        }
     }
 
 

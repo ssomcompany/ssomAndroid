@@ -36,51 +36,57 @@
         android:layout_marginTop="160dp"
         android:src="@drawable/icon_wirte_photo" />
 
-    <ImageView
-        android:id="@+id/targetbackground"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="216dp"
-        android:layout_marginTop="103dp"
-        android:src="@drawable/toggle_write_bg_w" />
+        android:layout_marginTop="103dp">
+        <ImageView
+            android:id="@+id/targetbackground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/toggle_write_bg_w" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/targetbackground"
-        android:layout_alignTop="@id/targetbackground"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="2dp"
-        android:layout_marginTop="2dp"
-        android:src="@drawable/toggle_write_black" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/targetbackground"
+            android:layout_alignTop="@id/targetbackground"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="2dp"
+            android:src="@drawable/toggle_write_black" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/targetbackground"
-        android:layout_alignTop="@id/targetbackground"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="19dp"
-        android:layout_marginTop="12dp"
-        android:src="@drawable/icon_check_w" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/targetbackground"
+            android:layout_alignTop="@id/targetbackground"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="19dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/icon_check_w" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/targetbackground"
-        android:layout_alignLeft="@id/targetbackground"
-        android:layout_marginBottom="2dp"
-        android:layout_marginLeft="2dp"
-        android:src="@drawable/toggle_write_red" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/targetbackground"
+            android:layout_alignLeft="@id/targetbackground"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="2dp"
+            android:src="@drawable/toggle_write_red" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/targetbackground"
-        android:layout_alignLeft="@id/targetbackground"
-        android:layout_marginBottom="12dp"
-        android:layout_marginLeft="19dp"
-        android:src="@drawable/icon_target_w" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/targetbackground"
+            android:layout_alignLeft="@id/targetbackground"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="19dp"
+            android:src="@drawable/icon_target_w" />
+    </RelativeLayout>
+
+
     //밥, 술 차 아무거나
     <RelativeLayout
         android:id="@+id/write_category"

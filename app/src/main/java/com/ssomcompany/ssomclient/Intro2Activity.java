@@ -15,6 +15,10 @@ public class Intro2Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro2);
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
 
         ImageView btnStart= (ImageView) findViewById(R.id.btn_start);
         btnStart.setOnClickListener(new View.OnClickListener() {
