@@ -49,6 +49,7 @@
             android:src="@drawable/toggle_write_bg_w" />
 
         <RelativeLayout
+            android:id="@+id/write_ssom_ssom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/targetbackground"
@@ -77,13 +78,15 @@
 
 
         <RelativeLayout
+            android:id="@+id/write_ssom_ssoseyo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/targetbackground"
             android:layout_alignLeft="@id/targetbackground"
             android:layout_marginBottom="2dp"
             android:layout_marginLeft="2dp"
-            android:background="@drawable/toggle_write_red" >
+            android:background="@drawable/toggle_write_red"
+            android:visibility="invisible">
             <ImageView
                 android:id="@+id/write_icon_target"
                 android:layout_width="wrap_content"

@@ -47,6 +47,35 @@ public class WriteActivity extends AppCompatActivity {
         initCategory();
         initCamera();
         initSeekbar();
+        initSsomType();
+
+    }
+
+    private void initSsomType() {
+        View view = findViewById(R.id.write_ssom);
+        ssomTypeSsom = findViewById(R.id.write_ssom_ssom);
+        ssomTypeSsoseyo = findViewById(R.id.write_ssom_ssoseyo);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleSsomType();
+            }
+        });
+    }
+    private String ssomType = "ssom";
+    private View ssomTypeSsom;
+    private View ssomTypeSsoseyo;
+    private void toggleSsomType() {
+        if(ssomType.equals("ssom")){
+            ssomType = "ssoseyo";
+            ssomTypeSsom.setVisibility(View.INVISIBLE);
+            ssomTypeSsoseyo.setVisibility(View.VISIBLE);
+        }else{
+            ssomType= "ssom";
+            ssomTypeSsom.setVisibility(View.VISIBLE);
+            ssomTypeSsoseyo.setVisibility(View.INVISIBLE);
+        }
     }
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
