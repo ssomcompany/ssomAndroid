@@ -90,6 +90,15 @@ public class MainActivity extends AppCompatActivity
     private void initLayoutWrite(){
         bgList = (ImageView) findViewById(R.id.bg_list_bot);
         btn_write = (ImageView) findViewById(R.id.btn_write);
+        final Context context = this;
+        btn_write.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(context, WriteActivity.class);
+                startActivity(i);
+            }
+        });
         filter = findViewById(R.id.filter);
         filter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,16 +122,6 @@ public class MainActivity extends AppCompatActivity
         mapBtn = (TextView) tb.findViewById(R.id.toggle_s_map);
         listBtn = (TextView) tb.findViewById(R.id.toggle_s_list);
         View toggleView = tb.findViewById(R.id.toggle_bg);
-        final Context context = this;
-
-        btn_write.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent();
-                i.setClass(context, WriteActivity.class);
-                startActivity(i);
-            }
-        });
         mBtnMapMyLocation = (ImageView) findViewById(R.id.map_current_location);
 
         toggleView.setOnClickListener(new View.OnClickListener() {
