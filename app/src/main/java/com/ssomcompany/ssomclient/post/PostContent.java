@@ -61,7 +61,6 @@ import java.util.Map;
                 }catch (Exception e){
                     Toast.makeText(context,e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(context,PostContent.ITEMS.toString(),Toast.LENGTH_SHORT).show();
             }
         },new Response.ErrorListener(){
             @Override

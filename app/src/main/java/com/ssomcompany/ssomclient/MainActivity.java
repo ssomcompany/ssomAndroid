@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity
     private TextView listBtn;
     private FragmentManager fragmentManager;
     private Location pastLocation;
+    private ImageView bgList;
+    private View filter;
     private int postItemIndexForMapFragment =0; // TODO: 2015. 10. 6. temporary variable for putting marker on random location
 
     @Override
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity
 
         //set up the toolbar
         initToolbar();
-
+        initLayoutWrite();
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -85,7 +87,17 @@ public class MainActivity extends AppCompatActivity
         startMapFragment();
         startService(new Intent(this, PushManageService.class));
     }
-
+    private void initLayoutWrite(){
+        bgList = (ImageView) findViewById(R.id.bg_list_bot);
+        btn_write = (ImageView) findViewById(R.id.btn_write);
+        filter = findViewById(R.id.filter);
+        filter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this,"start filter",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void initToolbar() {
         Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(tb);
@@ -103,7 +115,6 @@ public class MainActivity extends AppCompatActivity
         View toggleView = tb.findViewById(R.id.toggle_bg);
         final Context context = this;
 
-        btn_write = (ImageView) findViewById(R.id.btn_write);
         btn_write.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,6 +141,7 @@ public class MainActivity extends AppCompatActivity
         postItemIndexForMapFragment = 0;
         SupportMapFragment mapFragment = new SupportMapFragment();
         PostContent.init(this, null);
+        bgList.setVisibility(View.INVISIBLE);
         fragmentManager.beginTransaction().
                 replace(R.id.container, mapFragment)
                 .commit();
@@ -142,6 +154,7 @@ public class MainActivity extends AppCompatActivity
         mapBtn.setVisibility(View.INVISIBLE);
         listBtn.setVisibility(View.VISIBLE);
         selectedView = "list";
+        bgList.setVisibility(View.VISIBLE);
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
         Fragment fragment = SsomListFragment.newInstance("1", "2");
         fragmentManager.beginTransaction().
@@ -210,8 +223,12 @@ public class MainActivity extends AppCompatActivity
     public void setWriteBtn(boolean on){
         if(on){
             btn_write.setVisibility(View.VISIBLE);
+            bgList.setVisibility(View.VISIBLE);
+            filter.setVisibility(View.VISIBLE);
         }else{
             btn_write.setVisibility(View.INVISIBLE);
+            bgList.setVisibility(View.INVISIBLE);
+            filter.setVisibility(View.INVISIBLE);
         }
     }
     @Override
