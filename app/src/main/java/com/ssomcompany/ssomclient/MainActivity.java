@@ -3,6 +3,12 @@ package com.ssomcompany.ssomclient;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -22,6 +28,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,7 +39,10 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.common.VolleyUtil;
 import com.ssomcompany.ssomclient.post.PostContent;
+import com.ssomcompany.ssomclient.post.RoundImage;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
 
@@ -234,22 +246,54 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void addMarker(LatLng location) {
-
+    private void addMarker(final LatLng location) {
         if(PostContent.ITEMS.size() <= postItemIndexForMapFragment){
             Toast.makeText(getApplicationContext(),"no more post item",Toast.LENGTH_SHORT).show();
             return ;
         }
-        PostContent.PostItem item = PostContent.ITEMS.get(postItemIndexForMapFragment++);
-        mMap.addMarker(new MarkerOptions()
-                .position(location)
-                .title(item.content).draggable(false).icon(getMarkerImage(item.ssom,item.getImage())));
+        final PostContent.PostItem item = PostContent.ITEMS.get(postItemIndexForMapFragment++);
+        ImageRequest imageRequest = new ImageRequest(item.getImage(), new Response.Listener<Bitmap>() {
+            @Override
+            public void onResponse(Bitmap bitmap) {
+                mMap.addMarker(new MarkerOptions()
+                        .position(location)
+                        .title(item.content).draggable(false).icon(getMarkerImage(item.ssom, bitmap)));
+            }
+        },144, 256, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888
+                , new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        VolleyUtil.getInstance(getApplicationContext()).getRequestQueue().add(imageRequest);
+
+
     }
-    private BitmapDescriptor getMarkerImage(String ssom , String imageUrl){
+    private BitmapDescriptor getMarkerImage(String ssom , Bitmap imageBitmap){
         //TODO make BitmapDescriptor with profile image
 
-        return BitmapDescriptorFactory.fromResource(R.drawable.icon_sell_red);
+        Bitmap mergedBitmap = null;
+        try {
+
+            mergedBitmap = Bitmap.createBitmap(188, 237, Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(mergedBitmap);
+            Resources res = getResources();
+            Bitmap iconBitmap = BitmapFactory.decodeResource(res, R.drawable.icon_sell_red);
+            Drawable iconDrawable = new BitmapDrawable(iconBitmap);
+            Drawable imageDrawable = new RoundImage(imageBitmap);
+
+            iconDrawable.setBounds(0, 0, 188, 237);
+            imageDrawable.setBounds(18, 18, 170, 170);
+            imageDrawable.draw(c);
+            iconDrawable.draw(c);
+
+        } catch (Exception e) {
+        }
+        return BitmapDescriptorFactory.fromBitmap(mergedBitmap);
     }
+
 
 //    private void initLocationUsingLocationManager() {
 //        mLocationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
