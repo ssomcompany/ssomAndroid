@@ -28,7 +28,7 @@ import com.ssomcompany.ssomclient.post.PostItemListAdapter;
  * Activities containing this fragment MUST implement the {@link OnPostItemInteractionListener}
  * interface.
  */
-public class SsomListFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class SsomListFragment extends Fragment implements AbsListView.OnItemClickListener,PostDataChangeInterface {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -84,7 +84,7 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
     @Override
     public void onResume() {
         super.onResume();
-        PostContent.init((PostItemListAdapter)mAdapter);
+        PostContent.init(getActivity(), this);
     }
 
     @Override
@@ -139,6 +139,11 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
         if (emptyView instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
         }
+    }
+
+    @Override
+    public void onPostItemChanged() {
+        ((PostItemListAdapter)mAdapter).notifyDataSetChanged();
     }
 
     /**

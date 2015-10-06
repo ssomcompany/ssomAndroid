@@ -3,7 +3,6 @@ package com.ssomcompany.ssomclient;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -48,6 +47,7 @@ public class MainActivity extends AppCompatActivity
     private String selectedView = "map";
     private ImageView mBtnMapMyLocation;
     private ImageView btn_write;
+    private int postItemIndexForMapFragment =0; // TODO: 2015. 10. 6. temporary variable for putting marker on random location
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +113,9 @@ public class MainActivity extends AppCompatActivity
                             .commit();
                 } else {
                     selectedView = "map";
+                    postItemIndexForMapFragment = 0;
                     SupportMapFragment mapFragment = new SupportMapFragment();
+                    PostContent.init(context, null);
                     fragmentManager.beginTransaction().
                             replace(R.id.container, mapFragment)
                             .commit();
@@ -212,11 +214,13 @@ public class MainActivity extends AppCompatActivity
         mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "mylocation setting", Toast.LENGTH_SHORT).show();
+
                 Location location = mMap.getMyLocation();
                 if (location != null) {
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+                } else {
+                    Toast.makeText(context, "my location didn`t set yet. wait a minute ", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -229,27 +233,36 @@ public class MainActivity extends AppCompatActivity
         
 
     }
+
     private void addMarker(LatLng location) {
+
+        if(PostContent.ITEMS.size() <= postItemIndexForMapFragment){
+            Toast.makeText(getApplicationContext(),"no more post item",Toast.LENGTH_SHORT).show();
+            return ;
+        }
+        PostContent.PostItem item = PostContent.ITEMS.get(postItemIndexForMapFragment++);
         mMap.addMarker(new MarkerOptions()
                 .position(location)
-                .title("test marker").draggable(false).icon(getMarkerImage()));
+                .title(item.content).draggable(false).icon(getMarkerImage(item.ssom,item.getImage())));
     }
-    private BitmapDescriptor getMarkerImage(){
+    private BitmapDescriptor getMarkerImage(String ssom , String imageUrl){
+        //TODO make BitmapDescriptor with profile image
+
         return BitmapDescriptorFactory.fromResource(R.drawable.icon_sell_red);
     }
 
-    private void initLocationUsingLocationManager() {
-        mLocationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-//        String bestProvider = mLocationManager.getBestProvider(criteria,false);
-        String bestProvider = LocationManager.NETWORK_PROVIDER;
-        Location location = mLocationManager.getLastKnownLocation(bestProvider);
-        Toast.makeText(this,location.getLatitude()+"/"+location.getLongitude(),Toast.LENGTH_SHORT).show();
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-
-
-    }
+//    private void initLocationUsingLocationManager() {
+//        mLocationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+//        Criteria criteria = new Criteria();
+////        String bestProvider = mLocationManager.getBestProvider(criteria,false);
+//        String bestProvider = LocationManager.NETWORK_PROVIDER;
+//        Location location = mLocationManager.getLastKnownLocation(bestProvider);
+//        Toast.makeText(this,location.getLatitude()+"/"+location.getLongitude(),Toast.LENGTH_SHORT).show();
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+//        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+//
+//
+//    }
 
     /**
      * A placeholder fragment containing a simple view.

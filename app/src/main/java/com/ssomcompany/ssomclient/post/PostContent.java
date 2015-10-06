@@ -1,5 +1,6 @@
 package com.ssomcompany.ssomclient.post;
 
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -9,6 +10,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.ssomcompany.ssomclient.PostDataChangeInterface;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,11 +32,11 @@ import java.util.Map;
         ITEMS.add(item);
         ITEM_MAP.put(item.postId, item);
     }
-    public static void init(final PostItemListAdapter adapter){
+    public static void init(final Context context,final PostDataChangeInterface callback){
         ITEMS.clear();
         ITEM_MAP.clear();
 
-        RequestQueue queue = Volley.newRequestQueue(adapter.getContext());
+        RequestQueue queue = Volley.newRequestQueue(context);
         String url = "http://54.64.154.188/posts";
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET,url,null,new Response.Listener<JSONArray>(){
             @Override
@@ -53,16 +55,18 @@ import java.util.Map;
                         item.ssom = (String) obj.get("ssom");
                         PostContent.addItem(item);
                     }
-                    adapter.notifyDataSetChanged();
+                    if(callback!=null) {
+                        callback.onPostItemChanged();
+                    }
                 }catch (Exception e){
-                    Toast.makeText(adapter.getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(adapter.getContext(),PostContent.ITEMS.toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,PostContent.ITEMS.toString(),Toast.LENGTH_SHORT).show();
             }
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(adapter.getContext(),volleyError.getMessage(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,volleyError.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
         queue.add(jsonArrayRequest);
