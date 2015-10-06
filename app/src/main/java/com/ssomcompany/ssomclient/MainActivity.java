@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity
         btn_write.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "start write activity", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent();
                 i.setClass(context, WriteActivity.class);
                 startActivity(i);
@@ -200,7 +199,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPostItemClick(String id) {
-        Toast.makeText(this, "item click : " + PostContent.ITEM_MAP.get(id), Toast.LENGTH_SHORT).show();
         setWriteBtn(false);
         Fragment fragment = DetailFragment.newInstance(PostContent.ITEM_MAP.get(id).postId);
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -218,7 +216,6 @@ public class MainActivity extends AppCompatActivity
     }
     @Override
     public void onFragmentInteraction(Uri uri) {
-        Toast.makeText(getApplicationContext(),"onFragmentInteraction",Toast.LENGTH_SHORT).show();
         onBackPressed();
     }
 

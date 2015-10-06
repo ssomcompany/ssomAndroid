@@ -24,7 +24,6 @@ public class Intro2Activity extends AppCompatActivity {
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"start main",Toast.LENGTH_SHORT).show();
                 Intent i = new Intent();
                 i.setClass(getApplicationContext(), MainActivity.class);
                 startActivity(i);
