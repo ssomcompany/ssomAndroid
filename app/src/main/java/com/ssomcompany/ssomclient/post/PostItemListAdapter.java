@@ -35,7 +35,11 @@ public class PostItemListAdapter extends BaseAdapter{
 
     @Override
     public Object getItem(int position) {
-        return PostContent.ITEMS.get(position);
+        if(getCount() > position) {
+            return PostContent.ITEMS.get(position);
+        }else{
+            return null;
+        }
     }
 
     @Override

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FilterFragment.OnFragmentInteractionListener} interface
+ * {@link FilterFragment.OnFilterFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link FilterFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -26,7 +26,7 @@ public class FilterFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnFilterFragmentInteractionListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -63,13 +63,16 @@ public class FilterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_filter, container, false);
+        View view = inflater.inflate(R.layout.fragment_filter, container, false);
+        view.setClickable(true);
+        return view;
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onCloseButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onFilterFragmentInteraction(uri);
         }
     }
 
@@ -77,10 +80,10 @@ public class FilterFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnFilterFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnFilterFragmentInteractionListener");
         }
     }
 
@@ -100,9 +103,9 @@ public class FilterFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnFilterFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        public void onFilterFragmentInteraction(Uri uri);
     }
 
 }

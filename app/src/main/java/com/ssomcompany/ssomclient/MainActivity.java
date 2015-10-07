@@ -47,8 +47,8 @@ import com.ssomcompany.ssomclient.push.PushManageService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
-        SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnFragmentInteractionListener,
-        OnMapReadyCallback,GoogleMap.OnMyLocationChangeListener {
+        SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnDetailFragmentInteractionListener,
+        OnMapReadyCallback,GoogleMap.OnMyLocationChangeListener, FilterFragment.OnFilterFragmentInteractionListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity
     private TextView listBtn;
     private FragmentManager fragmentManager;
     private Location pastLocation;
-    private ImageView bgList;
     private View filter;
     private int postItemIndexForMapFragment =0; // TODO: 2015. 10. 6. temporary variable for putting marker on random location
 
@@ -88,7 +87,6 @@ public class MainActivity extends AppCompatActivity
         startService(new Intent(this, PushManageService.class));
     }
     private void initLayoutWrite(){
-        bgList = (ImageView) findViewById(R.id.bg_list_bot);
         btn_write = (ImageView) findViewById(R.id.btn_write);
         final Context context = this;
         btn_write.setOnClickListener(new View.OnClickListener() {
@@ -145,7 +143,6 @@ public class MainActivity extends AppCompatActivity
         postItemIndexForMapFragment = 0;
         SupportMapFragment mapFragment = new SupportMapFragment();
         PostContent.init(this, null);
-        bgList.setVisibility(View.INVISIBLE);
         fragmentManager.beginTransaction().
                 replace(R.id.container, mapFragment)
                 .commit();
@@ -158,7 +155,6 @@ public class MainActivity extends AppCompatActivity
         mapBtn.setVisibility(View.INVISIBLE);
         listBtn.setVisibility(View.VISIBLE);
         selectedView = "list";
-        bgList.setVisibility(View.VISIBLE);
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
         Fragment fragment = SsomListFragment.newInstance("1", "2");
         fragmentManager.beginTransaction().
@@ -227,16 +223,14 @@ public class MainActivity extends AppCompatActivity
     public void setWriteBtn(boolean on){
         if(on){
             btn_write.setVisibility(View.VISIBLE);
-            bgList.setVisibility(View.VISIBLE);
             filter.setVisibility(View.VISIBLE);
         }else{
             btn_write.setVisibility(View.INVISIBLE);
-            bgList.setVisibility(View.INVISIBLE);
             filter.setVisibility(View.INVISIBLE);
         }
     }
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onDeatilFragmentInteraction(Uri uri) {
         onBackPressed();
     }
 
@@ -340,6 +334,11 @@ public class MainActivity extends AppCompatActivity
             isFirstTimeChangeLocation = false;
             pastLocation = location;
         }
+    }
+
+    @Override
+    public void onFilterFragmentInteraction(Uri uri) {
+        onBackPressed();
     }
 
 

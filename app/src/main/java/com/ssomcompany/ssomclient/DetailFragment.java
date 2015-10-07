@@ -23,7 +23,7 @@ import com.ssomcompany.ssomclient.post.PostContent;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link DetailFragment.OnFragmentInteractionListener} interface
+ * {@link OnDetailFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link DetailFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -34,7 +34,7 @@ public class DetailFragment extends Fragment {
 
     private String postId;
 
-    private OnFragmentInteractionListener mListener;
+    private OnDetailFragmentInteractionListener mListener;
 
 
     public static DetailFragment newInstance(String postId) {
@@ -117,7 +117,7 @@ public class DetailFragment extends Fragment {
 
     public void onCloseButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onDeatilFragmentInteraction(uri);
         }
     }
 
@@ -127,10 +127,10 @@ public class DetailFragment extends Fragment {
         super.onAttach(activity);
         this.activity  = (MainActivity) activity;
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnDetailFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnDetailFragmentInteractionListener");
         }
     }
 
@@ -151,8 +151,8 @@ public class DetailFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(Uri uri);
+    public interface OnDetailFragmentInteractionListener {
+        public void onDeatilFragmentInteraction(Uri uri);
     }
 
 }
