@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.BaseVolleyRequest;
 import com.ssomcompany.ssomclient.network.UniqueIdGenUtil;
@@ -321,8 +323,16 @@ public class WriteActivity extends AppCompatActivity {
             jsonBody.put("category",currentCategory);
             jsonBody.put("minAge",minAge);
             jsonBody.put("maxAge",maxAge);
-            jsonBody.put("userCount",count);
-            jsonBody.put("ssom",ssomType);
+            jsonBody.put("userCount", count);
+            jsonBody.put("ssom", ssomType);
+            Location myLocation = LocationUtil.getMyLocation(this);
+            if(myLocation!=null) {
+                jsonBody.put("latitude", myLocation.getLatitude());
+                jsonBody.put("longitude", myLocation.getLongitude());
+            }else{
+                Toast.makeText(this,"위치정보를 가지고올수 없어 글을 작성할수 없습니다.",Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
                 @Override
@@ -333,7 +343,7 @@ public class WriteActivity extends AppCompatActivity {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
-                    Toast.makeText(getApplicationContext(), volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), ""+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
             queue.add(jsonObjectRequest);

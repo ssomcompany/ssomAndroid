@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
 import com.ssomcompany.ssomclient.post.PostContent;
 import com.ssomcompany.ssomclient.post.RoundImage;
@@ -56,14 +57,12 @@ public class MainActivity extends AppCompatActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     private GoogleMap mMap;
-    private LocationManager mLocationManager;
     private String selectedView = "map";
     private ImageView mBtnMapMyLocation;
     private ImageView btn_write;
     private TextView mapBtn;
     private TextView listBtn;
     private FragmentManager fragmentManager;
-    private Location pastLocation;
     private View filter;
     private int postItemIndexForMapFragment =0; // TODO: 2015. 10. 6. temporary variable for putting marker on random location
 
@@ -242,8 +241,8 @@ public class MainActivity extends AppCompatActivity
 
         mMap.setMyLocationEnabled(true);
         mBtnMapMyLocation.setVisibility(View.VISIBLE);
-        if(pastLocation!=null){
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(pastLocation.getLatitude(), pastLocation.getLongitude())));
+        if(LocationUtil.myLocation!=null){
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(LocationUtil.myLocation.getLatitude(), LocationUtil.myLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
         }
         mMap.setOnMyLocationChangeListener(this);
@@ -328,11 +327,13 @@ public class MainActivity extends AppCompatActivity
     private boolean isFirstTimeChangeLocation;
     @Override
     public void onMyLocationChange(Location location) {
-        if(isFirstTimeChangeLocation && pastLocation==null){
+        if(isFirstTimeChangeLocation && LocationUtil.myLocation==null){
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
             isFirstTimeChangeLocation = false;
-            pastLocation = location;
+            LocationUtil.myLocation = location;
+        }else{
+            LocationUtil.myLocation = location;
         }
     }
 
@@ -340,20 +341,6 @@ public class MainActivity extends AppCompatActivity
     public void onFilterFragmentInteraction(Uri uri) {
         onBackPressed();
     }
-
-
-//    private void initLocationUsingLocationManager() {
-//        mLocationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-//        Criteria criteria = new Criteria();
-////        String bestProvider = mLocationManager.getBestProvider(criteria,false);
-//        String bestProvider = LocationManager.NETWORK_PROVIDER;
-//        Location location = mLocationManager.getLastKnownLocation(bestProvider);
-//        Toast.makeText(this,location.getLatitude()+"/"+location.getLongitude(),Toast.LENGTH_SHORT).show();
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-//        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-//
-//
-//    }
 
     /**
      * A placeholder fragment containing a simple view.
