@@ -105,20 +105,9 @@ public class DetailFragment extends Fragment {
             fullPhotoSt.setImageResource(R.drawable.full_photo_st_r);
         }
         //distance
-        Location myLocation = LocationUtil.getMyLocation(getContext());
-        if(myLocation!=null) {
-            float[] results = new float[1];
-            Location.distanceBetween(item.lat, item.lng, myLocation.getLatitude(), myLocation.getLongitude(), results);
-            TextView distanceText = (TextView) view.findViewById(R.id.full_text_distance);
-            float distance = results[0];
-            if(distance > 1000){
-                int km = (int) (distance/1000);
-                distanceText.setText("\n\n"+km+"km");
-            }else{
-                int m = (int) distance;
-                distanceText.setText("\n\n"+m+"m");
-            }
-        }
+        TextView distanceText = (TextView) view.findViewById(R.id.full_text_distance);
+        distanceText.setText("\n\n"+LocationUtil.getDistanceString(item));
+
 
         ImageView btnClose = (ImageView) view.findViewById(R.id.close_detail_btn);
         btnClose.setOnClickListener(new View.OnClickListener() {

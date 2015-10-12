@@ -9,6 +9,8 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.widget.Toast;
 
+import com.ssomcompany.ssomclient.post.PostContent;
+
 /**
  * Created by kshgizmo on 2015. 10. 12..
  */
@@ -29,6 +31,22 @@ public class LocationUtil {
             }
             return myLocation;
         }
+    }
+
+    public static String getDistanceString(PostContent.PostItem item){
+        if(myLocation!=null) {
+            float[] results = new float[1];
+            Location.distanceBetween(item.lat, item.lng, myLocation.getLatitude(), myLocation.getLongitude(), results);
+            float distance = results[0];
+            if(distance > 1000){
+                int km = (int) (distance/1000);
+                return km+"km";
+            }else{
+                int m = (int) distance;
+                return m+"m";
+            }
+        }
+        return "";
     }
 
 }
