@@ -30,4 +30,5 @@ public class LocationUtil {
             return myLocation;
         }
     }
+
 }

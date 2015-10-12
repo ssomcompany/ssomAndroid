@@ -117,16 +117,30 @@
                     android:textColor="#929292"
                     android:text="\n 쏜다!!"/>
             </LinearLayout>
-
-            <TextView
-                android:layout_centerHorizontal="true"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:lineSpacingExtra="9sp"
-                android:textColor="#929292"
-                android:text="\n\n나와의 거리 1km"/>
+                android:layout_centerHorizontal="true">
+                <TextView
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:lineSpacingExtra="9sp"
+                    android:textColor="#929292"
+                    android:text="\n\n나와의 거리 "/>
+                <TextView
+                    android:id="@+id/full_text_distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:lineSpacingExtra="9sp"
+                    android:textColor="#e70033"
+                    android:text="\n\n1km"/>
+            </LinearLayout>
+
         </RelativeLayout>
 
         <ImageView
