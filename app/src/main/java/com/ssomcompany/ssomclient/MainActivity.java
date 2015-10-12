@@ -49,7 +49,8 @@ import com.ssomcompany.ssomclient.push.PushManageService;
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnDetailFragmentInteractionListener,
-        OnMapReadyCallback,GoogleMap.OnMyLocationChangeListener, FilterFragment.OnFilterFragmentInteractionListener {
+        OnMapReadyCallback,GoogleMap.OnMyLocationChangeListener, FilterFragment.OnFilterFragmentInteractionListener,
+        PostDataChangeInterface{
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -64,7 +65,6 @@ public class MainActivity extends AppCompatActivity
     private TextView listBtn;
     private FragmentManager fragmentManager;
     private View filter;
-    private int postItemIndexForMapFragment =0; // TODO: 2015. 10. 6. temporary variable for putting marker on random location
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +100,8 @@ public class MainActivity extends AppCompatActivity
         filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this,"start filter",Toast.LENGTH_SHORT).show();
-                FilterFragment filterFragment = FilterFragment.newInstance("1","1");
+                Toast.makeText(MainActivity.this, "start filter", Toast.LENGTH_SHORT).show();
+                FilterFragment filterFragment = FilterFragment.newInstance("1", "1");
                 fragmentManager.beginTransaction().
                         add(R.id.container, filterFragment)
                         .addToBackStack(null)
@@ -139,9 +139,8 @@ public class MainActivity extends AppCompatActivity
     }
     private void startMapFragment(){
         selectedView = "map";
-        postItemIndexForMapFragment = 0;
         SupportMapFragment mapFragment = new SupportMapFragment();
-        PostContent.init(this, null);
+        PostContent.init(this, this);
         fragmentManager.beginTransaction().
                 replace(R.id.container, mapFragment)
                 .commit();
@@ -246,7 +245,6 @@ public class MainActivity extends AppCompatActivity
             mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
         }
         mMap.setOnMyLocationChangeListener(this);
-//        initLocationUsingLocationManager();
         final Context context = this;
         mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -261,27 +259,25 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                addMarker(latLng);
-            }
-        });
-        
-
+        initMarker();
     }
 
-    private void addMarker(final LatLng location) {
-        if(PostContent.ITEMS.size() <= postItemIndexForMapFragment){
-            Toast.makeText(getApplicationContext(),"no more post item",Toast.LENGTH_SHORT).show();
-            return ;
+    private void initMarker() {
+        Toast.makeText(this,"init marker : "+PostContent.ITEMS.size(),Toast.LENGTH_SHORT).show();
+        if(PostContent.ITEMS.size()>0){
+            for ( PostContent.PostItem item: PostContent.ITEMS) {
+                addMarker(item);
+            }
         }
-        final PostContent.PostItem item = PostContent.ITEMS.get(postItemIndexForMapFragment++);
+    }
+
+    private void addMarker(final PostContent.PostItem item) {
+        Toast.makeText(this,"add marker:"+item.lat+"/"+item.lng,Toast.LENGTH_SHORT).show();
         ImageRequest imageRequest = new ImageRequest(item.getImage(), new Response.Listener<Bitmap>() {
             @Override
             public void onResponse(Bitmap bitmap) {
                 mMap.addMarker(new MarkerOptions()
-                        .position(location)
+                        .position(new LatLng(item.lat,item.lng))
                         .title(item.content).draggable(false).icon(getMarkerImage(item.ssom, bitmap)));
             }
         },144, 256, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888
@@ -340,6 +336,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFilterFragmentInteraction(Uri uri) {
         onBackPressed();
+    }
+
+    @Override
+    public void onPostItemChanged() {
+        if("map".equals(selectedView)){
+            initMarker();
+        }
     }
 
     /**

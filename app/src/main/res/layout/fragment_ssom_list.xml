@@ -11,7 +11,7 @@
         android:layout_alignParentBottom="true"
         android:src="@drawable/bg_list_bot"/>
     <ListView android:id="@android:id/list" android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_above="@id/bg_list_bot"/>
 
     <TextView android:id="@android:id/empty" android:layout_width="match_parent"

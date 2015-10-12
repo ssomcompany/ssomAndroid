@@ -53,6 +53,8 @@ import java.util.Map;
                         item.userCount = (int) obj.get("userCount");
                         item.userId = (String) obj.get("userId");
                         item.ssom = (String) obj.get("ssom");
+                        item.lat = (double) obj.get("latitude");
+                        item.lng = (double) obj.get("longitude");
                         PostContent.addItem(item);
                     }
                     if(callback!=null) {
@@ -80,8 +82,8 @@ import java.util.Map;
         public int maxAge;
         public int userCount;
         public String ssom;
-        public float lat;
-        public float lng;
+        public double lat;
+        public double lng;
 
 
         public PostItem(String postId, String content) {
