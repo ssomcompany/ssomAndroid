@@ -128,7 +128,6 @@ public class FilterFragment extends Fragment {
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO save current state to preference
                 SharedPreferences filterPref = activity.getSharedPreferences("filter", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = filterPref.edit();
                 int minAge = ageSeekbar.getProgress()+20;
