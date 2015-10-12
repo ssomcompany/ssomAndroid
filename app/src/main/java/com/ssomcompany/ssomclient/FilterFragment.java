@@ -1,12 +1,17 @@
 package com.ssomcompany.ssomclient;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 
 /**
@@ -27,6 +32,7 @@ public class FilterFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private String ssomType = "all";
     private OnFilterFragmentInteractionListener mListener;
 
     /**
@@ -66,6 +72,78 @@ public class FilterFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
         view.setClickable(true);
+
+        final TextView ageText = (TextView) view.findViewById(R.id.filter_text_age_range);
+        final TextView countText = (TextView) view.findViewById(R.id.filter_text_user_count);
+        final SeekBar ageSeekbar = (SeekBar) view.findViewById(R.id.filter_seekbar_age_range);
+        ageSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int count = progress+20;
+                ageText.setText(String.valueOf(count)+"~"+String.valueOf(count+1));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        final SeekBar countSeekbar = (SeekBar) view.findViewById(R.id.filter_seekbar_user_count);
+        countSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int count = progress+1;
+                countText.setText(String.valueOf(count)+"~"+String.valueOf(count+1));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        SharedPreferences filterPref = activity.getSharedPreferences("filter", Context.MODE_PRIVATE);
+        int minAge = filterPref.getInt("minAge",20);
+        int minCount = filterPref.getInt("minCount",1);
+        ageSeekbar.setProgress(minAge-20);
+        countSeekbar.setProgress(minCount-1);
+        ssomType = filterPref.getString("ssomtype","all");
+        ImageView btnCancel = (ImageView) view.findViewById(R.id.filter_btn_cancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onCloseButtonPressed(null);
+            }
+        });
+        View btnOk =view.findViewById(R.id.filter_btn_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO save current state to preference
+                SharedPreferences filterPref = activity.getSharedPreferences("filter", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = filterPref.edit();
+                int minAge = ageSeekbar.getProgress()+20;
+                int maxAge = ageSeekbar.getProgress()+21;
+                int minCount = countSeekbar.getProgress()+1;
+                int maxCount = countSeekbar.getProgress()+2;
+                editor.putInt("minAge",minAge);
+                editor.putInt("maxAge",maxAge);
+                editor.putInt("minCount",minCount);
+                editor.putInt("maxCount",maxCount);
+                editor.putString("ssomtype",ssomType);
+                editor.commit();
+                onCloseButtonPressed(null);
+            }
+        });
         return view;
 
     }

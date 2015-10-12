@@ -78,11 +78,12 @@
             android:layout_marginTop="25dp"
             android:layout_centerHorizontal="true">
             <TextView
+                android:id="@+id/filter_text_user_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textColor="#e70033"
-                android:text="2~3"/>
+                android:text="1~2"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -95,7 +96,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="13dp"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true"
+            android:max="10"/>
 
         <LinearLayout
             android:id="@+id/filter_layout_age_range"
@@ -105,12 +107,12 @@
             android:layout_marginTop="25dp"
             android:layout_centerHorizontal="true">
             <TextView
-                android:id="@+id/filter_text_age_ragne"
+                android:id="@+id/filter_text_age_range"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textColor="#e70033"
-                android:text="25~26"/>
+                android:text="20~21"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -123,7 +125,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="13dp"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true"
+            android:max="30"/>
         <RelativeLayout
             android:id="@+id/filter_btn_ok"
             android:layout_width="wrap_content"
