@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 public class WriteActivity extends AppCompatActivity {
@@ -197,7 +198,6 @@ public class WriteActivity extends AppCompatActivity {
     int pressImages[] = {R.drawable.icon_rice_press,R.drawable.icon_beer_press,R.drawable.icon_cof_press,R.drawable.icon_all_perss};
     int disImages[] = {R.drawable.icon_rice_dis,R.drawable.icon_beer_dis,R.drawable.icon_cof_dis,R.drawable.icon_all_dis};
     private void selectCategory(int categoryId) {
-        Toast.makeText(getApplicationContext(),"select "+categoryId,Toast.LENGTH_SHORT).show();
         for (int i=0;i<ids.length;i++) {
             if(categoryId == ids[i]){
                 //select
@@ -318,7 +318,7 @@ public class WriteActivity extends AppCompatActivity {
             JSONObject jsonBody = new JSONObject();
             jsonBody.put("postId", "" + System.currentTimeMillis());
             jsonBody.put("userId", UniqueIdGenUtil.getId(getApplicationContext()));
-            jsonBody.put("content", text);
+            jsonBody.put("content", URLEncoder.encode(text,"UTF-8"));
             jsonBody.put("imageUrl","http://54.64.154.188/file/images/"+fileId);
             jsonBody.put("category",currentCategory);
             jsonBody.put("minAge",minAge);

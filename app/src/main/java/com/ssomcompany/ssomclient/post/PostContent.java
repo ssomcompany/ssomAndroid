@@ -15,6 +15,7 @@ import com.ssomcompany.ssomclient.PostDataChangeInterface;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,8 +45,8 @@ import java.util.Map;
                 try {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject obj = (JSONObject)jsonArray.get(i);
-                        Log.i("kshgizmo",obj.toString());
-                        PostItem item = new PostItem((String)obj.get("postId"),(String)obj.get("content"));
+                        String content = URLDecoder.decode((String) obj.get("content"),"UTF-8");
+                        PostItem item = new PostItem((String)obj.get("postId"),content);
                         item.imgResource = (String)(obj.get("imageUrl"));
                         item.category  = (String) obj.get("category");
                         item.minAge = (int) obj.get("minAge");
