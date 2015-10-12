@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity
                         add(R.id.container, filterFragment)
                         .addToBackStack(null)
                         .commit();
+                setWriteBtn(false);
             }
         });
     }

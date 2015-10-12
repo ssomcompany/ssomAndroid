@@ -10,6 +10,7 @@
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="20dp"
         android:background="@drawable/bg_filter_white"
+        android:paddingBottom="12dp"
         >
         <ImageView
             android:id="@+id/filter_title"

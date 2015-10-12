@@ -21,6 +21,7 @@ public class FilterFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private MainActivity activity;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -79,6 +80,7 @@ public class FilterFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        this.activity  = (MainActivity) activity;
         try {
             mListener = (OnFilterFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
@@ -91,6 +93,7 @@ public class FilterFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        activity.setWriteBtn(true);
     }
 
     /**
