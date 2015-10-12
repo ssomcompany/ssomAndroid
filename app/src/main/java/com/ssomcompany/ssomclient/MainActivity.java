@@ -10,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -140,6 +139,7 @@ public class MainActivity extends AppCompatActivity
     }
     private void startMapFragment(){
         selectedView = "map";
+        initMarker = false;
         SupportMapFragment mapFragment = new SupportMapFragment();
         PostContent.init(this, this);
         fragmentManager.beginTransaction().
@@ -262,10 +262,10 @@ public class MainActivity extends AppCompatActivity
         });
         initMarker();
     }
-
+private boolean initMarker = false;
     private void initMarker() {
-        Toast.makeText(this,"init marker : "+PostContent.ITEMS.size(),Toast.LENGTH_SHORT).show();
-        if(PostContent.ITEMS.size()>0){
+        if(PostContent.ITEMS.size()>0 && !initMarker){
+            initMarker = true;
             for ( PostContent.PostItem item: PostContent.ITEMS) {
                 addMarker(item);
             }
@@ -273,7 +273,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void addMarker(final PostContent.PostItem item) {
-        Toast.makeText(this,"add marker:"+item.lat+"/"+item.lng,Toast.LENGTH_SHORT).show();
         ImageRequest imageRequest = new ImageRequest(item.getImage(), new Response.Listener<Bitmap>() {
             @Override
             public void onResponse(Bitmap bitmap) {
