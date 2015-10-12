@@ -3,6 +3,7 @@ package com.ssomcompany.ssomclient;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -84,6 +85,37 @@ public class MainActivity extends AppCompatActivity
         startMapFragment();
         startService(new Intent(this, PushManageService.class));
     }
+
+    private String getSsomTypeText(String ssomtype){
+        switch (ssomtype){
+            case "ssom":
+                return "내가 쏨/";
+            case "ssoseyo":
+                return "니가 쏴/";
+            case "all":
+            default:
+                return "모두 /";
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initFilterView();
+    }
+
+    private void initFilterView() {
+        SharedPreferences filterPref = this.getSharedPreferences("filter", Context.MODE_PRIVATE);
+        int minAge = filterPref.getInt("minAge", 20);
+        int minCount = filterPref.getInt("minCount", 1);
+        String ssomType = filterPref.getString("ssomtype", "all");
+        TextView ssomTyepText  = (TextView) findViewById(R.id.fv_text_ssom_type);
+        ssomTyepText.setText(getSsomTypeText(ssomType));
+        TextView ageText  = (TextView) findViewById(R.id.fv_text_age_range);
+        ageText.setText(minAge+"~"+(minAge+1)+"살 /");
+        TextView countText  = (TextView) findViewById(R.id.fv_text_user_count);
+        countText.setText(minCount+"~"+(minCount+1)+" 명");
+    }
+
     private void initLayoutWrite(){
         btn_write = (ImageView) findViewById(R.id.btn_write);
         final Context context = this;
@@ -334,6 +366,7 @@ private boolean initMarker = false;
 
     @Override
     public void onFilterFragmentInteraction(Uri uri) {
+        initFilterView();
         onBackPressed();
     }
 

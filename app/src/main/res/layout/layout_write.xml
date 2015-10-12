@@ -22,6 +22,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/btn_filter_black"/>
             <TextView
+                android:id="@+id/fv_text_ssom_type"
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -29,7 +30,27 @@
                 android:layout_marginLeft="12dp"
                 android:textSize="14sp"
                 android:textColor="#000000"
-                android:text="모두 / 20~29살 / 2~3 명"/>
+                android:text="모두 /"/>
+            <TextView
+                android:id="@+id/fv_text_age_range"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/fv_text_ssom_type"
+                android:layout_marginLeft="12dp"
+                android:textSize="14sp"
+                android:textColor="#000000"
+                android:text=" 20~29살 /"/>
+            <TextView
+                android:id="@+id/fv_text_user_count"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/fv_text_age_range"
+                android:layout_marginLeft="12dp"
+                android:textSize="14sp"
+                android:textColor="#000000"
+                android:text=" 2~3 명"/>
         </RelativeLayout>
         <ImageView
             android:id="@+id/btn_write"
