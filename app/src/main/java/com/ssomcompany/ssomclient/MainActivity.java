@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity
         filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "start filter", Toast.LENGTH_SHORT).show();
                 FilterFragment filterFragment = FilterFragment.newInstance("1", "1");
                 fragmentManager.beginTransaction().
                         add(R.id.container, filterFragment)
