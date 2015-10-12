@@ -337,13 +337,12 @@ public class WriteActivity extends AppCompatActivity {
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject jsonObject) {
-                    Toast.makeText(getApplicationContext(), "create post : "+jsonObject.toString(), Toast.LENGTH_SHORT).show();
                     onBackPressed();
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
-                    Toast.makeText(getApplicationContext(), ""+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "error create post : "+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
             queue.add(jsonObjectRequest);
