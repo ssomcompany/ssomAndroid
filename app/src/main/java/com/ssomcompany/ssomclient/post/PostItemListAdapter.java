@@ -94,7 +94,7 @@ public class PostItemListAdapter extends BaseAdapter{
         userCountTextView.setText(""+row_pos.userCount);
         //distance
         TextView distanceTextView = (TextView) convertView.findViewById(R.id.list_text_distance);
-        distanceTextView.setText(LocationUtil.getDistanceString(row_pos)); //TODO change to real data
+        distanceTextView.setText(LocationUtil.getDistanceString(row_pos));
         //category
         int iconId = CategoryUtil.getCategoryIconId(row_pos.category);
         if(iconId!=-1){
