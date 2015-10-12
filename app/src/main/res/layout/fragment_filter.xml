@@ -3,7 +3,6 @@
     android:layout_height="match_parent" tools:context="com.ssomcompany.ssomclient.FilterFragment"
     android:background="#55000000">
 
-    <!-- TODO: Update blank fragment layout -->
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,6 +19,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"/>
         <LinearLayout
+            android:id="@+id/filter_ssom_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/filter_title"
@@ -69,9 +69,85 @@
             </RelativeLayout>
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/filter_layout_user_count"
+            android:layout_below="@id/filter_ssom_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_centerHorizontal="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#e70033"
+                android:text="2~3"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:text=" 명이 한 팀 이었으면 좋겠어요"/>
+        </LinearLayout>
+        <SeekBar
+            android:id="@+id/filter_seekbar_user_count"
+            android:layout_below="@id/filter_layout_user_count"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:layout_centerHorizontal="true"/>
 
+        <LinearLayout
+            android:id="@+id/filter_layout_age_range"
+            android:layout_below="@id/filter_seekbar_user_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_centerHorizontal="true">
+            <TextView
+                android:id="@+id/filter_text_age_ragne"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#e70033"
+                android:text="25~26"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:text=" 살 이었으면 좋겠어요"/>
+        </LinearLayout>
+        <SeekBar
+            android:id="@+id/filter_seekbar_age_range"
+            android:layout_below="@id/filter_layout_age_range"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:layout_centerHorizontal="true"/>
+        <RelativeLayout
+            android:id="@+id/filter_btn_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_filter_ok_b"
+            android:layout_below="@id/filter_seekbar_age_range"
+            android:layout_marginTop="42dp"
+            android:layout_centerHorizontal="true">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="19sp"
+            android:textColor="#ffffff"
+            android:text="적용하기"/>
+        </RelativeLayout>
 
     </RelativeLayout>
-
+    <ImageView
+        android:id="@+id/filter_btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginBottom="12dp"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/bg_filter_cancel_b"/>
 
 </RelativeLayout>
