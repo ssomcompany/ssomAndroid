@@ -108,6 +108,9 @@ public class DetailFragment extends Fragment {
         TextView distanceText = (TextView) view.findViewById(R.id.full_text_distance);
         distanceText.setText("\n\n"+LocationUtil.getDistanceString(item));
 
+        //time
+        TextView timeText = (TextView) view.findViewById(R.id.full_detail_time);
+        timeText.setText("He says - "+Util.getTimeText(Long.valueOf(item.postId)));
 
         ImageView btnClose = (ImageView) view.findViewById(R.id.close_detail_btn);
         btnClose.setOnClickListener(new View.OnClickListener() {

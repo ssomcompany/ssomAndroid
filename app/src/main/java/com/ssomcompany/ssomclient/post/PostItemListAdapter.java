@@ -109,7 +109,7 @@ public class PostItemListAdapter extends BaseAdapter{
         //time
 
         TextView timeText  = (TextView) convertView.findViewById(R.id.list_text_time);
-        timeText.setText(Util.getTimeText(Long.valueOf(row_pos.postId)));
+        timeText.setText(Util.getTimeText(Long.valueOf(row_pos.postId))+",");
 
 
         return convertView;

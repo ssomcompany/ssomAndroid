@@ -33,15 +33,15 @@ public class Util {
         long gap = currentTimestamp - timestamp;
 
         if (gap < 60 * 1000) {
-            return "방금전,";
+            return "방금전";
         } else if (gap < 60 * 60 * 1000) {
             int min = (int) (gap / (60 * 1000));
-            return min + "분전,";
+            return min + "분전";
         } else if (gap < 24 * 60 * 60 * 1000) {
             int hour = (int) (gap / (60 * 60 * 1000));
-            return hour + "시간전,";
+            return hour + "시간전";
         } else {
-            return "오래전,";
+            return "오래전";
         }
     }
 }
