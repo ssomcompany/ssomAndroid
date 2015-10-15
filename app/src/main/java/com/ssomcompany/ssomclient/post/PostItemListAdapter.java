@@ -14,7 +14,12 @@ import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CategoryUtil;
 import com.ssomcompany.ssomclient.common.CircularNetworkImageView;
 import com.ssomcompany.ssomclient.common.LocationUtil;
+import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
+
+import org.w3c.dom.Text;
+
+import java.util.Date;
 
 /**
  * Created by kshgizmo on 2015. 9. 11..
@@ -101,6 +106,10 @@ public class PostItemListAdapter extends BaseAdapter{
             ImageView iconCategoty = (ImageView) convertView.findViewById(R.id.icon_category);
             iconCategoty.setImageResource(iconId);
         }
+        //time
+
+        TextView timeText  = (TextView) convertView.findViewById(R.id.list_text_time);
+        timeText.setText(Util.getTimeText(Long.valueOf(row_pos.postId)));
 
 
         return convertView;
