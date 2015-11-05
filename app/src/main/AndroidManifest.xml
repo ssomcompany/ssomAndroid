@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ssomcompany.ssomclient" >
 
+    
     <permission
         android:name="com.ssomcompany.ssomclient.locationapi.maps.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
