@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(tb);
         fragmentManager = getSupportFragmentManager();
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawers();
         ImageView lnbMenu = (ImageView) tb.findViewById(R.id.lnb_menu_btn);
         lnbMenu.setOnClickListener(new View.OnClickListener() {
             @Override

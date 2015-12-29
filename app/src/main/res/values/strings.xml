@@ -19,4 +19,8 @@
     <string name="title_activity_write">WriteActivity</string>
     <string name="title_activity_detail">DetailActivity</string>
 
+    <!-- post list menu -->
+    <string name="title_tab_give">내가 쏨</string>
+    <string name="title_tab_take">니가 쏴</string>
+
 </resources>

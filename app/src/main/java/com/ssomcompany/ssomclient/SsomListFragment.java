@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.ssomcompany.ssomclient.post.PostContent;
 import com.ssomcompany.ssomclient.post.PostItemListAdapter;
 
+import org.w3c.dom.Text;
+
 /**
  * A fragment representing a list of Items.
  * <p/>
@@ -40,6 +42,14 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
     private String mParam2;
 
     private OnPostItemInteractionListener mListener;
+
+    /**
+     * The fragment's Tabs
+     */
+    private TextView giveTv;
+    private TextView takeTv;
+    private ImageView giveBtmBar;
+    private ImageView takeBtmBar;
 
     /**
      * The fragment's ListView/GridView.
@@ -91,6 +101,33 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ssom, container, false);
+
+        // Tab control
+        giveTv = (TextView) view.findViewById(R.id.tab_give_tv);
+        takeTv = (TextView) view.findViewById(R.id.tab_take_tv);
+        giveBtmBar = (ImageView) view.findViewById(R.id.tab_give_bottom_bar);
+        takeBtmBar = (ImageView) view.findViewById(R.id.tab_take_bottom_bar);
+
+        // Set tab click listener
+        giveTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                giveTv.setTextAppearance(getActivity(), R.style.ssom_font_16_greenblue);
+                giveBtmBar.setVisibility(View.VISIBLE);
+                takeTv.setTextAppearance(getActivity(), R.style.ssom_font_16_greywarm);
+                takeBtmBar.setVisibility(View.GONE);
+            }
+        });
+
+        takeTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takeTv.setTextAppearance(getActivity(), R.style.ssom_font_16_redpink);
+                takeBtmBar.setVisibility(View.VISIBLE);
+                giveTv.setTextAppearance(getActivity(), R.style.ssom_font_16_greywarm);
+                giveBtmBar.setVisibility(View.GONE);
+            }
+        });
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);

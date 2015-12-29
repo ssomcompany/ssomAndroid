@@ -28,6 +28,7 @@ import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.BaseVolleyRequest;
+import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.UniqueIdGenUtil;
 
 import org.json.JSONObject;
@@ -312,7 +313,9 @@ public class WriteActivity extends AppCompatActivity {
     private void creatPost(String fileId) {
         try {
             RequestQueue queue = Volley.newRequestQueue(getApplication());
-            String url = "http://54.64.154.188/posts";
+            //String url = "http://54.64.154.188/posts";
+            String url = NetworkManager.getInstance().getNetworkUrl(NetworkManager.TYPE.POST);
+
             EditText messageBox = (EditText) findViewById(R.id.message);
             final String text = messageBox.getText().toString();
             JSONObject jsonBody = new JSONObject();

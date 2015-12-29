@@ -84,7 +84,7 @@ public class DetailFragment extends Fragment {
 
             }
         });
-        VolleyUtil.getInstance(getContext()).getRequestQueue().add(imageRequest);
+        VolleyUtil.getInstance(getActivity().getApplicationContext()).getRequestQueue().add(imageRequest);
         //category
         ImageView categoryIcon = (ImageView) view.findViewById(R.id.full_category);
         TextView categoryText = (TextView) view.findViewById(R.id.full_text_category);

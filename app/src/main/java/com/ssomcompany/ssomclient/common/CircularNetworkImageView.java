@@ -31,7 +31,7 @@ public class CircularNetworkImageView extends NetworkImageView {
     @Override
     public void setImageBitmap(Bitmap bm) {
         if(bm==null) return;
-        setImageDrawable(Util.getCircleBitmap(bm, 266));
+        setImageDrawable(Util.getCircleBitmap(bm, bm.getWidth()));
     }
 
 

@@ -22,21 +22,22 @@ public class VolleyUtil {
         mCtx = context;
         mRequestQueue = getRequestQueue();
 
-        mImageLoader = new ImageLoader(mRequestQueue,
-                new ImageLoader.ImageCache() {
-                    private final LruCache<String, Bitmap>
-                            cache = new LruCache<String, Bitmap>(20);
-
-                    @Override
-                    public Bitmap getBitmap(String url) {
-                        return cache.get(url);
-                    }
-
-                    @Override
-                    public void putBitmap(String url, Bitmap bitmap) {
-                        cache.put(url, bitmap);
-                    }
-                });
+//        mImageLoader = new ImageLoader(mRequestQueue,
+//                new ImageLoader.ImageCache() {
+//                    private final LruCache<String, Bitmap>
+//                            cache = new LruCache<String, Bitmap>(20);
+//
+//                    @Override
+//                    public Bitmap getBitmap(String url) {
+//                        return cache.get(url);
+//                    }
+//
+//                    @Override
+//                    public void putBitmap(String url, Bitmap bitmap) {
+//                        cache.put(url, bitmap);
+//                    }
+//                });
+        mImageLoader = new ImageLoader(mRequestQueue, new BitmapLruCache(BitmapLruCache.getDefaultLruCacheSize()));
     }
 
     public static synchronized VolleyUtil getInstance(Context context) {
@@ -56,6 +57,7 @@ public class VolleyUtil {
     }
 
     public <T> void addToRequestQueue(Request<T> req) {
+        req.setTag("App");
         getRequestQueue().add(req);
     }
 
