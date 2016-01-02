@@ -10,8 +10,8 @@ android {
     }
     defaultConfig {
         applicationId "com.ssomcompany.ssomclient"
-        minSdkVersion 14
-        targetSdkVersion 21
+        minSdkVersion 16
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
@@ -20,6 +20,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    dexOptions {
+        jumboMode = true
     }
 }
 
