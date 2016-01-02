@@ -37,7 +37,9 @@ public class VolleyUtil {
 //                        cache.put(url, bitmap);
 //                    }
 //                });
-        mImageLoader = new ImageLoader(mRequestQueue, new BitmapLruCache(BitmapLruCache.getDefaultLruCacheSize()));
+
+        // Custom LruCache load
+        mImageLoader = new ImageLoader(mRequestQueue, new BitmapLruCache());
     }
 
     public static synchronized VolleyUtil getInstance(Context context) {

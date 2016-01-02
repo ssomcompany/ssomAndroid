@@ -1,65 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/map_current_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/btn_site_me"
+        android:layout_marginTop="22.7dp"
+        android:layout_marginLeft="20dp"/>
+
+    <RelativeLayout
+        android:id="@+id/filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_filter_w80"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="17.3dp"
+        android:layout_marginLeft="20dp">
+
         <ImageView
-            android:id="@+id/map_current_location"
+            android:id="@+id/filter_black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/btn_site_me"
-            android:layout_marginTop="74dp"
-            android:layout_marginLeft="10dp"/>
-        <RelativeLayout
-            android:id="@+id/filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_filter_w80"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="12dp"
-            android:layout_marginLeft="24dp">
-            <ImageView
-                android:id="@+id/filter_black"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/btn_filter_black"/>
-            <TextView
-                android:id="@+id/fv_text_ssom_type"
-                android:layout_centerVertical="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/filter_black"
-                android:layout_marginLeft="12dp"
-                android:textSize="14sp"
-                android:textColor="#000000"
-                android:text="모두 /"/>
+            android:src="@drawable/icon_search_filter"/>
+        <!--<TextView-->
+            <!--android:id="@+id/fv_text_ssom_type"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_toRightOf="@id/filter_black"-->
+            <!--android:layout_marginLeft="12dp"-->
+            <!--android:textSize="14sp"-->
+            <!--android:textColor="#000000"-->
+            <!--android:text="모두,"/>-->
+        <LinearLayout
+            android:layout_toRightOf="@id/filter_black"
+            android:layout_width="84.8dp"
+            android:layout_height="19.5dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20.5dp"
+            android:layout_marginRight="44dp"
+            android:layout_marginLeft="18dp"
+            android:orientation="horizontal">
+
             <TextView
                 android:id="@+id/fv_text_age_range"
-                android:layout_centerVertical="true"
+                style="@style/ssom_font_16_greyish_brown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/fv_text_ssom_type"
-                android:layout_marginLeft="12dp"
                 android:textSize="14sp"
                 android:textColor="#000000"
-                android:text=" 20~29살 /"/>
+                android:text="20대 초,"/>
             <TextView
                 android:id="@+id/fv_text_user_count"
-                android:layout_centerVertical="true"
+                style="@style/ssom_font_16_greyish_brown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/fv_text_age_range"
-                android:layout_marginLeft="12dp"
                 android:textSize="14sp"
                 android:textColor="#000000"
-                android:text=" 2~3 명"/>
-        </RelativeLayout>
-        <ImageView
-            android:id="@+id/btn_write"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/btn_main_write"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="9dp"
-            android:layout_marginRight="24dp"/>
+                android:text=" 2명"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/btn_write"
+        android:layout_width="74.9dp"
+        android:layout_height="74.9dp"
+        android:background="@color/mainblack"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="10.1dp"
+        android:layout_marginRight="10.1dp"/>
 
 </RelativeLayout>

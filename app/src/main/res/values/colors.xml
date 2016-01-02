@@ -14,6 +14,10 @@
     <item name="greenblue" type="color">#00b48f</item>
     <item name="redpink" type="color">#ed344b</item>
     <item name="greywarm" type="color">#9b9b9b</item>
+    <item name="mainblack" type="color">#323232</item>
+    <item name="shadow_black_20" type="color">#33000000</item>
+    <item name="white" type="color">#ffffff</item>
+    <item name="greyish_brown" type="color">#4a4a4a</item>
 
     <integer-array name="androidcolors">
         <item>@color/blue</item>

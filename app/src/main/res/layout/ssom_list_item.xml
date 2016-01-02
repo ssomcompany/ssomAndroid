@@ -99,7 +99,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:src="@drawable/icon_chat_on"
+        android:src="@drawable/icon_chat"
         android:layout_marginTop="7dp"
         android:layout_marginRight="7dp"/>
     <TextView

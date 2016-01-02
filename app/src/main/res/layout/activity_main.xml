@@ -3,17 +3,91 @@
     xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
     android:layout_width="match_parent" android:layout_height="match_parent"
     tools:context=".MainActivity">
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <include layout="@layout/ssom_toolbar"/>
-    </LinearLayout>
-    <FrameLayout android:id="@+id/container" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:layout_marginTop="61dp"/>
-    <!-- As the main content view, the view below consumes the entire
-         space available using match_parent in both dimensions. -->
-    <include layout="@layout/layout_write"/>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/toolbar_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/ssom_toolbar"/>
+
+            <LinearLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/tab_give_tv"
+                        style="@style/ssom_font_16_greenblue"
+                        android:layout_width="180dp"
+                        android:layout_height="50dp"
+                        android:gravity="center"
+                        android:text="@string/title_tab_give"
+                        />
+
+                    <ImageView
+                        android:id="@+id/tab_give_bottom_bar"
+                        android:layout_width="180dp"
+                        android:layout_height="3dp"
+                        android:layout_gravity="bottom"
+                        android:background="@color/greenblue"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/tab_take_tv"
+                        style="@style/ssom_font_16_greywarm"
+                        android:layout_width="180dp"
+                        android:layout_height="50dp"
+                        android:gravity="center"
+                        android:text="@string/title_tab_take"
+                        />
+
+                    <ImageView
+                        android:id="@+id/tab_take_bottom_bar"
+                        android:layout_width="180dp"
+                        android:layout_height="3dp"
+                        android:layout_gravity="bottom"
+                        android:background="@color/redpink"
+                        android:visibility="gone"/>
+                </FrameLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <FrameLayout android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/toolbar_layout"/>
+
+        <!-- As the main content view, the view below consumes the entire
+             space available using match_parent in both dimensions. -->
+        <FrameLayout
+            android:layout_below="@id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@drawable/toolbar_dropshadow"/>
+
+            <include layout="@layout/layout_write"/>
+        </FrameLayout>
+
+    </RelativeLayout>
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
          this as a sliding drawer on the left side for left-to-right
          languages and on the right side for right-to-left languages.

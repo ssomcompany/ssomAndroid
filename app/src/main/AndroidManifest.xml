@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ssomcompany.ssomclient" >
 
-    
+    <meta-data
+        android:name="com.google.android.maps.v2.API_KEY"
+        android:value="AIzaSyDxR79-ULr-XbTxy4Ms8b2xU0gPTafAut0" />
+
     <permission
         android:name="com.ssomcompany.ssomclient.locationapi.maps.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
@@ -75,7 +78,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WriteActivity"
+            android:name=".post.WriteActivity"
             android:label="@string/title_activity_write" >
         </activity>
     </application>

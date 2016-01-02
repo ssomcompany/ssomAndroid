@@ -3,8 +3,6 @@ package com.ssomcompany.ssomclient.common;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import com.ssomcompany.ssomclient.post.RoundImage;
-
 /**
  * Created by kshgizmo on 2015-10-02.
  */

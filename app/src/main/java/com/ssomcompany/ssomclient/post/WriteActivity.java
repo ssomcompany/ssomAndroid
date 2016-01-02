@@ -1,4 +1,4 @@
-package com.ssomcompany.ssomclient;
+package com.ssomcompany.ssomclient.post;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,6 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.BaseVolleyRequest;

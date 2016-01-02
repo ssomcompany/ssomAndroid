@@ -1,4 +1,4 @@
-package com.ssomcompany.ssomclient.post;
+package com.ssomcompany.ssomclient.common;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;

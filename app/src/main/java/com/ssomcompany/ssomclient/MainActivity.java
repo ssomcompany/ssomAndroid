@@ -42,7 +42,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
 import com.ssomcompany.ssomclient.post.PostContent;
-import com.ssomcompany.ssomclient.post.RoundImage;
+import com.ssomcompany.ssomclient.common.RoundImage;
+import com.ssomcompany.ssomclient.post.WriteActivity;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
 
@@ -52,13 +53,24 @@ public class MainActivity extends AppCompatActivity
         OnMapReadyCallback,GoogleMap.OnMyLocationChangeListener, FilterFragment.OnFilterFragmentInteractionListener,
         PostDataChangeInterface{
 
+    private static final String MAP_VIEW = "map";
+    private static final String LIST_VIEW = "list";
+
+    /**
+     * The fragment's Tabs
+     */
+    private TextView giveTv;
+    private TextView takeTv;
+    private ImageView giveBtmBar;
+    private ImageView takeBtmBar;
+
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     private GoogleMap mMap;
-    private String selectedView = "map";
+    private String selectedView;
     private ImageView mBtnMapMyLocation;
     private ImageView btn_write;
     private TextView mapBtn;
@@ -70,6 +82,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        selectedView = MAP_VIEW;
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -107,16 +120,43 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences filterPref = this.getSharedPreferences("filter", Context.MODE_PRIVATE);
         int minAge = filterPref.getInt("minAge", 20);
         int minCount = filterPref.getInt("minCount", 1);
-        String ssomType = filterPref.getString("ssomtype", "all");
-        TextView ssomTyepText  = (TextView) findViewById(R.id.fv_text_ssom_type);
-        ssomTyepText.setText(getSsomTypeText(ssomType));
+//        String ssomType = filterPref.getString("ssomtype", "all");
+//        TextView ssomTyepText  = (TextView) findViewById(R.id.fv_text_ssom_type);
+//        ssomTyepText.setText(getSsomTypeText(ssomType));
         TextView ageText  = (TextView) findViewById(R.id.fv_text_age_range);
-        ageText.setText(minAge+"~"+(minAge+1)+"살 /");
+        ageText.setText(minAge+"대 초, ");
         TextView countText  = (TextView) findViewById(R.id.fv_text_user_count);
-        countText.setText(minCount+"~"+(minCount+1)+" 명");
+        countText.setText(minCount+"명");
     }
 
     private void initLayoutWrite(){
+        // Tab control
+        giveTv = (TextView) findViewById(R.id.tab_give_tv);
+        takeTv = (TextView) findViewById(R.id.tab_take_tv);
+        giveBtmBar = (ImageView) findViewById(R.id.tab_give_bottom_bar);
+        takeBtmBar = (ImageView) findViewById(R.id.tab_take_bottom_bar);
+
+        // Set tab click listener
+        giveTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_greenblue);
+                giveBtmBar.setVisibility(View.VISIBLE);
+                takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_greywarm);
+                takeBtmBar.setVisibility(View.GONE);
+            }
+        });
+
+        takeTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_redpink);
+                takeBtmBar.setVisibility(View.VISIBLE);
+                giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_greywarm);
+                giveBtmBar.setVisibility(View.GONE);
+            }
+        });
+
         btn_write = (ImageView) findViewById(R.id.btn_write);
         final Context context = this;
         btn_write.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +201,7 @@ public class MainActivity extends AppCompatActivity
         toggleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (selectedView.equals("map")) {
+                if (selectedView.equals(MAP_VIEW)) {
                     startListFragment();
                 } else {
                     startMapFragment();
@@ -170,7 +210,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
     private void startMapFragment(){
-        selectedView = "map";
+        selectedView = MAP_VIEW;
         initMarker = false;
         SupportMapFragment mapFragment = new SupportMapFragment();
         PostContent.init(this, this);
@@ -185,7 +225,7 @@ public class MainActivity extends AppCompatActivity
     private void startListFragment() {
         mapBtn.setVisibility(View.INVISIBLE);
         listBtn.setVisibility(View.VISIBLE);
-        selectedView = "list";
+        selectedView = LIST_VIEW;
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
         Fragment fragment = SsomListFragment.newInstance("1", "2");
         fragmentManager.beginTransaction().
@@ -373,7 +413,7 @@ private boolean initMarker = false;
 
     @Override
     public void onPostItemChanged() {
-        if("map".equals(selectedView)){
+        if(MAP_VIEW.equals(selectedView)){
             initMarker();
         }
     }
