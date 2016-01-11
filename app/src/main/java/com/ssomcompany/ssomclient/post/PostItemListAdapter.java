@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.post;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,24 +12,27 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.common.CategoryUtil;
 import com.ssomcompany.ssomclient.common.CircularNetworkImageView;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
-
-import org.w3c.dom.Text;
-
-import java.util.Date;
 
 /**
  * Created by kshgizmo on 2015. 9. 11..
  */
 public class PostItemListAdapter extends BaseAdapter{
 
+    private LayoutInflater mInflater;
     private Context context;
+    private ImageLoader mImageLoader;
+    private PostContent.PostItem item;
+
     public PostItemListAdapter(Context context){
         this.context = context;
+        this.mInflater = (LayoutInflater) context
+                .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+
+        this.mImageLoader = VolleyUtil.getInstance(context).getImageLoader();
     }
 
     @Override
@@ -52,20 +56,28 @@ public class PostItemListAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            LayoutInflater mInflater = (LayoutInflater) context
-                    .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            convertView = mInflater.inflate(R.layout.ssom_list_item, null);
-        }
-        TextView txtTitle = (TextView) convertView.findViewById(R.id.content);
-        PostContent.PostItem row_pos = PostContent.ITEMS.get(position);
-        // setting the image resource and title
-        txtTitle.setText(row_pos.toString());
-        //TODO replace ImageRequest to ImageLoader for performance
+        PostItemViewHolder holder;
 
-        final CircularNetworkImageView image = (CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image);
-        ImageLoader mImageLoader = VolleyUtil.getInstance(getContext()).getImageLoader();
-        image.setImageUrl(row_pos.getImage(), mImageLoader);
+        if (convertView == null) {
+            convertView = mInflater.inflate(R.layout.ssom_list_item, null);
+
+            holder = new PostItemViewHolder();
+
+            holder.titleTv = (TextView) convertView.findViewById(R.id.post_item_title);
+            holder.timeTv = (TextView) convertView.findViewById(R.id.post_item_time);
+            holder.distanceTv = (TextView) convertView.findViewById(R.id.post_item_distance);
+            holder.contentTv = (TextView) convertView.findViewById(R.id.content);
+            holder.image = (CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image);
+
+            convertView.setTag(holder);
+        } else {
+            holder = (PostItemViewHolder) convertView.getTag();
+        }
+
+        // list view item setting
+        item = PostContent.ITEMS.get(position);
+
+        holder.image.setImageUrl(item.getImage(), mImageLoader);
 //        mImageLoader.get(row_pos.getImage(), ImageLoader.getImageListener(image,R.drawable.icon_wirte_photo_emp, R.drawable.icon_wirte_photo_emp));
 //        ImageRequest imageRequest = new ImageRequest(row_pos.getImage(), new Response.Listener<Bitmap>() {
 //            @Override
@@ -83,38 +95,38 @@ public class PostItemListAdapter extends BaseAdapter{
 //        VolleyUtil.getInstance(getContext()).getRequestQueue().add(imageRequest);
 
         //icon
-        ImageView iconView = (ImageView) convertView.findViewById(R.id.icon_list_r);
-        if("ssom".equals(row_pos.ssom)){
-            iconView.setImageResource(R.drawable.icon_list_st_b);
+        holder.iconView = (ImageView) convertView.findViewById(R.id.icon_list_r);
+        if("ssom".equals(item.ssom)){
+            holder.iconView.setImageResource(R.drawable.icon_list_st_g);
         }else{
-            iconView.setImageResource(R.drawable.icon_list_st_r);
+            holder.iconView.setImageResource(R.drawable.icon_list_st_r);
         }
 
+        // title
+        holder.titleTv.setText(String.format(context.getResources().getString(R.string.post_title),
+                "20대 초", item.userCount));
 
-        //age
-        TextView ageTextView = (TextView) convertView.findViewById(R.id.list_text_age);
-        ageTextView.setText(row_pos.minAge+"~"+row_pos.maxAge);
-        //user count
-        TextView userCountTextView = (TextView) convertView.findViewById(R.id.list_text_user_count);
-        userCountTextView.setText(""+row_pos.userCount);
-        //distance
-        TextView distanceTextView = (TextView) convertView.findViewById(R.id.list_text_distance);
-        distanceTextView.setText(LocationUtil.getDistanceString(row_pos));
-        //category
-        int iconId = CategoryUtil.getCategoryIconId(row_pos.category);
-        if(iconId!=-1){
-            ImageView iconCategoty = (ImageView) convertView.findViewById(R.id.icon_category);
-            iconCategoty.setImageResource(iconId);
-        }
         //time
+        holder.timeTv.setText(Util.getTimeText(Long.valueOf(item.postId)));
 
-        TextView timeText  = (TextView) convertView.findViewById(R.id.list_text_time);
-        timeText.setText(Util.getTimeText(Long.valueOf(row_pos.postId))+",");
+        // distance
+        holder.distanceTv.setText(LocationUtil.getDistanceString(item));
 
+        // content
+        holder.contentTv.setText(item.content);
 
         return convertView;
     }
-    public Context getContext() {
-        return context;
+
+    private class PostItemViewHolder {
+        /**
+         * holder for list items
+         */
+        public ImageView iconView;
+        public CircularNetworkImageView image;
+        public TextView titleTv;
+        public TextView timeTv;
+        public TextView distanceTv;
+        public TextView contentTv;
     }
 }

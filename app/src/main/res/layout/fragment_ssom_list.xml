@@ -2,17 +2,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ssomcompany.ssomclient.SsomListFragment">
+    android:background="@color/white"
+    tools:context=".fragment.SsomListFragment">
 
-    <ImageView
-        android:id="@+id/bg_list_bot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:src="@drawable/bg_list_bot"/>
+    <!--<ImageView-->
+        <!--android:id="@+id/bg_list_bot"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:src="@drawable/bg_list_bot"/>-->
     <ListView android:id="@android:id/list" android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@id/bg_list_bot"/>
+        android:divider="@drawable/post_list_divider"/>
 
     <TextView android:id="@android:id/empty" android:layout_width="match_parent"
         android:layout_height="match_parent" android:gravity="center"

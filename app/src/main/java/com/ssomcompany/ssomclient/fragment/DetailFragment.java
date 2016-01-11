@@ -1,8 +1,7 @@
-package com.ssomcompany.ssomclient;
+package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +14,8 @@ import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
+import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.common.CategoryUtil;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;

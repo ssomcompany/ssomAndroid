@@ -1,4 +1,4 @@
-package com.ssomcompany.ssomclient;
+package com.ssomcompany.ssomclient.activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +7,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
+
+import com.ssomcompany.ssomclient.R;
 
 public class Intro2Activity extends AppCompatActivity {
 

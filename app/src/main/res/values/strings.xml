@@ -19,8 +19,14 @@
     <string name="title_activity_write">WriteActivity</string>
     <string name="title_activity_detail">DetailActivity</string>
 
+    <!-- filter -->
+    <string name="filter_age_n_count">%1$s, %2$d명</string>
+
     <!-- post list menu -->
     <string name="title_tab_give">내가 쏨</string>
     <string name="title_tab_take">니가 쏴</string>
+
+    <!-- post list item -->
+    <string name="post_title">%1$s %2$d명 있어요.</string>
 
 </resources>

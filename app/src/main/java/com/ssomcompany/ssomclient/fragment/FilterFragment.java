@@ -1,4 +1,4 @@
-package com.ssomcompany.ssomclient;
+package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.MainActivity;
 
 
 /**
@@ -170,6 +173,11 @@ public class FilterFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
         activity.setWriteBtn(true);
     }
 

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="61dp"
+    android:layout_height="58.5dp"
     android:background="@color/white"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:contentInsetLeft="0dp"
@@ -13,7 +13,7 @@
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="61dp"
+        android:layout_height="58.5dp"
         android:id="@+id/custom_action_bar">
 
         <ImageView
@@ -24,34 +24,33 @@
             android:layout_marginTop="12dp"
             android:padding="10dp"
             android:src="@drawable/icon_top_menu"/>
-        <LinearLayout
+
+        <RelativeLayout
             android:id="@+id/toggle_bg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="153.3dp"
+            android:layout_height="33.3dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"
-            android:padding="2dp"
+            android:layout_marginTop="10.5dp"
             android:background="@drawable/toggle_bg_w">
             <TextView
                 android:id="@+id/toggle_s_map"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/ssom_font_12_white"
+                android:layout_width="85.3dp"
+                android:layout_height="32.9dp"
                 android:background="@drawable/toggle_sel_b"
-                android:textSize="16sp"
                 android:text="MAP"
-                android:textColor="@color/white"
                 android:gravity="center"/>
             <TextView
                 android:id="@+id/toggle_s_list"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/ssom_font_12_white"
+                android:layout_width="85.3dp"
+                android:layout_height="32.9dp"
+                android:layout_alignParentRight="true"
                 android:background="@drawable/toggle_sel_b"
-                android:textSize="16sp"
                 android:text="LIST"
-                android:textColor="@color/white"
                 android:gravity="center"
                 android:visibility="invisible"/>
-        </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/chat_layout"
@@ -101,9 +100,10 @@
 
                 <TextView
                     android:id="@+id/heart_count"
-                    style="@style/roboto_font_12_white"
+                    style="@style/ssom_font_12_white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
                     android:layout_gravity="center"
                     android:text="5"/>
             </FrameLayout>

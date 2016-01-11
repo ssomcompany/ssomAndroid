@@ -1,4 +1,4 @@
-package com.ssomcompany.ssomclient;
+package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -11,7 +11,9 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.post.PostContent;
+import com.ssomcompany.ssomclient.post.PostDataChangeInterface;
 import com.ssomcompany.ssomclient.post.PostItemListAdapter;
 
 /**
@@ -153,7 +155,7 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
      */
     public interface OnPostItemInteractionListener {
         // TODO: Update argument type and name
-        public void onPostItemClick(String id);
+        void onPostItemClick(String id);
     }
 
 }

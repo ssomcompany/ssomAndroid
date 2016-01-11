@@ -1,4 +1,4 @@
-package com.ssomcompany.ssomclient;
+package com.ssomcompany.ssomclient.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -39,10 +39,16 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.LocationUtil;
-import com.ssomcompany.ssomclient.common.VolleyUtil;
-import com.ssomcompany.ssomclient.post.PostContent;
 import com.ssomcompany.ssomclient.common.RoundImage;
+import com.ssomcompany.ssomclient.common.VolleyUtil;
+import com.ssomcompany.ssomclient.fragment.DetailFragment;
+import com.ssomcompany.ssomclient.fragment.FilterFragment;
+import com.ssomcompany.ssomclient.fragment.NavigationDrawerFragment;
+import com.ssomcompany.ssomclient.fragment.SsomListFragment;
+import com.ssomcompany.ssomclient.post.PostContent;
+import com.ssomcompany.ssomclient.post.PostDataChangeInterface;
 import com.ssomcompany.ssomclient.post.WriteActivity;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
@@ -50,8 +56,8 @@ import com.ssomcompany.ssomclient.push.PushManageService;
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnDetailFragmentInteractionListener,
-        OnMapReadyCallback,GoogleMap.OnMyLocationChangeListener, FilterFragment.OnFilterFragmentInteractionListener,
-        PostDataChangeInterface{
+        OnMapReadyCallback, GoogleMap.OnMyLocationChangeListener, FilterFragment.OnFilterFragmentInteractionListener,
+        PostDataChangeInterface {
 
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
@@ -65,24 +71,41 @@ public class MainActivity extends AppCompatActivity
     private ImageView takeBtmBar;
 
     /**
+     * The filters resources
+     */
+    private View filter;
+    private View filterImgLayout;
+    private TextView filterTv;
+
+    /**
+     * layout write resources
+     */
+    private ImageView mBtnMapMyLocation;
+    private ImageView btn_write;
+
+    /**
+     * toolbar resources
+     */
+    private TextView mapBtn;
+    private TextView listBtn;
+
+    /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
-
     private GoogleMap mMap;
     private String selectedView;
-    private ImageView mBtnMapMyLocation;
-    private ImageView btn_write;
-    private TextView mapBtn;
-    private TextView listBtn;
+    private boolean initMarker;
+    private boolean isFirstTimeChangeLocation;
     private FragmentManager fragmentManager;
-    private View filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         selectedView = MAP_VIEW;
+        isFirstTimeChangeLocation = true;
+        PostContent.init(this, this);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -99,17 +122,6 @@ public class MainActivity extends AppCompatActivity
         startService(new Intent(this, PushManageService.class));
     }
 
-    private String getSsomTypeText(String ssomtype){
-        switch (ssomtype){
-            case "ssom":
-                return "내가 쏨/";
-            case "ssoseyo":
-                return "니가 쏴/";
-            case "all":
-            default:
-                return "모두 /";
-        }
-    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -118,15 +130,9 @@ public class MainActivity extends AppCompatActivity
 
     private void initFilterView() {
         SharedPreferences filterPref = this.getSharedPreferences("filter", Context.MODE_PRIVATE);
-        int minAge = filterPref.getInt("minAge", 20);
-        int minCount = filterPref.getInt("minCount", 1);
-//        String ssomType = filterPref.getString("ssomtype", "all");
-//        TextView ssomTyepText  = (TextView) findViewById(R.id.fv_text_ssom_type);
-//        ssomTyepText.setText(getSsomTypeText(ssomType));
-        TextView ageText  = (TextView) findViewById(R.id.fv_text_age_range);
-        ageText.setText(minAge+"대 초, ");
-        TextView countText  = (TextView) findViewById(R.id.fv_text_user_count);
-        countText.setText(minCount+"명");
+        filterTv = (TextView) findViewById(R.id.filter_txt_age_n_count);
+        filterTv.setText(String.format(getResources().getString(R.string.filter_age_n_count),
+                filterPref.getInt("minAge", 20) + "대 초", filterPref.getInt("minCount", 1)));
     }
 
     private void initLayoutWrite(){
@@ -167,19 +173,26 @@ public class MainActivity extends AppCompatActivity
                 startActivity(i);
             }
         });
-        filter = findViewById(R.id.filter);
-        filter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FilterFragment filterFragment = FilterFragment.newInstance("1", "1");
-                fragmentManager.beginTransaction().
-                        add(R.id.container, filterFragment)
-                        .addToBackStack(null)
-                        .commit();
-                setWriteBtn(false);
-            }
-        });
+        filter = findViewById(R.id.filter_txt_layout);
+        filterImgLayout = findViewById(R.id.filter_img_layout);
+
+        // listener register
+        filter.setOnClickListener(filterClickListener);
+        filterImgLayout.setOnClickListener(filterClickListener);
     }
+
+    private View.OnClickListener filterClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            FilterFragment filterFragment = FilterFragment.newInstance("1", "1");
+            fragmentManager.beginTransaction().
+                    add(R.id.container, filterFragment)
+                    .addToBackStack(null)
+                    .commit();
+            setWriteBtn(false);
+        }
+    };
+
     private void initToolbar() {
         Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(tb);
@@ -209,23 +222,23 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
     private void startMapFragment(){
         selectedView = MAP_VIEW;
         initMarker = false;
         SupportMapFragment mapFragment = new SupportMapFragment();
-        PostContent.init(this, this);
         fragmentManager.beginTransaction().
                 replace(R.id.container, mapFragment)
                 .commit();
         mapFragment.getMapAsync(this);
         mapBtn.setVisibility(View.VISIBLE);
         listBtn.setVisibility(View.INVISIBLE);
-        isFirstTimeChangeLocation = true;
     }
+
     private void startListFragment() {
+        selectedView = LIST_VIEW;
         mapBtn.setVisibility(View.INVISIBLE);
         listBtn.setVisibility(View.VISIBLE);
-        selectedView = LIST_VIEW;
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
         Fragment fragment = SsomListFragment.newInstance("1", "2");
         fragmentManager.beginTransaction().
@@ -252,8 +265,6 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -291,15 +302,20 @@ public class MainActivity extends AppCompatActivity
                 .addToBackStack(null)
                 .commit();
     }
+
+    // layout visibility setting
     public void setWriteBtn(boolean on){
         if(on){
             btn_write.setVisibility(View.VISIBLE);
             filter.setVisibility(View.VISIBLE);
+            filterImgLayout.setVisibility(View.VISIBLE);
         }else{
             btn_write.setVisibility(View.INVISIBLE);
             filter.setVisibility(View.INVISIBLE);
+            filterImgLayout.setVisibility(View.INVISIBLE);
         }
     }
+
     @Override
     public void onDeatilFragmentInteraction(Uri uri) {
         onBackPressed();
@@ -312,29 +328,27 @@ public class MainActivity extends AppCompatActivity
         mMap.getUiSettings().setRotateGesturesEnabled(false);
 
         mMap.setMyLocationEnabled(true);
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+//                == PackageManager.PERMISSION_GRANTED) {
+//        } else {
+//            // Show rationale and request permission.
+//        }
+
         mBtnMapMyLocation.setVisibility(View.VISIBLE);
-        if(LocationUtil.myLocation!=null){
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(LocationUtil.myLocation.getLatitude(), LocationUtil.myLocation.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-        }
+
+        // current position settings
+
+
         mMap.setOnMyLocationChangeListener(this);
-        final Context context = this;
         mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Location location = mMap.getMyLocation();
-                if (location != null) {
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-                } else {
-                    Toast.makeText(context, "my location didn`t set yet. wait a minute ", Toast.LENGTH_SHORT).show();
-                }
             }
         });
         initMarker();
     }
-private boolean initMarker = false;
+
     private void initMarker() {
         if(PostContent.ITEMS.size()>0 && !initMarker){
             initMarker = true;
@@ -352,8 +366,12 @@ private boolean initMarker = false;
                         .position(new LatLng(item.lat,item.lng))
                         .title(item.content).draggable(false).icon(getMarkerImage(item.ssom, bitmap)));
             }
-        },144, 256, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888
-                , new Response.ErrorListener(){
+        }
+        , 144  // max width
+        , 256  // max height
+        , ImageView.ScaleType.CENTER  // scale type
+        , Bitmap.Config.ARGB_8888  // decode config
+        , new Response.ErrorListener(){
 
             @Override
             public void onErrorResponse(VolleyError volleyError) {
@@ -361,9 +379,8 @@ private boolean initMarker = false;
             }
         });
         VolleyUtil.getInstance(getApplicationContext()).getRequestQueue().add(imageRequest);
-
-
     }
+
     private BitmapDescriptor getMarkerImage(String ssom , Bitmap imageBitmap){
         //TODO make BitmapDescriptor with profile image
 
@@ -392,16 +409,16 @@ private boolean initMarker = false;
         }
         return BitmapDescriptorFactory.fromBitmap(mergedBitmap);
     }
-    private boolean isFirstTimeChangeLocation;
+
     @Override
     public void onMyLocationChange(Location location) {
-        if(isFirstTimeChangeLocation && LocationUtil.myLocation==null){
+        if(isFirstTimeChangeLocation && LocationUtil.getMyLocation(this)==null){
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
             isFirstTimeChangeLocation = false;
-            LocationUtil.myLocation = location;
+            LocationUtil.setMyLocation(location);
         }else{
-            LocationUtil.myLocation = location;
+            LocationUtil.setMyLocation(location);
         }
     }
 

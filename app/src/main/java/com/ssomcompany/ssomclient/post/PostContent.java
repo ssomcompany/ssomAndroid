@@ -1,7 +1,6 @@
 package com.ssomcompany.ssomclient.post;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -10,7 +9,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
-import com.ssomcompany.ssomclient.PostDataChangeInterface;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 
 import org.json.JSONArray;
@@ -25,7 +23,7 @@ import java.util.Map;
 /**
  * Created by kshgizmo on 2015. 9. 11..
  */
-    public class PostContent {
+public class PostContent {
 
     public static List<PostItem> ITEMS = new ArrayList<>();
     public static Map<String, PostItem> ITEM_MAP = new HashMap<>();

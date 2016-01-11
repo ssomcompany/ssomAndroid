@@ -1,98 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="94dp"
-    android:minHeight="94dp"
+    android:layout_height="83dp"
     >
 
-    <com.ssomcompany.ssomclient.common.CircularNetworkImageView
-        android:id="@+id/icon_list_image"
+    <!-- left profile image layout Start -->
+    <FrameLayout
+        android:id="@+id/profile_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="8dp"/>
-    <ImageView
-        android:id="@+id/icon_list_r"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:src="@drawable/icon_list_st_r"
-        android:layout_marginLeft="8dp"/>
+        android:layout_marginLeft="12dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true">
 
-    <ImageView
-        android:id="@+id/icon_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="55dp"
-        android:layout_alignParentTop="true"
-        />
+        <com.ssomcompany.ssomclient.common.CircularNetworkImageView
+            android:id="@+id/icon_list_image"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:padding="1dp"/>
 
+        <ImageView
+            android:id="@+id/icon_list_r"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_list_st_g" />
+    </FrameLayout>
+
+    <!-- left profile image layout End -->
+
+    <!-- Contents layout Start -->
     <LinearLayout
-        android:id="@+id/list_info"
-        android:layout_width="wrap_content"
+        android:id="@+id/item_info"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="30.2dp"
-        android:layout_toRightOf="@id/icon_list_r">
+        android:layout_marginTop="17.5dp"
+        android:layout_marginRight="15.8dp"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/profile_layout">
+
         <TextView
-            android:id="@+id/list_text_time"
+            android:id="@+id/post_item_title"
+            style="@style/ssom_font_12_red_single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:lines="1"
-            android:textColor="#929292"
-            android:text="방금전 ,"/>
+            android:text="20대 초 1명 있어요."/>
+
         <TextView
-            android:id="@+id/list_text_age"
-            android:layout_width="wrap_content"
+            android:id="@+id/post_item_time"
+            style="@style/ssom_font_9_pinkish_grey_single"
+            android:layout_width="45.3dp"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:lines="1"
-            android:textColor="#e70033"
-            android:text=" 21~25"/>
+            android:layout_marginLeft="8dp"
+            android:layout_gravity="center_vertical"
+            android:text="방금전"/>
+
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/post_item_distance"
+            style="@style/ssom_font_12_pinkish_grey_single"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:lines="1"
-            android:textColor="#929292"
-            android:text="살 "/>
-        <TextView
-            android:id="@+id/list_text_user_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:lines="1"
-            android:textColor="#e70033"
-            android:text="4"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:lines="1"
-            android:textColor="#929292"
-            android:text="명 있어요,  "/>
-        <TextView
-            android:id="@+id/list_text_distance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:lines="1"
-            android:textColor="#e70033"
+            android:gravity="end"
+            android:layout_weight="1"
             android:text="300m"/>
     </LinearLayout>
+
     <TextView
         android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="30.7dp"
-        android:layout_below="@id/list_info"
-        android:layout_toRightOf="@id/icon_list_r"
-        android:textSize="12sp"
-        android:lines="3"
+        style="@style/ssom_font_12_main_black_2_lines"
+        android:layout_width="match_parent"
+        android:layout_height="33dp"
+        android:layout_marginTop="5.8dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15.8dp"
+        android:layout_below="@id/item_info"
+        android:layout_toRightOf="@id/profile_layout"
+        android:text="연말인데 모임나가기는 싫고 ㅋㅋ 그냥 편하게 얘기 하실 분 없나요?"
         />
+
+    <!-- Contents layout End -->
+
+    <!-- onChat layout Start
+
     <ImageView
         android:id="@+id/chat_on_list"
         android:layout_width="wrap_content"
@@ -112,4 +101,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginTop="7dp"
         android:layout_marginRight="15dp"/>
+
+     onChat layout End -->
+
 </RelativeLayout>

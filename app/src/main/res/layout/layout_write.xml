@@ -11,7 +11,7 @@
         android:layout_marginLeft="20dp"/>
 
     <RelativeLayout
-        android:id="@+id/filter"
+        android:id="@+id/filter_txt_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_filter_w80"
@@ -19,50 +19,33 @@
         android:layout_marginBottom="17.3dp"
         android:layout_marginLeft="20dp">
 
+        <TextView
+            android:id="@+id/filter_txt_age_n_count"
+            style="@style/ssom_font_16_greyish_brown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="78dp"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:text="20대 초, 1명"/>
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/filter_img_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="18dp"
+        android:layout_marginBottom="13.3dp">
+
         <ImageView
-            android:id="@+id/filter_black"
+            android:id="@+id/filter_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/icon_search_filter"/>
-        <!--<TextView-->
-            <!--android:id="@+id/fv_text_ssom_type"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_toRightOf="@id/filter_black"-->
-            <!--android:layout_marginLeft="12dp"-->
-            <!--android:textSize="14sp"-->
-            <!--android:textColor="#000000"-->
-            <!--android:text="모두,"/>-->
-        <LinearLayout
-            android:layout_toRightOf="@id/filter_black"
-            android:layout_width="84.8dp"
-            android:layout_height="19.5dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20.5dp"
-            android:layout_marginRight="44dp"
-            android:layout_marginLeft="18dp"
-            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/fv_text_age_range"
-                style="@style/ssom_font_16_greyish_brown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#000000"
-                android:text="20대 초,"/>
-            <TextView
-                android:id="@+id/fv_text_user_count"
-                style="@style/ssom_font_16_greyish_brown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#000000"
-                android:text=" 2명"/>
-
-        </LinearLayout>
-    </RelativeLayout>
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/btn_write"

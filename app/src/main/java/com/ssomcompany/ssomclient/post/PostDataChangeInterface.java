@@ -1,4 +1,4 @@
-package com.ssomcompany.ssomclient;
+package com.ssomcompany.ssomclient.post;
 
 /**
  * Created by kshgizmo on 2015. 10. 6..
