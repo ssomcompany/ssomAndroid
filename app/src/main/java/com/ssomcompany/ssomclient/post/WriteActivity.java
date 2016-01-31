@@ -329,7 +329,7 @@ public class WriteActivity extends AppCompatActivity {
             jsonBody.put("maxAge",maxAge);
             jsonBody.put("userCount", count);
             jsonBody.put("ssom", ssomType);
-            Location myLocation = LocationUtil.getMyLocation(this);
+            Location myLocation = LocationUtil.getLocation(this);
             if(myLocation!=null) {
                 jsonBody.put("latitude", myLocation.getLatitude());
                 jsonBody.put("longitude", myLocation.getLongitude());

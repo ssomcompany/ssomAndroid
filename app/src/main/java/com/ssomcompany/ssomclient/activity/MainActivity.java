@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +39,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.LocationUtil;
@@ -56,8 +58,11 @@ import com.ssomcompany.ssomclient.push.PushManageService;
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnDetailFragmentInteractionListener,
-        OnMapReadyCallback, GoogleMap.OnMyLocationChangeListener, FilterFragment.OnFilterFragmentInteractionListener,
+        OnMapReadyCallback, FilterFragment.OnFilterFragmentInteractionListener,
         PostDataChangeInterface {
+
+    private static final String TAG_MAP = "MainActivity_MAP";
+    private static final String TAG_LIST = "MainActivity_LIST";
 
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
@@ -98,6 +103,9 @@ public class MainActivity extends AppCompatActivity
     private boolean initMarker;
     private boolean isFirstTimeChangeLocation;
     private FragmentManager fragmentManager;
+
+    // current marker
+    Marker currentMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -327,27 +335,67 @@ public class MainActivity extends AppCompatActivity
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.getUiSettings().setRotateGesturesEnabled(false);
 
-        mMap.setMyLocationEnabled(true);
+        mMap.setMyLocationEnabled(false);
+        // Marshmallow
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 //                == PackageManager.PERMISSION_GRANTED) {
 //        } else {
 //            // Show rationale and request permission.
 //        }
 
-        mBtnMapMyLocation.setVisibility(View.VISIBLE);
+        // init start my location
+        initMyLocation();
 
         // current position settings
-
-
-        mMap.setOnMyLocationChangeListener(this);
+        mBtnMapMyLocation.setVisibility(View.VISIBLE);
         mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+//                initMyLocation();
+                Location currentLo = LocationUtil.getLocation(getApplicationContext());
+                LatLng currentPosition = new LatLng(currentLo.getLatitude(), currentLo.getLongitude());
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
+                currentMarker.setPosition(currentPosition);
             }
         });
         initMarker();
     }
+
+    private void initMyLocation() {
+        LocationUtil.getMyLocation(this, locationResult);
+
+        Location initLo = LocationUtil.getLocation(getApplicationContext());
+        LatLng initPosition = new LatLng(initLo.getLatitude(), initLo.getLongitude());
+        // TODO  : 위치정보를 가져올 수 없는 경우 기본을 홍대입구 역으로 셋팅
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initPosition, 13));
+        currentMarker = mMap.addMarker(new MarkerOptions()
+                .position(initPosition)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                .title("현재위치"));
+    }
+
+    private LocationUtil.LocationResult locationResult = new LocationUtil.LocationResult() {
+        @Override
+        public void getLocationCallback(Location location) {
+            Log.i(TAG_MAP, "lat : " + location.getLatitude() + ", lon : " + location.getLongitude());
+
+            LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+
+            // currentPosition 위치로 카메라 중심을 옮기고 화면 줌을 조정한다. 줌범위는 2~21, 숫자클수록 확대
+//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
+
+            if(currentMarker == null) {  // 마커 추가
+                currentMarker = mMap.addMarker(new MarkerOptions()
+                        .position(currentPosition)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                        .title("현재위치"));
+            } else {  // 마커 갱신
+                currentMarker.setPosition(currentPosition);
+            }
+
+        }
+    };
 
     private void initMarker() {
         if(PostContent.ITEMS.size()>0 && !initMarker){
@@ -410,17 +458,17 @@ public class MainActivity extends AppCompatActivity
         return BitmapDescriptorFactory.fromBitmap(mergedBitmap);
     }
 
-    @Override
-    public void onMyLocationChange(Location location) {
-        if(isFirstTimeChangeLocation && LocationUtil.getMyLocation(this)==null){
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-            isFirstTimeChangeLocation = false;
-            LocationUtil.setMyLocation(location);
-        }else{
-            LocationUtil.setMyLocation(location);
-        }
-    }
+//    @Override
+//    public void onMyLocationChange(Location location) {
+//        if(isFirstTimeChangeLocation && LocationUtil.getMyLocation(this)==null){
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+//            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+//            isFirstTimeChangeLocation = false;
+//            LocationUtil.setMyLocation(location);
+//        }else{
+//            LocationUtil.setMyLocation(location);
+//        }
+//    }
 
     @Override
     public void onFilterFragmentInteraction(Uri uri) {
@@ -473,6 +521,12 @@ public class MainActivity extends AppCompatActivity
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocationUtil.stopLocationUpdates();
     }
 
 }
