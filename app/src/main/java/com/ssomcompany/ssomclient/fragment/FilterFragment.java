@@ -56,9 +56,7 @@ public class FilterFragment extends Fragment {
         return fragment;
     }
 
-    public FilterFragment() {
-        // Required empty public constructor
-    }
+    public FilterFragment() { super(); }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

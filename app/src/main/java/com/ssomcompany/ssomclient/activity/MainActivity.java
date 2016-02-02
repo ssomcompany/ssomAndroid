@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -101,7 +100,6 @@ public class MainActivity extends AppCompatActivity
     private GoogleMap mMap;
     private String selectedView;
     private boolean initMarker;
-    private boolean isFirstTimeChangeLocation;
     private FragmentManager fragmentManager;
 
     // current marker
@@ -112,7 +110,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         selectedView = MAP_VIEW;
-        isFirstTimeChangeLocation = true;
         PostContent.init(this, this);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -234,7 +231,7 @@ public class MainActivity extends AppCompatActivity
     private void startMapFragment(){
         selectedView = MAP_VIEW;
         initMarker = false;
-        SupportMapFragment mapFragment = new SupportMapFragment();
+        SupportMapFragment mapFragment = SupportMapFragment.newInstance();
         fragmentManager.beginTransaction().
                 replace(R.id.container, mapFragment)
                 .commit();
@@ -276,13 +273,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
+        return !mNavigationDrawerFragment.isDrawerOpen() || super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -351,7 +342,11 @@ public class MainActivity extends AppCompatActivity
         mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                initMyLocation();
+                if(!LocationUtil.getMyLocation(getApplicationContext(), locationResult)) {
+                    showActivateGPSPopup();
+                    return;
+                }
+
                 Location currentLo = LocationUtil.getLocation(getApplicationContext());
                 LatLng currentPosition = new LatLng(currentLo.getLatitude(), currentLo.getLongitude());
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
@@ -362,11 +357,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initMyLocation() {
-        LocationUtil.getMyLocation(this, locationResult);
+        LatLng initPosition;
+        if(LocationUtil.getMyLocation(this, locationResult)) {
+            Location initLo = LocationUtil.getLocation(getApplicationContext());
+            initPosition = new LatLng(initLo.getLatitude(), initLo.getLongitude());
+        } else {
+            // 위치정보를 가져올 수 없는 경우 기본을 홍대입구 역으로 셋팅
+            initPosition = new LatLng(37.55595, 126.9230138);
+        }
 
-        Location initLo = LocationUtil.getLocation(getApplicationContext());
-        LatLng initPosition = new LatLng(initLo.getLatitude(), initLo.getLongitude());
-        // TODO  : 위치정보를 가져올 수 없는 경우 기본을 홍대입구 역으로 셋팅
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initPosition, 13));
         currentMarker = mMap.addMarker(new MarkerOptions()
                 .position(initPosition)
@@ -395,6 +394,10 @@ public class MainActivity extends AppCompatActivity
 
         }
     };
+
+    private void showActivateGPSPopup() {
+        // TODO - GPS on dialog popup
+    }
 
     private void initMarker() {
         if(PostContent.ITEMS.size()>0 && !initMarker){
@@ -510,8 +513,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
+            return inflater.inflate(R.layout.fragment_main, container, false);
         }
 
         @Override
