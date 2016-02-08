@@ -27,24 +27,24 @@
 
         <RelativeLayout
             android:id="@+id/toggle_bg"
-            android:layout_width="153.3dp"
-            android:layout_height="33.3dp"
+            android:layout_width="154dp"
+            android:layout_height="34dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10.5dp"
-            android:background="@drawable/toggle_bg_w">
+            android:background="@drawable/bg_main_toggle">
             <TextView
                 android:id="@+id/toggle_s_map"
                 style="@style/ssom_font_12_white"
-                android:layout_width="85.3dp"
-                android:layout_height="32.9dp"
-                android:background="@drawable/toggle_sel_b"
+                android:layout_width="86dp"
+                android:layout_height="33dp"
+                android:background="@drawable/bg_main_toggle_on"
                 android:text="MAP"
                 android:gravity="center"/>
             <TextView
                 android:id="@+id/toggle_s_list"
                 style="@style/ssom_font_12_white"
-                android:layout_width="85.3dp"
-                android:layout_height="32.9dp"
+                android:layout_width="86dp"
+                android:layout_height="33dp"
                 android:layout_alignParentRight="true"
                 android:background="@drawable/toggle_sel_b"
                 android:text="LIST"

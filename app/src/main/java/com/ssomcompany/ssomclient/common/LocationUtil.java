@@ -72,6 +72,7 @@ public class LocationUtil {
 
     public static Location getLocation(Context context) {
         if (myLocation != null) {
+            Log.i(TAG, "myLocation not null");
             return myLocation;
         } else {
             Criteria criteria = new Criteria();
@@ -81,6 +82,7 @@ public class LocationUtil {
             }catch (SecurityException e){
                 Toast.makeText(context,"위치 정보를 가져올수 없습니다.("+e.getLocalizedMessage()+")", Toast.LENGTH_SHORT).show();
             }
+            Log.i(TAG, "myLocation null, new location : " + myLocation);
             return myLocation;
         }
     }

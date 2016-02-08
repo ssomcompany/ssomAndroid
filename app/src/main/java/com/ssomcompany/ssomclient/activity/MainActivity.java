@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -43,6 +44,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.RoundImage;
+import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
 import com.ssomcompany.ssomclient.fragment.DetailFragment;
 import com.ssomcompany.ssomclient.fragment.FilterFragment;
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity
     private View filter;
     private View filterImgLayout;
     private TextView filterTv;
+    private SsomPreferences filterPref;
 
     /**
      * layout write resources
@@ -111,6 +114,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         selectedView = MAP_VIEW;
         PostContent.init(this, this);
+        filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -134,10 +138,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initFilterView() {
-        SharedPreferences filterPref = this.getSharedPreferences("filter", Context.MODE_PRIVATE);
         filterTv = (TextView) findViewById(R.id.filter_txt_age_n_count);
         filterTv.setText(String.format(getResources().getString(R.string.filter_age_n_count),
-                filterPref.getInt("minAge", 20) + "대 초", filterPref.getInt("minCount", 1)));
+                filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 20) + "대 초",
+                filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 1)));
+
     }
 
     private void initLayoutWrite(){
@@ -189,9 +194,8 @@ public class MainActivity extends AppCompatActivity
     private View.OnClickListener filterClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            FilterFragment filterFragment = FilterFragment.newInstance("1", "1");
-            fragmentManager.beginTransaction().
-                    add(R.id.container, filterFragment)
+            FilterFragment filterFragment = FilterFragment.newInstance();
+            fragmentManager.beginTransaction().add(R.id.container, filterFragment, "filter_fragment")
                     .addToBackStack(null)
                     .commit();
             setWriteBtn(false);
@@ -245,9 +249,9 @@ public class MainActivity extends AppCompatActivity
         mapBtn.setVisibility(View.INVISIBLE);
         listBtn.setVisibility(View.VISIBLE);
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
-        Fragment fragment = SsomListFragment.newInstance("1", "2");
+
         fragmentManager.beginTransaction().
-                replace(R.id.container, fragment)
+                replace(R.id.container, SsomListFragment.newInstance("1", "2"))
                 .commit();
     }
 
@@ -255,8 +259,7 @@ public class MainActivity extends AppCompatActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+        fragmentManager.beginTransaction().replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
     }
 
@@ -295,9 +298,7 @@ public class MainActivity extends AppCompatActivity
     public void onPostItemClick(String id) {
         setWriteBtn(false);
         Fragment fragment = DetailFragment.newInstance(PostContent.ITEM_MAP.get(id).postId);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().
-                add(R.id.container, fragment)
+        fragmentManager.beginTransaction().add(R.id.container, fragment)
                 .addToBackStack(null)
                 .commit();
     }
@@ -360,7 +361,7 @@ public class MainActivity extends AppCompatActivity
         LatLng initPosition;
         if(LocationUtil.getMyLocation(this, locationResult)) {
             Location initLo = LocationUtil.getLocation(getApplicationContext());
-            initPosition = new LatLng(initLo.getLatitude(), initLo.getLongitude());
+            initPosition = new LatLng(initLo!=null?initLo.getLatitude():37.55595, initLo!=null?initLo.getLongitude():126.9230138);
         } else {
             // 위치정보를 가져올 수 없는 경우 기본을 홍대입구 역으로 셋팅
             initPosition = new LatLng(37.55595, 126.9230138);
@@ -369,8 +370,7 @@ public class MainActivity extends AppCompatActivity
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initPosition, 13));
         currentMarker = mMap.addMarker(new MarkerOptions()
                 .position(initPosition)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-                .title("현재위치"));
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
     }
 
     private LocationUtil.LocationResult locationResult = new LocationUtil.LocationResult() {
@@ -386,8 +386,7 @@ public class MainActivity extends AppCompatActivity
             if(currentMarker == null) {  // 마커 추가
                 currentMarker = mMap.addMarker(new MarkerOptions()
                         .position(currentPosition)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-                        .title("현재위치"));
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
             } else {  // 마커 갱신
                 currentMarker.setPosition(currentPosition);
             }
@@ -473,9 +472,11 @@ public class MainActivity extends AppCompatActivity
 //    }
 
     @Override
-    public void onFilterFragmentInteraction(Uri uri) {
-        initFilterView();
-        onBackPressed();
+    public void onFilterFragmentInteraction(boolean isApply) {
+        Log.i(TAG_MAP, "filter interaction : " + isApply);
+        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag("filter_fragment")).commit();
+        if(isApply) initFilterView();
+        setWriteBtn(true);
     }
 
     @Override

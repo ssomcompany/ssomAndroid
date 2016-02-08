@@ -1,157 +1,197 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context=".fragment.FilterFragment"
-    android:background="#55000000">
+    android:background="#CC000000">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="20dp"
-        android:background="@drawable/bg_filter_white"
-        android:paddingBottom="12dp"
-        >
-        <ImageView
-            android:id="@+id/filter_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/title_filter_type"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"/>
-        <LinearLayout
-            android:id="@+id/filter_ssom_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/filter_title"
-            android:layout_marginTop="26dp"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/toggle_filter_bg_g">
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/toggle_filter_all">
-                <TextView
-                    android:layout_centerInParent="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="모두"
-                    android:textColor="#ffffff"/>
-            </RelativeLayout>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/line_filter_toggle_g"/>
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/toggle_filter_2">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="내가 쏨"
-                    android:textColor="#ffffff"
-                    android:layout_centerInParent="true"/>
-            </RelativeLayout>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/line_filter_toggle_g"/>
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/toggle_filter_3">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="니가 쏴"
-                    android:textColor="#ffffff"/>
-            </RelativeLayout>
-        </LinearLayout>
+        android:background="@drawable/bg_filter"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/filter_layout_user_count"
-            android:layout_below="@id/filter_ssom_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:layout_centerHorizontal="true">
-            <TextView
-                android:id="@+id/filter_text_user_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#e70033"
-                android:text="1~2"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:text=" 명이 한 팀 이었으면 좋겠어요"/>
-        </LinearLayout>
-        <SeekBar
-            android:id="@+id/filter_seekbar_user_count"
-            android:layout_below="@id/filter_layout_user_count"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="13dp"
-            android:layout_centerHorizontal="true"
-            android:max="10"/>
-
-        <LinearLayout
-            android:id="@+id/filter_layout_age_range"
-            android:layout_below="@id/filter_seekbar_user_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:layout_centerHorizontal="true">
-            <TextView
-                android:id="@+id/filter_text_age_range"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#e70033"
-                android:text="20~21"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:text=" 살 이었으면 좋겠어요"/>
-        </LinearLayout>
-        <SeekBar
-            android:id="@+id/filter_seekbar_age_range"
-            android:layout_below="@id/filter_layout_age_range"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="13dp"
-            android:layout_centerHorizontal="true"
-            android:max="30"/>
-        <RelativeLayout
-            android:id="@+id/filter_btn_ok"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_filter_ok_b"
-            android:layout_below="@id/filter_seekbar_age_range"
-            android:layout_marginTop="42dp"
-            android:layout_centerHorizontal="true">
         <TextView
+            style="@style/ssom_font_16_main_black_bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textSize="19sp"
-            android:textColor="#ffffff"
-            android:text="적용하기"/>
-        </RelativeLayout>
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="18dp"
+            android:text="@string/filter_ssom_title"/>
 
-    </RelativeLayout>
-    <ImageView
-        android:id="@+id/filter_btn_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginBottom="12dp"
-        android:layout_alignParentBottom="true"
-        android:src="@drawable/bg_filter_cancel_b"/>
+        // 나이 선택 영역
+        <TextView
+            style="@style/ssom_font_12_greywarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="17dp"
+            android:layout_marginLeft="20dp"
+            android:text="@string/filter_how_old_do_you_like"/>
+
+        <LinearLayout
+            android:layout_width="240dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_filter_age_20_early"
+                style="@style/ssom_font_12_greywarm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_age_20_early" />
+
+            <View
+                android:layout_width="0.2dp"
+                android:layout_height="match_parent"
+                android:background="#979797"/>
+
+            <TextView
+                android:id="@+id/tv_filter_age_20_middle"
+                style="@style/ssom_font_12_greywarm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_age_20_middle" />
+
+            <View
+                android:layout_width="0.2dp"
+                android:layout_height="match_parent"
+                android:background="#979797"/>
+
+            <TextView
+                android:id="@+id/tv_filter_age_20_late"
+                style="@style/ssom_font_12_greywarm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_age_20_late" />
+
+            <View
+                android:layout_width="0.2dp"
+                android:layout_height="match_parent"
+                android:background="#979797"/>
+
+            <TextView
+                android:id="@+id/tv_filter_age_30_all"
+                style="@style/ssom_font_12_greywarm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_age_30_all" />
+        </LinearLayout>
+
+        // 사람 선택 영역
+        <TextView
+            style="@style/ssom_font_12_greywarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:layout_marginLeft="20dp"
+            android:text="@string/filter_how_many_do_you_like"/>
+
+        <LinearLayout
+            android:layout_width="240dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_filter_people_1"
+                style="@style/ssom_font_12_greywarm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_people_1" />
+
+            <View
+                android:layout_width="0.2dp"
+                android:layout_height="match_parent"
+                android:background="#979797"/>
+
+            <TextView
+                android:id="@+id/tv_filter_people_2"
+                style="@style/ssom_font_12_greywarm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_people_2" />
+
+            <View
+                android:layout_width="0.2dp"
+                android:layout_height="match_parent"
+                android:background="#979797"/>
+
+            <TextView
+                android:id="@+id/tv_filter_people_3"
+                style="@style/ssom_font_12_greywarm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_people_3" />
+
+            <View
+                android:layout_width="0.2dp"
+                android:layout_height="match_parent"
+                android:background="#979797"/>
+
+            <TextView
+                android:id="@+id/tv_filter_people_4_n_over"
+                style="@style/ssom_font_12_greywarm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_people_4_n_over" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="29dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_filter_cancel"
+                android:textColor="@drawable/filter_button_selector"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:text="@string/filter_btn_cancel"/>
+
+            <TextView
+                android:id="@+id/tv_filter_apply"
+                android:textColor="@drawable/filter_button_selector"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:text="@string/filter_btn_apply"/>
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

@@ -21,6 +21,19 @@
 
     <!-- filter -->
     <string name="filter_age_n_count">%1$s, %2$d명</string>
+    <string name="filter_ssom_title">쏨 탐색기</string>
+    <string name="filter_how_old_do_you_like">몇 살이 좋아?</string>
+    <string name="filter_how_many_do_you_like">몇 명이 좋아?</string>
+    <string name="filter_age_20_early">20대 초</string>
+    <string name="filter_age_20_middle">20대 중</string>
+    <string name="filter_age_20_late">20대 후</string>
+    <string name="filter_age_30_all">30대</string>
+    <string name="filter_people_1">1명</string>
+    <string name="filter_people_2">2명</string>
+    <string name="filter_people_3">3명</string>
+    <string name="filter_people_4_n_over">4명 이상</string>
+    <string name="filter_btn_cancel">취소</string>
+    <string name="filter_btn_apply">적용하기</string>
 
     <!-- post list menu -->
     <string name="title_tab_give">내가 쏨</string>

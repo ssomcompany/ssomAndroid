@@ -6,15 +6,16 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.MainActivity;
+import com.ssomcompany.ssomclient.common.SsomPreferences;
 
 
 /**
@@ -26,45 +27,59 @@ import com.ssomcompany.ssomclient.activity.MainActivity;
  * create an instance of this fragment.
  */
 public class FilterFragment extends Fragment {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private MainActivity activity;
+    private static final String TAG = "FilterFragment";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    // set preferences
+    private static SsomPreferences filterPref;
 
-    private String ssomType = "all";
+    // set views
+    private TextView tvTwentyEarly;
+    private TextView tvTwentyMiddle;
+    private TextView tvTwentyLate;
+    private TextView tvThirtyAll;
+    private TextView tvOnePeople;
+    private TextView tvTwoPeople;
+    private TextView tvThreePeople;
+    private TextView tvFourPeopleOrMore;
+
+    // set buttons
+    private TextView tvCancel;
+    private TextView tvApply;
+
+    // set global filter params
+    private static int age;
+    private static int people;
+
     private OnFilterFragmentInteractionListener mListener;
+    private static FilterFragment filterFragment;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment FilterFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static FilterFragment newInstance(String param1, String param2) {
-        FilterFragment fragment = new FilterFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static FilterFragment newInstance() {
+        if(filterFragment == null) {
+            filterFragment = new FilterFragment();
+        }
+
+        return filterFragment;
     }
 
     public FilterFragment() { super(); }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
+        if(getActivity() == null) {
+            Log.e(TAG, "getActivity() is null.");
+            return;
         }
+
+        filterPref = new SsomPreferences(getActivity(), SsomPreferences.FILTER_PREF);
     }
 
     @Override
@@ -74,91 +89,105 @@ public class FilterFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
         view.setClickable(true);
 
-        final TextView ageText = (TextView) view.findViewById(R.id.filter_text_age_range);
-        final TextView countText = (TextView) view.findViewById(R.id.filter_text_user_count);
-        final SeekBar ageSeekbar = (SeekBar) view.findViewById(R.id.filter_seekbar_age_range);
-        ageSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int count = progress+20;
-                ageText.setText(String.valueOf(count)+"~"+String.valueOf(count+1));
-            }
+        age = filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 20);
+        people = filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 1);
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+        // view for age settings
+        tvTwentyEarly = (TextView) view.findViewById(R.id.tv_filter_age_20_early);
+        tvTwentyMiddle = (TextView) view.findViewById(R.id.tv_filter_age_20_middle);
+        tvTwentyLate = (TextView) view.findViewById(R.id.tv_filter_age_20_late);
+        tvThirtyAll = (TextView) view.findViewById(R.id.tv_filter_age_30_all);
 
-            }
+        // view for people settings
+        tvOnePeople = (TextView) view.findViewById(R.id.tv_filter_people_1);
+        tvTwoPeople = (TextView) view.findViewById(R.id.tv_filter_people_2);
+        tvThreePeople = (TextView) view.findViewById(R.id.tv_filter_people_3);
+        tvFourPeopleOrMore = (TextView) view.findViewById(R.id.tv_filter_people_4_n_over);
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+        tvTwentyEarly.setOnClickListener(filterAgeClickListener);
+        tvTwentyMiddle.setOnClickListener(filterAgeClickListener);
+        tvTwentyLate.setOnClickListener(filterAgeClickListener);
+        tvThirtyAll.setOnClickListener(filterAgeClickListener);
 
-            }
-        });
-        final SeekBar countSeekbar = (SeekBar) view.findViewById(R.id.filter_seekbar_user_count);
-        countSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int count = progress+1;
-                countText.setText(String.valueOf(count)+"~"+String.valueOf(count+1));
-            }
+        tvOnePeople.setOnClickListener(filterPeopleClickListener);
+        tvTwoPeople.setOnClickListener(filterPeopleClickListener);
+        tvThreePeople.setOnClickListener(filterPeopleClickListener);
+        tvFourPeopleOrMore.setOnClickListener(filterPeopleClickListener);
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+        // view for buttons
+        tvCancel = (TextView) view.findViewById(R.id.tv_filter_cancel);
+        tvApply = (TextView) view.findViewById(R.id.tv_filter_apply);
 
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        SharedPreferences filterPref = activity.getSharedPreferences("filter", Context.MODE_PRIVATE);
-        int minAge = filterPref.getInt("minAge",20);
-        int minCount = filterPref.getInt("minCount",1);
-        ageSeekbar.setProgress(minAge-20);
-        countSeekbar.setProgress(minCount-1);
-        ssomType = filterPref.getString("ssomtype","all");
-        ImageView btnCancel = (ImageView) view.findViewById(R.id.filter_btn_cancel);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        // listener 등록
+        tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onCloseButtonPressed(null);
+                closeView(false);
             }
         });
-        View btnOk =view.findViewById(R.id.filter_btn_ok);
-        btnOk.setOnClickListener(new View.OnClickListener() {
+        tvApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences filterPref = activity.getSharedPreferences("filter", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = filterPref.edit();
-                int minAge = ageSeekbar.getProgress()+20;
-                int maxAge = ageSeekbar.getProgress()+21;
-                int minCount = countSeekbar.getProgress()+1;
-                int maxCount = countSeekbar.getProgress()+2;
-                editor.putInt("minAge",minAge);
-                editor.putInt("maxAge",maxAge);
-                editor.putInt("minCount",minCount);
-                editor.putInt("maxCount",maxCount);
-                editor.putString("ssomtype",ssomType);
-                editor.commit();
-                onCloseButtonPressed(null);
+                filterPref.put(SsomPreferences.PREF_FILTER_AGE, age);
+                filterPref.put(SsomPreferences.PREF_FILTER_PEOPLE, people);
+                closeView(true);
             }
         });
+
+        initView();
+
         return view;
-
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onCloseButtonPressed(Uri uri) {
+    // setting init information
+    private void initView() {
+        Log.i(TAG, "initView() age : " + age);
+        switch(age) {
+            case 20 :
+                tvTwentyEarly.setSelected(true);
+                break;
+            case 25 :
+                tvTwentyMiddle.setSelected(true);
+                break;
+            case 29 :
+                tvTwentyLate.setSelected(true);
+                break;
+            case 30 :
+                tvThirtyAll.setSelected(true);
+                break;
+        }
+
+        Log.i(TAG, "initView() people : " + people);
+        switch(people) {
+            case 1 :
+                tvOnePeople.setSelected(true);
+                break;
+            case 2 :
+                tvTwoPeople.setSelected(true);
+                break;
+            case 3 :
+                tvThreePeople.setSelected(true);
+                break;
+            case 4 :
+                tvFourPeopleOrMore.setSelected(true);
+                break;
+        }
+    }
+
+    public void closeView(boolean isApply) {
+        if(isApply) {
+            filterPref.put(SsomPreferences.PREF_FILTER_AGE, age);
+            filterPref.put(SsomPreferences.PREF_FILTER_PEOPLE, people);
+        }
+
         if (mListener != null) {
-            mListener.onFilterFragmentInteraction(uri);
+            mListener.onFilterFragmentInteraction(isApply);
         }
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        this.activity  = (MainActivity) activity;
         try {
             mListener = (OnFilterFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
@@ -173,11 +202,67 @@ public class FilterFragment extends Fragment {
         mListener = null;
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        activity.setWriteBtn(true);
-    }
+    View.OnClickListener filterAgeClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v == tvTwentyEarly) {
+                tvTwentyEarly.setSelected(true);
+                tvTwentyMiddle.setSelected(false);
+                tvTwentyLate.setSelected(false);
+                tvThirtyAll.setSelected(false);
+                age = 20;
+            } else if(v == tvTwentyMiddle) {
+                tvTwentyEarly.setSelected(false);
+                tvTwentyMiddle.setSelected(true);
+                tvTwentyLate.setSelected(false);
+                tvThirtyAll.setSelected(false);
+                age = 25;
+            } else if(v == tvTwentyLate) {
+                tvTwentyEarly.setSelected(false);
+                tvTwentyMiddle.setSelected(false);
+                tvTwentyLate.setSelected(true);
+                tvThirtyAll.setSelected(false);
+                age = 29;
+            } else if(v == tvThirtyAll) {
+                tvTwentyEarly.setSelected(false);
+                tvTwentyMiddle.setSelected(false);
+                tvTwentyLate.setSelected(false);
+                tvThirtyAll.setSelected(true);
+                age = 30;
+            }
+        }
+    };
+
+    View.OnClickListener filterPeopleClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v == tvOnePeople) {
+                tvOnePeople.setSelected(true);
+                tvTwoPeople.setSelected(false);
+                tvThreePeople.setSelected(false);
+                tvFourPeopleOrMore.setSelected(false);
+                people = 1;
+            } else if(v == tvTwoPeople) {
+                tvOnePeople.setSelected(false);
+                tvTwoPeople.setSelected(true);
+                tvThreePeople.setSelected(false);
+                tvFourPeopleOrMore.setSelected(false);
+                people = 2;
+            } else if(v == tvThreePeople) {
+                tvOnePeople.setSelected(false);
+                tvTwoPeople.setSelected(false);
+                tvThreePeople.setSelected(true);
+                tvFourPeopleOrMore.setSelected(false);
+                people = 3;
+            } else if(v == tvFourPeopleOrMore) {
+                tvOnePeople.setSelected(false);
+                tvTwoPeople.setSelected(false);
+                tvThreePeople.setSelected(false);
+                tvFourPeopleOrMore.setSelected(true);
+                people = 4;
+            }
+        }
+    };
 
     /**
      * This interface must be implemented by activities that contain this
@@ -190,8 +275,7 @@ public class FilterFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFilterFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFilterFragmentInteraction(Uri uri);
+        public void onFilterFragmentInteraction(boolean isApply);
     }
 
 }

@@ -40,6 +40,13 @@
         <item name="android:typeface">normal</item>
     </style>
 
+    <style name="ssom_font_12_greywarm_bold" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/greywarm</item>
+        <item name="android:typeface">normal</item>
+    </style>
+
     <style name="ssom_font_12_white" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/white</item>
@@ -67,6 +74,13 @@
     <style name="ssom_font_16_greyish_brown" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/greyish_brown</item>
+        <item name="android:typeface">normal</item>
+    </style>
+
+    <style name="ssom_font_16_main_black_bold" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/mainblack</item>
         <item name="android:typeface">normal</item>
     </style>
 </resources>
