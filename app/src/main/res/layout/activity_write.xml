@@ -2,261 +2,80 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/main_black_80"
     tools:context=".post.WriteActivity">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="132dp"
-        android:layout_marginTop="25dp"
-        android:src="@drawable/title_wirte_type" />
-
-    <ImageView
-        android:id="@+id/write_photo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="47dp"
-        android:layout_marginTop="67dp"
-        android:scaleType="centerCrop"
-        android:layout_gravity="center"
-        android:src="@drawable/icon_wirte_photo_emp" />
-
-    <ImageView
-        android:id="@+id/write_icon_st"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="44dp"
-        android:layout_marginTop="64dp"
-        android:src="@drawable/icon_wirte_st_b" />
-
-    <ImageView
-        android:id="@+id/write_camera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="140dp"
-        android:layout_marginTop="160dp"
-        android:src="@drawable/icon_wirte_photo" />
-
-    <RelativeLayout
-        android:id="@+id/write_ssom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="216dp"
-        android:layout_marginTop="103dp">
-        <ImageView
-            android:id="@+id/targetbackground"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/toggle_write_bg_w" />
-
-        <RelativeLayout
-            android:id="@+id/write_ssom_ssom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/targetbackground"
-            android:layout_alignTop="@id/targetbackground"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="2dp"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/toggle_write_black" >
-            <ImageView
-                android:id="@+id/write_icon_check"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="19dp"
-                android:layout_centerVertical="true"
-                android:src="@drawable/icon_check_w" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="내가 쏨"
-                android:textColor="#ffffff"
-                android:layout_marginLeft="5dp"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/write_icon_check"/>
-            </RelativeLayout>
-
-
-
-        <RelativeLayout
-            android:id="@+id/write_ssom_ssoseyo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/targetbackground"
-            android:layout_alignLeft="@id/targetbackground"
-            android:layout_marginBottom="2dp"
-            android:layout_marginLeft="2dp"
-            android:background="@drawable/toggle_write_red"
-            android:visibility="invisible">
-            <ImageView
-                android:id="@+id/write_icon_target"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="19dp"
-                android:layout_centerVertical="true"
-                android:src="@drawable/icon_target_w" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="쏘세요"
-                android:textColor="#ffffff"
-                android:layout_marginLeft="5dp"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/write_icon_target"/>
-        </RelativeLayout>
-
-
-    </RelativeLayout>
-
-
-    //밥, 술 차 아무거나
-    <RelativeLayout
-        android:id="@+id/write_category"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#d3d3d3"
-        android:layout_marginTop="223dp">
-    <ImageView
-        android:id="@+id/category_rice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="7dp"
-        android:src="@drawable/icon_rice_dis" />
-    <ImageView
-        android:id="@+id/category_coffee"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/icon_cof_dis"
-        android:layout_marginLeft="95.5dp"
-        />
-    <ImageView
-        android:id="@+id/category_beer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/icon_beer_dis"
-        android:layout_marginLeft="184dp"
-        />
-    <ImageView
-        android:id="@+id/category_any"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/icon_all_perss"
-        android:layout_marginLeft="272.5dp"
-        />
-    </RelativeLayout>
-    //카테고리 끝
-    <EditText
-        android:id="@+id/message"
-        android:layout_below="@id/write_category"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:textSize="16sp"
-        android:gravity="center"
-        android:hint="함께 하고 싶은 아이템을 고르고\n나를 어필할수있는\n한 마디를 남겨보세요!"/>
+    <!-- title bar -->
     <LinearLayout
-        android:id="@+id/write_text_user_count"
+        android:id="@+id/title_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/message"
-        android:layout_marginTop="15dp"
-        android:gravity="center">
+        android:layout_height="52dp"
+        android:padding="10dp"
+        android:gravity="center_vertical"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="6dp"
+            android:paddingTop="7dp"
+            android:paddingBottom="8dp" >
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:background="@drawable/icon_target_g" />
+        </FrameLayout>
 
         <TextView
-            android:id="@+id/text_user_count"
+            style="@style/ssom_font_16_greyish_brown_single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#e70033"
-            android:text="1"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#636363"
-            android:text=" 명이 기다리고 있어요"
-            />
-    </LinearLayout>
-    <SeekBar
-    android:id="@+id/write_seekBar_user_count"
-    android:layout_width="187dp"
-        android:layout_centerHorizontal="true"
-    android:layout_height="wrap_content"
-        android:layout_below="@id/write_text_user_count"
-        android:layout_marginTop="13dp"
-    android:max="10"/>
-    <LinearLayout
-        android:id="@+id/write_text_age"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/write_seekBar_user_count"
-        android:layout_marginTop="20dp"
-        android:gravity="center">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#636363"
-            android:text="나이는 "
-            />
-        <TextView
-            android:id="@+id/text_age"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#e70033"
-            android:text="20~21"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#636363"
-            android:text=" 살 이에요"
-            />
-    </LinearLayout>
-
-    <SeekBar
-        android:id="@+id/write_seekBar_age"
-        android:layout_width="187dp"
-        android:layout_centerHorizontal="true"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/write_text_age"
-        android:layout_marginTop="13dp"
-        android:max="30"/>
-    <RelativeLayout
-        android:id="@+id/btn_write_post"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="108dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/btn_write_ok"
-        android:gravity="center">
-        <ImageView
-            android:id="@+id/write_icon_heart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_heart"/>
-        <TextView
-            android:layout_toRightOf="@id/write_icon_heart"
-            android:layout_marginLeft="9dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
             android:text="등록하기"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="175dp"
+        android:layout_below="@id/title_bar_layout">
+
+        <FrameLayout
+            android:id="@+id/image_layout"
+            android:layout_width="210dp"
+            android:layout_height="match_parent"
+            android:padding="7.5dp"
+            android:layout_marginLeft="29dp"
+            android:background="@color/white">
+
+            <ImageView
+                android:id="@+id/img_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/img_write_default"/>
+            
+            <ImageView
+                android:id="@+id/img_shadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@drawable/img_write_shadow"/>
+
+            <ImageView
+                android:id="@+id/camera_img"
+                android:layout_width="20dp"
+                android:layout_height="18dp"
+                android:layout_marginRight="11dp"
+                android:layout_marginBottom="8dp"
+                android:layout_gravity="bottom|right"
+                android:background="@drawable/icon_write_camera"/>
+        </FrameLayout>
+
+
+
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/btn_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="275dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/btn_write_cancle" />
 </RelativeLayout>
