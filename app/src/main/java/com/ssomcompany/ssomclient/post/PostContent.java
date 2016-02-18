@@ -1,6 +1,7 @@
 package com.ssomcompany.ssomclient.post;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -26,15 +27,21 @@ import java.util.Map;
 public class PostContent {
 
     public static List<PostItem> ITEMS = new ArrayList<>();
-    public static Map<String, PostItem> ITEM_MAP = new HashMap<>();
+    public static Map<String, PostItem> ITEM_GIVE = new HashMap<>();
+    public static Map<String, PostItem> ITEM_TAKE = new HashMap<>();
 
     private static void addItem(PostItem item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.postId, item);
+        if("ssom".equals(item.ssom)) {
+            ITEM_GIVE.put(item.postId, item);
+        } else {
+            ITEM_TAKE.put(item.postId, item);
+        }
     }
     public static void init(final Context context,final PostDataChangeInterface callback){
         ITEMS.clear();
-        ITEM_MAP.clear();
+        ITEM_GIVE.clear();
+        ITEM_TAKE.clear();
 
         RequestQueue queue = Volley.newRequestQueue(context);
         //String url = "http://54.64.154.188/posts";
@@ -74,6 +81,7 @@ public class PostContent {
         });
         queue.add(jsonArrayRequest);
     }
+
     public static class PostItem {
         public String postId;
         public String userId;

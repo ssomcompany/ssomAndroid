@@ -12,9 +12,14 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.MainActivity;
+import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.post.PostContent;
 import com.ssomcompany.ssomclient.post.PostDataChangeInterface;
 import com.ssomcompany.ssomclient.post.PostItemListAdapter;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * A fragment representing a list of Items.
@@ -25,16 +30,7 @@ import com.ssomcompany.ssomclient.post.PostItemListAdapter;
  * Activities containing this fragment MUST implement the {@link OnPostItemInteractionListener}
  * interface.
  */
-public class SsomListFragment extends Fragment implements AbsListView.OnItemClickListener,PostDataChangeInterface {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class SsomListFragment extends BaseFragment implements AbsListView.OnItemClickListener, PostDataChangeInterface {
 
     private OnPostItemInteractionListener mListener;
 
@@ -47,16 +43,17 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ListAdapter mAdapter;
+    private PostItemListAdapter mAdapter;
 
-    // TODO: Rename and change types of parameters
-    public static SsomListFragment newInstance(String param1, String param2) {
-        SsomListFragment fragment = new SsomListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    private static SsomListFragment ssomListFragment;
+
+    public static SsomListFragment newInstance(Map<String, PostContent.PostItem> items) {
+        if(ssomListFragment == null) {
+            ssomListFragment = new SsomListFragment();
+        }
+
+        ssomListFragment.postItemMap = items;
+        return ssomListFragment;
     }
 
     /**
@@ -64,24 +61,20 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
      * fragment (e.g. upon screen orientation changes).
      */
     public SsomListFragment() {
+        super();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
         mAdapter = new PostItemListAdapter(getActivity());
+        mAdapter.setItemList(Util.convertMapToArrayList(postItemMap));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        PostContent.init(getActivity(), this);
     }
 
     @Override
@@ -139,8 +132,10 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
     }
 
     @Override
-    public void onPostItemChanged() {
-        ((PostItemListAdapter)mAdapter).notifyDataSetChanged();
+    void setPostItemMap() {
+        this.postItemMap = ((MainActivity) getActivity()).getCurrentPostItems();
+        mAdapter.setItemList(Util.convertMapToArrayList(postItemMap));
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -154,7 +149,6 @@ public class SsomListFragment extends Fragment implements AbsListView.OnItemClic
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnPostItemInteractionListener {
-        // TODO: Update argument type and name
         void onPostItemClick(String id);
     }
 

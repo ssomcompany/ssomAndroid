@@ -3,19 +3,15 @@ package com.ssomcompany.ssomclient.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -45,6 +41,7 @@ import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.RoundImage;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
+import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
 import com.ssomcompany.ssomclient.fragment.DetailFragment;
 import com.ssomcompany.ssomclient.fragment.FilterFragment;
@@ -55,18 +52,28 @@ import com.ssomcompany.ssomclient.post.PostDataChangeInterface;
 import com.ssomcompany.ssomclient.post.WriteActivity;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnDetailFragmentInteractionListener,
         OnMapReadyCallback, FilterFragment.OnFilterFragmentInteractionListener,
         PostDataChangeInterface {
+    private static final String FILTER_FRAG = "filter_fragment";
+    private static final String DETAIL_FRAG = "detail_fragment";
 
     private static final String TAG_MAP = "MainActivity_MAP";
     private static final String TAG_LIST = "MainActivity_LIST";
 
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
+
+    private static final String SSOM = "ssom";
+    private static final String SSOA = "ssoa";
+
+    private HashMap<Marker, String> mIdMap = new HashMap<>();
 
     /**
      * The fragment's Tabs
@@ -102,7 +109,7 @@ public class MainActivity extends AppCompatActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private GoogleMap mMap;
     private String selectedView;
-    private boolean initMarker;
+    private String selectedTab;
     private FragmentManager fragmentManager;
 
     // current marker
@@ -113,6 +120,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         selectedView = MAP_VIEW;
+        selectedTab = SSOM;
         PostContent.init(this, this);
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
 
@@ -139,9 +147,42 @@ public class MainActivity extends AppCompatActivity
 
     private void initFilterView() {
         filterTv = (TextView) findViewById(R.id.filter_txt_age_n_count);
+        String filterAge = "";
+        String filterPeople = "";
+        int age = filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 20);
+        int people = filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 1);
+
+        switch(age) {
+            case 20:
+                filterAge = getResources().getString(R.string.filter_age_20_early);
+                break;
+            case 25:
+                filterAge = getResources().getString(R.string.filter_age_20_middle);
+                break;
+            case 29:
+                filterAge = getResources().getString(R.string.filter_age_20_late);
+                break;
+            case 30:
+                filterAge = getResources().getString(R.string.filter_age_30_all);
+                break;
+        }
+
+        switch(people) {
+            case 1:
+                filterPeople = getResources().getString(R.string.filter_people_1);
+                break;
+            case 2:
+                filterPeople = getResources().getString(R.string.filter_people_2);
+                break;
+            case 3:
+                filterPeople = getResources().getString(R.string.filter_people_3);
+                break;
+            case 4:
+                filterPeople = getResources().getString(R.string.filter_people_4_n_over);
+                break;
+        }
         filterTv.setText(String.format(getResources().getString(R.string.filter_age_n_count),
-                filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 20) + "대 초",
-                filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 1)));
+                filterAge, filterPeople));
 
     }
 
@@ -156,6 +197,9 @@ public class MainActivity extends AppCompatActivity
         giveTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (SSOM.equals(selectedTab)) return;
+
+                selectedTab = SSOM;
                 giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_greenblue);
                 giveBtmBar.setVisibility(View.VISIBLE);
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_greywarm);
@@ -166,6 +210,9 @@ public class MainActivity extends AppCompatActivity
         takeTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(SSOA.equals(selectedTab)) return;
+
+                selectedTab = SSOA;
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_redpink);
                 takeBtmBar.setVisibility(View.VISIBLE);
                 giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_greywarm);
@@ -184,7 +231,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
         filter = findViewById(R.id.filter_txt_layout);
-        filterImgLayout = findViewById(R.id.filter_img_layout);
+        filterImgLayout = findViewById(R.id.filter_img);
 
         // listener register
         filter.setOnClickListener(filterClickListener);
@@ -195,10 +242,8 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onClick(View v) {
             FilterFragment filterFragment = FilterFragment.newInstance();
-            fragmentManager.beginTransaction().add(R.id.container, filterFragment, "filter_fragment")
-                    .addToBackStack(null)
-                    .commit();
-            setWriteBtn(false);
+            fragmentManager.beginTransaction().add(R.id.top_container, filterFragment, FILTER_FRAG)
+                    .addToBackStack(null).commit();
         }
     };
 
@@ -234,11 +279,9 @@ public class MainActivity extends AppCompatActivity
 
     private void startMapFragment(){
         selectedView = MAP_VIEW;
-        initMarker = false;
         SupportMapFragment mapFragment = SupportMapFragment.newInstance();
         fragmentManager.beginTransaction().
-                replace(R.id.container, mapFragment)
-                .commit();
+                replace(R.id.container, mapFragment).commit();
         mapFragment.getMapAsync(this);
         mapBtn.setVisibility(View.VISIBLE);
         listBtn.setVisibility(View.INVISIBLE);
@@ -251,8 +294,7 @@ public class MainActivity extends AppCompatActivity
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
 
         fragmentManager.beginTransaction().
-                replace(R.id.container, SsomListFragment.newInstance("1", "2"))
-                .commit();
+                replace(R.id.container, SsomListFragment.newInstance(getCurrentPostItems())).commit();
     }
 
     @Override
@@ -296,29 +338,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPostItemClick(String id) {
-        setWriteBtn(false);
-        Fragment fragment = DetailFragment.newInstance(PostContent.ITEM_MAP.get(id).postId);
-        fragmentManager.beginTransaction().add(R.id.container, fragment)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    // layout visibility setting
-    public void setWriteBtn(boolean on){
-        if(on){
-            btn_write.setVisibility(View.VISIBLE);
-            filter.setVisibility(View.VISIBLE);
-            filterImgLayout.setVisibility(View.VISIBLE);
-        }else{
-            btn_write.setVisibility(View.INVISIBLE);
-            filter.setVisibility(View.INVISIBLE);
-            filterImgLayout.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    @Override
-    public void onDeatilFragmentInteraction(Uri uri) {
-        onBackPressed();
+        Fragment fragment = DetailFragment.newInstance(id, getCurrentPostItems());
+        fragmentManager.beginTransaction().add(R.id.whole_container, fragment, DETAIL_FRAG)
+                .addToBackStack(null).commit();
     }
 
     @Override
@@ -343,7 +365,7 @@ public class MainActivity extends AppCompatActivity
         mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!LocationUtil.getMyLocation(getApplicationContext(), locationResult)) {
+                if (!LocationUtil.getMyLocation(getApplicationContext(), locationResult)) {
                     showActivateGPSPopup();
                     return;
                 }
@@ -355,17 +377,30 @@ public class MainActivity extends AppCompatActivity
             }
         });
         initMarker();
+
+        // 마커 클릭 리스너
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+            public boolean onMarkerClick(Marker marker) {
+                String postId = mIdMap.get(marker);
+
+                Log.i(TAG_MAP, "[마커 클릭 이벤트] latitude ="
+                        + marker.getPosition().latitude + ", longitude ="
+                        + marker.getPosition().longitude);
+
+                Fragment fragment = DetailFragment.newInstance(postId, getCurrentPostItems());
+                fragmentManager.beginTransaction().add(R.id.whole_container, fragment, DETAIL_FRAG)
+                        .addToBackStack(null).commit();
+                return false;
+            }
+        });
     }
 
     private void initMyLocation() {
-        LatLng initPosition;
-        if(LocationUtil.getMyLocation(this, locationResult)) {
-            Location initLo = LocationUtil.getLocation(getApplicationContext());
-            initPosition = new LatLng(initLo!=null?initLo.getLatitude():37.55595, initLo!=null?initLo.getLongitude():126.9230138);
-        } else {
-            // 위치정보를 가져올 수 없는 경우 기본을 홍대입구 역으로 셋팅
-            initPosition = new LatLng(37.55595, 126.9230138);
-        }
+        LocationUtil.getMyLocation(this, locationResult);
+
+        Location initLo = LocationUtil.getLocation(getApplicationContext());
+        LatLng initPosition = new LatLng(initLo.getLatitude(), initLo.getLongitude());
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initPosition, 13));
         currentMarker = mMap.addMarker(new MarkerOptions()
@@ -394,26 +429,34 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    public Map<String, PostContent.PostItem> getCurrentPostItems() {
+        return SSOM.equals(selectedTab)?PostContent.ITEM_GIVE:PostContent.ITEM_TAKE;
+    }
+
     private void showActivateGPSPopup() {
         // TODO - GPS on dialog popup
     }
 
     private void initMarker() {
-        if(PostContent.ITEMS.size()>0 && !initMarker){
-            initMarker = true;
-            for ( PostContent.PostItem item: PostContent.ITEMS) {
-                addMarker(item);
+        Map<String, PostContent.PostItem> items = getCurrentPostItems();
+        if(items != null && items.size()>0){
+            for (Map.Entry<String, PostContent.PostItem> item : items.entrySet()) {
+                addMarker(item.getValue());
             }
         }
     }
 
     private void addMarker(final PostContent.PostItem item) {
         ImageRequest imageRequest = new ImageRequest(item.getImage(), new Response.Listener<Bitmap>() {
+            Marker marker;
+
             @Override
             public void onResponse(Bitmap bitmap) {
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(item.lat,item.lng))
+                marker = mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(item.lat, item.lng))
                         .title(item.content).draggable(false).icon(getMarkerImage(item.ssom, bitmap)));
+
+                mIdMap.put(marker, item.postId);
             }
         }
         , 144  // max width
@@ -431,31 +474,30 @@ public class MainActivity extends AppCompatActivity
     }
 
     private BitmapDescriptor getMarkerImage(String ssom , Bitmap imageBitmap){
-        //TODO make BitmapDescriptor with profile image
-
         Bitmap mergedBitmap = null;
         try {
-
-            mergedBitmap = Bitmap.createBitmap(188, 237, Bitmap.Config.ARGB_8888);
+            mergedBitmap = Bitmap.createBitmap((int) Util.convertDpToPixel(49, this),
+                    (int) Util.convertDpToPixel(57, this), Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(mergedBitmap);
-            Resources res = getResources();
             Bitmap iconBitmap =  null;
             if("ssom".equals(ssom)){
-                iconBitmap = BitmapFactory.decodeResource(res, R.drawable.icon_buy_black);
+                iconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_map_st_g);
             }else{
-                iconBitmap = BitmapFactory.decodeResource(res, R.drawable.icon_sell_red);
+                iconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_map_st_r);
             }
 
             Drawable iconDrawable = new BitmapDrawable(iconBitmap);
             Drawable imageDrawable = new RoundImage(imageBitmap);
 
-            iconDrawable.setBounds(0, 0, 188, 237);
-            imageDrawable.setBounds(18, 18, 170, 170);
+            iconDrawable.setBounds(0, 0,
+                    (int) Util.convertDpToPixel(49, this), (int) Util.convertDpToPixel(57, this));
+            imageDrawable.setBounds((int) Util.convertDpToPixel(2, this), (int) Util.convertDpToPixel(2, this),
+                    (int) Util.convertDpToPixel(47, this), (int) Util.convertDpToPixel(47, this));
             imageDrawable.draw(c);
             iconDrawable.draw(c);
-
         } catch (Exception e) {
         }
+
         return BitmapDescriptorFactory.fromBitmap(mergedBitmap);
     }
 
@@ -474,9 +516,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFilterFragmentInteraction(boolean isApply) {
         Log.i(TAG_MAP, "filter interaction : " + isApply);
-        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag("filter_fragment")).commit();
+        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(FILTER_FRAG)).commit();
         if(isApply) initFilterView();
-        setWriteBtn(true);
+    }
+
+    @Override
+    public void onDeatilFragmentInteraction(boolean isApply) {
+        Log.i(TAG_MAP, "detail interaction : " + isApply);
+        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(DETAIL_FRAG)).commit();
+
+        // TODO - if true, go to chatting activity
+        if(isApply) {
+
+        }
     }
 
     @Override

@@ -17,6 +17,8 @@ import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
 
+import java.util.ArrayList;
+
 /**
  * Created by kshgizmo on 2015. 9. 11..
  */
@@ -25,7 +27,8 @@ public class PostItemListAdapter extends BaseAdapter{
     private LayoutInflater mInflater;
     private Context context;
     private ImageLoader mImageLoader;
-    private PostContent.PostItem item;
+
+    private ArrayList<PostContent.PostItem> itemList;
 
     public PostItemListAdapter(Context context){
         this.context = context;
@@ -35,15 +38,19 @@ public class PostItemListAdapter extends BaseAdapter{
         this.mImageLoader = VolleyUtil.getInstance(context).getImageLoader();
     }
 
+    public void setItemList(ArrayList<PostContent.PostItem> itemList) {
+        this.itemList = itemList;
+    }
+
     @Override
     public int getCount() {
-        return PostContent.ITEMS.size();
+        return itemList.size();
     }
 
     @Override
     public Object getItem(int position) {
         if(getCount() > position) {
-            return PostContent.ITEMS.get(position);
+            return itemList.get(position);
         }else{
             return null;
         }
@@ -51,7 +58,7 @@ public class PostItemListAdapter extends BaseAdapter{
 
     @Override
     public long getItemId(int position) {
-        return PostContent.ITEMS.indexOf(getItem(position));
+        return itemList.indexOf(getItem(position));
     }
 
     @Override
@@ -75,7 +82,7 @@ public class PostItemListAdapter extends BaseAdapter{
         }
 
         // list view item setting
-        item = PostContent.ITEMS.get(position);
+        PostContent.PostItem item = itemList.get(position);
 
         holder.image.setImageUrl(item.getImage(), mImageLoader);
 //        mImageLoader.get(row_pos.getImage(), ImageLoader.getImageListener(image,R.drawable.icon_wirte_photo_emp, R.drawable.icon_wirte_photo_emp));

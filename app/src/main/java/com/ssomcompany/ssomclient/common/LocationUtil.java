@@ -83,6 +83,13 @@ public class LocationUtil {
                 Toast.makeText(context,"위치 정보를 가져올수 없습니다.("+e.getLocalizedMessage()+")", Toast.LENGTH_SHORT).show();
             }
             Log.i(TAG, "myLocation null, new location : " + myLocation);
+
+            // 위치정보를 가져올 수 없는 경우 기본을 홍대입구 역으로 셋팅
+            if(myLocation == null) {
+                myLocation = new Location("initial provider");
+                myLocation.setLatitude(37.55595);
+                myLocation.setLongitude(126.9230138);
+            }
             return myLocation;
         }
     }

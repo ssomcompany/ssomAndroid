@@ -1,26 +1,27 @@
 package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.MainActivity;
-import com.ssomcompany.ssomclient.common.CategoryUtil;
-import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
 import com.ssomcompany.ssomclient.post.PostContent;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -31,110 +32,69 @@ import com.ssomcompany.ssomclient.post.PostContent;
  * Use the {@link DetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DetailFragment extends Fragment {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "postId";
+public class DetailFragment extends BaseFragment {
+    private static final String TAG = "DetailFragment";
 
+    private static final String POST_ID = "postId";
     private String postId;
 
+    private static DetailFragment detailFragment;
     private OnDetailFragmentInteractionListener mListener;
 
+    ViewPager mViewPager;
+    PagerAdapter mPagerAdapter;
 
-    public static DetailFragment newInstance(String postId) {
-        DetailFragment fragment = new DetailFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, postId);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    public DetailFragment() { super(); }
 
-    public DetailFragment() {
-        // Required empty public constructor
+    public static DetailFragment newInstance(String postId, Map<String, PostContent.PostItem> items) {
+        if(detailFragment == null) {
+            detailFragment = new DetailFragment();
+        }
+
+        detailFragment.postId = postId;
+
+//        Bundle args = new Bundle();
+//        args.putString(POST_ID, postId);
+//        args.putParcelable("map", items);
+//        detailFragment.setArguments(args);
+
+        return detailFragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
-            postId = getArguments().getString(ARG_PARAM1);
+            postId = getArguments().getString(POST_ID);
+            Log.i(TAG, "postId : " + postId);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        PostContent.PostItem item  = PostContent.ITEM_MAP.get(postId);
+        PostContent.PostItem item  = postItemMap.get(postId);
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        //content
-        TextView content = (TextView) view.findViewById(R.id.detail_content);
-        content.setText(item.content);
+        mViewPager = (ViewPager) view.findViewById(R.id.pager);
+        mPagerAdapter = new DetailPagerAdapter(inflater);
+//        mViewPager.setCurrentItem(item);
+        mViewPager.setAdapter(mPagerAdapter);
 
-        //image
-        final ImageView fullPhoto = (ImageView) view.findViewById(R.id.full_photo);
-        ImageRequest imageRequest = new ImageRequest(item.getImage(), new Response.Listener<Bitmap>() {
-            @Override
-            public void onResponse(Bitmap bitmap) {
-                fullPhoto.setImageDrawable(Util.getCircleBitmap(bitmap,428));
-            }
-        },144, 256, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888
-                , new Response.ErrorListener(){
-
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-            }
-        });
-        VolleyUtil.getInstance(getActivity().getApplicationContext()).getRequestQueue().add(imageRequest);
-        //category
-        ImageView categoryIcon = (ImageView) view.findViewById(R.id.full_category);
-        TextView categoryText = (TextView) view.findViewById(R.id.full_text_category);
-        categoryIcon.setImageResource(CategoryUtil.getCategoryIconId(item.category));
-        categoryText.setText("\n" + CategoryUtil.getCategoryDescription(item.category));
-
-        //age
-        TextView ageTextView  = (TextView) view.findViewById(R.id.full_text_age);
-        ageTextView.setText(item.minAge+"~"+item.maxAge);
-        //userCount
-        TextView userCountTextView = (TextView) view.findViewById(R.id.full_text_user_count);
-        userCountTextView.setText("" + item.userCount);
-
-        ImageView fullPhotoSt = (ImageView) view.findViewById(R.id.full_photo_st_b);
-        if("ssom".equals(item.ssom)){
-            fullPhotoSt.setImageResource(R.drawable.full_photo_st_b);
-        }else{
-            fullPhotoSt.setImageResource(R.drawable.full_photo_st_r);
-        }
-        //distance
-        TextView distanceText = (TextView) view.findViewById(R.id.full_text_distance);
-        distanceText.setText("\n\n"+LocationUtil.getDistanceString(item));
-
-        //time
-        TextView timeText = (TextView) view.findViewById(R.id.full_detail_time);
-        timeText.setText("He says - "+Util.getTimeText(Long.valueOf(item.postId)));
-
-        ImageView btnClose = (ImageView) view.findViewById(R.id.close_detail_btn);
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onCloseButtonPressed(null);
-            }
-        });
-        view.setClickable(true);
         return view;
     }
 
-    public void onCloseButtonPressed(Uri uri) {
+    public void onCloseButtonPressed() {
         if (mListener != null) {
-            mListener.onDeatilFragmentInteraction(uri);
+            mListener.onDeatilFragmentInteraction(false);
         }
     }
 
-    private MainActivity activity;
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        this.activity  = (MainActivity) activity;
         try {
             mListener = (OnDetailFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
@@ -147,7 +107,12 @@ public class DetailFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        activity.setWriteBtn(true);
+    }
+
+    @Override
+    void setPostItemMap() {
+        this.postItemMap = ((MainActivity) getActivity()).getCurrentPostItems();
+        mPagerAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -161,7 +126,46 @@ public class DetailFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnDetailFragmentInteractionListener {
-        public void onDeatilFragmentInteraction(Uri uri);
+        public void onDeatilFragmentInteraction(boolean isApply);
     }
 
+    private class DetailPagerAdapter extends PagerAdapter {
+        LayoutInflater inflater;
+        ImageLoader mImageLoader;
+
+        public DetailPagerAdapter(LayoutInflater inflater) {
+            this.inflater = inflater;
+            this.mImageLoader = VolleyUtil.getInstance(getActivity()).getImageLoader();
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            View view = inflater.inflate(R.layout.detail_pager_adapter, null);
+
+            NetworkImageView profileImg = (NetworkImageView) view.findViewById(R.id.profile_img);
+            LinearLayout centerLine = (LinearLayout) view.findViewById(R.id.center_line_layout);
+            TextView tvCategory = (TextView) view.findViewById(R.id.tv_category);
+            TextView tvDistance = (TextView) view.findViewById(R.id.tv_distance);
+            TextView tvAgePeople = (TextView) view.findViewById(R.id.tv_age_people);
+            TextView tvContent = (TextView) view.findViewById(R.id.tv_content);
+            TextView btnCancel = (TextView) view.findViewById(R.id.btn_cancel);
+            LinearLayout btnApply = (LinearLayout) view.findViewById(R.id.btn_apply);
+
+            PostContent.PostItem item = postItemMap.get(position);
+
+            profileImg.setImageUrl(item.getImage(), mImageLoader);
+
+            return view;
+        }
+
+        @Override
+        public int getCount() {
+            return postItemMap.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+    }
 }

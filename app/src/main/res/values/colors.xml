@@ -10,6 +10,7 @@
     <item name="white" type="color">#ffffff</item>
     <item name="greyish_brown" type="color">#4a4a4a</item>
     <item name="pinkish_grey" type="color">#bbbbbb</item>
+    <item name="c8c8c8" type="color">#c8c8c8</item>
 
     <integer-array name="androidcolors">
         <item>@color/red</item>

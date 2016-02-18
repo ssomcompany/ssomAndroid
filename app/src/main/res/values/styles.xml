@@ -27,6 +27,13 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="ssom_font_12_redpink_single" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/redpink</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
     <style name="ssom_font_12_main_black_2_lines" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/mainblack</item>
@@ -53,6 +60,13 @@
         <item name="android:typeface">normal</item>
     </style>
 
+    <style name="ssom_font_12_white_single" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
     <style name="ssom_font_16_greenblue" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/greenblue</item>
@@ -75,6 +89,21 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/greyish_brown</item>
         <item name="android:typeface">normal</item>
+    </style>
+
+    <style name="ssom_font_16_white_single" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="ssom_font_16_white_bold_single" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="ssom_font_16_main_black_bold" parent="@android:style/TextAppearance.Medium">

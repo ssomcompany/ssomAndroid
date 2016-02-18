@@ -46,7 +46,7 @@
                 android:layout_width="86dp"
                 android:layout_height="33dp"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/toggle_sel_b"
+                android:background="@drawable/bg_main_toggle_on"
                 android:text="LIST"
                 android:gravity="center"
                 android:visibility="invisible"/>

@@ -87,6 +87,17 @@
             <include layout="@layout/layout_write"/>
         </FrameLayout>
 
+        <FrameLayout
+            android:id="@+id/top_container"
+            android:layout_below="@id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <FrameLayout
+            android:id="@+id/whole_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
     </RelativeLayout>
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
          this as a sliding drawer on the left side for left-to-right

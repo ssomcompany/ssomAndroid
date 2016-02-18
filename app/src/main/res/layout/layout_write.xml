@@ -12,11 +12,11 @@
 
     <RelativeLayout
         android:id="@+id/filter_txt_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="207dp"
+        android:layout_height="60dp"
         android:background="@drawable/bg_filter_w80"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="17.3dp"
+        android:layout_marginBottom="17dp"
         android:layout_marginLeft="20dp">
 
         <TextView
@@ -25,27 +25,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="78dp"
-            android:textSize="14sp"
-            android:textColor="#000000"
-            android:text="20대 초, 1명"/>
+            android:layout_marginLeft="78dp"/>
     </RelativeLayout>
 
-    <FrameLayout
-        android:id="@+id/filter_img_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/filter_img"
+        android:layout_width="61dp"
+        android:layout_height="61dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="18dp"
-        android:layout_marginBottom="13.3dp">
-
-        <ImageView
-            android:id="@+id/filter_img"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_filter_off"/>
-
-    </FrameLayout>
+        android:layout_marginLeft="19dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/filter_icon_selector" />
 
     <ImageView
         android:id="@+id/btn_write"
