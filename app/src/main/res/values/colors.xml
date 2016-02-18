@@ -2,26 +2,15 @@
 <resources>
 
     <item name="red" type="color">#e60000</item>
-    <item name="greenblue" type="color">#00b48f</item>
-    <item name="redpink" type="color">#ed344b</item>
-    <item name="greywarm" type="color">#9b9b9b</item>
-    <item name="mainblack" type="color">#323232</item>
+    <item name="green_blue" type="color">#00b48f</item>
+    <item name="red_pink" type="color">#ed344b</item>
+    <item name="grey_warm" type="color">#9b9b9b</item>
+    <item name="main_black" type="color">#323232</item>
+    <item name="main_black_80" type="color">#CC323232</item>
     <item name="shadow_black_20" type="color">#33000000</item>
     <item name="white" type="color">#ffffff</item>
     <item name="greyish_brown" type="color">#4a4a4a</item>
     <item name="pinkish_grey" type="color">#bbbbbb</item>
     <item name="c8c8c8" type="color">#c8c8c8</item>
-
-    <integer-array name="androidcolors">
-        <item>@color/red</item>
-        <item>@color/greenblue</item>
-        <item>@color/redpink</item>
-        <item>@color/greywarm</item>
-        <item>@color/mainblack</item>
-        <item>@color/shadow_black_20</item>
-        <item>@color/white</item>
-        <item>@color/greyish_brown</item>
-        <item>@color/pinkish_grey</item>
-    </integer-array>
 
 </resources> 

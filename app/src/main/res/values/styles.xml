@@ -6,86 +6,86 @@
 
     </style>
 
-    <style name="ssom_font_9_pinkish_grey_single" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_9_pinkish_grey_single">
         <item name="android:textSize">9sp</item>
         <item name="android:textColor">@color/pinkish_grey</item>
         <item name="android:typeface">normal</item>
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="ssom_font_12_pinkish_grey_single" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_12_pinkish_grey_single">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/pinkish_grey</item>
         <item name="android:typeface">normal</item>
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="ssom_font_12_red_single" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_12_red_single">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/red</item>
         <item name="android:typeface">normal</item>
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="ssom_font_12_redpink_single" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_12_red_pink_single">
         <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@color/redpink</item>
+        <item name="android:textColor">@color/red_pink</item>
         <item name="android:typeface">normal</item>
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="ssom_font_12_main_black_2_lines" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_12_main_black_2_lines">
         <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@color/mainblack</item>
+        <item name="android:textColor">@color/main_black</item>
         <item name="android:typeface">normal</item>
         <item name="android:maxLines">2</item>
     </style>
 
-    <style name="ssom_font_12_greywarm" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_12_greywarm">
         <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@color/greywarm</item>
+        <item name="android:textColor">@color/grey_warm</item>
         <item name="android:typeface">normal</item>
     </style>
 
-    <style name="ssom_font_12_greywarm_bold" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_12_greywarm_bold">
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/greywarm</item>
+        <item name="android:textColor">@color/grey_warm</item>
         <item name="android:typeface">normal</item>
     </style>
 
-    <style name="ssom_font_12_white" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_12_white">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:typeface">normal</item>
     </style>
 
-    <style name="ssom_font_12_white_single" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_12_white_single">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:typeface">normal</item>
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="ssom_font_16_greenblue" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_16_greenblue">
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/greenblue</item>
+        <item name="android:textColor">@color/green_blue</item>
         <item name="android:typeface">normal</item>
     </style>
 
-    <style name="ssom_font_16_redpink" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_16_redpink">
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/redpink</item>
+        <item name="android:textColor">@color/red_pink</item>
         <item name="android:typeface">normal</item>
     </style>
 
-    <style name="ssom_font_16_greywarm" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_16_greywarm">
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/greywarm</item>
+        <item name="android:textColor">@color/grey_warm</item>
         <item name="android:typeface">normal</item>
     </style>
 
-    <style name="ssom_font_16_greyish_brown" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_16_greyish_brown">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/greyish_brown</item>
         <item name="android:typeface">normal</item>
@@ -106,10 +106,17 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="ssom_font_16_main_black_bold" parent="@android:style/TextAppearance.Medium">
+    <style name="ssom_font_16_greyish_brown_single">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/greyish_brown</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="ssom_font_16_main_black_bold">
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/mainblack</item>
+        <item name="android:textColor">@color/main_black</item>
         <item name="android:typeface">normal</item>
     </style>
 </resources>
