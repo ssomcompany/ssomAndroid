@@ -5,6 +5,6 @@
         android:state_selected="true" />
 
     <item
-        android:color="@color/greywarm"
+        android:color="@color/grey_warm"
         android:state_selected="false" />
 </selector>

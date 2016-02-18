@@ -16,7 +16,7 @@
         android:layout_width="306dp"
         android:layout_height="38dp"
         android:gravity="center_vertical"
-        android:background="@color/redpink"
+        android:background="@color/red_pink"
         android:orientation="horizontal">
 
         <TextView
@@ -47,7 +47,7 @@
 
         <TextView
             android:id="@+id/tv_age_people"
-            style="@style/ssom_font_12_redpink_single"
+            style="@style/ssom_font_12_red_pink_single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -85,7 +85,7 @@
             android:layout_height="46dp"
             android:layout_marginLeft="8dp"
             android:gravity="center"
-            android:background="@color/redpink">
+            android:background="@color/red_pink">
             
             <ImageView
                 android:layout_width="23dp"
