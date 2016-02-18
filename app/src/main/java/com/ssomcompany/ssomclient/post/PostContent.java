@@ -26,20 +26,23 @@ import java.util.Map;
  */
 public class PostContent {
 
-    public static List<PostItem> ITEMS = new ArrayList<>();
+    public static ArrayList<PostItem> ITEMS_GIVE = new ArrayList<>();
+    public static ArrayList<PostItem> ITEMS_TAKE = new ArrayList<>();
     public static Map<String, PostItem> ITEM_GIVE = new HashMap<>();
     public static Map<String, PostItem> ITEM_TAKE = new HashMap<>();
 
     private static void addItem(PostItem item) {
-        ITEMS.add(item);
         if("ssom".equals(item.ssom)) {
+            ITEMS_GIVE.add(item);
             ITEM_GIVE.put(item.postId, item);
         } else {
+            ITEMS_TAKE.add(item);
             ITEM_TAKE.put(item.postId, item);
         }
     }
     public static void init(final Context context,final PostDataChangeInterface callback){
-        ITEMS.clear();
+        ITEMS_GIVE.clear();
+        ITEMS_TAKE.clear();
         ITEM_GIVE.clear();
         ITEM_TAKE.clear();
 

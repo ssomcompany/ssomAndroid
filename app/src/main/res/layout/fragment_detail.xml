@@ -5,8 +5,35 @@
     tools:context=".fragment.DetailFragment"
     android:background="#E6000000" >
 
+    <RelativeLayout
+        android:id="@+id/header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp"
+        android:paddingBottom="13dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/img_heart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/icon_heart_green" />
+
+        <ImageView
+            android:id="@+id/img_cross"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginRight="27dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@id/img_heart"
+            android:src="@drawable/icon_check_w"/>
+    </RelativeLayout>
+
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="27dp"
+        android:layout_below="@id/header_layout"/>
 </RelativeLayout>

@@ -43,26 +43,23 @@
             android:id="@+id/post_item_title"
             style="@style/ssom_font_12_red_single"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="20대 초 1명 있어요."/>
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/post_item_time"
-            style="@style/ssom_font_9_pinkish_grey_single"
+            style="@style/ssom_font_9_pinkish_gray_single"
             android:layout_width="45.3dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_gravity="center_vertical"
-            android:text="방금전"/>
+            android:layout_gravity="center_vertical"/>
 
         <TextView
             android:id="@+id/post_item_distance"
-            style="@style/ssom_font_12_pinkish_grey_single"
+            style="@style/ssom_font_12_pinkish_gray_single"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:layout_weight="1"
-            android:text="300m"/>
+            android:layout_weight="1"/>
     </LinearLayout>
 
     <TextView
@@ -75,7 +72,6 @@
         android:layout_marginRight="15.8dp"
         android:layout_below="@id/item_info"
         android:layout_toRightOf="@id/profile_layout"
-        android:text="연말인데 모임나가기는 싫고 ㅋㅋ 그냥 편하게 얘기 하실 분 없나요?"
         />
 
     <!-- Contents layout End -->

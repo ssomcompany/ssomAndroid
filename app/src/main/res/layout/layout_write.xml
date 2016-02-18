@@ -21,7 +21,7 @@
 
         <TextView
             android:id="@+id/filter_txt_age_n_count"
-            style="@style/ssom_font_16_greyish_brown"
+            style="@style/ssom_font_16_grayish_brown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"

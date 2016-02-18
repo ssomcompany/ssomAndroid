@@ -52,6 +52,7 @@ import com.ssomcompany.ssomclient.post.PostDataChangeInterface;
 import com.ssomcompany.ssomclient.post.WriteActivity;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -200,9 +201,9 @@ public class MainActivity extends AppCompatActivity
                 if (SSOM.equals(selectedTab)) return;
 
                 selectedTab = SSOM;
-                giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_greenblue);
+                giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_green_blue);
                 giveBtmBar.setVisibility(View.VISIBLE);
-                takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_greywarm);
+                takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 takeBtmBar.setVisibility(View.GONE);
             }
         });
@@ -213,9 +214,9 @@ public class MainActivity extends AppCompatActivity
                 if(SSOA.equals(selectedTab)) return;
 
                 selectedTab = SSOA;
-                takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_redpink);
+                takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_red_pink);
                 takeBtmBar.setVisibility(View.VISIBLE);
-                giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_greywarm);
+                giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 giveBtmBar.setVisibility(View.GONE);
             }
         });
@@ -252,7 +253,10 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(tb);
         fragmentManager = getSupportFragmentManager();
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawers();
+
+        Log.i(TAG_MAP, "drawer open state : " + drawer.isDrawerOpen(Gravity.LEFT));
+        if(drawer.isDrawerOpen(Gravity.LEFT)) drawer.closeDrawers();
+
         ImageView lnbMenu = (ImageView) tb.findViewById(R.id.lnb_menu_btn);
         lnbMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -294,7 +298,7 @@ public class MainActivity extends AppCompatActivity
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
 
         fragmentManager.beginTransaction().
-                replace(R.id.container, SsomListFragment.newInstance(getCurrentPostItems())).commit();
+                replace(R.id.container, SsomListFragment.newInstance()).commit();
     }
 
     @Override
@@ -338,7 +342,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPostItemClick(String id) {
-        Fragment fragment = DetailFragment.newInstance(id, getCurrentPostItems());
+        Fragment fragment = DetailFragment.newInstance(id);
         fragmentManager.beginTransaction().add(R.id.whole_container, fragment, DETAIL_FRAG)
                 .addToBackStack(null).commit();
     }
@@ -388,7 +392,7 @@ public class MainActivity extends AppCompatActivity
                         + marker.getPosition().latitude + ", longitude ="
                         + marker.getPosition().longitude);
 
-                Fragment fragment = DetailFragment.newInstance(postId, getCurrentPostItems());
+                Fragment fragment = DetailFragment.newInstance(postId);
                 fragmentManager.beginTransaction().add(R.id.whole_container, fragment, DETAIL_FRAG)
                         .addToBackStack(null).commit();
                 return false;
@@ -425,12 +429,15 @@ public class MainActivity extends AppCompatActivity
             } else {  // 마커 갱신
                 currentMarker.setPosition(currentPosition);
             }
-
         }
     };
 
-    public Map<String, PostContent.PostItem> getCurrentPostItems() {
+    public Map<String, PostContent.PostItem> getCurrentPostMap() {
         return SSOM.equals(selectedTab)?PostContent.ITEM_GIVE:PostContent.ITEM_TAKE;
+    }
+
+    public ArrayList<PostContent.PostItem> getCurrentPostItems() {
+        return SSOM.equals(selectedTab)?PostContent.ITEMS_GIVE:PostContent.ITEMS_TAKE;
     }
 
     private void showActivateGPSPopup() {
@@ -438,7 +445,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initMarker() {
-        Map<String, PostContent.PostItem> items = getCurrentPostItems();
+        Map<String, PostContent.PostItem> items = getCurrentPostMap();
         if(items != null && items.size()>0){
             for (Map.Entry<String, PostContent.PostItem> item : items.entrySet()) {
                 addMarker(item.getValue());

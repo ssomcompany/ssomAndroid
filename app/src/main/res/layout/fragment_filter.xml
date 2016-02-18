@@ -22,7 +22,7 @@
 
         // 나이 선택 영역
         <TextView
-            style="@style/ssom_font_12_greywarm"
+            style="@style/ssom_font_12_gray_warm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="17dp"
@@ -39,7 +39,7 @@
 
             <TextView
                 android:id="@+id/tv_filter_age_20_early"
-                style="@style/ssom_font_12_greywarm_bold"
+                style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:gravity="center"
@@ -54,7 +54,7 @@
 
             <TextView
                 android:id="@+id/tv_filter_age_20_middle"
-                style="@style/ssom_font_12_greywarm_bold"
+                style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:gravity="center"
@@ -69,7 +69,7 @@
 
             <TextView
                 android:id="@+id/tv_filter_age_20_late"
-                style="@style/ssom_font_12_greywarm_bold"
+                style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:gravity="center"
@@ -84,7 +84,7 @@
 
             <TextView
                 android:id="@+id/tv_filter_age_30_all"
-                style="@style/ssom_font_12_greywarm_bold"
+                style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:gravity="center"
@@ -95,7 +95,7 @@
 
         // 사람 선택 영역
         <TextView
-            style="@style/ssom_font_12_greywarm"
+            style="@style/ssom_font_12_gray_warm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="13dp"
@@ -112,7 +112,7 @@
 
             <TextView
                 android:id="@+id/tv_filter_people_1"
-                style="@style/ssom_font_12_greywarm_bold"
+                style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:gravity="center"
@@ -127,7 +127,7 @@
 
             <TextView
                 android:id="@+id/tv_filter_people_2"
-                style="@style/ssom_font_12_greywarm_bold"
+                style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:gravity="center"
@@ -142,7 +142,7 @@
 
             <TextView
                 android:id="@+id/tv_filter_people_3"
-                style="@style/ssom_font_12_greywarm_bold"
+                style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:gravity="center"
@@ -157,7 +157,7 @@
 
             <TextView
                 android:id="@+id/tv_filter_people_4_n_over"
-                style="@style/ssom_font_12_greywarm_bold"
+                style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:gravity="center"

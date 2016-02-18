@@ -52,27 +52,25 @@ public class WriteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write);
+
         initWrite();
         initCancel();
-        initCategory();
         initCamera();
-        initSeekbar();
         initSsomType();
-
     }
 
     private void initSsomType() {
-        View view = findViewById(R.id.write_ssom);
-        ssomTypeSsom = findViewById(R.id.write_ssom_ssom);
-        ssomTypeSsoseyo = findViewById(R.id.write_ssom_ssoseyo);
-        iconSt = (ImageView) findViewById(R.id.write_icon_st);
+//        View view = findViewById(R.id.write_ssom);
+//        ssomTypeSsom = findViewById(R.id.write_ssom_ssom);
+//        ssomTypeSsoseyo = findViewById(R.id.write_ssom_ssoseyo);
+//        iconSt = (ImageView) findViewById(R.id.write_icon_st);
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleSsomType();
-            }
-        });
+//        view.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                toggleSsomType();
+//            }
+//        });
     }
 
     private void toggleSsomType() {
@@ -100,55 +98,15 @@ public class WriteActivity extends AppCompatActivity {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
-    private void initSeekbar() {
-        final TextView ageTextView = (TextView) findViewById(R.id.text_age);
-        final TextView userCountTextView = (TextView) findViewById(R.id.text_user_count);
-        SeekBar ageSeekbar = (SeekBar) findViewById(R.id.write_seekBar_age);
-        ageSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                minAge = progress+20;
-                maxAge =progress+21;
-                ageTextView.setText(minAge+"~"+maxAge);
-            }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        SeekBar userCountSeekbar = (SeekBar) findViewById(R.id.write_seekBar_user_count);
-        userCountSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                count = progress+1;
-                userCountTextView.setText(String.valueOf(count));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-    }
     private void initCamera(){
-        ImageView camera = (ImageView) findViewById(R.id.write_camera);
-        camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dispatchTakePictureIntent();
-            }
-        });
+//        ImageView camera = (ImageView) findViewById(R.id.write_camera);
+//        camera.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dispatchTakePictureIntent();
+//            }
+//        });
     }
 
 
@@ -157,82 +115,34 @@ public class WriteActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
-            ImageView mImageView = (ImageView) findViewById(R.id.write_photo);
+//            ImageView mImageView = (ImageView) findViewById(R.id.write_photo);
 
-            mImageView.setImageDrawable(Util.getCircleBitmap(imageBitmap, 535)); //TODO 535pixel to dp
+//            mImageView.setImageDrawable(Util.getCircleBitmap(imageBitmap, 535)); //TODO 535pixel to dp
         }
     }
-    private void initCategory(){
-        ImageView rice = (ImageView) findViewById(R.id.category_rice);
-        ImageView beer = (ImageView) findViewById(R.id.category_beer);
-        ImageView coffee = (ImageView) findViewById(R.id.category_coffee);
-        ImageView any = (ImageView) findViewById(R.id.category_any);
-        rice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectCategory(R.id.category_rice);
-            }
-        });
-        beer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectCategory(R.id.category_beer);
-            }
-        });
-        coffee.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectCategory(R.id.category_coffee);
-            }
-        });
-        any.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectCategory(R.id.category_any);
-            }
-        });
 
-
-    }
-    String currentCategory ="any";
-    String category[] = {"rice","beer","coffee","any"};
-    int ids[] = {R.id.category_rice,R.id.category_beer,R.id.category_coffee,R.id.category_any};
     int pressImages[] = {R.drawable.icon_rice_press,R.drawable.icon_beer_press,R.drawable.icon_cof_press,R.drawable.icon_all_perss};
     int disImages[] = {R.drawable.icon_rice_dis,R.drawable.icon_beer_dis,R.drawable.icon_cof_dis,R.drawable.icon_all_dis};
-    private void selectCategory(int categoryId) {
-        for (int i=0;i<ids.length;i++) {
-            if(categoryId == ids[i]){
-                //select
-                ImageView selImage = (ImageView) findViewById(ids[i]);
-                selImage.setImageResource(pressImages[i]);
-                currentCategory = category[i];
-            }else{
-                //deselect
-                ImageView disImage = (ImageView) findViewById(ids[i]);
-                disImage.setImageResource(disImages[i]);
-            }
-        }
-    }
 
     private void initCancel(){
-        ImageView btnCancel = (ImageView) findViewById(R.id.btn_cancel);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "cancel write", Toast.LENGTH_SHORT).show();
-                onBackPressed();
-            }
-        });
+//        ImageView btnCancel = (ImageView) findViewById(R.id.btn_cancel);
+//        btnCancel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(getApplicationContext(), "cancel write", Toast.LENGTH_SHORT).show();
+//                onBackPressed();
+//            }
+//        });
     }
     private void initWrite() {
-        View btnWrite = findViewById(R.id.btn_write_post);
-        btnWrite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uploadImage();
-                //creatPost();
-            }
-        });
+//        View btnWrite = findViewById(R.id.btn_write_post);
+//        btnWrite.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                uploadImage();
+//                //creatPost();
+//            }
+//        });
     }
 
 
@@ -317,39 +227,38 @@ public class WriteActivity extends AppCompatActivity {
             //String url = "http://54.64.154.188/posts";
             String url = NetworkManager.getInstance().getNetworkUrl(NetworkManager.TYPE.POST);
 
-            EditText messageBox = (EditText) findViewById(R.id.message);
-            final String text = messageBox.getText().toString();
-            JSONObject jsonBody = new JSONObject();
-            jsonBody.put("postId", "" + System.currentTimeMillis());
-            jsonBody.put("userId", UniqueIdGenUtil.getId(getApplicationContext()));
-            jsonBody.put("content", URLEncoder.encode(text,"UTF-8"));
-            jsonBody.put("imageUrl","http://54.64.154.188/file/images/"+fileId);
-            jsonBody.put("category",currentCategory);
-            jsonBody.put("minAge",minAge);
-            jsonBody.put("maxAge",maxAge);
-            jsonBody.put("userCount", count);
-            jsonBody.put("ssom", ssomType);
-            Location myLocation = LocationUtil.getLocation(this);
-            if(myLocation!=null) {
-                jsonBody.put("latitude", myLocation.getLatitude());
-                jsonBody.put("longitude", myLocation.getLongitude());
-            }else{
-                Toast.makeText(this,"위치정보를 가지고올수 없어 글을 작성할수 없습니다.",Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject jsonObject) {
-                    onBackPressed();
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
-                    Toast.makeText(getApplicationContext(), "error create post : "+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-            queue.add(jsonObjectRequest);
+//            EditText messageBox = (EditText) findViewById(R.id.message);
+//            final String text = messageBox.getText().toString();
+//            JSONObject jsonBody = new JSONObject();
+//            jsonBody.put("postId", "" + System.currentTimeMillis());
+//            jsonBody.put("userId", UniqueIdGenUtil.getId(getApplicationContext()));
+//            jsonBody.put("content", URLEncoder.encode(text,"UTF-8"));
+//            jsonBody.put("imageUrl","http://54.64.154.188/file/images/"+fileId);
+//            jsonBody.put("minAge",minAge);
+//            jsonBody.put("maxAge",maxAge);
+//            jsonBody.put("userCount", count);
+//            jsonBody.put("ssom", ssomType);
+//            Location myLocation = LocationUtil.getLocation(this);
+//            if(myLocation!=null) {
+//                jsonBody.put("latitude", myLocation.getLatitude());
+//                jsonBody.put("longitude", myLocation.getLongitude());
+//            }else{
+//                Toast.makeText(this,"위치정보를 가지고올수 없어 글을 작성할수 없습니다.",Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//
+//            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
+//                @Override
+//                public void onResponse(JSONObject jsonObject) {
+//                    onBackPressed();
+//                }
+//            }, new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError volleyError) {
+//                    Toast.makeText(getApplicationContext(), "error create post : "+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//            queue.add(jsonObjectRequest);
         }catch(Exception e){
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }

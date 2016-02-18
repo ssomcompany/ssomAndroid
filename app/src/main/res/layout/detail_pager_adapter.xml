@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="306dp"
     android:layout_height="532dp"
+    android:layout_marginBottom="38dp"
     android:background="@drawable/bg_detail_round">
 
     <com.android.volley.toolbox.NetworkImageView
@@ -13,10 +14,10 @@
     <LinearLayout
         android:id="@+id/center_line_layout"
         android:layout_below="@id/profile_img"
-        android:layout_width="306dp"
-        android:layout_height="38dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:background="@color/red_pink"
+        android:background="@drawable/bg_detail_center_green"
         android:orientation="horizontal">
 
         <TextView
@@ -25,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
-            android:text="@string/title_tab_take"/>
+            android:text="@string/title_tab_give"/>
 
         <TextView
             android:id="@+id/tv_distance"
@@ -55,7 +56,7 @@
 
         <TextView
             android:id="@+id/tv_content"
-            style="@style/ssom_font_16_greyish_brown"
+            style="@style/ssom_font_16_grayish_brown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp" />
@@ -75,7 +76,7 @@
             style="@style/ssom_font_16_white_bold_single"
             android:layout_width="136dp"
             android:layout_height="46dp"
-            android:background="@color/c8c8c8"
+            android:background="@drawable/btn_write_cancel"
             android:gravity="center"
             android:text="@string/detail_cancel"/>
 
@@ -85,7 +86,7 @@
             android:layout_height="46dp"
             android:layout_marginLeft="8dp"
             android:gravity="center"
-            android:background="@color/red_pink">
+            android:background="@drawable/btn_write_apply_ssom">
             
             <ImageView
                 android:layout_width="23dp"

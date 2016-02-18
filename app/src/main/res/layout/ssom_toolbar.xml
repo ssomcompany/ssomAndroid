@@ -71,7 +71,7 @@
 
             <TextView
                 android:id="@+id/chat_count"
-                style="@style/ssom_font_12_greywarm"
+                style="@style/ssom_font_12_gray_warm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -110,7 +110,7 @@
 
             <TextView
                 android:id="@+id/heart_refill_time"
-                style="@style/ssom_font_12_greywarm"
+                style="@style/ssom_font_12_gray_warm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
 import com.ssomcompany.ssomclient.post.PostContent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +48,7 @@ public class DetailFragment extends BaseFragment {
 
     public DetailFragment() { super(); }
 
-    public static DetailFragment newInstance(String postId, Map<String, PostContent.PostItem> items) {
+    public static DetailFragment newInstance(String postId) {
         if(detailFragment == null) {
             detailFragment = new DetailFragment();
         }
@@ -63,7 +65,7 @@ public class DetailFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
+        Log.i(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
@@ -75,13 +77,16 @@ public class DetailFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        PostContent.PostItem item  = postItemMap.get(postId);
+        Log.i(TAG, "onCreateView()");
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
         mViewPager = (ViewPager) view.findViewById(R.id.pager);
-        mPagerAdapter = new DetailPagerAdapter(inflater);
+        mPagerAdapter = new DetailPagerAdapter(inflater, postItemList);
 //        mViewPager.setCurrentItem(item);
         mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.setPageMargin(Math.round(Util.convertDpToPixel(16.5f, getActivity())));
+        mViewPager.setOffscreenPageLimit(2);
+        mViewPager.setClipToPadding(false);
 
         return view;
     }
@@ -110,9 +115,8 @@ public class DetailFragment extends BaseFragment {
     }
 
     @Override
-    void setPostItemMap() {
-        this.postItemMap = ((MainActivity) getActivity()).getCurrentPostItems();
-        mPagerAdapter.notifyDataSetChanged();
+    void setPostItems() {
+        Log.i(TAG, "setPostItem called : " + getActivity().toString());
     }
 
     /**
@@ -126,15 +130,17 @@ public class DetailFragment extends BaseFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnDetailFragmentInteractionListener {
-        public void onDeatilFragmentInteraction(boolean isApply);
+        void onDeatilFragmentInteraction(boolean isApply);
     }
 
     private class DetailPagerAdapter extends PagerAdapter {
         LayoutInflater inflater;
         ImageLoader mImageLoader;
+        ArrayList<PostContent.PostItem> pagerItems;
 
-        public DetailPagerAdapter(LayoutInflater inflater) {
+        public DetailPagerAdapter(LayoutInflater inflater, ArrayList<PostContent.PostItem> items) {
             this.inflater = inflater;
+            this.pagerItems = items;
             this.mImageLoader = VolleyUtil.getInstance(getActivity()).getImageLoader();
         }
 
@@ -151,21 +157,34 @@ public class DetailFragment extends BaseFragment {
             TextView btnCancel = (TextView) view.findViewById(R.id.btn_cancel);
             LinearLayout btnApply = (LinearLayout) view.findViewById(R.id.btn_apply);
 
-            PostContent.PostItem item = postItemMap.get(position);
-
+            PostContent.PostItem item = pagerItems.get(position);
+            // setting
             profileImg.setImageUrl(item.getImage(), mImageLoader);
 
+            container.addView(view, position);
             return view;
         }
 
         @Override
+        public void destroyItem(ViewGroup collection, int position, Object view) {
+            //must be overridden else throws exception as not overridden.
+            Log.d(TAG, "destroy views at : " + collection.getChildCount());
+            collection.removeView((View) view);
+        }
+
+        @Override
         public int getCount() {
-            return postItemMap.size();
+            return pagerItems.size();
         }
 
         @Override
         public boolean isViewFromObject(View view, Object object) {
             return view == object;
+        }
+
+        @Override
+        public float getPageWidth(int position) {
+            return 0.925f;
         }
     }
 }

@@ -47,12 +47,10 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
 
     private static SsomListFragment ssomListFragment;
 
-    public static SsomListFragment newInstance(Map<String, PostContent.PostItem> items) {
+    public static SsomListFragment newInstance() {
         if(ssomListFragment == null) {
             ssomListFragment = new SsomListFragment();
         }
-
-        ssomListFragment.postItemMap = items;
         return ssomListFragment;
     }
 
@@ -69,7 +67,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
         super.onCreate(savedInstanceState);
 
         mAdapter = new PostItemListAdapter(getActivity());
-        mAdapter.setItemList(Util.convertMapToArrayList(postItemMap));
+        mAdapter.setItemList(postItemList);
     }
 
     @Override
@@ -114,7 +112,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onPostItemClick(PostContent.ITEMS.get(position).postId);
+            mListener.onPostItemClick(postItemList.get(position).postId);
         }
     }
 
@@ -131,10 +129,20 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
         }
     }
 
+    // TODO activity result
+    public void onActivityResult() {
+
+    }
+
     @Override
-    void setPostItemMap() {
-        this.postItemMap = ((MainActivity) getActivity()).getCurrentPostItems();
-        mAdapter.setItemList(Util.convertMapToArrayList(postItemMap));
+    public void onPostItemChanged() {
+        setPostItems();
+    }
+
+    @Override
+    void setPostItems() {
+        postItemMap = ((MainActivity) getActivity()).getCurrentPostMap();
+        postItemList = ((MainActivity) getActivity()).getCurrentPostItems();
         mAdapter.notifyDataSetChanged();
     }
 

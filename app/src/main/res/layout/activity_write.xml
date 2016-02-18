@@ -30,7 +30,7 @@
         </FrameLayout>
 
         <TextView
-            style="@style/ssom_font_16_greyish_brown_single"
+            style="@style/ssom_font_16_grayish_brown_single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="등록하기"/>
