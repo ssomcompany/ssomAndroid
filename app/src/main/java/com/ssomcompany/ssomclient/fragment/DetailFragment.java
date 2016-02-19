@@ -10,6 +10,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.MainActivity;
+import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
 import com.ssomcompany.ssomclient.post.PostContent;
@@ -45,6 +47,16 @@ public class DetailFragment extends BaseFragment {
 
     ViewPager mViewPager;
     PagerAdapter mPagerAdapter;
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     */
+    public interface OnDetailFragmentInteractionListener {
+        void onDetailFragmentInteraction(boolean isApply);
+    }
 
     public DetailFragment() { super(); }
 
@@ -91,9 +103,9 @@ public class DetailFragment extends BaseFragment {
         return view;
     }
 
-    public void onCloseButtonPressed() {
+    public void onAdapterButtonPressed(boolean apply) {
         if (mListener != null) {
-            mListener.onDeatilFragmentInteraction(false);
+            mListener.onDetailFragmentInteraction(apply);
         }
     }
 
@@ -119,21 +131,7 @@ public class DetailFragment extends BaseFragment {
         Log.i(TAG, "setPostItem called : " + getActivity().toString());
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnDetailFragmentInteractionListener {
-        void onDeatilFragmentInteraction(boolean isApply);
-    }
-
-    private class DetailPagerAdapter extends PagerAdapter {
+    private class DetailPagerAdapter extends PagerAdapter implements View.OnClickListener {
         LayoutInflater inflater;
         ImageLoader mImageLoader;
         ArrayList<PostContent.PostItem> pagerItems;
@@ -146,23 +144,44 @@ public class DetailFragment extends BaseFragment {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            View view = inflater.inflate(R.layout.detail_pager_adapter, null);
+            View mView = inflater.inflate(R.layout.detail_pager_adapter, null);
 
-            NetworkImageView profileImg = (NetworkImageView) view.findViewById(R.id.profile_img);
-            LinearLayout centerLine = (LinearLayout) view.findViewById(R.id.center_line_layout);
-            TextView tvCategory = (TextView) view.findViewById(R.id.tv_category);
-            TextView tvDistance = (TextView) view.findViewById(R.id.tv_distance);
-            TextView tvAgePeople = (TextView) view.findViewById(R.id.tv_age_people);
-            TextView tvContent = (TextView) view.findViewById(R.id.tv_content);
-            TextView btnCancel = (TextView) view.findViewById(R.id.btn_cancel);
-            LinearLayout btnApply = (LinearLayout) view.findViewById(R.id.btn_apply);
+            NetworkImageView profileImg = (NetworkImageView) mView.findViewById(R.id.profile_img);
+            LinearLayout centerLine = (LinearLayout) mView.findViewById(R.id.center_line_layout);
+            TextView tvCategory = (TextView) mView.findViewById(R.id.tv_category);
+            TextView tvDistance = (TextView) mView.findViewById(R.id.tv_distance);
+            TextView tvAgePeople = (TextView) mView.findViewById(R.id.tv_age_people);
+            TextView tvContent = (TextView) mView.findViewById(R.id.tv_content);
+            TextView btnCancel = (TextView) mView.findViewById(R.id.btn_cancel);
+            LinearLayout btnApply = (LinearLayout) mView.findViewById(R.id.btn_apply);
 
             PostContent.PostItem item = pagerItems.get(position);
-            // setting
+            // item setting
             profileImg.setImageUrl(item.getImage(), mImageLoader);
+            centerLine.setBackgroundResource("ssom".equals(item.ssom) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
+            tvCategory.setText("ssom".equals(item.ssom) ? R.string.title_tab_give : R.string.title_tab_take);
+            tvDistance.setText( String.format( getResources().getString(R.string.detail_distance), LocationUtil.getDistanceString(item) ) );
+            tvAgePeople.setText( String.format( getResources().getString(R.string.detail_age_people), Util.convertAgeRange(item.minAge), item.userCount) );
+            tvContent.setText(item.content);
+            btnApply.setBackgroundResource("ssom".equals(item.ssom) ? R.drawable.btn_write_apply_ssom : R.drawable.btn_write_apply_ssoa);
 
-            container.addView(view, position);
-            return view;
+            // btn setting
+            btnCancel.setOnClickListener(this);
+            btnApply.setOnClickListener(this);
+
+            container.addView(mView, position);
+            return mView;
+        }
+
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+
+            if(id == R.id.btn_cancel) {
+                onAdapterButtonPressed(false);
+            } else {
+                onAdapterButtonPressed(true);
+            }
         }
 
         @Override

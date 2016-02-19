@@ -95,6 +95,7 @@ public class LocationUtil {
     }
 
     public static String getDistanceString(PostContent.PostItem item){
+        Log.i(TAG, "Distance from me : " + myLocation);
         if(myLocation!=null) {
             float[] results = new float[1];
             Location.distanceBetween(item.lat, item.lng, myLocation.getLatitude(), myLocation.getLongitude(), results);

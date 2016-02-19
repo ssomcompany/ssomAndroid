@@ -528,7 +528,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDeatilFragmentInteraction(boolean isApply) {
+    public void onDetailFragmentInteraction(boolean isApply) {
         Log.i(TAG_MAP, "detail interaction : " + isApply);
         fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(DETAIL_FRAG)).commit();
 

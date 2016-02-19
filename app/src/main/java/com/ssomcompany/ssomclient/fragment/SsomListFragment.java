@@ -32,6 +32,16 @@ import java.util.Map;
  */
 public class SsomListFragment extends BaseFragment implements AbsListView.OnItemClickListener, PostDataChangeInterface {
 
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     */
+    public interface OnPostItemInteractionListener {
+        void onPostItemClick(String id);
+    }
+
     private OnPostItemInteractionListener mListener;
 
     /**
@@ -145,19 +155,4 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
         postItemList = ((MainActivity) getActivity()).getCurrentPostItems();
         mAdapter.notifyDataSetChanged();
     }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnPostItemInteractionListener {
-        void onPostItemClick(String id);
-    }
-
 }

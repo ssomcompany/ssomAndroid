@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="306dp"
     android:layout_height="532dp"
-    android:layout_marginBottom="38dp"
     android:background="@drawable/bg_detail_round">
 
     <com.android.volley.toolbox.NetworkImageView

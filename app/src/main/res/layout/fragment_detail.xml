@@ -9,8 +9,8 @@
         android:id="@+id/header_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="15dp"
-        android:paddingBottom="13dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         android:orientation="horizontal">
 
         <ImageView
@@ -21,13 +21,13 @@
             android:src="@drawable/icon_heart_green" />
 
         <ImageView
-            android:id="@+id/img_cross"
+            android:id="@+id/img_close"
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:layout_marginRight="27dp"
             android:layout_alignParentRight="true"
             android:layout_alignBottom="@id/img_heart"
-            android:src="@drawable/icon_check_w"/>
+            android:src="@drawable/icon_close_white"/>
     </RelativeLayout>
 
     <android.support.v4.view.ViewPager
@@ -35,5 +35,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="27dp"
+        android:paddingBottom="38dp"
         android:layout_below="@id/header_layout"/>
 </RelativeLayout>
