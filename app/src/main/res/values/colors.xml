@@ -8,7 +8,9 @@
     <item name="main_black" type="color">#323232</item>
     <item name="main_black_80" type="color">#CC323232</item>
     <item name="shadow_black_20" type="color">#33000000</item>
+    <item name="shadow_black_89" type="color">#E3000000</item>
     <item name="white" type="color">#ffffff</item>
+    <item name="shadow_white_0" type="color">#00ffffff</item>
     <item name="grayish_brown" type="color">#4a4a4a</item>
     <item name="pinkish_gray" type="color">#bbbbbb</item>
     <item name="c8c8c8" type="color">#c8c8c8</item>

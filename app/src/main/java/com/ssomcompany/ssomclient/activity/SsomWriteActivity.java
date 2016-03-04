@@ -1,8 +1,7 @@
-package com.ssomcompany.ssomclient.post;
+package com.ssomcompany.ssomclient.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.location.Location;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -10,10 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -22,26 +18,19 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.common.LocationUtil;
-import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.BaseVolleyRequest;
 import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.UniqueIdGenUtil;
-
-import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Map;
 
-public class WriteActivity extends AppCompatActivity {
+public class SsomWriteActivity extends AppCompatActivity {
 
     private String ssomType = "ssom";
     private View ssomTypeSsom;
@@ -163,7 +152,7 @@ public class WriteActivity extends AppCompatActivity {
                 Map<String,String> data = gson.fromJson(jsonData,Map.class);
                 String fileId = data.get("fileId");
                 creatPost(fileId);
-                Toast.makeText(WriteActivity.this, "upload complete : "+fileId, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SsomWriteActivity.this, "upload complete : "+fileId, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override

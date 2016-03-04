@@ -1,7 +1,6 @@
-package com.ssomcompany.ssomclient.post;
+package com.ssomcompany.ssomclient.common;
 
 import android.content.Context;
-import android.os.Parcelable;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -18,13 +17,12 @@ import org.json.JSONObject;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Created by kshgizmo on 2015. 9. 11..
  */
-public class PostContent {
+public class SsomContent {
 
     public static ArrayList<PostItem> ITEMS_GIVE = new ArrayList<>();
     public static ArrayList<PostItem> ITEMS_TAKE = new ArrayList<>();
@@ -40,7 +38,7 @@ public class PostContent {
             ITEM_TAKE.put(item.postId, item);
         }
     }
-    public static void init(final Context context,final PostDataChangeInterface callback){
+    public static void init(final Context context,final SsomDataChangeListener callback){
         ITEMS_GIVE.clear();
         ITEMS_TAKE.clear();
         ITEM_GIVE.clear();
@@ -67,7 +65,7 @@ public class PostContent {
                         item.ssom = (String) obj.get("ssom");
                         item.lat = (double) obj.get("latitude");
                         item.lng = (double) obj.get("longitude");
-                        PostContent.addItem(item);
+                        SsomContent.addItem(item);
                     }
                     if(callback!=null) {
                         callback.onPostItemChanged();

@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.ssomcompany.ssomclient.post.PostContent;
-
 /**
  * Created by kshgizmo on 2015. 10. 12..
  */
@@ -94,7 +92,7 @@ public class LocationUtil {
         }
     }
 
-    public static String getDistanceString(PostContent.PostItem item){
+    public static String getDistanceString(SsomContent.PostItem item){
         Log.i(TAG, "Distance from me : " + myLocation);
         if(myLocation!=null) {
             float[] results = new float[1];

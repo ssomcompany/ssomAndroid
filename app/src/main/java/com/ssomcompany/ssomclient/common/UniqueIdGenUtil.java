@@ -1,4 +1,4 @@
-package com.ssomcompany.ssomclient.network;
+package com.ssomcompany.ssomclient.common;
 
 import android.content.Context;
 import android.provider.Settings;

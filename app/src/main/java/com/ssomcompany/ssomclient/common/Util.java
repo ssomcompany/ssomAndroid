@@ -6,9 +6,6 @@ import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.post.PostContent;
-
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -83,9 +80,9 @@ public class Util {
      *
      * @param items A map
      */
-    public static ArrayList<PostContent.PostItem> convertMapToArrayList(Map<String, PostContent.PostItem> items) {
-        ArrayList<PostContent.PostItem> arrayList = new ArrayList<>();
-        for(Map.Entry<String, PostContent.PostItem> item : items.entrySet()) {
+    public static ArrayList<SsomContent.PostItem> convertMapToArrayList(Map<String, SsomContent.PostItem> items) {
+        ArrayList<SsomContent.PostItem> arrayList = new ArrayList<>();
+        for(Map.Entry<String, SsomContent.PostItem> item : items.entrySet()) {
             arrayList.add(item.getValue());
         }
         return arrayList;

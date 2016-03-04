@@ -1,8 +1,7 @@
-package com.ssomcompany.ssomclient.post;
+package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,21 +15,22 @@ import com.ssomcompany.ssomclient.common.CircularNetworkImageView;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
+import com.ssomcompany.ssomclient.common.SsomContent;
 
 import java.util.ArrayList;
 
 /**
  * Created by kshgizmo on 2015. 9. 11..
  */
-public class PostItemListAdapter extends BaseAdapter{
+public class SsomItemListAdapter extends BaseAdapter{
 
     private LayoutInflater mInflater;
     private Context context;
     private ImageLoader mImageLoader;
 
-    private ArrayList<PostContent.PostItem> itemList;
+    private ArrayList<SsomContent.PostItem> itemList;
 
-    public PostItemListAdapter(Context context){
+    public SsomItemListAdapter(Context context){
         this.context = context;
         this.mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -38,7 +38,7 @@ public class PostItemListAdapter extends BaseAdapter{
         this.mImageLoader = VolleyUtil.getInstance(context).getImageLoader();
     }
 
-    public void setItemList(ArrayList<PostContent.PostItem> itemList) {
+    public void setItemList(ArrayList<SsomContent.PostItem> itemList) {
         this.itemList = itemList;
     }
 
@@ -82,7 +82,7 @@ public class PostItemListAdapter extends BaseAdapter{
         }
 
         // list view item setting
-        PostContent.PostItem item = itemList.get(position);
+        SsomContent.PostItem item = itemList.get(position);
 
         holder.image.setImageUrl(item.getImage(), mImageLoader);
 //        mImageLoader.get(row_pos.getImage(), ImageLoader.getImageListener(image,R.drawable.icon_wirte_photo_emp, R.drawable.icon_wirte_photo_emp));

@@ -2,30 +2,25 @@ package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
-import com.ssomcompany.ssomclient.post.PostContent;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import com.ssomcompany.ssomclient.common.SsomContent;
 
 
 /**
@@ -36,7 +31,7 @@ import java.util.Map;
  * Use the {@link DetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DetailFragment extends BaseFragment {
+public class DetailFragment extends BaseFragment implements View.OnClickListener {
     private static final String TAG = "DetailFragment";
 
     private static final String POST_ID = "postId";
@@ -47,6 +42,9 @@ public class DetailFragment extends BaseFragment {
 
     ViewPager mViewPager;
     PagerAdapter mPagerAdapter;
+
+    ImageView imgHeart;
+    ImageView imgClose;
 
     /**
      * This interface must be implemented by activities that contain this
@@ -92,13 +90,27 @@ public class DetailFragment extends BaseFragment {
         Log.i(TAG, "onCreateView()");
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
+        imgHeart = (ImageView) view.findViewById(R.id.img_heart);
+        imgClose = (ImageView) view.findViewById(R.id.img_close);
+
+        imgHeart.setBackgroundResource("ssom".equals(postItemMap.get(postId).ssom)?R.drawable.icon_heart_green:R.drawable.icon_heart_red);
+        imgHeart.setOnClickListener(this);
+        imgClose.setOnClickListener(this);
+
         mViewPager = (ViewPager) view.findViewById(R.id.pager);
-        mPagerAdapter = new DetailPagerAdapter(inflater, postItemList);
-//        mViewPager.setCurrentItem(item);
+        mPagerAdapter = new DetailPagerAdapter(inflater);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setPageMargin(Math.round(Util.convertDpToPixel(16.5f, getActivity())));
         mViewPager.setOffscreenPageLimit(2);
         mViewPager.setClipToPadding(false);
+
+        // set page position to selected item
+        mViewPager.post(new Runnable() {
+            @Override
+            public void run() {
+                mViewPager.setCurrentItem(getCurrentPosition(postId), false);
+            }
+        });
 
         return view;
     }
@@ -123,6 +135,8 @@ public class DetailFragment extends BaseFragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        mViewPager = null;
+        mPagerAdapter = null;
         mListener = null;
     }
 
@@ -131,14 +145,22 @@ public class DetailFragment extends BaseFragment {
         Log.i(TAG, "setPostItem called : " + getActivity().toString());
     }
 
+    @Override
+    public void onClick(View v) {
+        if(v == imgHeart) {
+            // TODO - heart action 정의 후 기능부여
+        } else {
+            onAdapterButtonPressed(false);
+        }
+    }
+
     private class DetailPagerAdapter extends PagerAdapter implements View.OnClickListener {
         LayoutInflater inflater;
         ImageLoader mImageLoader;
-        ArrayList<PostContent.PostItem> pagerItems;
 
-        public DetailPagerAdapter(LayoutInflater inflater, ArrayList<PostContent.PostItem> items) {
+        public DetailPagerAdapter(LayoutInflater inflater) {
+            super();
             this.inflater = inflater;
-            this.pagerItems = items;
             this.mImageLoader = VolleyUtil.getInstance(getActivity()).getImageLoader();
         }
 
@@ -155,7 +177,7 @@ public class DetailFragment extends BaseFragment {
             TextView btnCancel = (TextView) mView.findViewById(R.id.btn_cancel);
             LinearLayout btnApply = (LinearLayout) mView.findViewById(R.id.btn_apply);
 
-            PostContent.PostItem item = pagerItems.get(position);
+            SsomContent.PostItem item = postItemList.get(position);
             // item setting
             profileImg.setImageUrl(item.getImage(), mImageLoader);
             centerLine.setBackgroundResource("ssom".equals(item.ssom) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
@@ -169,7 +191,7 @@ public class DetailFragment extends BaseFragment {
             btnCancel.setOnClickListener(this);
             btnApply.setOnClickListener(this);
 
-            container.addView(mView, position);
+            ((ViewPager)container).addView(mView);
             return mView;
         }
 
@@ -187,13 +209,14 @@ public class DetailFragment extends BaseFragment {
         @Override
         public void destroyItem(ViewGroup collection, int position, Object view) {
             //must be overridden else throws exception as not overridden.
-            Log.d(TAG, "destroy views at : " + collection.getChildCount());
-            collection.removeView((View) view);
+            Log.d(TAG, "destroy views at : " + collection.getChildAt(position));
+            ((ViewPager)collection).removeView((View) view);
+            Log.d(TAG, "item count : " + collection.getChildCount());
         }
 
         @Override
         public int getCount() {
-            return pagerItems.size();
+            return postItemList.size();
         }
 
         @Override
@@ -201,9 +224,26 @@ public class DetailFragment extends BaseFragment {
             return view == object;
         }
 
+
+        /* To make sure this pager's view correctly loaded, must override these four methods below */
         @Override
-        public float getPageWidth(int position) {
-            return 0.925f;
+        public Parcelable saveState() {
+            return null;
         }
+
+        @Override
+        public void startUpdate(ViewGroup container) {}
+
+        @Override
+        public void finishUpdate(ViewGroup container) {}
+
+        @Override
+        public void restoreState(Parcelable state, ClassLoader loader) {}
+
+        //
+//        @Override
+//        public float getPageWidth(int position) {
+//            return 0.95f;
+//        }
     }
 }

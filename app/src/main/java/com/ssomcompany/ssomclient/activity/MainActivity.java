@@ -40,6 +40,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.RoundImage;
+import com.ssomcompany.ssomclient.common.SsomContent;
+import com.ssomcompany.ssomclient.common.SsomDataChangeListener;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.common.VolleyUtil;
@@ -47,9 +49,6 @@ import com.ssomcompany.ssomclient.fragment.DetailFragment;
 import com.ssomcompany.ssomclient.fragment.FilterFragment;
 import com.ssomcompany.ssomclient.fragment.NavigationDrawerFragment;
 import com.ssomcompany.ssomclient.fragment.SsomListFragment;
-import com.ssomcompany.ssomclient.post.PostContent;
-import com.ssomcompany.ssomclient.post.PostDataChangeInterface;
-import com.ssomcompany.ssomclient.post.WriteActivity;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
 import java.util.ArrayList;
@@ -60,10 +59,10 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnDetailFragmentInteractionListener,
-        OnMapReadyCallback, FilterFragment.OnFilterFragmentInteractionListener,
-        PostDataChangeInterface {
+        OnMapReadyCallback, FilterFragment.OnFilterFragmentInteractionListener {
     private static final String FILTER_FRAG = "filter_fragment";
     private static final String DETAIL_FRAG = "detail_fragment";
+    private static final String SSOM_LIST_FRAG = "ssom_list_fragment";
 
     private static final String TAG_MAP = "MainActivity_MAP";
     private static final String TAG_LIST = "MainActivity_LIST";
@@ -122,7 +121,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         selectedView = MAP_VIEW;
         selectedTab = SSOM;
-        PostContent.init(this, this);
+        SsomContent.init(this, dataChangeListener);
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -205,6 +204,8 @@ public class MainActivity extends AppCompatActivity
                 giveBtmBar.setVisibility(View.VISIBLE);
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 takeBtmBar.setVisibility(View.GONE);
+
+                SsomContent.init(getApplicationContext(), dataChangeListener);
             }
         });
 
@@ -218,6 +219,8 @@ public class MainActivity extends AppCompatActivity
                 takeBtmBar.setVisibility(View.VISIBLE);
                 giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 giveBtmBar.setVisibility(View.GONE);
+
+                SsomContent.init(getApplicationContext(), dataChangeListener);
             }
         });
 
@@ -227,7 +230,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent i = new Intent();
-                i.setClass(context, WriteActivity.class);
+                i.setClass(context, SsomWriteActivity.class);
                 startActivity(i);
             }
         });
@@ -238,6 +241,17 @@ public class MainActivity extends AppCompatActivity
         filter.setOnClickListener(filterClickListener);
         filterImgLayout.setOnClickListener(filterClickListener);
     }
+
+    private SsomDataChangeListener dataChangeListener = new SsomDataChangeListener() {
+        @Override
+        public void onPostItemChanged() {
+            if(MAP_VIEW.equals(selectedView)){
+                initMarker();
+            } else {
+
+            }
+        }
+    };
 
     private View.OnClickListener filterClickListener = new View.OnClickListener() {
         @Override
@@ -296,9 +310,8 @@ public class MainActivity extends AppCompatActivity
         mapBtn.setVisibility(View.INVISIBLE);
         listBtn.setVisibility(View.VISIBLE);
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
-
         fragmentManager.beginTransaction().
-                replace(R.id.container, SsomListFragment.newInstance()).commit();
+                replace(R.id.container, SsomListFragment.newInstance(), SSOM_LIST_FRAG).commit();
     }
 
     @Override
@@ -342,6 +355,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPostItemClick(String id) {
+        Log.i(TAG_LIST, "onPostItemClick() : " + id);
+
         Fragment fragment = DetailFragment.newInstance(id);
         fragmentManager.beginTransaction().add(R.id.whole_container, fragment, DETAIL_FRAG)
                 .addToBackStack(null).commit();
@@ -350,10 +365,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.mMap = googleMap;
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        mMap.getUiSettings().setRotateGesturesEnabled(false);
+        setMapUiSetting();
 
-        mMap.setMyLocationEnabled(false);
         // Marshmallow
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 //                == PackageManager.PERMISSION_GRANTED) {
@@ -398,6 +411,39 @@ public class MainActivity extends AppCompatActivity
                 return false;
             }
         });
+
+        // TODO - 마커가 겹쳤을 경우 처리
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return new View(getApplicationContext());
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                return null;
+            }
+        });
+    }
+
+    private void setMapUiSetting() {
+        // 내 위치 버튼 설정
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
+        // 지도 회전시키기 설정
+        mMap.getUiSettings().setRotateGesturesEnabled(false);
+
+        // 마커 선택 시 툴바 설정
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+
+        // 맵 기울이기 설정
+        mMap.getUiSettings().setTiltGesturesEnabled(false);
+
+        // 나침반 설정
+        mMap.getUiSettings().setCompassEnabled(false);
+
+        // default my location marker disabled
+        mMap.setMyLocationEnabled(false);
     }
 
     private void initMyLocation() {
@@ -432,12 +478,12 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    public Map<String, PostContent.PostItem> getCurrentPostMap() {
-        return SSOM.equals(selectedTab)?PostContent.ITEM_GIVE:PostContent.ITEM_TAKE;
+    public Map<String, SsomContent.PostItem> getCurrentPostMap() {
+        return SSOM.equals(selectedTab)? SsomContent.ITEM_GIVE: SsomContent.ITEM_TAKE;
     }
 
-    public ArrayList<PostContent.PostItem> getCurrentPostItems() {
-        return SSOM.equals(selectedTab)?PostContent.ITEMS_GIVE:PostContent.ITEMS_TAKE;
+    public ArrayList<SsomContent.PostItem> getCurrentPostItems() {
+        return SSOM.equals(selectedTab)? SsomContent.ITEMS_GIVE: SsomContent.ITEMS_TAKE;
     }
 
     private void showActivateGPSPopup() {
@@ -445,15 +491,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initMarker() {
-        Map<String, PostContent.PostItem> items = getCurrentPostMap();
+        Map<String, SsomContent.PostItem> items = getCurrentPostMap();
         if(items != null && items.size()>0){
-            for (Map.Entry<String, PostContent.PostItem> item : items.entrySet()) {
+            for (Map.Entry<String, SsomContent.PostItem> item : items.entrySet()) {
                 addMarker(item.getValue());
             }
         }
     }
 
-    private void addMarker(final PostContent.PostItem item) {
+    private void addMarker(final SsomContent.PostItem item) {
         ImageRequest imageRequest = new ImageRequest(item.getImage(), new Response.Listener<Bitmap>() {
             Marker marker;
 
@@ -535,13 +581,6 @@ public class MainActivity extends AppCompatActivity
         // TODO - if true, go to chatting activity
         if(isApply) {
 
-        }
-    }
-
-    @Override
-    public void onPostItemChanged() {
-        if(MAP_VIEW.equals(selectedView)){
-            initMarker();
         }
     }
 

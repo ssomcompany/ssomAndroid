@@ -2,8 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     tools:context=".fragment.DetailFragment"
-    android:background="#E6000000" >
+    android:background="@color/shadow_black_89" >
 
     <RelativeLayout
         android:id="@+id/header_layout"
@@ -35,6 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="27dp"
+        android:paddingRight="27dp"
         android:paddingBottom="38dp"
         android:layout_below="@id/header_layout"/>
 </RelativeLayout>

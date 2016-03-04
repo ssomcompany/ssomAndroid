@@ -10,7 +10,7 @@ import android.widget.ImageView;
 
 import com.ssomcompany.ssomclient.R;
 
-public class Intro2Activity extends AppCompatActivity {
+public class IntroActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

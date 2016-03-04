@@ -33,6 +33,4 @@ public class CircularNetworkImageView extends NetworkImageView {
         if(bm==null) return;
         setImageDrawable(Util.getCircleBitmap(bm, bm.getWidth()));
     }
-
-
 }

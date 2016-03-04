@@ -2,24 +2,17 @@ package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.MainActivity;
-import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.post.PostContent;
-import com.ssomcompany.ssomclient.post.PostDataChangeInterface;
-import com.ssomcompany.ssomclient.post.PostItemListAdapter;
-
-import java.util.ArrayList;
-import java.util.Map;
+import com.ssomcompany.ssomclient.common.SsomDataChangeListener;
+import com.ssomcompany.ssomclient.adapter.SsomItemListAdapter;
 
 /**
  * A fragment representing a list of Items.
@@ -30,7 +23,7 @@ import java.util.Map;
  * Activities containing this fragment MUST implement the {@link OnPostItemInteractionListener}
  * interface.
  */
-public class SsomListFragment extends BaseFragment implements AbsListView.OnItemClickListener, PostDataChangeInterface {
+public class SsomListFragment extends BaseFragment implements AbsListView.OnItemClickListener, SsomDataChangeListener {
 
     /**
      * This interface must be implemented by activities that contain this
@@ -53,7 +46,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private PostItemListAdapter mAdapter;
+    private SsomItemListAdapter mAdapter;
 
     private static SsomListFragment ssomListFragment;
 
@@ -76,7 +69,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new PostItemListAdapter(getActivity());
+        mAdapter = new SsomItemListAdapter(getActivity());
         mAdapter.setItemList(postItemList);
     }
 
@@ -150,7 +143,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
     }
 
     @Override
-    void setPostItems() {
+    public void setPostItems() {
         postItemMap = ((MainActivity) getActivity()).getCurrentPostMap();
         postItemList = ((MainActivity) getActivity()).getCurrentPostItems();
         mAdapter.notifyDataSetChanged();

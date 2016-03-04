@@ -1,16 +1,13 @@
 package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.ssomcompany.ssomclient.activity.MainActivity;
-import com.ssomcompany.ssomclient.post.PostContent;
-import com.ssomcompany.ssomclient.post.PostDataChangeInterface;
+import com.ssomcompany.ssomclient.common.SsomContent;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,13 +16,25 @@ import java.util.Map;
 public abstract class BaseFragment extends Fragment {
     private static final String TAG = "BaseFragment";
 
-    public Map<String, PostContent.PostItem> postItemMap;
-    public ArrayList<PostContent.PostItem> postItemList;
+    public Map<String, SsomContent.PostItem> postItemMap;
+    public ArrayList<SsomContent.PostItem> postItemList;
 
     abstract void setPostItems();
 
     public BaseFragment() {
         super();
+    }
+
+    public int getCurrentPosition(String postId) {
+        int position = 0;
+        if(postItemList == null) return position;
+
+        for(int i=0 ; i<postItemList.size() ; i++) {
+            if(postId.equals(postItemList.get(i).postId)) position = i;
+        }
+
+        Log.i(TAG, "getCurrentPosition() : " + position);
+        return position;
     }
 
     @Override
