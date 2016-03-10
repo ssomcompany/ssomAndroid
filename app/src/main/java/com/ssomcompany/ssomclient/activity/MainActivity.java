@@ -38,19 +38,23 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.RoundImage;
-import com.ssomcompany.ssomclient.common.SsomContent;
-import com.ssomcompany.ssomclient.common.SsomDataChangeListener;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.common.VolleyUtil;
 import com.ssomcompany.ssomclient.fragment.DetailFragment;
 import com.ssomcompany.ssomclient.fragment.FilterFragment;
 import com.ssomcompany.ssomclient.fragment.NavigationDrawerFragment;
 import com.ssomcompany.ssomclient.fragment.SsomListFragment;
+import com.ssomcompany.ssomclient.network.APICaller;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.GetSsomList;
+import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,19 +64,18 @@ public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnDetailFragmentInteractionListener,
         OnMapReadyCallback, FilterFragment.OnFilterFragmentInteractionListener {
-    private static final String FILTER_FRAG = "filter_fragment";
-    private static final String DETAIL_FRAG = "detail_fragment";
-    private static final String SSOM_LIST_FRAG = "ssom_list_fragment";
 
-    private static final String TAG_MAP = "MainActivity_MAP";
-    private static final String TAG_LIST = "MainActivity_LIST";
+    public interface OnTabChangedListener {
+        void onTabChangedAction();
+    }
+
+    private OnTabChangedListener mTabListener;
 
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
 
-    private static final String SSOM = "ssom";
-    private static final String SSOA = "ssoa";
-
+    private ArrayList<SsomItem> ITEM_LIST = new ArrayList<>();
+    private Map<String, SsomItem> ITEM_MAP = new HashMap<>();
     private HashMap<Marker, String> mIdMap = new HashMap<>();
 
     /**
@@ -120,8 +123,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         selectedView = MAP_VIEW;
-        selectedTab = SSOM;
-        SsomContent.init(this, dataChangeListener);
+        selectedTab = CommonConst.Ssom.SSOM;
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -137,6 +139,36 @@ public class MainActivity extends AppCompatActivity
 
         startMapFragment();
         startService(new Intent(this, PushManageService.class));
+    }
+
+    private void requestSsomList() {
+        APICaller.getSsomList(new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
+
+            @Override
+            public void onResponse(SsomResponse<GetSsomList.Response> response) {
+                if (response.isSuccess()) {
+                    GetSsomList.Response data = response.getData();
+                    if (data != null && data.getSsomList() != null && data.getSsomList().size() > 0) {
+                        ITEM_LIST.clear();
+                        ITEM_MAP.clear();
+
+                        ITEM_LIST = data.getSsomList();
+                        for(SsomItem item : data.getSsomList()) {
+                            ITEM_MAP.put(item.getPostId(), item);
+                        }
+
+                        // ui change at last
+                        ssomDataChangedListener();
+                    } else {
+                        // TODO reloading to use app
+                        Log.i(CommonConst.Tag.MAIN_ACTIVITY, "data is null !!");
+                    }
+                } else {
+                    Log.e(CommonConst.Tag.MAIN_ACTIVITY, "Response error with code " + response.getResultCode() + ", message : " + response.getMessage(),
+                            response.getError());
+                }
+            }
+        });
     }
 
     @Override
@@ -197,30 +229,30 @@ public class MainActivity extends AppCompatActivity
         giveTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (SSOM.equals(selectedTab)) return;
+                if (CommonConst.Ssom.SSOM.equals(selectedTab)) return;
 
-                selectedTab = SSOM;
+                selectedTab = CommonConst.Ssom.SSOM;
                 giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_green_blue);
                 giveBtmBar.setVisibility(View.VISIBLE);
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 takeBtmBar.setVisibility(View.GONE);
 
-                SsomContent.init(getApplicationContext(), dataChangeListener);
+                requestSsomList();
             }
         });
 
         takeTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(SSOA.equals(selectedTab)) return;
+                if(CommonConst.Ssom.SSOA.equals(selectedTab)) return;
 
-                selectedTab = SSOA;
+                selectedTab = CommonConst.Ssom.SSOA;
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_red_pink);
                 takeBtmBar.setVisibility(View.VISIBLE);
                 giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 giveBtmBar.setVisibility(View.GONE);
 
-                SsomContent.init(getApplicationContext(), dataChangeListener);
+                requestSsomList();
             }
         });
 
@@ -242,14 +274,13 @@ public class MainActivity extends AppCompatActivity
         filterImgLayout.setOnClickListener(filterClickListener);
     }
 
-    private SsomDataChangeListener dataChangeListener = new SsomDataChangeListener() {
-        @Override
-        public void onPostItemChanged() {
-            if(MAP_VIEW.equals(selectedView)){
-                initMarker();
-            } else {
-
-            }
+    private void ssomDataChangedListener() {
+        if(MAP_VIEW.equals(selectedView)){
+            if(mMap != null) mMap.clear();
+            initMyLocation(true);
+            initMarker();
+        } else {
+            mTabListener.onTabChangedAction();
         }
     };
 
@@ -257,7 +288,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onClick(View v) {
             FilterFragment filterFragment = FilterFragment.newInstance();
-            fragmentManager.beginTransaction().add(R.id.top_container, filterFragment, FILTER_FRAG)
+            fragmentManager.beginTransaction().add(R.id.top_container, filterFragment, CommonConst.Fragment.FILTER_FRAG)
                     .addToBackStack(null).commit();
         }
     };
@@ -268,7 +299,7 @@ public class MainActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        Log.i(TAG_MAP, "drawer open state : " + drawer.isDrawerOpen(Gravity.LEFT));
+        Log.i(CommonConst.Tag.MAIN_ACTIVITY, "drawer open state : " + drawer.isDrawerOpen(Gravity.LEFT));
         if(drawer.isDrawerOpen(Gravity.LEFT)) drawer.closeDrawers();
 
         ImageView lnbMenu = (ImageView) tb.findViewById(R.id.lnb_menu_btn);
@@ -291,8 +322,17 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     startMapFragment();
                 }
+
+                setToggleButtonUI();
             }
         });
+    }
+
+    private void setToggleButtonUI() {
+        mapBtn.setTextAppearance(this, MAP_VIEW.equals(selectedView)? R.style.ssom_font_12_white_single : R.style.ssom_font_12_grayish_brown_single);
+        mapBtn.setBackgroundResource(MAP_VIEW.equals(selectedView) ? R.drawable.bg_main_toggle_on : 0);
+        listBtn.setTextAppearance(this, LIST_VIEW.equals(selectedView)? R.style.ssom_font_12_white_single : R.style.ssom_font_12_grayish_brown_single);
+        listBtn.setBackgroundResource(LIST_VIEW.equals(selectedView) ? R.drawable.bg_main_toggle_on : 0);
     }
 
     private void startMapFragment(){
@@ -301,17 +341,13 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().
                 replace(R.id.container, mapFragment).commit();
         mapFragment.getMapAsync(this);
-        mapBtn.setVisibility(View.VISIBLE);
-        listBtn.setVisibility(View.INVISIBLE);
     }
 
     private void startListFragment() {
         selectedView = LIST_VIEW;
-        mapBtn.setVisibility(View.INVISIBLE);
-        listBtn.setVisibility(View.VISIBLE);
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
         fragmentManager.beginTransaction().
-                replace(R.id.container, SsomListFragment.newInstance(), SSOM_LIST_FRAG).commit();
+                replace(R.id.container, SsomListFragment.newInstance(), CommonConst.Fragment.SSOM_LIST_FRAG).commit();
     }
 
     @Override
@@ -355,10 +391,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPostItemClick(String id) {
-        Log.i(TAG_LIST, "onPostItemClick() : " + id);
+        Log.i(CommonConst.Tag.MAIN_ACTIVITY, "onPostItemClick() : " + id);
 
         Fragment fragment = DetailFragment.newInstance(id);
-        fragmentManager.beginTransaction().add(R.id.whole_container, fragment, DETAIL_FRAG)
+        fragmentManager.beginTransaction().add(R.id.whole_container, fragment, CommonConst.Fragment.DETAIL_FRAG)
                 .addToBackStack(null).commit();
     }
 
@@ -375,7 +411,7 @@ public class MainActivity extends AppCompatActivity
 //        }
 
         // init start my location
-        initMyLocation();
+        initMyLocation(false);
 
         // current position settings
         mBtnMapMyLocation.setVisibility(View.VISIBLE);
@@ -393,7 +429,7 @@ public class MainActivity extends AppCompatActivity
                 currentMarker.setPosition(currentPosition);
             }
         });
-        initMarker();
+        requestSsomList();
 
         // 마커 클릭 리스너
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -401,12 +437,15 @@ public class MainActivity extends AppCompatActivity
             public boolean onMarkerClick(Marker marker) {
                 String postId = mIdMap.get(marker);
 
-                Log.i(TAG_MAP, "[마커 클릭 이벤트] latitude ="
+                // my position click 시 이벤트 없음
+                if(postId == null || "".equals(postId)) return false;
+
+                Log.i(CommonConst.Tag.MAIN_ACTIVITY, "[마커 클릭 이벤트] latitude ="
                         + marker.getPosition().latitude + ", longitude ="
                         + marker.getPosition().longitude);
 
                 Fragment fragment = DetailFragment.newInstance(postId);
-                fragmentManager.beginTransaction().add(R.id.whole_container, fragment, DETAIL_FRAG)
+                fragmentManager.beginTransaction().add(R.id.whole_container, fragment, CommonConst.Fragment.DETAIL_FRAG)
                         .addToBackStack(null).commit();
                 return false;
             }
@@ -446,14 +485,15 @@ public class MainActivity extends AppCompatActivity
         mMap.setMyLocationEnabled(false);
     }
 
-    private void initMyLocation() {
+    private void initMyLocation(boolean isUpdate) {
         LocationUtil.getMyLocation(this, locationResult);
 
         Location initLo = LocationUtil.getLocation(getApplicationContext());
         LatLng initPosition = new LatLng(initLo.getLatitude(), initLo.getLongitude());
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initPosition, 13));
+        if(!isUpdate) mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initPosition, 13));
         currentMarker = mMap.addMarker(new MarkerOptions()
+                .draggable(false)
                 .position(initPosition)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
     }
@@ -461,7 +501,7 @@ public class MainActivity extends AppCompatActivity
     private LocationUtil.LocationResult locationResult = new LocationUtil.LocationResult() {
         @Override
         public void getLocationCallback(Location location) {
-            Log.i(TAG_MAP, "lat : " + location.getLatitude() + ", lon : " + location.getLongitude());
+            Log.i(CommonConst.Tag.MAIN_ACTIVITY, "lat : " + location.getLatitude() + ", lon : " + location.getLongitude());
 
             LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -478,12 +518,12 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    public Map<String, SsomContent.PostItem> getCurrentPostMap() {
-        return SSOM.equals(selectedTab)? SsomContent.ITEM_GIVE: SsomContent.ITEM_TAKE;
+    public Map<String, SsomItem> getCurrentPostMap() {
+        return CommonConst.Ssom.SSOM.equals(selectedTab)? Util.convertAllMapToSsomMap(ITEM_MAP) : Util.convertAllMapToSsoaMap(ITEM_MAP);
     }
 
-    public ArrayList<SsomContent.PostItem> getCurrentPostItems() {
-        return SSOM.equals(selectedTab)? SsomContent.ITEMS_GIVE: SsomContent.ITEMS_TAKE;
+    public ArrayList<SsomItem> getCurrentPostItems() {
+        return CommonConst.Ssom.SSOM.equals(selectedTab)? Util.convertAllListToSsomList(ITEM_LIST) : Util.convertAllListToSsoaList(ITEM_LIST);
     }
 
     private void showActivateGPSPopup() {
@@ -491,25 +531,26 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initMarker() {
-        Map<String, SsomContent.PostItem> items = getCurrentPostMap();
+        Map<String, SsomItem> items = getCurrentPostMap();
         if(items != null && items.size()>0){
-            for (Map.Entry<String, SsomContent.PostItem> item : items.entrySet()) {
+            mIdMap.clear();
+            for (Map.Entry<String, SsomItem> item : items.entrySet()) {
                 addMarker(item.getValue());
             }
         }
     }
 
-    private void addMarker(final SsomContent.PostItem item) {
-        ImageRequest imageRequest = new ImageRequest(item.getImage(), new Response.Listener<Bitmap>() {
+    private void addMarker(final SsomItem item) {
+        ImageRequest imageRequest = new ImageRequest(item.getImageUrl(), new Response.Listener<Bitmap>() {
             Marker marker;
 
             @Override
             public void onResponse(Bitmap bitmap) {
                 marker = mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(item.lat, item.lng))
-                        .title(item.content).draggable(false).icon(getMarkerImage(item.ssom, bitmap)));
+                        .position(new LatLng(item.getLatitude(), item.getLongitude()))
+                        .title(item.getContent()).draggable(false).icon(getMarkerImage(item.getSsom(), bitmap)));
 
-                mIdMap.put(marker, item.postId);
+                mIdMap.put(marker, item.getPostId());
             }
         }
         , 144  // max width
@@ -523,7 +564,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        VolleyUtil.getInstance(getApplicationContext()).getRequestQueue().add(imageRequest);
+        NetworkManager.getInstance().getRequestQueue().add(imageRequest);
     }
 
     private BitmapDescriptor getMarkerImage(String ssom , Bitmap imageBitmap){
@@ -549,6 +590,7 @@ public class MainActivity extends AppCompatActivity
             imageDrawable.draw(c);
             iconDrawable.draw(c);
         } catch (Exception e) {
+            Log.i(CommonConst.Tag.MAIN_ACTIVITY, "Get Marker image finished by exception..!");
         }
 
         return BitmapDescriptorFactory.fromBitmap(mergedBitmap);
@@ -568,15 +610,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFilterFragmentInteraction(boolean isApply) {
-        Log.i(TAG_MAP, "filter interaction : " + isApply);
-        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(FILTER_FRAG)).commit();
+        Log.i(CommonConst.Tag.MAIN_ACTIVITY, "filter interaction : " + isApply);
+        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.Fragment.FILTER_FRAG)).commit();
         if(isApply) initFilterView();
     }
 
     @Override
     public void onDetailFragmentInteraction(boolean isApply) {
-        Log.i(TAG_MAP, "detail interaction : " + isApply);
-        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(DETAIL_FRAG)).commit();
+        Log.i(CommonConst.Tag.MAIN_ACTIVITY, "detail interaction : " + isApply);
+        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.Fragment.DETAIL_FRAG)).commit();
 
         // TODO - if true, go to chatting activity
         if(isApply) {
@@ -629,4 +671,7 @@ public class MainActivity extends AppCompatActivity
         LocationUtil.stopLocationUpdates();
     }
 
+    public void setOnTabChangedListener(OnTabChangedListener mTabListener) {
+        this.mTabListener = mTabListener;
+    }
 }

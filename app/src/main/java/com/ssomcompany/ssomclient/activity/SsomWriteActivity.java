@@ -21,8 +21,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.network.BaseVolleyRequest;
-import com.ssomcompany.ssomclient.network.NetworkManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,10 +31,10 @@ import java.io.IOException;
 import java.util.Map;
 
 public class SsomWriteActivity extends AppCompatActivity {
+    private static String ssomType = CommonConst.Ssom.SSOM;
 
-    private String ssomType = "ssom";
     private View ssomTypeSsom;
-    private View ssomTypeSsoseyo;
+    private View ssomTypeSsoa;
     private ImageView iconSt;
 
     @Override
@@ -63,15 +63,15 @@ public class SsomWriteActivity extends AppCompatActivity {
     }
 
     private void toggleSsomType() {
-        if(ssomType.equals("ssom")){
-            ssomType = "ssoseyo";
+        if(CommonConst.Ssom.SSOM.equals(ssomType)){
+            ssomType = CommonConst.Ssom.SSOA;
             ssomTypeSsom.setVisibility(View.INVISIBLE);
-            ssomTypeSsoseyo.setVisibility(View.VISIBLE);
+            ssomTypeSsoa.setVisibility(View.VISIBLE);
             iconSt.setImageResource(R.drawable.icon_wirte_st_r);
         }else{
-            ssomType= "ssom";
+            ssomType= CommonConst.Ssom.SSOM;
             ssomTypeSsom.setVisibility(View.VISIBLE);
-            ssomTypeSsoseyo.setVisibility(View.INVISIBLE);
+            ssomTypeSsoa.setVisibility(View.INVISIBLE);
             iconSt.setImageResource(R.drawable.icon_wirte_st_b);
         }
     }
@@ -214,7 +214,7 @@ public class SsomWriteActivity extends AppCompatActivity {
         try {
             RequestQueue queue = Volley.newRequestQueue(getApplication());
             //String url = "http://54.64.154.188/posts";
-            String url = NetworkManager.getInstance().getNetworkUrl(NetworkManager.TYPE.POST);
+//            String url = NetworkManager.getInstance().getNetworkUrl(NetworkManager.TYPE.POST);
 
 //            EditText messageBox = (EditText) findViewById(R.id.message);
 //            final String text = messageBox.getText().toString();

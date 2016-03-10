@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/main_black_80"
     tools:context=".activity.SsomWriteActivity">
 
     <!-- title bar -->
@@ -37,10 +36,18 @@
 
     </LinearLayout>
 
+    <ImageView
+        android:layout_below="@id/title_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_photo_map"/>
+
     <RelativeLayout
+        android:layout_below="@id/title_bar_layout"
+        android:id="@+id/image_category_layout"
         android:layout_width="match_parent"
         android:layout_height="175dp"
-        android:layout_below="@id/title_bar_layout">
+        android:background="@color/main_black_80">
 
         <FrameLayout
             android:id="@+id/image_layout"
@@ -74,8 +81,265 @@
                 android:background="@drawable/icon_write_camera"/>
         </FrameLayout>
 
+        <TextView
+            android:layout_toRightOf="@id/image_layout"
+            android:id="@+id/tv_ssom_balloon"
+            style="@style/ssom_font_16_white_single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_write_balloon_ssom_on"
+            android:text="@string/title_tab_give"
+            android:gravity="center_vertical|right"
+            android:paddingRight="12dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            />
 
-
+        <TextView
+            android:layout_toRightOf="@id/image_layout"
+            android:layout_below="@id/tv_ssom_balloon"
+            android:id="@+id/tv_ssoa_balloon"
+            style="@style/ssom_font_12_white_single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_write_balloon_ssoa_off"
+            android:text="@string/title_tab_take"
+            android:gravity="center_vertical|right"
+            android:paddingRight="9dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"
+            />
     </RelativeLayout>
+
+    <LinearLayout
+        android:layout_below="@id/image_category_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <!-- 나이 선택 영역 -->
+            <TextView
+                android:id="@+id/tv_our_age"
+                style="@style/ssom_font_12_gray_warm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/write_select_our_age"/>
+
+            <LinearLayout
+                android:layout_below="@id/tv_our_age"
+                android:id="@+id/age_select_option"
+                android:layout_width="240dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_write_age_20_early"
+                    style="@style/ssom_font_12_gray_warm_bold"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:background="@drawable/filter_option_selector"
+                    android:textColor="@drawable/filter_option_color_selector"
+                    android:text="@string/filter_age_20_early" />
+
+                <View
+                    android:layout_width="0.2dp"
+                    android:layout_height="match_parent"
+                    android:background="#979797"/>
+
+                <TextView
+                    android:id="@+id/tv_write_age_20_middle"
+                    style="@style/ssom_font_12_gray_warm_bold"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:background="@drawable/filter_option_selector"
+                    android:textColor="@drawable/filter_option_color_selector"
+                    android:text="@string/filter_age_20_middle" />
+
+                <View
+                    android:layout_width="0.2dp"
+                    android:layout_height="match_parent"
+                    android:background="#979797"/>
+
+                <TextView
+                    android:id="@+id/tv_write_age_20_late"
+                    style="@style/ssom_font_12_gray_warm_bold"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:background="@drawable/filter_option_selector"
+                    android:textColor="@drawable/filter_option_color_selector"
+                    android:text="@string/filter_age_20_late" />
+
+                <View
+                    android:layout_width="0.2dp"
+                    android:layout_height="match_parent"
+                    android:background="#979797"/>
+
+                <TextView
+                    android:id="@+id/tv_write_age_30_all"
+                    style="@style/ssom_font_12_gray_warm_bold"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:background="@drawable/filter_option_selector"
+                    android:textColor="@drawable/filter_option_color_selector"
+                    android:text="@string/filter_age_30_all" />
+            </LinearLayout>
+
+            <!-- 사람 선택 영역 -->
+            <TextView
+                android:layout_below="@id/age_select_option"
+                android:id="@+id/tv_our_people"
+                style="@style/ssom_font_12_gray_warm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                android:text="@string/write_select_our_people"/>
+
+            <LinearLayout
+                android:layout_below="@id/tv_our_people"
+                android:id="@+id/people_select_option"
+                android:layout_width="240dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_write_people_1"
+                    style="@style/ssom_font_12_gray_warm_bold"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:background="@drawable/filter_option_selector"
+                    android:textColor="@drawable/filter_option_color_selector"
+                    android:text="@string/filter_people_1" />
+
+                <View
+                    android:layout_width="0.2dp"
+                    android:layout_height="match_parent"
+                    android:background="#979797"/>
+
+                <TextView
+                    android:id="@+id/tv_write_people_2"
+                    style="@style/ssom_font_12_gray_warm_bold"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:background="@drawable/filter_option_selector"
+                    android:textColor="@drawable/filter_option_color_selector"
+                    android:text="@string/filter_people_2" />
+
+                <View
+                    android:layout_width="0.2dp"
+                    android:layout_height="match_parent"
+                    android:background="#979797"/>
+
+                <TextView
+                    android:id="@+id/tv_write_people_3"
+                    style="@style/ssom_font_12_gray_warm_bold"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:background="@drawable/filter_option_selector"
+                    android:textColor="@drawable/filter_option_color_selector"
+                    android:text="@string/filter_people_3" />
+
+                <View
+                    android:layout_width="0.2dp"
+                    android:layout_height="match_parent"
+                    android:background="#979797"/>
+
+                <TextView
+                    android:id="@+id/tv_write_people_4_n_over"
+                    style="@style/ssom_font_12_gray_warm_bold"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:background="@drawable/filter_option_selector"
+                    android:textColor="@drawable/filter_option_color_selector"
+                    android:text="@string/filter_people_4_n_over" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_below="@id/people_select_option"
+                android:id="@+id/tv_one_letter"
+                style="@style/ssom_font_9_c8c8c8_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="29dp"
+                android:text="@string/write_one_letter"/>
+
+            <EditText
+                android:layout_below="@id/tv_one_letter"
+                android:id="@+id/edit_write_content"
+                style="@style/ssom_font_16_gray_warm"
+                android:layout_width="240dp"
+                android:layout_height="94dp"
+                android:layout_marginTop="7.5dp"
+                android:lines="4"
+                android:maxLines="4"
+                android:hint="@string/write_content_hint"
+                android:textColorHint="@color/c8c8c8"
+                android:background="@null"/>
+
+            <ImageView
+                android:layout_below="@id/edit_write_content"
+                android:background="@color/c8c8c8"
+                android:layout_marginTop="5dp"
+                android:layout_width="240dp"
+                android:layout_height="1.3dp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:layout_marginTop="47dp"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/btn_cancel"
+                style="@style/ssom_font_16_white_bold_single"
+                android:layout_width="136dp"
+                android:layout_height="46dp"
+                android:background="@drawable/btn_write_cancel"
+                android:gravity="center"
+                android:text="@string/detail_cancel"/>
+
+            <LinearLayout
+                android:id="@+id/btn_apply"
+                android:layout_width="136dp"
+                android:layout_height="46dp"
+                android:layout_marginLeft="7dp"
+                android:gravity="center"
+                android:background="@drawable/btn_write_apply_ssom">
+
+                <ImageView
+                    android:layout_width="23dp"
+                    android:layout_height="21dp"
+                    android:layout_marginTop="2dp"
+                    android:src="@drawable/icon_heart_white"/>
+
+                <TextView
+                    style="@style/ssom_font_16_white_bold_single"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/write_apply"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

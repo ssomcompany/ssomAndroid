@@ -12,33 +12,31 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CircularNetworkImageView;
+import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.common.VolleyUtil;
-import com.ssomcompany.ssomclient.common.SsomContent;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
 import java.util.ArrayList;
 
-/**
- * Created by kshgizmo on 2015. 9. 11..
- */
 public class SsomItemListAdapter extends BaseAdapter{
 
     private LayoutInflater mInflater;
     private Context context;
     private ImageLoader mImageLoader;
 
-    private ArrayList<SsomContent.PostItem> itemList;
+    private ArrayList<SsomItem> itemList;
 
     public SsomItemListAdapter(Context context){
         this.context = context;
         this.mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-        this.mImageLoader = VolleyUtil.getInstance(context).getImageLoader();
+        this.mImageLoader = NetworkManager.getInstance().getImageLoader();
     }
 
-    public void setItemList(ArrayList<SsomContent.PostItem> itemList) {
+    public void setItemList(ArrayList<SsomItem> itemList) {
         this.itemList = itemList;
     }
 
@@ -82,9 +80,9 @@ public class SsomItemListAdapter extends BaseAdapter{
         }
 
         // list view item setting
-        SsomContent.PostItem item = itemList.get(position);
+        SsomItem item = itemList.get(position);
 
-        holder.image.setImageUrl(item.getImage(), mImageLoader);
+        holder.image.setImageUrl(item.getImageUrl(), mImageLoader);
 //        mImageLoader.get(row_pos.getImage(), ImageLoader.getImageListener(image,R.drawable.icon_wirte_photo_emp, R.drawable.icon_wirte_photo_emp));
 //        ImageRequest imageRequest = new ImageRequest(row_pos.getImage(), new Response.Listener<Bitmap>() {
 //            @Override
@@ -103,7 +101,7 @@ public class SsomItemListAdapter extends BaseAdapter{
 
         //icon
         holder.iconView = (ImageView) convertView.findViewById(R.id.icon_list_r);
-        if("ssom".equals(item.ssom)){
+        if(CommonConst.Ssom.SSOM.equals(item.getSsom())){
             holder.iconView.setImageResource(R.drawable.icon_list_st_g);
         }else{
             holder.iconView.setImageResource(R.drawable.icon_list_st_r);
@@ -111,16 +109,16 @@ public class SsomItemListAdapter extends BaseAdapter{
 
         // title
         holder.titleTv.setText(String.format(context.getResources().getString(R.string.post_title),
-                "20대 초", item.userCount));
+                "20대 초", item.getUserCount()));
 
         //time
-        holder.timeTv.setText(Util.getTimeText(Long.valueOf(item.postId)));
+        holder.timeTv.setText(Util.getTimeText(Long.valueOf(item.getPostId())));
 
         // distance
         holder.distanceTv.setText(LocationUtil.getDistanceString(item));
 
         // content
-        holder.contentTv.setText(item.content);
+        holder.contentTv.setText(item.getContent());
 
         return convertView;
     }

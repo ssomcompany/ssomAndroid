@@ -9,13 +9,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-/**
- * Created by kshgizmo on 2015. 10. 12..
- */
+import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+
 public class LocationUtil {
     // Logging
     private static final String TAG = "LocationUtil";
-    private static String provide;
 
     // location settings
     private static Location myLocation;
@@ -31,6 +29,7 @@ public class LocationUtil {
     private static final long MIN_TIME_UPDATES = 1000 * 10;
 
     public static boolean getMyLocation(Context context, LocationResult result) {
+        String provide;
         locationResult = result;
         if(locationManager == null) {
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -92,11 +91,10 @@ public class LocationUtil {
         }
     }
 
-    public static String getDistanceString(SsomContent.PostItem item){
-        Log.i(TAG, "Distance from me : " + myLocation);
+    public static String getDistanceString(SsomItem item){
         if(myLocation!=null) {
             float[] results = new float[1];
-            Location.distanceBetween(item.lat, item.lng, myLocation.getLatitude(), myLocation.getLongitude(), results);
+            Location.distanceBetween(item.getLatitude(), item.getLongitude(), myLocation.getLatitude(), myLocation.getLongitude(), results);
             float distance = results[0];
             if(distance > 1000){
                 int km = (int) (distance/1000);

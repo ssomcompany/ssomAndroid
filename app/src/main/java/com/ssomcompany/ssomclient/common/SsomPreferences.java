@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-/**
- * Created by Aaron Choi on 2016-02-04.
- */
 public class SsomPreferences {
     public static final String FILTER_PREF = "com.ssomcompany.ssomclient.pref";
 
@@ -28,14 +25,14 @@ public class SsomPreferences {
         pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
         editor = pref.edit();
         editor.putString(key, value);
-        editor.commit();
+        editor.apply();
     }
 
     public void put(String key, int value) {
         pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
         editor = pref.edit();
         editor.putInt(key, value);
-        editor.commit();
+        editor.apply();
     }
 
     public String getString(String key, String defValue) {

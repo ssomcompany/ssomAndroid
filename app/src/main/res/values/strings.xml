@@ -28,6 +28,13 @@
     <string name="filter_btn_cancel">취소</string>
     <string name="filter_btn_apply">적용하기</string>
 
+    <!-- write post -->
+    <string name="write_select_our_age">우리 나이는 %1$s 이에요</string>
+    <string name="write_select_our_people">%1$d 명이 기다리고 있어요</string>
+    <string name="write_one_letter">한마디</string>
+    <string name="write_content_hint">한 마디를 작성해보세요!\n센스 있는 메뉴선택, 멘트가\n뜨거운 쏨의 첫 걸음 입니다. : )</string>
+    <string name="write_apply">등록하기</string>
+
     <!-- post list menu -->
     <string name="title_tab_give">내가 쏨</string>
     <string name="title_tab_take">니가 쏴</string>
@@ -41,4 +48,17 @@
     <string name="detail_age_people">%1$s, %2$d명 이에요.</string>
     <string name="detail_distance">나와의 거리 %1$s</string>
 
+    <!-- button -->
+    <string name="ok_upper">확인</string>
+    <string name="cancel">취소</string>
+
+    <!-- error message -->
+    <string name="an_unexpected_error_occur">예상하지 못한 에러가 발생했습니다.</string>
+
+    <!-- notice message -->
+    <string name="notice">공지</string>
+
+    <!-- toggle bar -->
+    <string name="map">MAP</string>
+    <string name="list">LIST</string>
 </resources>

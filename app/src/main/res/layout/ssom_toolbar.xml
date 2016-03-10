@@ -34,49 +34,35 @@
             android:background="@drawable/bg_main_toggle">
             <TextView
                 android:id="@+id/toggle_s_map"
-                style="@style/ssom_font_12_white"
+                style="@style/ssom_font_12_white_single"
                 android:layout_width="86dp"
-                android:layout_height="33dp"
+                android:layout_height="34dp"
                 android:background="@drawable/bg_main_toggle_on"
-                android:text="MAP"
+                android:text="@string/map"
                 android:gravity="center"/>
             <TextView
                 android:id="@+id/toggle_s_list"
-                style="@style/ssom_font_12_white"
+                style="@style/ssom_font_12_grayish_brown_single"
                 android:layout_width="86dp"
-                android:layout_height="33dp"
+                android:layout_height="34dp"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/bg_main_toggle_on"
-                android:text="LIST"
-                android:gravity="center"
-                android:visibility="invisible"/>
+                android:text="@string/list"
+                android:gravity="center"/>
         </RelativeLayout>
 
-        <LinearLayout
+        <TextView
             android:id="@+id/chat_layout"
+            style="@style/ssom_font_12_gray_warm"
             android:layout_width="34dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="11dp"
             android:layout_marginRight="6dp"
             android:layout_alignParentRight="true"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/chat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="1.5dp"
-                android:src="@drawable/icon_chat"/>
-
-            <TextView
-                android:id="@+id/chat_count"
-                style="@style/ssom_font_12_gray_warm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="5"/>
-        </LinearLayout>
+            android:drawableTop="@drawable/icon_chat"
+            android:drawablePadding="1.5dp"
+            android:gravity="center"
+            android:text="5"
+            android:orientation="vertical" />
 
         <LinearLayout
             android:layout_width="38.3dp"

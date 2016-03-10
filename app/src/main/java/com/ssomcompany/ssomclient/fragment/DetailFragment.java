@@ -17,10 +17,11 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.common.VolleyUtil;
-import com.ssomcompany.ssomclient.common.SsomContent;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
 
 /**
@@ -32,8 +33,6 @@ import com.ssomcompany.ssomclient.common.SsomContent;
  * create an instance of this fragment.
  */
 public class DetailFragment extends BaseFragment implements View.OnClickListener {
-    private static final String TAG = "DetailFragment";
-
     private static final String POST_ID = "postId";
     private String postId;
 
@@ -75,25 +74,26 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate()");
+        Log.i(CommonConst.Tag.DETAIL_FRAGMENT, "onCreate()");
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
             postId = getArguments().getString(POST_ID);
-            Log.i(TAG, "postId : " + postId);
+            Log.i(CommonConst.Tag.DETAIL_FRAGMENT, "postId : " + postId);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i(TAG, "onCreateView()");
+        Log.i(CommonConst.Tag.DETAIL_FRAGMENT, "onCreateView()");
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
         imgHeart = (ImageView) view.findViewById(R.id.img_heart);
         imgClose = (ImageView) view.findViewById(R.id.img_close);
 
-        imgHeart.setBackgroundResource("ssom".equals(postItemMap.get(postId).ssom)?R.drawable.icon_heart_green:R.drawable.icon_heart_red);
+        Log.i(CommonConst.Tag.DETAIL_FRAGMENT, "postId : " + postId + ", ssom : " + postItemMap.get(postId).getSsom());
+        imgHeart.setBackgroundResource(CommonConst.Ssom.SSOM.equals(postItemMap.get(postId).getSsom()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
         imgHeart.setOnClickListener(this);
         imgClose.setOnClickListener(this);
 
@@ -142,7 +142,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     void setPostItems() {
-        Log.i(TAG, "setPostItem called : " + getActivity().toString());
+        Log.i(CommonConst.Tag.DETAIL_FRAGMENT, "setPostItem called : " + getActivity().toString());
     }
 
     @Override
@@ -161,7 +161,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         public DetailPagerAdapter(LayoutInflater inflater) {
             super();
             this.inflater = inflater;
-            this.mImageLoader = VolleyUtil.getInstance(getActivity()).getImageLoader();
+            this.mImageLoader = NetworkManager.getInstance().getImageLoader();
         }
 
         @Override
@@ -177,15 +177,15 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             TextView btnCancel = (TextView) mView.findViewById(R.id.btn_cancel);
             LinearLayout btnApply = (LinearLayout) mView.findViewById(R.id.btn_apply);
 
-            SsomContent.PostItem item = postItemList.get(position);
+            SsomItem item = postItemList.get(position);
             // item setting
-            profileImg.setImageUrl(item.getImage(), mImageLoader);
-            centerLine.setBackgroundResource("ssom".equals(item.ssom) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
-            tvCategory.setText("ssom".equals(item.ssom) ? R.string.title_tab_give : R.string.title_tab_take);
+            profileImg.setImageUrl(item.getImageUrl(), mImageLoader);
+            centerLine.setBackgroundResource(CommonConst.Ssom.SSOM.equals(item.getSsom()) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
+            tvCategory.setText(CommonConst.Ssom.SSOM.equals(item.getSsom()) ? R.string.title_tab_give : R.string.title_tab_take);
             tvDistance.setText( String.format( getResources().getString(R.string.detail_distance), LocationUtil.getDistanceString(item) ) );
-            tvAgePeople.setText( String.format( getResources().getString(R.string.detail_age_people), Util.convertAgeRange(item.minAge), item.userCount) );
-            tvContent.setText(item.content);
-            btnApply.setBackgroundResource("ssom".equals(item.ssom) ? R.drawable.btn_write_apply_ssom : R.drawable.btn_write_apply_ssoa);
+            tvAgePeople.setText( String.format( getResources().getString(R.string.detail_age_people), Util.convertAgeRange(item.getMinAge()), item.getUserCount()) );
+            tvContent.setText(item.getContent());
+            btnApply.setBackgroundResource(CommonConst.Ssom.SSOM.equals(item.getSsom()) ? R.drawable.btn_write_apply_ssom : R.drawable.btn_write_apply_ssoa);
 
             // btn setting
             btnCancel.setOnClickListener(this);
@@ -209,9 +209,9 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         @Override
         public void destroyItem(ViewGroup collection, int position, Object view) {
             //must be overridden else throws exception as not overridden.
-            Log.d(TAG, "destroy views at : " + collection.getChildAt(position));
+            Log.d(CommonConst.Tag.DETAIL_FRAGMENT, "destroy views at : " + collection.getChildAt(position));
             ((ViewPager)collection).removeView((View) view);
-            Log.d(TAG, "item count : " + collection.getChildCount());
+            Log.d(CommonConst.Tag.DETAIL_FRAGMENT, "item count : " + collection.getChildCount());
         }
 
         @Override

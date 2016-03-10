@@ -3,10 +3,16 @@ package com.ssomcompany.ssomclient.common;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -80,9 +86,9 @@ public class Util {
      *
      * @param items A map
      */
-    public static ArrayList<SsomContent.PostItem> convertMapToArrayList(Map<String, SsomContent.PostItem> items) {
-        ArrayList<SsomContent.PostItem> arrayList = new ArrayList<>();
-        for(Map.Entry<String, SsomContent.PostItem> item : items.entrySet()) {
+    public static ArrayList<SsomItem> convertMapToArrayList(Map<String, SsomItem> items) {
+        ArrayList<SsomItem> arrayList = new ArrayList<>();
+        for(Map.Entry<String, SsomItem> item : items.entrySet()) {
             arrayList.add(item.getValue());
         }
         return arrayList;
@@ -110,5 +116,70 @@ public class Util {
                 break;
         }
         return ageRange;
+    }
+
+    /**
+     * This method converts all list to ssom list
+     *
+     * @param allList all list arrayList
+     */
+    public static ArrayList<SsomItem> convertAllListToSsomList(ArrayList<SsomItem> allList) {
+        ArrayList<SsomItem> toList = new ArrayList<>();
+        for(SsomItem item : allList) {
+            if(CommonConst.Ssom.SSOM.equals(item.getSsom())) toList.add(item);
+        }
+
+        return toList;
+    }
+
+    /**
+     * This method converts all list to ssoa list
+     *
+     * @param allList all list arrayList
+     */
+    public static ArrayList<SsomItem> convertAllListToSsoaList(ArrayList<SsomItem> allList) {
+        ArrayList<SsomItem> toList = new ArrayList<>();
+        for(SsomItem item : allList) {
+            if(!CommonConst.Ssom.SSOM.equals(item.getSsom())) toList.add(item);
+        }
+
+        return toList;
+    }
+
+    /**
+     * This method converts all map to ssom map
+     *
+     * @param allMap all map HashMap
+     */
+    public static Map<String, SsomItem> convertAllMapToSsomMap(Map<String, SsomItem> allMap) {
+        Map<String, SsomItem> toMap = new HashMap<>();
+        for(Map.Entry<String, SsomItem> item : allMap.entrySet()) {
+            if(CommonConst.Ssom.SSOM.equals(item.getValue().getSsom())) toMap.put(item.getKey(), item.getValue());
+        }
+
+        return toMap;
+    }
+
+    /**
+     * This method converts all map to ssoa map
+     *
+     * @param allMap all map HashMap
+     */
+    public static Map<String, SsomItem> convertAllMapToSsoaMap(Map<String, SsomItem> allMap) {
+        Map<String, SsomItem> toMap = new HashMap<>();
+        for(Map.Entry<String, SsomItem> item : allMap.entrySet()) {
+            if(!CommonConst.Ssom.SSOM.equals(item.getValue().getSsom())) toMap.put(item.getKey(), item.getValue());
+        }
+
+        return toMap;
+    }
+
+    public static String getDecodedString(String content) {
+        try {
+            return URLDecoder.decode(content, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }

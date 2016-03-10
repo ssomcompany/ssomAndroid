@@ -5,7 +5,8 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.ssomcompany.ssomclient.activity.MainActivity;
-import com.ssomcompany.ssomclient.common.SsomContent;
+import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -14,10 +15,8 @@ import java.util.Map;
  * Created by AaronMac on 2016. 2. 16..
  */
 public abstract class BaseFragment extends Fragment {
-    private static final String TAG = "BaseFragment";
-
-    public Map<String, SsomContent.PostItem> postItemMap;
-    public ArrayList<SsomContent.PostItem> postItemList;
+    public Map<String, SsomItem> postItemMap;
+    public ArrayList<SsomItem> postItemList;
 
     abstract void setPostItems();
 
@@ -30,16 +29,16 @@ public abstract class BaseFragment extends Fragment {
         if(postItemList == null) return position;
 
         for(int i=0 ; i<postItemList.size() ; i++) {
-            if(postId.equals(postItemList.get(i).postId)) position = i;
+            if(postId.equals(postItemList.get(i).getPostId())) position = i;
         }
 
-        Log.i(TAG, "getCurrentPosition() : " + position);
+        Log.i(CommonConst.Tag.BASE_FRAGMENT, "getCurrentPosition() : " + position);
         return position;
     }
 
     @Override
     public void onAttach(Activity activity) {
-        Log.i(TAG, "onAttach()");
+        Log.i(CommonConst.Tag.BASE_FRAGMENT, "onAttach()");
         super.onAttach(activity);
 
         // Map, List setting
@@ -49,13 +48,19 @@ public abstract class BaseFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.i(TAG, "onResume()");
+        Log.i(CommonConst.Tag.BASE_FRAGMENT, "onResume()");
         super.onResume();
+
+        if(getActivity() instanceof MainActivity) {
+            Log.i(CommonConst.Tag.BASE_FRAGMENT, "Reset list and map.");
+            postItemMap = ((MainActivity) getActivity()).getCurrentPostMap();
+            postItemList = ((MainActivity) getActivity()).getCurrentPostItems();
+        }
     }
 
     @Override
     public void onDetach() {
-        Log.i(TAG, "onDetach()");
+        Log.i(CommonConst.Tag.BASE_FRAGMENT, "onDetach()");
         super.onDetach();
 
         if(postItemMap != null) postItemMap = null;

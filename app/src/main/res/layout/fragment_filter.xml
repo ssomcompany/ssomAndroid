@@ -20,7 +20,7 @@
             android:layout_marginTop="18dp"
             android:text="@string/filter_ssom_title"/>
 
-        // 나이 선택 영역
+        <!-- 나이 선택 영역 -->
         <TextView
             style="@style/ssom_font_12_gray_warm"
             android:layout_width="wrap_content"
@@ -93,7 +93,7 @@
                 android:text="@string/filter_age_30_all" />
         </LinearLayout>
 
-        // 사람 선택 영역
+        <!-- 사람 선택 영역 -->
         <TextView
             style="@style/ssom_font_12_gray_warm"
             android:layout_width="wrap_content"

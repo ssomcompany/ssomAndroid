@@ -1,4 +1,4 @@
-package com.ssomcompany.ssomclient.common;
+package com.ssomcompany.ssomclient.network;
 
 import android.content.Context;
 import android.graphics.Bitmap;
