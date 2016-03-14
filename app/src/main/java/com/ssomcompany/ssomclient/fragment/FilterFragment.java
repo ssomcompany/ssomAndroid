@@ -37,10 +37,6 @@ public class FilterFragment extends Fragment {
     private TextView tvThreePeople;
     private TextView tvFourPeopleOrMore;
 
-    // set buttons
-    private TextView tvCancel;
-    private TextView tvApply;
-
     // set global filter params
     private static int age;
     private static int people;
@@ -110,8 +106,8 @@ public class FilterFragment extends Fragment {
         tvFourPeopleOrMore.setOnClickListener(filterPeopleClickListener);
 
         // view for buttons
-        tvCancel = (TextView) view.findViewById(R.id.tv_filter_cancel);
-        tvApply = (TextView) view.findViewById(R.id.tv_filter_apply);
+        TextView tvCancel = (TextView) view.findViewById(R.id.tv_filter_cancel);
+        TextView tvApply = (TextView) view.findViewById(R.id.tv_filter_apply);
 
         // listener 등록
         tvCancel.setOnClickListener(new View.OnClickListener() {
@@ -270,7 +266,7 @@ public class FilterFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFilterFragmentInteractionListener {
-        public void onFilterFragmentInteraction(boolean isApply);
+        void onFilterFragmentInteraction(boolean isApply);
     }
 
 }

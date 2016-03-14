@@ -101,7 +101,7 @@ public class SsomItemListAdapter extends BaseAdapter{
 
         //icon
         holder.iconView = (ImageView) convertView.findViewById(R.id.icon_list_r);
-        if(CommonConst.Ssom.SSOM.equals(item.getSsom())){
+        if(CommonConst.SSOM.equals(item.getSsom())){
             holder.iconView.setImageResource(R.drawable.icon_list_st_g);
         }else{
             holder.iconView.setImageResource(R.drawable.icon_list_st_r);

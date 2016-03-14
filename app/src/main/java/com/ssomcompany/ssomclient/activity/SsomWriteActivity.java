@@ -4,12 +4,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -30,57 +31,124 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-public class SsomWriteActivity extends AppCompatActivity {
-    private static String ssomType = CommonConst.Ssom.SSOM;
+public class SsomWriteActivity extends BaseActivity implements View.OnClickListener {
+    private static final String TAG = SsomWriteActivity.class.getSimpleName();
 
-    private View ssomTypeSsom;
-    private View ssomTypeSsoa;
-    private ImageView iconSt;
+    private static String ssomType = CommonConst.SSOM;
+    private static final int REQUEST_IMAGE_CAPTURE = 10001;
+
+    private FrameLayout btnBack;
+
+    private ImageView imgProfile;
+    private ImageView imgShadow;
+
+    private ImageView imgCamera;
+
+    private TextView tvSsomBalloon;
+    private TextView tvSsoaBalloon;
+
+    private TextView tvOurAge;
+    private TextView tvOurPeople;
+
+    // set select views
+    private TextView tvTwentyEarly;
+    private TextView tvTwentyMiddle;
+    private TextView tvTwentyLate;
+    private TextView tvThirtyAll;
+    private TextView tvOnePeople;
+    private TextView tvTwoPeople;
+    private TextView tvThreePeople;
+    private TextView tvFourPeopleOrMore;
+
+    private EditText editWriteContent;
+    private TextView btnCancel;
+    private LinearLayout btnApply;
+
+    // local variables
+    private int age = 20;
+    private int people = 1;
+    private Bitmap imageBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write);
 
-        initWrite();
-        initCancel();
-        initCamera();
-        initSsomType();
+        initLayout();
     }
 
-    private void initSsomType() {
-//        View view = findViewById(R.id.write_ssom);
-//        ssomTypeSsom = findViewById(R.id.write_ssom_ssom);
-//        ssomTypeSsoseyo = findViewById(R.id.write_ssom_ssoseyo);
-//        iconSt = (ImageView) findViewById(R.id.write_icon_st);
+    private void initLayout() {
+        //////////// view 객체 생성 ///////////////
+        // action bar button
+        btnBack = (FrameLayout) findViewById(R.id.btn_back);
 
-//        view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                toggleSsomType();
-//            }
-//        });
+        // delete view when picture loaded
+        imgProfile = (ImageView) findViewById(R.id.img_profile);
+        imgShadow = (ImageView) findViewById(R.id.img_shadow);
+
+        // camera
+        imgCamera = (ImageView) findViewById(R.id.img_camera);
+
+        // category ssom or ssoa
+        tvSsomBalloon = (TextView) findViewById(R.id.tv_ssom_balloon);
+        tvSsoaBalloon = (TextView) findViewById(R.id.tv_ssoa_balloon);
+
+        // text view change their value dynamically
+        tvOurAge = (TextView) findViewById(R.id.tv_our_age);
+        tvOurPeople = (TextView) findViewById(R.id.tv_our_people);
+
+        // view for age settings
+        tvTwentyEarly = (TextView) findViewById(R.id.tv_write_age_20_early);
+        tvTwentyMiddle = (TextView) findViewById(R.id.tv_write_age_20_middle);
+        tvTwentyLate = (TextView) findViewById(R.id.tv_write_age_20_late);
+        tvThirtyAll = (TextView) findViewById(R.id.tv_write_age_30_all);
+
+        // view for people settings
+        tvOnePeople = (TextView) findViewById(R.id.tv_write_people_1);
+        tvTwoPeople = (TextView) findViewById(R.id.tv_write_people_2);
+        tvThreePeople = (TextView) findViewById(R.id.tv_write_people_3);
+        tvFourPeopleOrMore = (TextView) findViewById(R.id.tv_write_people_4_n_over);
+
+        // content
+        editWriteContent = (EditText) findViewById(R.id.edit_write_content);
+
+        // button
+        btnCancel = (TextView) findViewById(R.id.btn_cancel);
+        btnApply = (LinearLayout) findViewById(R.id.btn_apply);
+
+        ////////// listener 등록 ////////////
+        // implements clickListener
+        btnBack.setOnClickListener(this);
+        imgCamera.setOnClickListener(this);
+        tvSsomBalloon.setOnClickListener(this);
+        tvSsoaBalloon.setOnClickListener(this);
+        btnCancel.setOnClickListener(this);
+        btnApply.setOnClickListener(this);
+
+        // listener for age settings
+        tvTwentyEarly.setOnClickListener(writeAgeClickListener);
+        tvTwentyMiddle.setOnClickListener(writeAgeClickListener);
+        tvTwentyLate.setOnClickListener(writeAgeClickListener);
+        tvThirtyAll.setOnClickListener(writeAgeClickListener);
+
+        // listener for people settings
+        tvOnePeople.setOnClickListener(writePeopleClickListener);
+        tvTwoPeople.setOnClickListener(writePeopleClickListener);
+        tvThreePeople.setOnClickListener(writePeopleClickListener);
+        tvFourPeopleOrMore.setOnClickListener(writePeopleClickListener);
+
+        initSelectView();
     }
 
-    private void toggleSsomType() {
-        if(CommonConst.Ssom.SSOM.equals(ssomType)){
-            ssomType = CommonConst.Ssom.SSOA;
-            ssomTypeSsom.setVisibility(View.INVISIBLE);
-            ssomTypeSsoa.setVisibility(View.VISIBLE);
-            iconSt.setImageResource(R.drawable.icon_wirte_st_r);
-        }else{
-            ssomType= CommonConst.Ssom.SSOM;
-            ssomTypeSsom.setVisibility(View.VISIBLE);
-            ssomTypeSsoa.setVisibility(View.INVISIBLE);
-            iconSt.setImageResource(R.drawable.icon_wirte_st_b);
-        }
+    // setting init information
+    private void initSelectView() {
+        tvSsomBalloon.setSelected(true);
+        tvSsoaBalloon.setSelected(false);
+        tvTwentyEarly.setSelected(true);
+        tvOnePeople.setSelected(true);
     }
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    int minAge = 20;
-    int maxAge = 21;
-    int count = 1;
-    private Bitmap imageBitmap;
+    // camera app 실행
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -88,52 +156,17 @@ public class SsomWriteActivity extends AppCompatActivity {
         }
     }
 
-    private void initCamera(){
-//        ImageView camera = (ImageView) findViewById(R.id.write_camera);
-//        camera.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                dispatchTakePictureIntent();
-//            }
-//        });
-    }
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
-//            ImageView mImageView = (ImageView) findViewById(R.id.write_photo);
 
-//            mImageView.setImageDrawable(Util.getCircleBitmap(imageBitmap, 535)); //TODO 535pixel to dp
+            //TODO 535pixel to dp
+//            ImageView mImageView = (ImageView) findViewById(R.id.write_photo);
+//            mImageView.setImageDrawable(Util.getCircleBitmap(imageBitmap, 535));
         }
     }
-
-    int pressImages[] = {R.drawable.icon_rice_press,R.drawable.icon_beer_press,R.drawable.icon_cof_press,R.drawable.icon_all_perss};
-    int disImages[] = {R.drawable.icon_rice_dis,R.drawable.icon_beer_dis,R.drawable.icon_cof_dis,R.drawable.icon_all_dis};
-
-    private void initCancel(){
-//        ImageView btnCancel = (ImageView) findViewById(R.id.btn_cancel);
-//        btnCancel.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(getApplicationContext(), "cancel write", Toast.LENGTH_SHORT).show();
-//                onBackPressed();
-//            }
-//        });
-    }
-    private void initWrite() {
-//        View btnWrite = findViewById(R.id.btn_write_post);
-//        btnWrite.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                uploadImage();
-//                //creatPost();
-//            }
-//        });
-    }
-
 
     private DataOutputStream dos = null;
     private void uploadImage(){
@@ -151,7 +184,7 @@ public class SsomWriteActivity extends AppCompatActivity {
                 Gson gson = new Gson();
                 Map<String,String> data = gson.fromJson(jsonData,Map.class);
                 String fileId = data.get("fileId");
-                creatPost(fileId);
+                createPost(fileId);
                 Toast.makeText(SsomWriteActivity.this, "upload complete : "+fileId, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
@@ -210,7 +243,8 @@ public class SsomWriteActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(getApplication());
         queue.add(baseVolleyRequest);
     }
-    private void creatPost(String fileId) {
+
+    private void createPost(String fileId) {
         try {
             RequestQueue queue = Volley.newRequestQueue(getApplication());
             //String url = "http://54.64.154.188/posts";
@@ -253,25 +287,82 @@ public class SsomWriteActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_write, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    View.OnClickListener writeAgeClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v == tvTwentyEarly) {
+                tvTwentyEarly.setSelected(true);
+                tvTwentyMiddle.setSelected(false);
+                tvTwentyLate.setSelected(false);
+                tvThirtyAll.setSelected(false);
+                age = 20;
+            } else if(v == tvTwentyMiddle) {
+                tvTwentyEarly.setSelected(false);
+                tvTwentyMiddle.setSelected(true);
+                tvTwentyLate.setSelected(false);
+                tvThirtyAll.setSelected(false);
+                age = 25;
+            } else if(v == tvTwentyLate) {
+                tvTwentyEarly.setSelected(false);
+                tvTwentyMiddle.setSelected(false);
+                tvTwentyLate.setSelected(true);
+                tvThirtyAll.setSelected(false);
+                age = 29;
+            } else if(v == tvThirtyAll) {
+                tvTwentyEarly.setSelected(false);
+                tvTwentyMiddle.setSelected(false);
+                tvTwentyLate.setSelected(false);
+                tvThirtyAll.setSelected(true);
+                age = 30;
+            }
         }
+    };
 
-        return super.onOptionsItemSelected(item);
+    View.OnClickListener writePeopleClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v == tvOnePeople) {
+                tvOnePeople.setSelected(true);
+                tvTwoPeople.setSelected(false);
+                tvThreePeople.setSelected(false);
+                tvFourPeopleOrMore.setSelected(false);
+                people = 1;
+            } else if(v == tvTwoPeople) {
+                tvOnePeople.setSelected(false);
+                tvTwoPeople.setSelected(true);
+                tvThreePeople.setSelected(false);
+                tvFourPeopleOrMore.setSelected(false);
+                people = 2;
+            } else if(v == tvThreePeople) {
+                tvOnePeople.setSelected(false);
+                tvTwoPeople.setSelected(false);
+                tvThreePeople.setSelected(true);
+                tvFourPeopleOrMore.setSelected(false);
+                people = 3;
+            } else if(v == tvFourPeopleOrMore) {
+                tvOnePeople.setSelected(false);
+                tvTwoPeople.setSelected(false);
+                tvThreePeople.setSelected(false);
+                tvFourPeopleOrMore.setSelected(true);
+                people = 4;
+            }
+        }
+    };
+
+    @Override
+    public void onClick(View v) {
+        if(v == btnBack || v == btnCancel) {
+            finish();
+        } else if(v == imgCamera) {
+            dispatchTakePictureIntent();
+        } else if(v == tvSsomBalloon) {
+            tvSsomBalloon.setSelected(true);
+            tvSsoaBalloon.setSelected(false);
+        } else if(v == tvSsoaBalloon) {
+            tvSsomBalloon.setSelected(false);
+            tvSsoaBalloon.setSelected(true);
+        } else if(v == btnApply) {
+            // TODO interaction listener 등록
+        }
     }
 }

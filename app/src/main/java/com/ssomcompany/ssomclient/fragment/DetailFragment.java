@@ -33,6 +33,8 @@ import com.ssomcompany.ssomclient.network.api.model.SsomItem;
  * create an instance of this fragment.
  */
 public class DetailFragment extends BaseFragment implements View.OnClickListener {
+    private static final String TAG = DetailFragment.class.getSimpleName();
+    
     private static final String POST_ID = "postId";
     private String postId;
 
@@ -74,26 +76,26 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(CommonConst.Tag.DETAIL_FRAGMENT, "onCreate()");
+        Log.i(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
             postId = getArguments().getString(POST_ID);
-            Log.i(CommonConst.Tag.DETAIL_FRAGMENT, "postId : " + postId);
+            Log.i(TAG, "postId : " + postId);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i(CommonConst.Tag.DETAIL_FRAGMENT, "onCreateView()");
+        Log.i(TAG, "onCreateView()");
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
         imgHeart = (ImageView) view.findViewById(R.id.img_heart);
         imgClose = (ImageView) view.findViewById(R.id.img_close);
 
-        Log.i(CommonConst.Tag.DETAIL_FRAGMENT, "postId : " + postId + ", ssom : " + postItemMap.get(postId).getSsom());
-        imgHeart.setBackgroundResource(CommonConst.Ssom.SSOM.equals(postItemMap.get(postId).getSsom()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
+        Log.i(TAG, "postId : " + postId + ", ssom : " + postItemMap.get(postId).getSsom());
+        imgHeart.setBackgroundResource(CommonConst.SSOM.equals(postItemMap.get(postId).getSsom()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
         imgHeart.setOnClickListener(this);
         imgClose.setOnClickListener(this);
 
@@ -142,7 +144,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     void setPostItems() {
-        Log.i(CommonConst.Tag.DETAIL_FRAGMENT, "setPostItem called : " + getActivity().toString());
+        Log.i(TAG, "setPostItem called : " + getActivity().toString());
     }
 
     @Override
@@ -180,12 +182,12 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             SsomItem item = postItemList.get(position);
             // item setting
             profileImg.setImageUrl(item.getImageUrl(), mImageLoader);
-            centerLine.setBackgroundResource(CommonConst.Ssom.SSOM.equals(item.getSsom()) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
-            tvCategory.setText(CommonConst.Ssom.SSOM.equals(item.getSsom()) ? R.string.title_tab_give : R.string.title_tab_take);
+            centerLine.setBackgroundResource(CommonConst.SSOM.equals(item.getSsom()) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
+            tvCategory.setText(CommonConst.SSOM.equals(item.getSsom()) ? R.string.title_tab_give : R.string.title_tab_take);
             tvDistance.setText( String.format( getResources().getString(R.string.detail_distance), LocationUtil.getDistanceString(item) ) );
             tvAgePeople.setText( String.format( getResources().getString(R.string.detail_age_people), Util.convertAgeRange(item.getMinAge()), item.getUserCount()) );
             tvContent.setText(item.getContent());
-            btnApply.setBackgroundResource(CommonConst.Ssom.SSOM.equals(item.getSsom()) ? R.drawable.btn_write_apply_ssom : R.drawable.btn_write_apply_ssoa);
+            btnApply.setBackgroundResource(CommonConst.SSOM.equals(item.getSsom()) ? R.drawable.btn_write_apply_ssom : R.drawable.btn_write_apply_ssoa);
 
             // btn setting
             btnCancel.setOnClickListener(this);
@@ -209,9 +211,9 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         @Override
         public void destroyItem(ViewGroup collection, int position, Object view) {
             //must be overridden else throws exception as not overridden.
-            Log.d(CommonConst.Tag.DETAIL_FRAGMENT, "destroy views at : " + collection.getChildAt(position));
+            Log.d(TAG, "destroy views at : " + collection.getChildAt(position));
             ((ViewPager)collection).removeView((View) view);
-            Log.d(CommonConst.Tag.DETAIL_FRAGMENT, "item count : " + collection.getChildCount());
+            Log.d(TAG, "item count : " + collection.getChildCount());
         }
 
         @Override
@@ -240,7 +242,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         @Override
         public void restoreState(Parcelable state, ClassLoader loader) {}
 
-        //
+        // viewpager page width setting left and right padding with this
 //        @Override
 //        public float getPageWidth(int position) {
 //            return 0.95f;

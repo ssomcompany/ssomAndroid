@@ -15,6 +15,7 @@
         android:orientation="horizontal">
 
         <FrameLayout
+            android:id="@+id/btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="8dp"
@@ -25,7 +26,7 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:background="@drawable/icon_target_g" />
+                android:background="@drawable/icon_back" />
         </FrameLayout>
 
         <TextView
@@ -72,7 +73,7 @@
                 android:background="@drawable/img_write_shadow"/>
 
             <ImageView
-                android:id="@+id/camera_img"
+                android:id="@+id/img_camera"
                 android:layout_width="20dp"
                 android:layout_height="18dp"
                 android:layout_marginRight="11dp"
@@ -87,7 +88,7 @@
             style="@style/ssom_font_16_white_single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_write_balloon_ssom_on"
+            android:background="@drawable/write_category_ssom_selector"
             android:text="@string/title_tab_give"
             android:gravity="center_vertical|right"
             android:paddingRight="12dp"
@@ -102,7 +103,7 @@
             style="@style/ssom_font_12_white_single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_write_balloon_ssoa_off"
+            android:background="@drawable/write_category_ssoa_selector"
             android:text="@string/title_tab_take"
             android:gravity="center_vertical|right"
             android:paddingRight="9dp"

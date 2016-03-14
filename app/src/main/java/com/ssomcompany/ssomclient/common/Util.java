@@ -1,13 +1,14 @@
 package com.ssomcompany.ssomclient.common;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.push.MessageCountCheck;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -19,11 +20,12 @@ import java.util.Map;
  * Created by kshgizmo on 2015-10-02.
  */
 public class Util {
+    private static final String TAG = Util.class.getSimpleName();
 
     public static RoundImage getCircleBitmap(Bitmap bitmap, int size) {
         float width = bitmap.getWidth();
         float height = bitmap.getHeight();
-        Log.i("kshgizmo", "before : " + width + "/ " + height);
+        Log.i(TAG, "before : " + width + "/ " + height);
         // Calculate image's size by maintain the image's aspect ratio
 
         float percente = width / 100;
@@ -31,7 +33,7 @@ public class Util {
         width *= (scale / 100);
         height *= (scale / 100);
 
-        Log.i("kshgizmo", "after : " + width + "/ " + height);
+        Log.i(TAG, "after : " + width + "/ " + height);
         // Resizing image
         Bitmap bitmapimg = Bitmap.createScaledBitmap(bitmap, (int) width, (int) width, true);
 
@@ -126,7 +128,7 @@ public class Util {
     public static ArrayList<SsomItem> convertAllListToSsomList(ArrayList<SsomItem> allList) {
         ArrayList<SsomItem> toList = new ArrayList<>();
         for(SsomItem item : allList) {
-            if(CommonConst.Ssom.SSOM.equals(item.getSsom())) toList.add(item);
+            if(CommonConst.SSOM.equals(item.getSsom())) toList.add(item);
         }
 
         return toList;
@@ -140,7 +142,7 @@ public class Util {
     public static ArrayList<SsomItem> convertAllListToSsoaList(ArrayList<SsomItem> allList) {
         ArrayList<SsomItem> toList = new ArrayList<>();
         for(SsomItem item : allList) {
-            if(!CommonConst.Ssom.SSOM.equals(item.getSsom())) toList.add(item);
+            if(!CommonConst.SSOM.equals(item.getSsom())) toList.add(item);
         }
 
         return toList;
@@ -154,7 +156,7 @@ public class Util {
     public static Map<String, SsomItem> convertAllMapToSsomMap(Map<String, SsomItem> allMap) {
         Map<String, SsomItem> toMap = new HashMap<>();
         for(Map.Entry<String, SsomItem> item : allMap.entrySet()) {
-            if(CommonConst.Ssom.SSOM.equals(item.getValue().getSsom())) toMap.put(item.getKey(), item.getValue());
+            if(CommonConst.SSOM.equals(item.getValue().getSsom())) toMap.put(item.getKey(), item.getValue());
         }
 
         return toMap;
@@ -168,7 +170,7 @@ public class Util {
     public static Map<String, SsomItem> convertAllMapToSsoaMap(Map<String, SsomItem> allMap) {
         Map<String, SsomItem> toMap = new HashMap<>();
         for(Map.Entry<String, SsomItem> item : allMap.entrySet()) {
-            if(!CommonConst.Ssom.SSOM.equals(item.getValue().getSsom())) toMap.put(item.getKey(), item.getValue());
+            if(!CommonConst.SSOM.equals(item.getValue().getSsom())) toMap.put(item.getKey(), item.getValue());
         }
 
         return toMap;
@@ -181,5 +183,30 @@ public class Util {
             e.printStackTrace();
             return "";
         }
+    }
+
+    /**
+     *
+     * @param activity target activity
+     * @return boolean
+     */
+    public static boolean isMessageCountCheckingExcludeActivity(Activity activity) {
+        Class<?>[] validList = new Class<?>[] {
+                /* BaseLoginActivity.class, BaseIntroActivity.class, PassCodeActivity.class, OtpVerificationActivity.class, */
+                MessageCountCheck.class
+        };
+
+        if (null == activity) {
+            return false;
+        }
+
+        for (Class<?> exclude : validList) {
+            if (exclude.isInstance(activity)) {
+                Log.v(TAG, activity.getClass().getSimpleName() + " is instance of " + exclude.getSimpleName());
+                return true;
+            }
+        }
+
+        return false;
     }
 }

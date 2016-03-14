@@ -25,6 +25,7 @@ import com.ssomcompany.ssomclient.common.CommonConst;
  * interface.
  */
 public class SsomListFragment extends BaseFragment implements AbsListView.OnItemClickListener {
+    private static final String TAG = SsomListFragment.class.getSimpleName();
 
     /**
      * This interface must be implemented by activities that contain this
@@ -155,7 +156,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
     private MainActivity.OnTabChangedListener mTabListener = new MainActivity.OnTabChangedListener() {
         @Override
         public void onTabChangedAction() {
-            Log.d(CommonConst.Tag.SSOMLIST_FRAGMENT, "onTabChangedAction() called !!");
+            Log.d(TAG, "onTabChangedAction() called !!");
             setPostItems();
             ssomListNotifyDataSetChanged();
         }

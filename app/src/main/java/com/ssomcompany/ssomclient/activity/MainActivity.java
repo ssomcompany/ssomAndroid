@@ -54,16 +54,16 @@ import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.PushManageService;
 
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnDetailFragmentInteractionListener,
         OnMapReadyCallback, FilterFragment.OnFilterFragmentInteractionListener {
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     public interface OnTabChangedListener {
         void onTabChangedAction();
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         selectedView = MAP_VIEW;
-        selectedTab = CommonConst.Ssom.SSOM;
+        selectedTab = CommonConst.SSOM;
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -161,10 +161,10 @@ public class MainActivity extends AppCompatActivity
                         ssomDataChangedListener();
                     } else {
                         // TODO reloading to use app
-                        Log.i(CommonConst.Tag.MAIN_ACTIVITY, "data is null !!");
+                        Log.i(TAG, "data is null !!");
                     }
                 } else {
-                    Log.e(CommonConst.Tag.MAIN_ACTIVITY, "Response error with code " + response.getResultCode() + ", message : " + response.getMessage(),
+                    Log.e(TAG, "Response error with code " + response.getResultCode() + ", message : " + response.getMessage(),
                             response.getError());
                 }
             }
@@ -229,9 +229,9 @@ public class MainActivity extends AppCompatActivity
         giveTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (CommonConst.Ssom.SSOM.equals(selectedTab)) return;
+                if (CommonConst.SSOM.equals(selectedTab)) return;
 
-                selectedTab = CommonConst.Ssom.SSOM;
+                selectedTab = CommonConst.SSOM;
                 giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_green_blue);
                 giveBtmBar.setVisibility(View.VISIBLE);
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
@@ -244,9 +244,9 @@ public class MainActivity extends AppCompatActivity
         takeTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(CommonConst.Ssom.SSOA.equals(selectedTab)) return;
+                if(CommonConst.SSOA.equals(selectedTab)) return;
 
-                selectedTab = CommonConst.Ssom.SSOA;
+                selectedTab = CommonConst.SSOA;
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_red_pink);
                 takeBtmBar.setVisibility(View.VISIBLE);
                 giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onClick(View v) {
             FilterFragment filterFragment = FilterFragment.newInstance();
-            fragmentManager.beginTransaction().add(R.id.top_container, filterFragment, CommonConst.Fragment.FILTER_FRAG)
+            fragmentManager.beginTransaction().add(R.id.top_container, filterFragment, CommonConst.FILTER_FRAG)
                     .addToBackStack(null).commit();
         }
     };
@@ -299,7 +299,7 @@ public class MainActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        Log.i(CommonConst.Tag.MAIN_ACTIVITY, "drawer open state : " + drawer.isDrawerOpen(Gravity.LEFT));
+        Log.i(TAG, "drawer open state : " + drawer.isDrawerOpen(Gravity.LEFT));
         if(drawer.isDrawerOpen(Gravity.LEFT)) drawer.closeDrawers();
 
         ImageView lnbMenu = (ImageView) tb.findViewById(R.id.lnb_menu_btn);
@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity
         selectedView = LIST_VIEW;
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
         fragmentManager.beginTransaction().
-                replace(R.id.container, SsomListFragment.newInstance(), CommonConst.Fragment.SSOM_LIST_FRAG).commit();
+                replace(R.id.container, SsomListFragment.newInstance(), CommonConst.SSOM_LIST_FRAG).commit();
     }
 
     @Override
@@ -391,10 +391,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPostItemClick(String id) {
-        Log.i(CommonConst.Tag.MAIN_ACTIVITY, "onPostItemClick() : " + id);
+        Log.i(TAG, "onPostItemClick() : " + id);
 
         Fragment fragment = DetailFragment.newInstance(id);
-        fragmentManager.beginTransaction().add(R.id.whole_container, fragment, CommonConst.Fragment.DETAIL_FRAG)
+        fragmentManager.beginTransaction().add(R.id.whole_container, fragment, CommonConst.DETAIL_FRAG)
                 .addToBackStack(null).commit();
     }
 
@@ -440,12 +440,12 @@ public class MainActivity extends AppCompatActivity
                 // my position click 시 이벤트 없음
                 if(postId == null || "".equals(postId)) return false;
 
-                Log.i(CommonConst.Tag.MAIN_ACTIVITY, "[마커 클릭 이벤트] latitude ="
+                Log.i(TAG, "[마커 클릭 이벤트] latitude ="
                         + marker.getPosition().latitude + ", longitude ="
                         + marker.getPosition().longitude);
 
                 Fragment fragment = DetailFragment.newInstance(postId);
-                fragmentManager.beginTransaction().add(R.id.whole_container, fragment, CommonConst.Fragment.DETAIL_FRAG)
+                fragmentManager.beginTransaction().add(R.id.whole_container, fragment, CommonConst.DETAIL_FRAG)
                         .addToBackStack(null).commit();
                 return false;
             }
@@ -501,7 +501,7 @@ public class MainActivity extends AppCompatActivity
     private LocationUtil.LocationResult locationResult = new LocationUtil.LocationResult() {
         @Override
         public void getLocationCallback(Location location) {
-            Log.i(CommonConst.Tag.MAIN_ACTIVITY, "lat : " + location.getLatitude() + ", lon : " + location.getLongitude());
+            Log.i(TAG, "lat : " + location.getLatitude() + ", lon : " + location.getLongitude());
 
             LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -519,11 +519,11 @@ public class MainActivity extends AppCompatActivity
     };
 
     public Map<String, SsomItem> getCurrentPostMap() {
-        return CommonConst.Ssom.SSOM.equals(selectedTab)? Util.convertAllMapToSsomMap(ITEM_MAP) : Util.convertAllMapToSsoaMap(ITEM_MAP);
+        return CommonConst.SSOM.equals(selectedTab)? Util.convertAllMapToSsomMap(ITEM_MAP) : Util.convertAllMapToSsoaMap(ITEM_MAP);
     }
 
     public ArrayList<SsomItem> getCurrentPostItems() {
-        return CommonConst.Ssom.SSOM.equals(selectedTab)? Util.convertAllListToSsomList(ITEM_LIST) : Util.convertAllListToSsoaList(ITEM_LIST);
+        return CommonConst.SSOM.equals(selectedTab)? Util.convertAllListToSsomList(ITEM_LIST) : Util.convertAllListToSsoaList(ITEM_LIST);
     }
 
     private void showActivateGPSPopup() {
@@ -590,7 +590,7 @@ public class MainActivity extends AppCompatActivity
             imageDrawable.draw(c);
             iconDrawable.draw(c);
         } catch (Exception e) {
-            Log.i(CommonConst.Tag.MAIN_ACTIVITY, "Get Marker image finished by exception..!");
+            Log.i(TAG, "Get Marker image finished by exception..!");
         }
 
         return BitmapDescriptorFactory.fromBitmap(mergedBitmap);
@@ -610,15 +610,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFilterFragmentInteraction(boolean isApply) {
-        Log.i(CommonConst.Tag.MAIN_ACTIVITY, "filter interaction : " + isApply);
-        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.Fragment.FILTER_FRAG)).commit();
+        Log.i(TAG, "filter interaction : " + isApply);
+        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.FILTER_FRAG)).commit();
         if(isApply) initFilterView();
     }
 
     @Override
     public void onDetailFragmentInteraction(boolean isApply) {
-        Log.i(CommonConst.Tag.MAIN_ACTIVITY, "detail interaction : " + isApply);
-        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.Fragment.DETAIL_FRAG)).commit();
+        Log.i(TAG, "detail interaction : " + isApply);
+        fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
 
         // TODO - if true, go to chatting activity
         if(isApply) {

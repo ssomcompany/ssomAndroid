@@ -11,6 +11,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +31,7 @@ import com.ssomcompany.ssomclient.R;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
+    private static final String TAG = NavigationDrawerFragment.class.getSimpleName();
 
     /**
      * Remember the position of the selected item.
@@ -113,6 +115,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public boolean isDrawerOpen() {
+        Log.d(TAG, "isDrawerOpen()");
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
     }
 
