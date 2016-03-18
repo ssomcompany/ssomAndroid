@@ -29,8 +29,12 @@
     <string name="filter_btn_apply">적용하기</string>
 
     <!-- write post -->
-    <string name="write_select_our_age">우리 나이는 %1$s 이에요</string>
-    <string name="write_select_our_people">%1$d 명이 기다리고 있어요</string>
+    <string name="write_age_20_early">20대 초반 이</string>
+    <string name="write_age_20_middle">20대 중반 이</string>
+    <string name="write_age_20_late">20대 후반 이</string>
+    <string name="write_age_30_all">30대</string>
+    <string name="write_select_our_age">우리 나이는 %1$s에요</string>
+    <string name="write_select_our_people">%1$s이 기다리고 있어요</string>
     <string name="write_one_letter">한마디</string>
     <string name="write_content_hint">한 마디를 작성해보세요!\n센스 있는 메뉴선택, 멘트가\n뜨거운 쏨의 첫 걸음 입니다. : )</string>
     <string name="write_apply">등록하기</string>
@@ -54,11 +58,15 @@
 
     <!-- error message -->
     <string name="an_unexpected_error_occur">예상하지 못한 에러가 발생했습니다.</string>
+    <string name="cannot_upload_over_10m">10Mb 이상의 파일을 업로드 할 수 없습니다.</string>
 
     <!-- notice message -->
     <string name="notice">공지</string>
+    <string name="write_content_max_lines">최대 4줄까지만 입력 가능합니다.</string>
+    <string name="cannot_write_with_unknown_location">위치정보를 가지고올수 없어 글을 작성할수 없습니다.</string>
 
     <!-- toggle bar -->
     <string name="map">MAP</string>
     <string name="list">LIST</string>
+
 </resources>

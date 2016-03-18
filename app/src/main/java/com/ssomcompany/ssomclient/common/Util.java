@@ -4,28 +4,45 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.media.ExifInterface;
+import android.os.Environment;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
-/**
- * Created by kshgizmo on 2015-10-02.
- */
 public class Util {
     private static final String TAG = Util.class.getSimpleName();
 
     public static RoundImage getCircleBitmap(Bitmap bitmap, int size) {
         float width = bitmap.getWidth();
         float height = bitmap.getHeight();
-        Log.i(TAG, "before : " + width + "/ " + height);
         // Calculate image's size by maintain the image's aspect ratio
 
         float percente = width / 100;
@@ -33,11 +50,46 @@ public class Util {
         width *= (scale / 100);
         height *= (scale / 100);
 
-        Log.i(TAG, "after : " + width + "/ " + height);
         // Resizing image
         Bitmap bitmapimg = Bitmap.createScaledBitmap(bitmap, (int) width, (int) width, true);
 
         return new RoundImage(bitmapimg);
+    }
+
+    public static Bitmap getRoundedCornerBitmap(Bitmap input, float radius, boolean topLeft, boolean topRight, boolean bottomLeft, boolean bottomRight) {
+        int w = input.getWidth(), h = input.getHeight();
+        Bitmap output = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, w, h);
+        final RectF rectF = new RectF(rect);
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawRoundRect(rectF, radius, radius, paint);
+
+
+        //draw rectangles over the corners we want to be square
+        if (topLeft){
+            canvas.drawRect(0, 0, w/2, h/2, paint);
+        }
+        if (topRight){
+            canvas.drawRect(w/2, 0, w, h/2, paint);
+        }
+        if (bottomLeft){
+            canvas.drawRect(0, h/2, w/2, h, paint);
+        }
+        if (bottomRight){
+            canvas.drawRect(w/2, h/2, w, h, paint);
+        }
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(input, 0,0, paint);
+
+        return output;
     }
 
     public static String getTimeText(long timestamp) {
@@ -57,15 +109,58 @@ public class Util {
         }
     }
 
+    ////////////////////////////////////////////////////// image file for camera ///////////////////////////////////////////////////
+
+    // file directory 가져오기
+    public static String getFileRootPath(Context context) {
+        File rootFile = context.getExternalFilesDir(null);
+        if (rootFile != null) {
+            return rootFile.getPath() + "/";
+        }
+
+        return null;
+    }
+
+    public static String saveBitmapToJpeg(Context context, Bitmap bitmap) {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA).format(new Date());
+
+        Environment.getExternalStorageDirectory().getAbsolutePath();
+
+        String folderName = "upload/";
+        String fileName = timeStamp + ".jpg";
+        String stringPath = getFileRootPath(context) + folderName;
+
+        File filePath;
+        try {
+            filePath = new File(stringPath);
+            if (!filePath.isDirectory()) {
+                filePath.mkdir();
+            }
+
+            FileOutputStream out = new FileOutputStream(stringPath + fileName);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.close();
+
+            return stringPath + fileName;
+
+        } catch (FileNotFoundException e) {
+            Log.v(TAG, "FileNotFoundException : " + e.toString());
+        } catch (IOException e) {
+            Log.v(TAG, "IOException : " + e.toString());
+        }
+        return null;
+    }
+
+    ////////////////////////////////////////////////// convert pixel /////////////////////////////////////////////////////////
+
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.
      *
      * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
-     * @param context Context to get resources and device specific display metrics
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    public static float convertDpToPixel(float dp, Context context){
-        Resources resources = context.getResources();
+    public static float convertDpToPixel(float dp){
+        Resources resources = BaseApplication.getInstance().getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return dp * (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
@@ -74,14 +169,15 @@ public class Util {
      * This method converts device specific pixels to density independent pixels.
      *
      * @param px A value in px (pixels) unit. Which we need to convert into db
-     * @param context Context to get resources and device specific display metrics
      * @return A float value to represent dp equivalent to px value
      */
-    public static float convertPixelsToDp(float px, Context context){
-        Resources resources = context.getResources();
+    public static float convertPixelsToDp(float px){
+        Resources resources = BaseApplication.getInstance().getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return  px / (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
+
+    /////////////////////////////////////////////////////// convert variable /////////////////////////////////////////////////
 
     /**
      * This method coverts Map to ArrayList.
@@ -94,30 +190,6 @@ public class Util {
             arrayList.add(item.getValue());
         }
         return arrayList;
-    }
-
-    /**
-     *  This method converts age to age range
-     *
-     *  @param age int
-     */
-    public static String convertAgeRange(int age) {
-        String ageRange = "";
-        switch (age) {
-            case 20:
-                ageRange = "20대 초반";
-                break;
-            case 25:
-                ageRange = "20대 중반";
-                break;
-            case 29:
-                ageRange = "20대 후반";
-                break;
-            case 30:
-                ageRange = "30대";
-                break;
-        }
-        return ageRange;
     }
 
     /**
@@ -176,9 +248,42 @@ public class Util {
         return toMap;
     }
 
+    /**
+     *  This method converts age to age range
+     *
+     *  @param age int
+     */
+    public static String convertAgeRange(int age) {
+        String ageRange = "";
+        switch (age) {
+            case 20:
+                ageRange = "20대 초반";
+                break;
+            case 25:
+                ageRange = "20대 중반";
+                break;
+            case 29:
+                ageRange = "20대 후반";
+                break;
+            case 30:
+                ageRange = "30대";
+                break;
+        }
+        return ageRange;
+    }
+
     public static String getDecodedString(String content) {
         try {
-            return URLDecoder.decode(content, "utf-8");
+            return URLDecoder.decode(content, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static String getEncodedString(String content) {
+        try {
+            return URLEncoder.encode(content, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return "";

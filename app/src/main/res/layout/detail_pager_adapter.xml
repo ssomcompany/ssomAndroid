@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="306dp"
     android:layout_height="532dp"
-    android:background="@drawable/bg_detail_round">
+    android:background="@drawable/bg_detail_round"
+    tools:context=".fragment.DetailFragment">
 
-    <com.android.volley.toolbox.NetworkImageView
+    <com.ssomcompany.ssomclient.common.RoundedNetworkImageView
         android:id="@+id/profile_img"
         android:layout_width="306dp"
         android:layout_height="248dp"
-        android:background="@drawable/detail_img_round"
+        android:scaleType="centerCrop"
         />
 
     <LinearLayout
@@ -59,6 +61,7 @@
             style="@style/ssom_font_16_grayish_brown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:lines="4"
             android:layout_marginTop="16dp" />
     </LinearLayout>
 

@@ -2,8 +2,15 @@ package com.ssomcompany.ssomclient.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -11,7 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -23,24 +29,40 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.common.FilterType;
+import com.ssomcompany.ssomclient.common.LocationUtil;
+import com.ssomcompany.ssomclient.common.UniqueIdGenUtil;
+import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.BaseVolleyRequest;
+import com.ssomcompany.ssomclient.network.NetworkConstant;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.NetworkUtil;
+import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
+import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 public class SsomWriteActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = SsomWriteActivity.class.getSimpleName();
 
-    private static String ssomType = CommonConst.SSOM;
     private static final int REQUEST_IMAGE_CAPTURE = 10001;
+    private static final int REQUEST_IMAGE_CROP = 10002;
 
+    ////// view 영역 //////
     private FrameLayout btnBack;
 
-    private ImageView imgProfile;
+    private ImageView imgEmpty;
     private ImageView imgShadow;
+    private ImageView imgProfile;
 
     private ImageView imgCamera;
 
@@ -65,22 +87,31 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     private LinearLayout btnApply;
 
     // local variables
-    private int age = 20;
-    private int people = 1;
+    private FilterType age = FilterType.twentyEarly;
+    private FilterType people = FilterType.onePerson;
+    private Location myLocation;
+    // camera 변수
+    private String mCurrentPhotoPath;
     private Bitmap imageBitmap;
+    private Uri mContentUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_write);
 
         initLayout();
     }
 
     private void initLayout() {
+        Log.d(TAG, "initLayout()");
         //////////// view 객체 생성 ///////////////
         // action bar button
         btnBack = (FrameLayout) findViewById(R.id.btn_back);
+
+        // set image when camera or gallery sent a image
+        imgEmpty = (ImageView) findViewById(R.id.img_empty);
 
         // delete view when picture loaded
         imgProfile = (ImageView) findViewById(R.id.img_profile);
@@ -116,7 +147,34 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         btnCancel = (TextView) findViewById(R.id.btn_cancel);
         btnApply = (LinearLayout) findViewById(R.id.btn_apply);
 
+        // text 입력
+        tvOurAge.setText(String.format(getResources().getString(R.string.write_select_our_age), age.getTitle()));
+        tvOurPeople.setText(String.format(getResources().getString(R.string.write_select_our_people), people.getTitle()));
+
         ////////// listener 등록 ////////////
+        // content line 4줄 max 설정
+        editWriteContent.addTextChangedListener(new TextWatcher() {
+            String previousString = "";
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                previousString = s.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (editWriteContent.getLineCount() >= 5) {
+                    editWriteContent.setText(previousString);
+                    editWriteContent.setSelection(editWriteContent.length());
+                    showToastMessageShort(R.string.write_content_max_lines);
+                }
+            }
+        });
+
         // implements clickListener
         btnBack.setOnClickListener(this);
         imgCamera.setOnClickListener(this);
@@ -142,6 +200,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
     // setting init information
     private void initSelectView() {
+        Log.d(TAG, "initSelectView()");
         tvSsomBalloon.setSelected(true);
         tvSsoaBalloon.setSelected(false);
         tvTwentyEarly.setSelected(true);
@@ -149,48 +208,304 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     }
 
     // camera app 실행
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+    private void moveToCamera() {
+        Log.d(TAG, "moveToCamera()");
+        Intent intent = new Intent();
+        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            if (photoFile != null) {
+                mContentUri = Uri.fromFile(photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+            }
         }
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, /* prefix */
+                ".jpg", /* suffix */
+                storageDir /* directory */
+        );
+
+        mCurrentPhotoPath = image.getAbsolutePath();
+
+        return image;
+    }
+
+    private void cropImage() {
+        Intent cropIntent = new Intent("com.android.camera.action.CROP");
+        // indicate image type and Uri of image
+        cropIntent.setDataAndType(mContentUri, "image/*");
+        // set crop properties
+        cropIntent.putExtra("crop", "true");
+        // indicate aspect of desired crop
+        cropIntent.putExtra("aspectX", 390);
+        cropIntent.putExtra("aspectY", 320);
+        // indicate output X and Y
+        cropIntent.putExtra("outputX", 780);
+        cropIntent.putExtra("outputY", 640);
+
+        // if thumbnail needed below
+//        cropIntent.putExtra("scale", true);
+//        cropIntent.putExtra("scaleUpIfNeeded", true);
+//        cropIntent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+//        cropIntent.putExtra("return-data", false);
+
+        // retrieve data on return
+        cropIntent.putExtra("return-data", false);
+        cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mContentUri);
+        startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            imageBitmap = (Bitmap) extras.get("data");
-
-            //TODO 535pixel to dp
-//            ImageView mImageView = (ImageView) findViewById(R.id.write_photo);
-//            mImageView.setImageDrawable(Util.getCircleBitmap(imageBitmap, 535));
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_IMAGE_CAPTURE:
+                    cropImage();
+                    break;
+                case REQUEST_IMAGE_CROP:
+                    Bundle extras = data.getExtras();
+                    if (extras != null) {
+                        imgProfile.setImageURI(mContentUri);
+                        imgEmpty.setVisibility(View.INVISIBLE);
+                        imgShadow.setVisibility(View.INVISIBLE);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
+    View.OnClickListener writeAgeClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v == tvTwentyEarly) {
+                tvTwentyEarly.setSelected(true);
+                tvTwentyMiddle.setSelected(false);
+                tvTwentyLate.setSelected(false);
+                tvThirtyAll.setSelected(false);
+                age = FilterType.twentyEarly;
+            } else if(v == tvTwentyMiddle) {
+                tvTwentyEarly.setSelected(false);
+                tvTwentyMiddle.setSelected(true);
+                tvTwentyLate.setSelected(false);
+                tvThirtyAll.setSelected(false);
+                age = FilterType.twentyMiddle;
+            } else if(v == tvTwentyLate) {
+                tvTwentyEarly.setSelected(false);
+                tvTwentyMiddle.setSelected(false);
+                tvTwentyLate.setSelected(true);
+                tvThirtyAll.setSelected(false);
+                age = FilterType.twentyLate;
+            } else if(v == tvThirtyAll) {
+                tvTwentyEarly.setSelected(false);
+                tvTwentyMiddle.setSelected(false);
+                tvTwentyLate.setSelected(false);
+                tvThirtyAll.setSelected(true);
+                age = FilterType.thirtyOver;
+            }
+
+            tvOurAge.setText(String.format(getResources().getString(R.string.write_select_our_age), age.getTitle()));
+        }
+    };
+
+    View.OnClickListener writePeopleClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v == tvOnePeople) {
+                tvOnePeople.setSelected(true);
+                tvTwoPeople.setSelected(false);
+                tvThreePeople.setSelected(false);
+                tvFourPeopleOrMore.setSelected(false);
+                people = FilterType.onePerson;
+            } else if(v == tvTwoPeople) {
+                tvOnePeople.setSelected(false);
+                tvTwoPeople.setSelected(true);
+                tvThreePeople.setSelected(false);
+                tvFourPeopleOrMore.setSelected(false);
+                people = FilterType.twoPeople;
+            } else if(v == tvThreePeople) {
+                tvOnePeople.setSelected(false);
+                tvTwoPeople.setSelected(false);
+                tvThreePeople.setSelected(true);
+                tvFourPeopleOrMore.setSelected(false);
+                people = FilterType.threePeople;
+            } else if(v == tvFourPeopleOrMore) {
+                tvOnePeople.setSelected(false);
+                tvTwoPeople.setSelected(false);
+                tvThreePeople.setSelected(false);
+                tvFourPeopleOrMore.setSelected(true);
+                people = FilterType.fourPeople;
+            }
+
+            tvOurPeople.setText(String.format(getResources().getString(R.string.write_select_our_people), people.getTitle()));
+        }
+    };
+
+    @Override
+    public void onClick(View v) {
+        if(v == btnBack || v == btnCancel) {
+            finish();
+        } else if(v == imgCamera) {
+            moveToCamera();
+        } else if(v == tvSsomBalloon) {
+            tvSsomBalloon.setSelected(true);
+            tvSsoaBalloon.setSelected(false);
+
+            tvSsomBalloon.setTextAppearance(this, R.style.ssom_font_16_white_single);
+            tvSsoaBalloon.setTextAppearance(this, R.style.ssom_font_12_white_single);
+
+            tvSsomBalloon.setPadding(0, 0, (int) Util.convertDpToPixel(12), 0);
+            tvSsoaBalloon.setPadding(0, 0, (int) Util.convertDpToPixel(9), 0);
+
+            btnApply.setBackgroundResource(R.drawable.btn_write_apply_ssom);
+        } else if(v == tvSsoaBalloon) {
+            tvSsomBalloon.setSelected(false);
+            tvSsoaBalloon.setSelected(true);
+
+            tvSsomBalloon.setTextAppearance(this, R.style.ssom_font_12_white_single);
+            tvSsoaBalloon.setTextAppearance(this, R.style.ssom_font_16_white_single);
+
+            tvSsomBalloon.setPadding(0, 0, (int) Util.convertDpToPixel(9), 0);
+            tvSsoaBalloon.setPadding(0, 0, (int) Util.convertDpToPixel(12), 0);
+
+            btnApply.setBackgroundResource(R.drawable.btn_write_apply_ssoa);
+        } else if(v == btnApply) {
+            myLocation = LocationUtil.getLocation(this);
+            if(myLocation == null) {
+                showToastMessageShort(R.string.cannot_write_with_unknown_location);
+                return;
+            }
+
+            uploadImage();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(imageBitmap != null) imageBitmap.recycle();
+        if (!TextUtils.isEmpty(mCurrentPhotoPath)) {
+            File f = new File(mCurrentPhotoPath);
+            f.delete();
+            mCurrentPhotoPath = "";
+        }
+    }
+
+    // TODO upload image and create post
+//    private void uploadImage() {
+//        if (mContentUri != null) {
+//            showProgressDialog();
+//            Log.v(TAG, "uri path = " + mContentUri);
+//
+//            imageBitmap = BitmapFactory.decodeFile(mContentUri.getPath());
+//
+//            APICaller.ssomImageUpload(makeFileByteArray(), new NetworkManager.NetworkListener<SsomResponse<SsomImageUpload.Response>>() {
+//                @Override
+//                public void onResponse(SsomResponse<SsomImageUpload.Response> response) {
+//                    if (response.isSuccess()) {
+//                        SsomImageUpload.Response data = response.getData();
+//                        Log.i(TAG, "data : " + data);
+//                        if (data != null && data.getFileId() != null && !"".equals(data.getFileId())) {
+//                            createPost(data.getFileId());
+//                        } else {
+//                            // TODO reloading to use app
+//                            Log.i(TAG, "data is null !!");
+//                        }
+//                    } else {
+//                        Log.e(TAG, "Response error with code " + response.getResultCode() + ", message : " + response.getMessage(),
+//                                response.getError());
+//                    }
+//                }
+//            });
+//        } else {
+//            Log.e(TAG, "uploadImage() failed!!");
+//        }
+//    }
+
+//    private byte[] makeFileByteArray() {
+//        final String twoHyphens = "--";
+//        final String lineEnd = "\r\n";
+//        final String boundary = "apiclient-" + System.currentTimeMillis();
+//        final int maxBufferSize = 1024 * 1024;
+//
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        imageBitmap.compress(Bitmap.CompressFormat.PNG, 1, byteArrayOutputStream);
+//
+//        byte[] bitmapData = byteArrayOutputStream.toByteArray();
+//        int bytesRead, bytesAvailable, bufferSize;
+//        byte[] buffer;
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        DataOutputStream dos = new DataOutputStream(bos);
+//        try {
+//            dos.writeBytes(twoHyphens + boundary + lineEnd);
+//            dos.writeBytes("Content-Disposition: form-data; name=\"pict\";filename=\""
+//                    + "ssom_upload_from_camera.png" + "\"" + lineEnd);
+//            dos.writeBytes(lineEnd);
+//            ByteArrayInputStream fileInputStream = new ByteArrayInputStream(bitmapData);
+//            bytesAvailable = fileInputStream.available();
+//
+//            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+//            buffer = new byte[bufferSize];
+//
+//            // read file and write it into form...
+//            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+//
+//            while (bytesRead > 0) {
+//                dos.write(buffer, 0, bufferSize);
+//                bytesAvailable = fileInputStream.available();
+//                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+//                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+//            }
+//
+//            // send multipart form data necesssary after file data...
+//            dos.writeBytes(lineEnd);
+//            dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+//
+//            return bos.toByteArray();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return bitmapData;
+//    }
+
+    // TODO image upload 임시.. api 정의 시 변경 필요
     private DataOutputStream dos = null;
     private void uploadImage(){
         final String twoHyphens = "--";
         final String lineEnd = "\r\n";
-        final String url = "http://54.64.154.188/file/upload";
         final String boundary = "apiclient-" + System.currentTimeMillis();
         final String mimeType = "multipart/form-data;boundary=" + boundary;
         final int maxBufferSize = 1024 * 1024;
 
-        BaseVolleyRequest baseVolleyRequest = new BaseVolleyRequest(Request.Method.POST, url, new Response.Listener<NetworkResponse>() {
+        showProgressDialog();
+        BaseVolleyRequest baseVolleyRequest = new BaseVolleyRequest(Request.Method.POST, NetworkConstant.API.SSOM.IMAGE_FILE_UPLOAD, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
                 String jsonData = new String(response.data);
                 Gson gson = new Gson();
-                Map<String,String> data = gson.fromJson(jsonData,Map.class);
+                Map<String,String> data = gson.fromJson(jsonData, Map.class);
                 String fileId = data.get("fileId");
                 createPost(fileId);
-                Toast.makeText(SsomWriteActivity.this, "upload complete : "+fileId, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("kshgizmo",error.toString());
+                Log.e(TAG, error.toString());
             }
         }) {
             @Override
@@ -200,6 +515,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
             @Override
             public byte[] getBody() throws AuthFailureError {
+                imageBitmap = BitmapFactory.decodeFile(mContentUri.getPath());
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 imageBitmap.compress(Bitmap.CompressFormat.PNG, 1, byteArrayOutputStream);
                 byte[] bitmapData = byteArrayOutputStream.toByteArray();
@@ -245,11 +561,34 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void createPost(String fileId) {
-        try {
-            RequestQueue queue = Volley.newRequestQueue(getApplication());
-            //String url = "http://54.64.154.188/posts";
-//            String url = NetworkManager.getInstance().getNetworkUrl(NetworkManager.TYPE.POST);
+        Log.d(TAG, "createPost()");
 
+        APICaller.ssomPostCreate("" + System.currentTimeMillis(), UniqueIdGenUtil.getId(getApplicationContext()), Util.getEncodedString(editWriteContent.getText().toString()),
+                NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.SSOM.IMAGE_PATH).concat(fileId), age.getValue(), people.getValue(),
+                tvSsomBalloon.isSelected() ? CommonConst.SSOM : CommonConst.SSOA, myLocation.getLatitude(), myLocation.getLongitude(),
+                new NetworkManager.NetworkListener<SsomResponse<SsomPostCreate.Response>>() {
+                    @Override
+                    public void onResponse(SsomResponse<SsomPostCreate.Response> response) {
+                        if (response != null) {
+                            if (response.isSuccess()) {
+                                Log.d(TAG, "success to create post!");
+                                setResult(RESULT_OK);
+                                finish();
+                            } else {
+                                Log.d(TAG, "failed to create post!");
+                            }
+                        }
+                    }
+                });
+    }
+
+//    private void createPost(String fileId) {
+//        Log.d(TAG, "createPost()");
+//        try {
+//            RequestQueue queue = Volley.newRequestQueue(getApplication());
+//            String url = "http://54.64.154.188/posts";
+//            String url = NetworkManager.getInstance().getNetworkUrl(NetworkManager.TYPE.POST);
+//
 //            EditText messageBox = (EditText) findViewById(R.id.message);
 //            final String text = messageBox.getText().toString();
 //            JSONObject jsonBody = new JSONObject();
@@ -282,87 +621,9 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 //                }
 //            });
 //            queue.add(jsonObjectRequest);
-        }catch(Exception e){
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
+//        }catch(Exception e){
+//            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
-    View.OnClickListener writeAgeClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(v == tvTwentyEarly) {
-                tvTwentyEarly.setSelected(true);
-                tvTwentyMiddle.setSelected(false);
-                tvTwentyLate.setSelected(false);
-                tvThirtyAll.setSelected(false);
-                age = 20;
-            } else if(v == tvTwentyMiddle) {
-                tvTwentyEarly.setSelected(false);
-                tvTwentyMiddle.setSelected(true);
-                tvTwentyLate.setSelected(false);
-                tvThirtyAll.setSelected(false);
-                age = 25;
-            } else if(v == tvTwentyLate) {
-                tvTwentyEarly.setSelected(false);
-                tvTwentyMiddle.setSelected(false);
-                tvTwentyLate.setSelected(true);
-                tvThirtyAll.setSelected(false);
-                age = 29;
-            } else if(v == tvThirtyAll) {
-                tvTwentyEarly.setSelected(false);
-                tvTwentyMiddle.setSelected(false);
-                tvTwentyLate.setSelected(false);
-                tvThirtyAll.setSelected(true);
-                age = 30;
-            }
-        }
-    };
-
-    View.OnClickListener writePeopleClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(v == tvOnePeople) {
-                tvOnePeople.setSelected(true);
-                tvTwoPeople.setSelected(false);
-                tvThreePeople.setSelected(false);
-                tvFourPeopleOrMore.setSelected(false);
-                people = 1;
-            } else if(v == tvTwoPeople) {
-                tvOnePeople.setSelected(false);
-                tvTwoPeople.setSelected(true);
-                tvThreePeople.setSelected(false);
-                tvFourPeopleOrMore.setSelected(false);
-                people = 2;
-            } else if(v == tvThreePeople) {
-                tvOnePeople.setSelected(false);
-                tvTwoPeople.setSelected(false);
-                tvThreePeople.setSelected(true);
-                tvFourPeopleOrMore.setSelected(false);
-                people = 3;
-            } else if(v == tvFourPeopleOrMore) {
-                tvOnePeople.setSelected(false);
-                tvTwoPeople.setSelected(false);
-                tvThreePeople.setSelected(false);
-                tvFourPeopleOrMore.setSelected(true);
-                people = 4;
-            }
-        }
-    };
-
-    @Override
-    public void onClick(View v) {
-        if(v == btnBack || v == btnCancel) {
-            finish();
-        } else if(v == imgCamera) {
-            dispatchTakePictureIntent();
-        } else if(v == tvSsomBalloon) {
-            tvSsomBalloon.setSelected(true);
-            tvSsoaBalloon.setSelected(false);
-        } else if(v == tvSsoaBalloon) {
-            tvSsomBalloon.setSelected(false);
-            tvSsoaBalloon.setSelected(true);
-        } else if(v == btnApply) {
-            // TODO interaction listener 등록
-        }
-    }
 }

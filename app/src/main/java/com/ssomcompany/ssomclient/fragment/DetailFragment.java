@@ -19,9 +19,13 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationUtil;
+import com.ssomcompany.ssomclient.common.RoundedNetworkImageView;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 
 /**
@@ -40,6 +44,9 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     private static DetailFragment detailFragment;
     private OnDetailFragmentInteractionListener mListener;
+
+    private ArrayList<SsomItem> ssomList;
+    private Map<String, SsomItem> ssomMap;
 
     ViewPager mViewPager;
     PagerAdapter mPagerAdapter;
@@ -74,6 +81,10 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         return detailFragment;
     }
 
+    public void setSsomListData(ArrayList<SsomItem> ssomList) {
+        this.ssomList = ssomList;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate()");
@@ -94,15 +105,14 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         imgHeart = (ImageView) view.findViewById(R.id.img_heart);
         imgClose = (ImageView) view.findViewById(R.id.img_close);
 
-        Log.i(TAG, "postId : " + postId + ", ssom : " + postItemMap.get(postId).getSsom());
-        imgHeart.setBackgroundResource(CommonConst.SSOM.equals(postItemMap.get(postId).getSsom()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
+        imgHeart.setBackgroundResource(CommonConst.SSOM.equals(ssomList.get(0).getSsom()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
         imgHeart.setOnClickListener(this);
         imgClose.setOnClickListener(this);
 
         mViewPager = (ViewPager) view.findViewById(R.id.pager);
         mPagerAdapter = new DetailPagerAdapter(inflater);
         mViewPager.setAdapter(mPagerAdapter);
-        mViewPager.setPageMargin(Math.round(Util.convertDpToPixel(16.5f, getActivity())));
+        mViewPager.setPageMargin(Math.round(Util.convertDpToPixel(16.5f)));
         mViewPager.setOffscreenPageLimit(2);
         mViewPager.setClipToPadding(false);
 
@@ -143,17 +153,24 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     }
 
     @Override
-    void setPostItems() {
-        Log.i(TAG, "setPostItem called : " + getActivity().toString());
-    }
-
-    @Override
     public void onClick(View v) {
         if(v == imgHeart) {
             // TODO - heart action 정의 후 기능부여
         } else {
             onAdapterButtonPressed(false);
         }
+    }
+
+    public int getCurrentPosition(String postId) {
+        int position = 0;
+        if(ssomList == null) return position;
+
+        for(int i=0 ; i<ssomList.size() ; i++) {
+            if(postId.equals(ssomList.get(i).getPostId())) position = i;
+        }
+
+        Log.i(TAG, "getCurrentPosition() : " + position);
+        return position;
     }
 
     private class DetailPagerAdapter extends PagerAdapter implements View.OnClickListener {
@@ -170,7 +187,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         public Object instantiateItem(ViewGroup container, int position) {
             View mView = inflater.inflate(R.layout.detail_pager_adapter, null);
 
-            NetworkImageView profileImg = (NetworkImageView) mView.findViewById(R.id.profile_img);
+            RoundedNetworkImageView profileImg = (RoundedNetworkImageView) mView.findViewById(R.id.profile_img);
             LinearLayout centerLine = (LinearLayout) mView.findViewById(R.id.center_line_layout);
             TextView tvCategory = (TextView) mView.findViewById(R.id.tv_category);
             TextView tvDistance = (TextView) mView.findViewById(R.id.tv_distance);
@@ -179,7 +196,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             TextView btnCancel = (TextView) mView.findViewById(R.id.btn_cancel);
             LinearLayout btnApply = (LinearLayout) mView.findViewById(R.id.btn_apply);
 
-            SsomItem item = postItemList.get(position);
+            SsomItem item = ssomList.get(position);
             // item setting
             profileImg.setImageUrl(item.getImageUrl(), mImageLoader);
             centerLine.setBackgroundResource(CommonConst.SSOM.equals(item.getSsom()) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
@@ -218,7 +235,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
         @Override
         public int getCount() {
-            return postItemList.size();
+            return ssomList.size();
         }
 
         @Override

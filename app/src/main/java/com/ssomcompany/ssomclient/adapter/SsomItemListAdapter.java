@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +16,13 @@ import com.ssomcompany.ssomclient.common.CircularNetworkImageView;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.fragment.SsomListFragment;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
 import java.util.ArrayList;
 
-public class SsomItemListAdapter extends BaseAdapter{
+public class SsomItemListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
     private Context context;
@@ -120,6 +122,7 @@ public class SsomItemListAdapter extends BaseAdapter{
         // content
         holder.contentTv.setText(item.getContent());
 
+//        if(getCount() - 1 == position) mSsomAdapterListener.onNotifyFinished();
         return convertView;
     }
 

@@ -16,8 +16,8 @@
         android:layout_height="60dp"
         android:background="@drawable/bg_filter_w80"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="17dp"
-        android:layout_marginLeft="20dp">
+        android:layout_marginBottom="19dp"
+        android:layout_marginLeft="21dp">
 
         <TextView
             android:id="@+id/filter_txt_age_n_count"
@@ -30,8 +30,8 @@
 
     <ImageView
         android:id="@+id/filter_img"
-        android:layout_width="61dp"
-        android:layout_height="61dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="19dp"
         android:layout_marginBottom="16dp"

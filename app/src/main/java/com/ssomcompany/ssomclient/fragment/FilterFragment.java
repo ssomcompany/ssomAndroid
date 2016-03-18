@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.common.FilterType;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 
 
@@ -80,8 +82,8 @@ public class FilterFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
         view.setClickable(true);
 
-        age = filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 20);
-        people = filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 1);
+        age = filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, FilterType.twentyEarly.getValue());
+        people = filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, FilterType.onePerson.getValue());
 
         // view for age settings
         tvTwentyEarly = (TextView) view.findViewById(R.id.tv_filter_age_20_early);
@@ -133,35 +135,25 @@ public class FilterFragment extends Fragment {
     // setting init information
     private void initView() {
         Log.i(TAG, "initView() age : " + age);
-        switch(age) {
-            case 20 :
-                tvTwentyEarly.setSelected(true);
-                break;
-            case 25 :
-                tvTwentyMiddle.setSelected(true);
-                break;
-            case 29 :
-                tvTwentyLate.setSelected(true);
-                break;
-            case 30 :
-                tvThirtyAll.setSelected(true);
-                break;
+        if(age == FilterType.twentyEarly.getValue()) {
+            tvTwentyEarly.setSelected(true);
+        } else if(age == FilterType.twentyMiddle.getValue()) {
+            tvTwentyMiddle.setSelected(true);
+        } else if(age == FilterType.twentyLate.getValue()) {
+            tvTwentyLate.setSelected(true);
+        } else if(age == FilterType.thirtyOver.getValue()) {
+            tvThirtyAll.setSelected(true);
         }
 
         Log.i(TAG, "initView() people : " + people);
-        switch(people) {
-            case 1 :
-                tvOnePeople.setSelected(true);
-                break;
-            case 2 :
-                tvTwoPeople.setSelected(true);
-                break;
-            case 3 :
-                tvThreePeople.setSelected(true);
-                break;
-            case 4 :
-                tvFourPeopleOrMore.setSelected(true);
-                break;
+        if(people == FilterType.onePerson.getValue()) {
+            tvOnePeople.setSelected(true);
+        } else if(people == FilterType.twoPeople.getValue()) {
+            tvTwoPeople.setSelected(true);
+        } else if(people == FilterType.threePeople.getValue()) {
+            tvThreePeople.setSelected(true);
+        } else if(people == FilterType.fourPeople.getValue()) {
+            tvFourPeopleOrMore.setSelected(true);
         }
     }
 
@@ -201,25 +193,25 @@ public class FilterFragment extends Fragment {
                 tvTwentyMiddle.setSelected(false);
                 tvTwentyLate.setSelected(false);
                 tvThirtyAll.setSelected(false);
-                age = 20;
+                age = FilterType.twentyEarly.getValue();
             } else if(v == tvTwentyMiddle) {
                 tvTwentyEarly.setSelected(false);
                 tvTwentyMiddle.setSelected(true);
                 tvTwentyLate.setSelected(false);
                 tvThirtyAll.setSelected(false);
-                age = 25;
+                age = FilterType.twentyMiddle.getValue();
             } else if(v == tvTwentyLate) {
                 tvTwentyEarly.setSelected(false);
                 tvTwentyMiddle.setSelected(false);
                 tvTwentyLate.setSelected(true);
                 tvThirtyAll.setSelected(false);
-                age = 29;
+                age = FilterType.twentyLate.getValue();
             } else if(v == tvThirtyAll) {
                 tvTwentyEarly.setSelected(false);
                 tvTwentyMiddle.setSelected(false);
                 tvTwentyLate.setSelected(false);
                 tvThirtyAll.setSelected(true);
-                age = 30;
+                age = FilterType.thirtyOver.getValue();
             }
         }
     };
@@ -232,25 +224,25 @@ public class FilterFragment extends Fragment {
                 tvTwoPeople.setSelected(false);
                 tvThreePeople.setSelected(false);
                 tvFourPeopleOrMore.setSelected(false);
-                people = 1;
+                people = FilterType.onePerson.getValue();
             } else if(v == tvTwoPeople) {
                 tvOnePeople.setSelected(false);
                 tvTwoPeople.setSelected(true);
                 tvThreePeople.setSelected(false);
                 tvFourPeopleOrMore.setSelected(false);
-                people = 2;
+                people = FilterType.twoPeople.getValue();
             } else if(v == tvThreePeople) {
                 tvOnePeople.setSelected(false);
                 tvTwoPeople.setSelected(false);
                 tvThreePeople.setSelected(true);
                 tvFourPeopleOrMore.setSelected(false);
-                people = 3;
+                people = FilterType.threePeople.getValue();
             } else if(v == tvFourPeopleOrMore) {
                 tvOnePeople.setSelected(false);
                 tvTwoPeople.setSelected(false);
                 tvThreePeople.setSelected(false);
                 tvFourPeopleOrMore.setSelected(true);
-                people = 4;
+                people = FilterType.fourPeople.getValue();
             }
         }
     };

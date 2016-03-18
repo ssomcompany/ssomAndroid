@@ -20,7 +20,7 @@ public class BaseVolleyRequest extends Request<NetworkResponse> {
     }
 
     public BaseVolleyRequest(int method, String url, Response.Listener<NetworkResponse> listener, Response.ErrorListener errorListener) {
-        super(method, url, errorListener);
+        super(method, NetworkUtil.getSsomHostUrl() + url, errorListener);
         this.mListener = listener;
         this.mErrorListener = errorListener;
     }

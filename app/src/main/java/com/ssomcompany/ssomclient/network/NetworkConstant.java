@@ -33,7 +33,9 @@ public class NetworkConstant {
     public static class API {
         public static class SSOM {
             public static final String SSOM_LIST = "/posts";
+            public static final String SSOM_POST = "/posts";
             public static final String IMAGE_PATH = "/file/images/";
+            public static final String IMAGE_FILE_UPLOAD = "/file/upload";
         }
     }
 }

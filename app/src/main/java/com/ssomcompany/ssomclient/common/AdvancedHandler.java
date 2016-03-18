@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Message Handler that supports buffering up of runnable when the activity is paused. Buffered runnable will be executed when the activity is
  * resumed.
  *
- * @author minsung.ku
+ * @author aaron.choi
  */
 public class AdvancedHandler extends Handler {
 

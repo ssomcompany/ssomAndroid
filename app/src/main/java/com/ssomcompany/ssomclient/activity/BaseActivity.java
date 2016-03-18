@@ -4,6 +4,7 @@ package com.ssomcompany.ssomclient.activity;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.DialogInterface.OnKeyListener;
@@ -15,10 +16,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.common.AdvancedHandler;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.push.MessageManager;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
@@ -151,11 +154,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         return mProgressDialog != null && mProgressDialog.getFragmentManager() != null && mProgressDialog.isShowing();
     }
 
+    private OnCancelListener basicCancelListener = new OnCancelListener() {
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            NetworkManager.getInstance().cancelPendingRequests(TAG);
+        }
+    };
+
     /**
      * Show progress dialog(Cancel by Back key)
      */
     public void showProgressDialog() {
-        showProgressDialog(true, null);
+        showProgressDialog(true, basicCancelListener);
     }
 
     /**
@@ -164,7 +174,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param isCancelable (Cancel by Back key)
      */
     public void showProgressDialog(boolean isCancelable) {
-        showProgressDialog(isCancelable, null);
+        showProgressDialog(isCancelable, isCancelable ? basicCancelListener : null);
     }
 
     /**
@@ -272,6 +282,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         } else {
             return null;
         }
+    }
+
+    /**
+     * This makes toast message short time
+     * @param resId string resources id
+     */
+    public void showToastMessageShort(int resId) {
+        Toast.makeText(getApplicationContext(), getResources().getString(resId), Toast.LENGTH_SHORT).show();
     }
 
     @Override

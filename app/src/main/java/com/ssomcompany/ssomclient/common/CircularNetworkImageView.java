@@ -6,9 +6,6 @@ import android.util.AttributeSet;
 
 import com.android.volley.toolbox.NetworkImageView;
 
-/**
- * Created by kshgizmo on 2015-10-08.
- */
 public class CircularNetworkImageView extends NetworkImageView {
     Context mContext;
 

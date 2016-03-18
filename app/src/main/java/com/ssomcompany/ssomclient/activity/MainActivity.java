@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -56,7 +55,6 @@ import com.ssomcompany.ssomclient.push.PushManageService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 
 public class MainActivity extends BaseActivity
@@ -66,16 +64,17 @@ public class MainActivity extends BaseActivity
     private static final String TAG = MainActivity.class.getSimpleName();
 
     public interface OnTabChangedListener {
-        void onTabChangedAction();
+        void onTabChangedAction(ArrayList<SsomItem> ssomList);
     }
 
     private OnTabChangedListener mTabListener;
 
+    private static final int REQUEST_SSOM_WRITE = 100;
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
 
     private ArrayList<SsomItem> ITEM_LIST = new ArrayList<>();
-    private Map<String, SsomItem> ITEM_MAP = new HashMap<>();
+//    private Map<String, SsomItem> ITEM_MAP = new HashMap<>();
     private HashMap<Marker, String> mIdMap = new HashMap<>();
 
     /**
@@ -89,16 +88,12 @@ public class MainActivity extends BaseActivity
     /**
      * The filters resources
      */
-    private View filter;
-    private View filterImgLayout;
-    private TextView filterTv;
     private SsomPreferences filterPref;
 
     /**
      * layout write resources
      */
     private ImageView mBtnMapMyLocation;
-    private ImageView btn_write;
 
     /**
      * toolbar resources
@@ -142,6 +137,8 @@ public class MainActivity extends BaseActivity
     }
 
     private void requestSsomList() {
+        showProgressDialog();
+
         APICaller.getSsomList(new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
 
             @Override
@@ -150,12 +147,12 @@ public class MainActivity extends BaseActivity
                     GetSsomList.Response data = response.getData();
                     if (data != null && data.getSsomList() != null && data.getSsomList().size() > 0) {
                         ITEM_LIST.clear();
-                        ITEM_MAP.clear();
+//                        ITEM_MAP.clear();
 
                         ITEM_LIST = data.getSsomList();
-                        for(SsomItem item : data.getSsomList()) {
-                            ITEM_MAP.put(item.getPostId(), item);
-                        }
+//                        for(SsomItem item : data.getSsomList()) {
+//                            ITEM_MAP.put(item.getPostId(), item);
+//                        }
 
                         // ui change at last
                         ssomDataChangedListener();
@@ -178,7 +175,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void initFilterView() {
-        filterTv = (TextView) findViewById(R.id.filter_txt_age_n_count);
+        TextView filterTv = (TextView) findViewById(R.id.filter_txt_age_n_count);
         String filterAge = "";
         String filterPeople = "";
         int age = filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 20);
@@ -237,6 +234,7 @@ public class MainActivity extends BaseActivity
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 takeBtmBar.setVisibility(View.GONE);
 
+                SsomListFragment.newInstance().setPostItemClickListener(null);
                 requestSsomList();
             }
         });
@@ -252,22 +250,24 @@ public class MainActivity extends BaseActivity
                 giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 giveBtmBar.setVisibility(View.GONE);
 
+                SsomListFragment.newInstance().setPostItemClickListener(null);
                 requestSsomList();
             }
         });
 
-        btn_write = (ImageView) findViewById(R.id.btn_write);
+        ImageView btn_write = (ImageView) findViewById(R.id.btn_write);
         final Context context = this;
         btn_write.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent();
                 i.setClass(context, SsomWriteActivity.class);
-                startActivity(i);
+                startActivityForResult(i, REQUEST_SSOM_WRITE);
             }
         });
-        filter = findViewById(R.id.filter_txt_layout);
-        filterImgLayout = findViewById(R.id.filter_img);
+
+        View filter = findViewById(R.id.filter_txt_layout);
+        View filterImgLayout = findViewById(R.id.filter_img);
 
         // listener register
         filter.setOnClickListener(filterClickListener);
@@ -276,13 +276,12 @@ public class MainActivity extends BaseActivity
 
     private void ssomDataChangedListener() {
         if(MAP_VIEW.equals(selectedView)){
-            if(mMap != null) mMap.clear();
             initMyLocation(true);
             initMarker();
         } else {
-            mTabListener.onTabChangedAction();
+            mTabListener.onTabChangedAction(getCurrentPostItems());
         }
-    };
+    }
 
     private View.OnClickListener filterClickListener = new View.OnClickListener() {
         @Override
@@ -331,7 +330,7 @@ public class MainActivity extends BaseActivity
     private void setToggleButtonUI() {
         mapBtn.setTextAppearance(this, MAP_VIEW.equals(selectedView)? R.style.ssom_font_12_white_single : R.style.ssom_font_12_grayish_brown_single);
         mapBtn.setBackgroundResource(MAP_VIEW.equals(selectedView) ? R.drawable.bg_main_toggle_on : 0);
-        listBtn.setTextAppearance(this, LIST_VIEW.equals(selectedView)? R.style.ssom_font_12_white_single : R.style.ssom_font_12_grayish_brown_single);
+        listBtn.setTextAppearance(this, LIST_VIEW.equals(selectedView) ? R.style.ssom_font_12_white_single : R.style.ssom_font_12_grayish_brown_single);
         listBtn.setBackgroundResource(LIST_VIEW.equals(selectedView) ? R.drawable.bg_main_toggle_on : 0);
     }
 
@@ -346,8 +345,10 @@ public class MainActivity extends BaseActivity
     private void startListFragment() {
         selectedView = LIST_VIEW;
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
+        SsomListFragment fragment = SsomListFragment.newInstance();
+        fragment.setSsomListData(getCurrentPostItems());
         fragmentManager.beginTransaction().
-                replace(R.id.container, SsomListFragment.newInstance(), CommonConst.SSOM_LIST_FRAG).commit();
+                replace(R.id.container, fragment, CommonConst.SSOM_LIST_FRAG).commit();
     }
 
     @Override
@@ -390,10 +391,11 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    public void onPostItemClick(String id) {
-        Log.i(TAG, "onPostItemClick() : " + id);
+    public void onPostItemClick(ArrayList<SsomItem> ssomList, int position) {
+        Log.i(TAG, "onPostItemClick() : " + position);
 
-        Fragment fragment = DetailFragment.newInstance(id);
+        DetailFragment fragment = DetailFragment.newInstance(ssomList.get(position).getPostId());
+        fragment.setSsomListData(ssomList);
         fragmentManager.beginTransaction().add(R.id.whole_container, fragment, CommonConst.DETAIL_FRAG)
                 .addToBackStack(null).commit();
     }
@@ -425,8 +427,8 @@ public class MainActivity extends BaseActivity
 
                 Location currentLo = LocationUtil.getLocation(getApplicationContext());
                 LatLng currentPosition = new LatLng(currentLo.getLatitude(), currentLo.getLongitude());
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
                 currentMarker.setPosition(currentPosition);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
             }
         });
         requestSsomList();
@@ -438,13 +440,14 @@ public class MainActivity extends BaseActivity
                 String postId = mIdMap.get(marker);
 
                 // my position click 시 이벤트 없음
-                if(postId == null || "".equals(postId)) return false;
+                if (postId == null || "".equals(postId)) return false;
 
                 Log.i(TAG, "[마커 클릭 이벤트] latitude ="
                         + marker.getPosition().latitude + ", longitude ="
                         + marker.getPosition().longitude);
 
-                Fragment fragment = DetailFragment.newInstance(postId);
+                DetailFragment fragment = DetailFragment.newInstance(postId);
+                fragment.setSsomListData(getCurrentPostItems());
                 fragmentManager.beginTransaction().add(R.id.whole_container, fragment, CommonConst.DETAIL_FRAG)
                         .addToBackStack(null).commit();
                 return false;
@@ -518,9 +521,9 @@ public class MainActivity extends BaseActivity
         }
     };
 
-    public Map<String, SsomItem> getCurrentPostMap() {
-        return CommonConst.SSOM.equals(selectedTab)? Util.convertAllMapToSsomMap(ITEM_MAP) : Util.convertAllMapToSsoaMap(ITEM_MAP);
-    }
+//    public Map<String, SsomItem> getCurrentPostMap() {
+//        return CommonConst.SSOM.equals(selectedTab)? Util.convertAllMapToSsomMap(ITEM_MAP) : Util.convertAllMapToSsoaMap(ITEM_MAP);
+//    }
 
     public ArrayList<SsomItem> getCurrentPostItems() {
         return CommonConst.SSOM.equals(selectedTab)? Util.convertAllListToSsomList(ITEM_LIST) : Util.convertAllListToSsoaList(ITEM_LIST);
@@ -531,16 +534,18 @@ public class MainActivity extends BaseActivity
     }
 
     private void initMarker() {
-        Map<String, SsomItem> items = getCurrentPostMap();
+        ArrayList<SsomItem> items = getCurrentPostItems();
         if(items != null && items.size()>0){
+            if(mMap != null) mMap.clear();
             mIdMap.clear();
-            for (Map.Entry<String, SsomItem> item : items.entrySet()) {
-                addMarker(item.getValue());
+            for (int i=0 ; i<items.size() ; i++) {
+                boolean isLastItem = (i == items.size() - 1);
+                addMarker(items.get(i), isLastItem);
             }
         }
     }
 
-    private void addMarker(final SsomItem item) {
+    private void addMarker(final SsomItem item, final boolean isLastItem) {
         ImageRequest imageRequest = new ImageRequest(item.getImageUrl(), new Response.Listener<Bitmap>() {
             Marker marker;
 
@@ -551,6 +556,8 @@ public class MainActivity extends BaseActivity
                         .title(item.getContent()).draggable(false).icon(getMarkerImage(item.getSsom(), bitmap)));
 
                 mIdMap.put(marker, item.getPostId());
+
+                if(isLastItem) dismissProgressDialog();
             }
         }
         , 144  // max width
@@ -570,23 +577,23 @@ public class MainActivity extends BaseActivity
     private BitmapDescriptor getMarkerImage(String ssom , Bitmap imageBitmap){
         Bitmap mergedBitmap = null;
         try {
-            mergedBitmap = Bitmap.createBitmap((int) Util.convertDpToPixel(49, this),
-                    (int) Util.convertDpToPixel(57, this), Bitmap.Config.ARGB_8888);
+            mergedBitmap = Bitmap.createBitmap((int) Util.convertDpToPixel(49),
+                    (int) Util.convertDpToPixel(57), Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(mergedBitmap);
-            Bitmap iconBitmap =  null;
-            if("ssom".equals(ssom)){
+            Bitmap iconBitmap;
+            if(CommonConst.SSOM.equals(ssom)){
                 iconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_map_st_g);
             }else{
                 iconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_map_st_r);
             }
 
-            Drawable iconDrawable = new BitmapDrawable(iconBitmap);
+            Drawable iconDrawable = new BitmapDrawable(getApplicationContext().getResources(), iconBitmap);
             Drawable imageDrawable = new RoundImage(imageBitmap);
 
             iconDrawable.setBounds(0, 0,
-                    (int) Util.convertDpToPixel(49, this), (int) Util.convertDpToPixel(57, this));
-            imageDrawable.setBounds((int) Util.convertDpToPixel(2, this), (int) Util.convertDpToPixel(2, this),
-                    (int) Util.convertDpToPixel(47, this), (int) Util.convertDpToPixel(47, this));
+                    (int) Util.convertDpToPixel(49), (int) Util.convertDpToPixel(57));
+            imageDrawable.setBounds((int) Util.convertDpToPixel(2), (int) Util.convertDpToPixel(2),
+                    (int) Util.convertDpToPixel(47), (int) Util.convertDpToPixel(47));
             imageDrawable.draw(c);
             iconDrawable.draw(c);
         } catch (Exception e) {
@@ -623,6 +630,19 @@ public class MainActivity extends BaseActivity
         // TODO - if true, go to chatting activity
         if(isApply) {
 
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_SSOM_WRITE :
+                    requestSsomList();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

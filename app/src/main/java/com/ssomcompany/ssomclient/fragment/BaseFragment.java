@@ -1,67 +1,100 @@
 package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 public abstract class BaseFragment extends Fragment {
-    private static final String TAG = BaseFragment.class.getSimpleName();
-    
-    public Map<String, SsomItem> postItemMap;
-    public ArrayList<SsomItem> postItemList;
+    private static final String PROGRESS_DIALOG_TAG = "WAIT";
+    private CommonDialog mProgressDialog = null;
 
-    abstract void setPostItems();
-
-    public BaseFragment() {
-        super();
+    /**
+     * Show progress dialog(Cancel by Back key)
+     */
+    public void showProgressDialog() {
+        showProgressDialog(true);
     }
 
-    public int getCurrentPosition(String postId) {
-        int position = 0;
-        if(postItemList == null) return position;
-
-        for(int i=0 ; i<postItemList.size() ; i++) {
-            if(postId.equals(postItemList.get(i).getPostId())) position = i;
-        }
-
-        Log.i(TAG, "getCurrentPosition() : " + position);
-        return position;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        Log.i(TAG, "onAttach()");
-        super.onAttach(activity);
-
-        // Map, List setting
-        postItemMap = ((MainActivity) activity).getCurrentPostMap();
-        postItemList = ((MainActivity) activity).getCurrentPostItems();
-    }
-
-    @Override
-    public void onResume() {
-        Log.i(TAG, "onResume()");
-        super.onResume();
-
-        if(getActivity() instanceof MainActivity) {
-            Log.i(TAG, "Reset list and map.");
-            postItemMap = ((MainActivity) getActivity()).getCurrentPostMap();
-            postItemList = ((MainActivity) getActivity()).getCurrentPostItems();
+    /**
+     * Show progress dialog
+     *
+     * @param isCancelable (Cancel by Back key)
+     */
+    public void showProgressDialog(boolean isCancelable) {
+        try {
+            makeProgressDialog();
+            if (mProgressDialog.getFragmentManager() == null) {
+                mProgressDialog.setCancelable(isCancelable);
+                mProgressDialog.setCanceledOnTouchOutside(false);
+                mProgressDialog.show(getActivity().getFragmentManager(), PROGRESS_DIALOG_TAG);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    @Override
-    public void onDetach() {
-        Log.i(TAG, "onDetach()");
-        super.onDetach();
+    /**
+     * Make base progress dialog
+     */
+    private void makeProgressDialog() {
+        try {
+            if (mProgressDialog == null) {
+                mProgressDialog = CommonDialog.getInstance(CommonDialog.DIALOG_STYLE_SPINNER);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-        if(postItemMap != null) postItemMap = null;
-        if(postItemList != null) postItemList = null;
+    /**
+     * Dismiss progress dialog
+     */
+    public void dismissProgressDialog() {
+        try {
+            if (mProgressDialog != null && mProgressDialog.getFragmentManager() != null) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Set cancel listener in ProgressDialog
+     *
+     * @param cancel OnCancelListener
+     */
+    public void setProgressDialogCancel(DialogInterface.OnCancelListener cancel) {
+        makeProgressDialog();
+        mProgressDialog.setCancelListener(cancel);
+    }
+
+    /**
+     * Set dismiss listener in ProgressDialog
+     *
+     * @param dismiss OnDismissListener
+     */
+    public void setProgressDialogDismiss(DialogInterface.OnDismissListener dismiss) {
+        makeProgressDialog();
+        mProgressDialog.setDismissListener(dismiss);
+    }
+
+    /**
+     * Set key listener in ProgressDialog
+     *
+     * @param listener OnKeyListener
+     */
+    public void setProgressDialogKeyListener(DialogInterface.OnKeyListener listener) {
+        makeProgressDialog();
+        mProgressDialog.setKeyListener(listener);
     }
 }

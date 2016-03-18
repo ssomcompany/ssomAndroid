@@ -11,9 +11,13 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.adapter.SsomItemListAdapter;
 import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+
+import java.util.ArrayList;
 
 /**
  * A fragment representing a list of Items.
@@ -34,7 +38,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
      * activity.
      */
     public interface OnPostItemInteractionListener {
-        void onPostItemClick(String id);
+        void onPostItemClick(ArrayList<SsomItem> ssomList, int position);
     }
 
     private OnPostItemInteractionListener mListener;
@@ -49,6 +53,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
      * Views.
      */
     private SsomItemListAdapter mAdapter;
+    private ArrayList<SsomItem> ssomList;
 
     private static SsomListFragment ssomListFragment;
 
@@ -57,6 +62,14 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
             ssomListFragment = new SsomListFragment();
         }
         return ssomListFragment;
+    }
+
+    public void setSsomListData(ArrayList<SsomItem> ssomList) {
+        this.ssomList = ssomList;
+    }
+
+    public void setPostItemClickListener(OnPostItemInteractionListener mListener) {
+        this.mListener = mListener;
     }
 
     /**
@@ -72,7 +85,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
         super.onCreate(savedInstanceState);
 
         mAdapter = new SsomItemListAdapter(getActivity());
-        mAdapter.setItemList(postItemList);
+        mAdapter.setItemList(ssomList);
     }
 
     @Override
@@ -100,7 +113,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
         super.onAttach(activity);
         try {
             mListener = (OnPostItemInteractionListener) activity;
-            if(activity instanceof MainActivity) ((MainActivity) activity).setOnTabChangedListener(mTabListener);
+            ((MainActivity) activity).setOnTabChangedListener(mTabListener);
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnPostItemInteractionListener");
@@ -118,7 +131,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onPostItemClick(postItemList.get(position).getPostId());
+            mListener.onPostItemClick(ssomList, position);
         }
     }
 
@@ -135,30 +148,19 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
         }
     }
 
-    // TODO activity result
-    public void onActivityResult() {
-
-    }
-
     public void ssomListNotifyDataSetChanged() {
-        mAdapter.setItemList(postItemList);
+        mAdapter.setItemList(ssomList);
         mAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    void setPostItems() {
-        if(getActivity() instanceof MainActivity) {
-            postItemList = ((MainActivity) getActivity()).getCurrentPostItems();
-            postItemMap = ((MainActivity) getActivity()).getCurrentPostMap();
-        }
     }
 
     private MainActivity.OnTabChangedListener mTabListener = new MainActivity.OnTabChangedListener() {
         @Override
-        public void onTabChangedAction() {
+        public void onTabChangedAction(ArrayList<SsomItem> ssomList) {
             Log.d(TAG, "onTabChangedAction() called !!");
-            setPostItems();
+            setSsomListData(ssomList);
             ssomListNotifyDataSetChanged();
+            mListener = (OnPostItemInteractionListener) getActivity();
+            ((MainActivity) getActivity()).dismissProgressDialog();
         }
     };
 }

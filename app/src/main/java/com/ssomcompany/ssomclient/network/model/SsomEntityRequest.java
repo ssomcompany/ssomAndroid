@@ -45,8 +45,8 @@ public abstract class SsomEntityRequest extends SsomRequest {
 
     @Override
     public String getPayload() {
-        if (false == isFormParam()) {
-            String jsonPayload = null;
+        if (!isFormParam()) {
+            String jsonPayload;
             try {
                 Gson gson = new Gson();
                 jsonPayload = gson.toJson(this);
@@ -74,7 +74,7 @@ public abstract class SsomEntityRequest extends SsomRequest {
                     if (obj != null) {
                         obj = handleGSonLongTypeConversionBug(obj);
 
-                        StringBuffer value = new StringBuffer();
+                        StringBuilder value = new StringBuilder();
                         if (obj instanceof List<?>) {
                             List<?> list = ((List<?>) obj);
                             for (int i = 0; i < list.size(); i++) {

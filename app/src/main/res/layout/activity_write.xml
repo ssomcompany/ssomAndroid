@@ -59,7 +59,7 @@
             android:background="@color/white">
 
             <ImageView
-                android:id="@+id/img_profile"
+                android:id="@+id/img_empty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -73,13 +73,19 @@
                 android:background="@drawable/img_write_shadow"/>
 
             <ImageView
+                android:id="@+id/img_profile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageView
                 android:id="@+id/img_camera"
-                android:layout_width="20dp"
-                android:layout_height="18dp"
-                android:layout_marginRight="11dp"
-                android:layout_marginBottom="8dp"
+                android:layout_width="26dp"
+                android:layout_height="24dp"
+                android:padding="3dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="5dp"
                 android:layout_gravity="bottom|right"
-                android:background="@drawable/icon_write_camera"/>
+                android:src="@drawable/icon_write_camera"/>
         </FrameLayout>
 
         <TextView
@@ -130,8 +136,7 @@
                 style="@style/ssom_font_12_gray_warm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="@string/write_select_our_age"/>
+                android:layout_marginTop="15dp"/>
 
             <LinearLayout
                 android:layout_below="@id/tv_our_age"
@@ -204,8 +209,7 @@
                 style="@style/ssom_font_12_gray_warm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="13dp"
-                android:text="@string/write_select_our_people"/>
+                android:layout_marginTop="13dp"/>
 
             <LinearLayout
                 android:layout_below="@id/tv_our_people"
