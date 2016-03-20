@@ -7,11 +7,13 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 
 import java.io.IOException;
 
 public class PushManageService extends Service {
+    private static final String TAG = PushManageService.class.getSimpleName();
     private GoogleCloudMessaging gcm;
 
     public PushManageService() {
@@ -19,7 +21,7 @@ public class PushManageService extends Service {
 
     @Override
     public void onCreate() {
-        Log.i("kshgizmo","pushManageService on create");
+        Log.i(TAG,"pushManageService on create");
         super.onCreate();
         gcm = GoogleCloudMessaging.getInstance(getBaseContext());
         register();
@@ -32,16 +34,16 @@ public class PushManageService extends Service {
 
 
     private void register() {
-        Log.i("kshgizmo", "gcm register");
+        Log.i(TAG, "gcm register");
         new AsyncTask(){
             protected Object doInBackground(final Object... params) {
                 String token;
                 try {
-                    token = gcm.register(getString(R.string.project_number));
-                    Log.i("registrationId", token);
+                    token = gcm.register(BaseApplication.getInstance().getGCMSenderID());
+                    Log.i(TAG, "token :: " + token);
                 }
                 catch (IOException e) {
-                    Log.i("Registration Error", e.getMessage());
+                    Log.i(TAG, e.getMessage());
                 }
                 return true;
             }
