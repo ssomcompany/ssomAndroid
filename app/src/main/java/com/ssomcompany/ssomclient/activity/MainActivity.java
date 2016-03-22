@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.RoundImage;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
@@ -120,6 +121,7 @@ public class MainActivity extends BaseActivity
         selectedView = MAP_VIEW;
         selectedTab = CommonConst.SSOM;
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
+        locationTracker.setLocationResult(locationResult);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -420,12 +422,12 @@ public class MainActivity extends BaseActivity
         mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!LocationUtil.getMyLocation(getApplicationContext(), locationResult)) {
+                if (!locationTracker.chkCanGetLocation()) {
                     showActivateGPSPopup();
                     return;
                 }
 
-                Location currentLo = LocationUtil.getLocation(getApplicationContext());
+                Location currentLo = locationTracker.getLocation();
                 LatLng currentPosition = new LatLng(currentLo.getLatitude(), currentLo.getLongitude());
                 currentMarker.setPosition(currentPosition);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
@@ -489,9 +491,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void initMyLocation(boolean isUpdate) {
-        LocationUtil.getMyLocation(this, locationResult);
-
-        Location initLo = LocationUtil.getLocation(getApplicationContext());
+        Location initLo = locationTracker.getLocation();
         LatLng initPosition = new LatLng(initLo.getLatitude(), initLo.getLongitude());
 
         if(!isUpdate) mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initPosition, 13));
@@ -501,7 +501,7 @@ public class MainActivity extends BaseActivity
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
     }
 
-    private LocationUtil.LocationResult locationResult = new LocationUtil.LocationResult() {
+    private LocationTracker.LocationResult locationResult = new LocationTracker.LocationResult() {
         @Override
         public void getLocationCallback(Location location) {
             Log.i(TAG, "lat : " + location.getLatitude() + ", lon : " + location.getLongitude());
@@ -509,10 +509,11 @@ public class MainActivity extends BaseActivity
             LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
 
             // currentPosition 위치로 카메라 중심을 옮기고 화면 줌을 조정한다. 줌범위는 2~21, 숫자클수록 확대
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
+//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
 
             if(currentMarker == null) {  // 마커 추가
                 currentMarker = mMap.addMarker(new MarkerOptions()
+                        .draggable(false)
                         .position(currentPosition)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
             } else {  // 마커 갱신
@@ -688,7 +689,7 @@ public class MainActivity extends BaseActivity
     @Override
     public void onPause() {
         super.onPause();
-        LocationUtil.stopLocationUpdates();
+        locationTracker.stopLocationUpdates();
     }
 
     public void setOnTabChangedListener(OnTabChangedListener mTabListener) {

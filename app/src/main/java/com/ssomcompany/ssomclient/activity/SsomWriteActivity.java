@@ -383,7 +383,15 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
             btnApply.setBackgroundResource(R.drawable.btn_write_apply_ssoa);
         } else if(v == btnApply) {
-            myLocation = LocationUtil.getLocation(this);
+            if(imgEmpty.getVisibility() == View.VISIBLE) {
+                showToastMessageShort(R.string.cannot_write_with_empty_picture);
+                return;
+            } else if("".equals(editWriteContent.getText().toString())) {
+                showToastMessageShort(R.string.cannot_write_with_empty_content);
+                return;
+            }
+
+            myLocation = locationTracker.getLocation();
             if(myLocation == null) {
                 showToastMessageShort(R.string.cannot_write_with_unknown_location);
                 return;
@@ -581,49 +589,4 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                     }
                 });
     }
-
-//    private void createPost(String fileId) {
-//        Log.d(TAG, "createPost()");
-//        try {
-//            RequestQueue queue = Volley.newRequestQueue(getApplication());
-//            String url = "http://54.64.154.188/posts";
-//            String url = NetworkManager.getInstance().getNetworkUrl(NetworkManager.TYPE.POST);
-//
-//            EditText messageBox = (EditText) findViewById(R.id.message);
-//            final String text = messageBox.getText().toString();
-//            JSONObject jsonBody = new JSONObject();
-//            jsonBody.put("postId", "" + System.currentTimeMillis());
-//            jsonBody.put("userId", UniqueIdGenUtil.getId(getApplicationContext()));
-//            jsonBody.put("content", URLEncoder.encode(text,"UTF-8"));
-//            jsonBody.put("imageUrl","http://54.64.154.188/file/images/"+fileId);
-//            jsonBody.put("minAge",minAge);
-//            jsonBody.put("maxAge",maxAge);
-//            jsonBody.put("userCount", count);
-//            jsonBody.put("ssom", ssomType);
-//            Location myLocation = LocationUtil.getLocation(this);
-//            if(myLocation!=null) {
-//                jsonBody.put("latitude", myLocation.getLatitude());
-//                jsonBody.put("longitude", myLocation.getLongitude());
-//            }else{
-//                Toast.makeText(this,"위치정보를 가지고올수 없어 글을 작성할수 없습니다.",Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//
-//            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
-//                @Override
-//                public void onResponse(JSONObject jsonObject) {
-//                    onBackPressed();
-//                }
-//            }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError volleyError) {
-//                    Toast.makeText(getApplicationContext(), "error create post : "+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//            queue.add(jsonObjectRequest);
-//        }catch(Exception e){
-//            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
 }

@@ -63,7 +63,9 @@
     <!-- notice message -->
     <string name="notice">공지</string>
     <string name="write_content_max_lines">최대 4줄까지만 입력 가능합니다.</string>
+    <string name="cannot_write_with_empty_content">최대 4줄까지만 입력 가능합니다.</string>
     <string name="cannot_write_with_unknown_location">위치정보를 가지고올수 없어 글을 작성할수 없습니다.</string>
+    <string name="cannot_write_with_empty_picture">사진을 등록해 주세요.</string>
 
     <!-- toggle bar -->
     <string name="map">MAP</string>

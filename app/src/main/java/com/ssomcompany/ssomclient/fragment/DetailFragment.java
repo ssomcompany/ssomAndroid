@@ -105,7 +105,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         imgHeart = (ImageView) view.findViewById(R.id.img_heart);
         imgClose = (ImageView) view.findViewById(R.id.img_close);
 
-        imgHeart.setBackgroundResource(CommonConst.SSOM.equals(ssomList.get(0).getSsom()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
+        imgHeart.setImageResource(CommonConst.SSOM.equals(ssomList.get(0).getSsom()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
         imgHeart.setOnClickListener(this);
         imgClose.setOnClickListener(this);
 

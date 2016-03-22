@@ -17,7 +17,7 @@ public class CommonConst {
 
     // ssom string
     public static final String SSOM = "ssom";
-    public static final String SSOA = "ssoa";
+    public static final String SSOA = "ssoseyo";
 
     // image file size
     public static final int LIMIT_IMAGE_SIZE = 1024 * 1024 * 10;

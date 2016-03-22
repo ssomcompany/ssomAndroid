@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.common.AdvancedHandler;
+import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.push.MessageManager;
@@ -33,6 +34,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final String PROGRESS_DIALOG_TAG = "WAIT";
     private CommonDialog mProgressDialog = null;
     private static ActivityManager mActivityManager;
+    protected static LocationTracker locationTracker;
 
     private int progressCount = 0;
     private MessageManager messageManager;
@@ -50,6 +52,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (mActivityManager == null) {
             mActivityManager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
         }
+
+        locationTracker = LocationTracker.getInstance();
 
         if (null != savedInstanceState) {
             this.activityCreatedTime = savedInstanceState.getLong(KEY_ACTIVITY_CREATE_TIME);
