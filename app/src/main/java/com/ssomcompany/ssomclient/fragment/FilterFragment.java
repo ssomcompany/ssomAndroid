@@ -80,7 +80,6 @@ public class FilterFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
-        view.setClickable(true);
 
         age = filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, FilterType.twentyEarly.getValue());
         people = filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, FilterType.onePerson.getValue());

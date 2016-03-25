@@ -52,6 +52,9 @@
     <string name="detail_age_people">%1$s, %2$d명 이에요.</string>
     <string name="detail_distance">나와의 거리 %1$s</string>
 
+    <!-- chatting -->
+    <string name="chat_list_title">Chat list (%1$d)</string>
+
     <!-- button -->
     <string name="ok_upper">확인</string>
     <string name="cancel">취소</string>
@@ -63,12 +66,22 @@
     <!-- notice message -->
     <string name="notice">공지</string>
     <string name="write_content_max_lines">최대 4줄까지만 입력 가능합니다.</string>
-    <string name="cannot_write_with_empty_content">최대 4줄까지만 입력 가능합니다.</string>
+    <string name="cannot_write_with_empty_content">한마디를 작성해 주세요.</string>
     <string name="cannot_write_with_unknown_location">위치정보를 가지고올수 없어 글을 작성할수 없습니다.</string>
     <string name="cannot_write_with_empty_picture">사진을 등록해 주세요.</string>
 
     <!-- toggle bar -->
     <string name="map">MAP</string>
     <string name="list">LIST</string>
+
+    <!-- left menu -->
+    <string name="noti_setting">알림 설정</string>
+    <string name="make_heart">하트 만들기</string>
+    <string name="private_information">개인 정보</string>
+    <string name="use_policy">이용 약관</string>
+    <string name="question">문의 하기</string>
+
+    <!-- login , logout -->
+    <string name="logout">로그아웃</string>
 
 </resources>

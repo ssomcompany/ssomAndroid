@@ -2,7 +2,6 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +11,10 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.common.CircularNetworkImageView;
+import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.fragment.SsomListFragment;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 

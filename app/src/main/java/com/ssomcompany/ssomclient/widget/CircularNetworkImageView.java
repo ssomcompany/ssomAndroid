@@ -1,10 +1,11 @@
-package com.ssomcompany.ssomclient.common;
+package com.ssomcompany.ssomclient.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.ssomcompany.ssomclient.common.Util;
 
 public class CircularNetworkImageView extends NetworkImageView {
     Context mContext;

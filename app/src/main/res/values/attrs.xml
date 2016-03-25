@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CommonActionBarAttr">
+        <attr name="commonActionBarStyle">
+            <enum name="streamDrawerGray" value="0x01" />
+            <enum name="streamDrawerBlue" value="0x02" />
+            <enum name="streamBackGray" value="0x03" />
+            <enum name="streamBackBlue" value="0x04" />
+            <enum name="streamNormalGray" value="0x05" />
+            <enum name="streamNormalBlue" value="0x06" />
+            <enum name="driveDrawerGray" value="0x07" />
+            <enum name="driveDrawerBlue" value="0x08" />
+            <enum name="driveBackGray" value="0x09" />
+            <enum name="driveBackBlue" value="0x10" />
+            <enum name="driveNormalGray" value="0x11" />
+            <enum name="driveNormalBlue" value="0x12" />
+        </attr>
+    </declare-styleable>
+</resources>

@@ -6,7 +6,7 @@
     android:background="@drawable/bg_detail_round"
     tools:context=".fragment.DetailFragment">
 
-    <com.ssomcompany.ssomclient.common.RoundedNetworkImageView
+    <com.ssomcompany.ssomclient.widget.RoundedNetworkImageView
         android:id="@+id/profile_img"
         android:layout_width="306dp"
         android:layout_height="248dp"

@@ -1,5 +1,124 @@
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:choiceMode="singleChoice"
-    android:divider="@android:color/transparent" android:dividerHeight="0dp"
-    android:background="#cccc" tools:context=".fragment.NavigationDrawerFragment" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="288dp"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    tools:context=".fragment.NavigationDrawerFragment" >
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/img_drawer_main"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:paddingRight="18dp"
+        android:paddingBottom="34dp"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp" >
+
+            <ImageView
+                android:id="@+id/icon_people"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_people"/>
+
+            <TextView
+                android:layout_toRightOf="@id/icon_people"
+                style="@style/ssom_font_14_custom_515151_single"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="11.5dp"
+                android:ellipsize="end"
+                android:text="test@angrymomo.com"/>
+
+            <TextView
+                style="@style/ssom_font_12_c8c8c8_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:text="@string/logout"/>
+        </RelativeLayout>
+
+        <TextView
+            style="@style/ssom_font_16_custom_555555"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="34dp"
+            android:layout_centerVertical="true"
+            android:drawablePadding="11.5dp"
+            android:drawableLeft="@drawable/icon_noti"
+            android:text="@string/noti_setting"/>
+
+        <TextView
+            style="@style/ssom_font_16_red_pink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="34dp"
+            android:layout_centerVertical="true"
+            android:drawablePadding="11.5dp"
+            android:drawableLeft="@drawable/icon_drawer_heart"
+            android:text="@string/make_heart"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/custom_e5e5e5"/>
+
+    <TextView
+        style="@style/ssom_font_13_999999_single"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:paddingLeft="17dp"
+        android:gravity="center_vertical"
+        android:drawablePadding="14dp"
+        android:drawableLeft="@drawable/icon_lock"
+        android:text="@string/private_information"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/custom_e5e5e5"/>
+
+    <TextView
+        style="@style/ssom_font_13_999999_single"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:paddingLeft="15.5dp"
+        android:gravity="center_vertical"
+        android:drawablePadding="13dp"
+        android:drawableLeft="@drawable/icon_book"
+        android:text="@string/use_policy"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/custom_e5e5e5"/>
+
+    <TextView
+        style="@style/ssom_font_13_999999_single"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:paddingLeft="13dp"
+        android:gravity="center_vertical"
+        android:drawablePadding="10dp"
+        android:drawableLeft="@drawable/icon_mail"
+        android:text="@string/question"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/custom_e5e5e5"/>
+
+</LinearLayout>

@@ -119,7 +119,7 @@ public class MessageManager {
         content.append(contents);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx);
-        builder.setSmallIcon(R.drawable.icon_chat)
+        builder.setSmallIcon(R.mipmap.ssom_icon)
                 .setContentTitle(title)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(content.toString()))
                 .setAutoCancel(true)
@@ -143,7 +143,7 @@ public class MessageManager {
         notificationManager.cancel(NOTIFICATION_ID);
     }
 
-    // TODO api 정의
+    // TODO message api 정의
 //    private void getUnreadCount(String viewFilter) {
 //        Log.i(TAG, "::getUnreadCount:viewFilter=" + viewFilter);
 //
@@ -192,37 +192,6 @@ public class MessageManager {
         Intent pushIntent = new Intent(BROADCAST_MESSAGE_RECEIVED_PUSH);
 
         localBroadcastManager.sendBroadcast(pushIntent);
-    }
-
-    public void increaseCount() {
-        Log.d(TAG, "::increaseCount");
-
-        if (alarmCount == null) {
-            alarmCount = 0;
-        }
-
-        alarmCount++;
-
-        Log.d(TAG, "sendBroadcast: action=BROADCAST_MESSAGE_COUNT_CHANGE");
-        localBroadcastManager.sendBroadcast(new Intent(BROADCAST_MESSAGE_COUNT_CHANGE));
-    }
-
-    public void reduceCount() {
-        Log.d(TAG, "::reduceCount");
-
-        if (alarmCount == null) {
-            alarmCount = 0;
-        }
-
-        alarmCount--;
-
-        if (alarmCount < 0) {
-            Log.d(TAG, "alarmCount is minus.... confirm..");
-            alarmCount = 0;
-        }
-
-        Log.d(TAG, "sendBroadcast: action=BROADCAST_MESSAGE_COUNT_CHANGE");
-        localBroadcastManager.sendBroadcast(new Intent(BROADCAST_MESSAGE_COUNT_CHANGE));
     }
 
     public void increasePushCount() {

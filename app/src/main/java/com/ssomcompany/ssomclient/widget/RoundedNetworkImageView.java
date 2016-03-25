@@ -1,17 +1,14 @@
-package com.ssomcompany.ssomclient.common;
+package com.ssomcompany.ssomclient.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.ssomcompany.ssomclient.common.Util;
 
 public class RoundedNetworkImageView extends NetworkImageView {
     private static final String TAG = RoundedNetworkImageView.class.getSimpleName();

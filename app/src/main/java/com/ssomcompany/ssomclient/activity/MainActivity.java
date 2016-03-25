@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -50,9 +52,12 @@ import com.ssomcompany.ssomclient.fragment.SsomListFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
+import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.PushManageService;
+import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +66,7 @@ import java.util.HashMap;
 public class MainActivity extends BaseActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnDetailFragmentInteractionListener,
-        OnMapReadyCallback, FilterFragment.OnFilterFragmentInteractionListener {
+        OnMapReadyCallback, FilterFragment.OnFilterFragmentInteractionListener, MessageCountCheck {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     public interface OnTabChangedListener {
@@ -75,8 +80,11 @@ public class MainActivity extends BaseActivity
     private static final String LIST_VIEW = "list";
 
     private ArrayList<SsomItem> ITEM_LIST = new ArrayList<>();
+    private ArrayList<ChattingItem> chatList = new ArrayList<>();
 //    private Map<String, SsomItem> ITEM_MAP = new HashMap<>();
     private HashMap<Marker, String> mIdMap = new HashMap<>();
+
+    private SsomActionBarView ssomActionBar;
 
     /**
      * The fragment's Tabs
@@ -112,7 +120,8 @@ public class MainActivity extends BaseActivity
     private FragmentManager fragmentManager;
 
     // current marker
-    Marker currentMarker;
+    private Marker currentMarker;
+    private Location myLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +130,6 @@ public class MainActivity extends BaseActivity
         selectedView = MAP_VIEW;
         selectedTab = CommonConst.SSOM;
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
-        locationTracker.setLocationResult(locationResult);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -278,7 +286,7 @@ public class MainActivity extends BaseActivity
 
     private void ssomDataChangedListener() {
         if(MAP_VIEW.equals(selectedView)){
-            initMyLocation(true);
+//            initMyLocation(true);
             initMarker();
         } else {
             mTabListener.onTabChangedAction(getCurrentPostItems());
@@ -289,7 +297,7 @@ public class MainActivity extends BaseActivity
         @Override
         public void onClick(View v) {
             FilterFragment filterFragment = FilterFragment.newInstance();
-            fragmentManager.beginTransaction().add(R.id.top_container, filterFragment, CommonConst.FILTER_FRAG)
+            fragmentManager.beginTransaction().replace(R.id.top_container, filterFragment, CommonConst.FILTER_FRAG)
                     .addToBackStack(null).commit();
         }
     };
@@ -303,7 +311,40 @@ public class MainActivity extends BaseActivity
         Log.i(TAG, "drawer open state : " + drawer.isDrawerOpen(Gravity.LEFT));
         if(drawer.isDrawerOpen(Gravity.LEFT)) drawer.closeDrawers();
 
-        ImageView lnbMenu = (ImageView) tb.findViewById(R.id.lnb_menu_btn);
+        ssomActionBar = (SsomActionBarView) tb.findViewById(R.id.ssom_action_bar);
+        // TODO set message count by calling getMessageCount api
+        ssomActionBar.setChatCount("0");
+        ssomActionBar.setHeartCount(0);
+        ssomActionBar.setHeartRefillTime("--:--");
+        TextView chatLayout = (TextView) tb.findViewById(R.id.chat_layout);
+        chatLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SsomChattingActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                // TODO just for test
+                int count = 0;
+                for(SsomItem item : getCurrentPostItems()) {
+                    ChattingItem chat = new ChattingItem();
+                    chat.setUserId(item.getUserId());
+                    chat.setUserCount(item.getUserCount());
+                    chat.setSsom(item.getSsom());
+                    chat.setMinAge(item.getMinAge());
+                    chat.setLongitude(item.getLongitude());
+                    chat.setLatitude(item.getLatitude());
+                    chat.setImageUrl(item.getImageUrl());
+                    chat.setMessage("test입니당." + count);
+                    chatList.add(chat);
+                    count++;
+                }
+                Log.d(TAG, "chatList size : " + chatList.size());
+                // TODO just for test
+                intent.putExtra(SsomChattingActivity.EXTRA_KEY_CHAT_LIST, chatList);
+                startActivity(intent);
+            }
+        });
+
+        ImageView lnbMenu = (ImageView) tb.findViewById(R.id.btn_left_navi);
         lnbMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -327,6 +368,24 @@ public class MainActivity extends BaseActivity
                 setToggleButtonUI();
             }
         });
+    }
+
+    @Override
+    protected void setMessageCount(String msgCount) {
+        super.setMessageCount(msgCount);
+
+        if(ssomActionBar == null) {
+            Log.d(TAG, "ssomActionBar is null");
+            return;
+        }
+
+        if(msgCount != null && !msgCount.isEmpty()) {
+            ssomActionBar.setChatIconOnOff(true);
+            ssomActionBar.setChatCount(msgCount);
+        } else {
+            ssomActionBar.setChatIconOnOff(false);
+            ssomActionBar.setChatCount("0");
+        }
     }
 
     private void setToggleButtonUI() {
@@ -384,11 +443,6 @@ public class MainActivity extends BaseActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -398,7 +452,7 @@ public class MainActivity extends BaseActivity
 
         DetailFragment fragment = DetailFragment.newInstance(ssomList.get(position).getPostId());
         fragment.setSsomListData(ssomList);
-        fragmentManager.beginTransaction().add(R.id.whole_container, fragment, CommonConst.DETAIL_FRAG)
+        fragmentManager.beginTransaction().replace(R.id.whole_container, fragment, CommonConst.DETAIL_FRAG)
                 .addToBackStack(null).commit();
     }
 
@@ -406,6 +460,10 @@ public class MainActivity extends BaseActivity
     public void onMapReady(GoogleMap googleMap) {
         this.mMap = googleMap;
         setMapUiSetting();
+        locationTracker = LocationTracker.getInstance();
+        if(locationTracker.chkCanGetLocation()) {
+            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
+        }
 
         // Marshmallow
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -415,7 +473,7 @@ public class MainActivity extends BaseActivity
 //        }
 
         // init start my location
-        initMyLocation(false);
+        moveToMyLocation();
 
         // current position settings
         mBtnMapMyLocation.setVisibility(View.VISIBLE);
@@ -450,7 +508,7 @@ public class MainActivity extends BaseActivity
 
                 DetailFragment fragment = DetailFragment.newInstance(postId);
                 fragment.setSsomListData(getCurrentPostItems());
-                fragmentManager.beginTransaction().add(R.id.whole_container, fragment, CommonConst.DETAIL_FRAG)
+                fragmentManager.beginTransaction().replace(R.id.whole_container, fragment, CommonConst.DETAIL_FRAG)
                         .addToBackStack(null).commit();
                 return false;
             }
@@ -471,6 +529,9 @@ public class MainActivity extends BaseActivity
     }
 
     private void setMapUiSetting() {
+        // default my location marker disabled
+        mMap.setMyLocationEnabled(true);
+
         // 내 위치 버튼 설정
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
@@ -485,42 +546,86 @@ public class MainActivity extends BaseActivity
 
         // 나침반 설정
         mMap.getUiSettings().setCompassEnabled(false);
-
-        // default my location marker disabled
-        mMap.setMyLocationEnabled(false);
     }
 
-    private void initMyLocation(boolean isUpdate) {
-        Location initLo = locationTracker.getLocation();
-        LatLng initPosition = new LatLng(initLo.getLatitude(), initLo.getLongitude());
+    private void moveToMyLocation() {
+        if(myLocation == null) {
+            myLocation = locationTracker.getLocation();
+        }
+        LatLng initPosition = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initPosition, 13));
 
-        if(!isUpdate) mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initPosition, 13));
-        currentMarker = mMap.addMarker(new MarkerOptions()
-                .draggable(false)
-                .position(initPosition)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        if(currentMarker == null) {  // 마커 추가
+            setCurrentMarker(initPosition);
+        }
     }
 
-    private LocationTracker.LocationResult locationResult = new LocationTracker.LocationResult() {
+    // Location Listener for gps
+    private LocationListener gpsLocationListener = new LocationListener() {
         @Override
-        public void getLocationCallback(Location location) {
-            Log.i(TAG, "lat : " + location.getLatitude() + ", lon : " + location.getLongitude());
+        public void onLocationChanged(Location location) {
+            Log.d(TAG, "gpsLocationListener : " + location);
 
-            LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+            setMyLocationMarker(location);
+        }
 
-            // currentPosition 위치로 카메라 중심을 옮기고 화면 줌을 조정한다. 줌범위는 2~21, 숫자클수록 확대
-//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
 
-            if(currentMarker == null) {  // 마커 추가
-                currentMarker = mMap.addMarker(new MarkerOptions()
-                        .draggable(false)
-                        .position(currentPosition)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-            } else {  // 마커 갱신
-                currentMarker.setPosition(currentPosition);
-            }
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
         }
     };
+
+    // Location Listener for Network
+    private LocationListener networkLocationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.d(TAG, "networkLocationListener : " + location);
+
+            setMyLocationMarker(location);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+
+    private void setMyLocationMarker(Location location) {
+        myLocation = location;
+        LatLng updatePosition = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+
+        if(currentMarker == null) {  // 마커 추가
+            setCurrentMarker(updatePosition);
+        } else {  // 마커 갱신
+            currentMarker.setPosition(updatePosition);
+        }
+    }
+
+    private void setCurrentMarker(LatLng position) {
+        currentMarker = mMap.addMarker(new MarkerOptions()
+                .draggable(false)
+                .position(position));
+    }
 
 //    public Map<String, SsomItem> getCurrentPostMap() {
 //        return CommonConst.SSOM.equals(selectedTab)? Util.convertAllMapToSsomMap(ITEM_MAP) : Util.convertAllMapToSsoaMap(ITEM_MAP);
@@ -620,6 +725,7 @@ public class MainActivity extends BaseActivity
     public void onFilterFragmentInteraction(boolean isApply) {
         Log.i(TAG, "filter interaction : " + isApply);
         fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.FILTER_FRAG)).commit();
+        fragmentManager.popBackStack();
         if(isApply) initFilterView();
     }
 
@@ -627,6 +733,7 @@ public class MainActivity extends BaseActivity
     public void onDetailFragmentInteraction(boolean isApply) {
         Log.i(TAG, "detail interaction : " + isApply);
         fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
+        fragmentManager.popBackStack();
 
         // TODO - if true, go to chatting activity
         if(isApply) {

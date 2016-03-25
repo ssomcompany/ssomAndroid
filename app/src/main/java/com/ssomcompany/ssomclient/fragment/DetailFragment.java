@@ -15,11 +15,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationUtil;
-import com.ssomcompany.ssomclient.common.RoundedNetworkImageView;
+import com.ssomcompany.ssomclient.widget.RoundedNetworkImageView;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
@@ -228,9 +227,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         @Override
         public void destroyItem(ViewGroup collection, int position, Object view) {
             //must be overridden else throws exception as not overridden.
-            Log.d(TAG, "destroy views at : " + collection.getChildAt(position));
             ((ViewPager)collection).removeView((View) view);
-            Log.d(TAG, "item count : " + collection.getChildCount());
         }
 
         @Override

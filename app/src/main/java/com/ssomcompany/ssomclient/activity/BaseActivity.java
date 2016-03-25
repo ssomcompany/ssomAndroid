@@ -53,8 +53,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             mActivityManager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
         }
 
-        locationTracker = LocationTracker.getInstance();
-
         if (null != savedInstanceState) {
             this.activityCreatedTime = savedInstanceState.getLong(KEY_ACTIVITY_CREATE_TIME);
         }
@@ -76,15 +74,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onStart();
 
         messageManager = MessageManager.getInstance();
-
-        if (Util.isMessageCountCheckingExcludeActivity(this)) {
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(MessageManager.BROADCAST_MESSAGE_COUNT_CHANGE);
-            filter.addAction(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH);
-
-            LocalBroadcastManager.getInstance(BaseApplication.getInstance())
-                    .registerReceiver(this.mLocalReceiver, filter);
-        }
     }
 
     @Override
@@ -150,8 +139,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         messageManager.getMessageCount();
     }
 
-    protected void setMessageCount(String msCount) {
-        Log.d(TAG, "setMessageCount : " + msCount);
+    // this method must be overwritten when use notification count on the activity
+    protected void setMessageCount(String msgCount) {
+        Log.d(TAG, "setMessageCount : " + msgCount);
     }
 
     public boolean isShowingProgressDialog() {
@@ -320,6 +310,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onResume();
         this.paused.set(false);
         this.aHandler.resume();
+
+        if (Util.isMessageCountCheckingExcludeActivity(this)) {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(MessageManager.BROADCAST_MESSAGE_COUNT_CHANGE);
+            filter.addAction(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH);
+
+            LocalBroadcastManager.getInstance(BaseApplication.getInstance())
+                    .registerReceiver(this.mLocalReceiver, filter);
+        }
     }
 
     @Override

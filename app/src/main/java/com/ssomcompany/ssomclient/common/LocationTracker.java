@@ -4,11 +4,9 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.ssomcompany.ssomclient.BaseApplication;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
 public class LocationTracker {
     // Logging
@@ -16,12 +14,13 @@ public class LocationTracker {
 
     // location settings
     private static LocationTracker locationTracker;
-    private static Location myLocation;
     private static LocationManager locationManager;
-    private static LocationResult locationResult;
     private static boolean isGpsEnabled;
     private static boolean isNetEnabled;
     private static boolean canGetLocation;
+
+    private LocationListener gpsLocationListener;
+    private LocationListener networkLocationListener;
 
     // 위치 정보 업데이트 거리 (미터)
     private static final long MIN_DISTANCE_UPDATES = 3;
@@ -47,8 +46,6 @@ public class LocationTracker {
     }
 
     private void getMyLocation() {
-        String provide;
-
         try {
             isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         } catch (Exception e) {
@@ -63,26 +60,10 @@ public class LocationTracker {
 
         canGetLocation = !(!isGpsEnabled && !isNetEnabled);
         Log.d(TAG, "getMyLocation() : " + canGetLocation);
-
-        if(!canGetLocation) return;
-
-        if(isNetEnabled) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_UPDATES,
-                    MIN_DISTANCE_UPDATES, networkLocationListener);
-
-            provide = LocationManager.NETWORK_PROVIDER;
-        } else {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_UPDATES,
-                    MIN_DISTANCE_UPDATES, gpsLocationListener);
-
-            provide = LocationManager.GPS_PROVIDER;
-        }
-
-        Log.i(TAG, "provider : " + provide);
     }
 
     public Location getLocation() {
-        myLocation = getLastBestLocation();
+        Location myLocation = getLastBestLocation();
 
         Log.i(TAG, "myLocation null, new location : " + myLocation);
 
@@ -95,68 +76,29 @@ public class LocationTracker {
         return myLocation;
     }
 
+    public void startLocationUpdates(LocationListener gpsListener, LocationListener netListener) {
+        gpsLocationListener = gpsListener;
+        networkLocationListener = netListener;
+
+        if(locationManager != null) {
+            if(isGpsEnabled) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_UPDATES,
+                        MIN_DISTANCE_UPDATES, gpsListener);
+            }
+
+            if(isNetEnabled) {
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_UPDATES,
+                        MIN_DISTANCE_UPDATES, netListener);
+            }
+        }
+    }
+
     public void stopLocationUpdates() {
         if(locationManager != null) {
             if(isGpsEnabled) locationManager.removeUpdates(gpsLocationListener);
             if(isNetEnabled) locationManager.removeUpdates(networkLocationListener);
         }
     }
-
-    public void setLocationResult(LocationResult result) {
-        locationResult = result;
-    }
-
-    // Location Listener for gps
-    private static LocationListener gpsLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            Log.d(TAG, "gpsLocationListener : " + location);
-            myLocation = location;
-            locationResult.getLocationCallback(location);
-//            myLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
-
-    // Location Listener for Network
-    private static LocationListener networkLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            Log.d(TAG, "networkLocationListener : " + location);
-            myLocation = location;
-            locationResult.getLocationCallback(location);
-//            myLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
 
     /**
      * @return the last know best location
@@ -185,7 +127,11 @@ public class LocationTracker {
         return canGetLocation;
     }
 
-    public static abstract class LocationResult {
-        public abstract void getLocationCallback(Location location);
+    public boolean chkGpsEnabled() {
+        return isGpsEnabled;
+    }
+
+    public boolean chkNetEnabled() {
+        return isNetEnabled;
     }
 }
