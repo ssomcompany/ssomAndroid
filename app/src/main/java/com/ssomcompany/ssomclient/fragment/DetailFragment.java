@@ -17,11 +17,11 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
-import com.ssomcompany.ssomclient.common.LocationUtil;
-import com.ssomcompany.ssomclient.widget.RoundedNetworkImageView;
+import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.widget.RoundedNetworkImageView;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -200,7 +200,8 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             profileImg.setImageUrl(item.getImageUrl(), mImageLoader);
             centerLine.setBackgroundResource(CommonConst.SSOM.equals(item.getSsom()) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
             tvCategory.setText(CommonConst.SSOM.equals(item.getSsom()) ? R.string.title_tab_give : R.string.title_tab_take);
-            tvDistance.setText( String.format( getResources().getString(R.string.detail_distance), LocationUtil.getDistanceString(item) ) );
+            tvDistance.setText( String.format(getResources().getString(R.string.detail_distance),
+                    LocationTracker.getInstance().getDistanceString(item.getLatitude(), item.getLongitude())) );
             tvAgePeople.setText( String.format( getResources().getString(R.string.detail_age_people), Util.convertAgeRange(item.getMinAge()), item.getUserCount()) );
             tvContent.setText(item.getContent());
             btnApply.setBackgroundResource(CommonConst.SSOM.equals(item.getSsom()) ? R.drawable.btn_write_apply_ssom : R.drawable.btn_write_apply_ssoa);

@@ -14,6 +14,8 @@ public class CommonConst {
     public static final String FILTER_FRAG = "filter_fragment";
     public static final String DETAIL_FRAG = "detail_fragment";
     public static final String SSOM_LIST_FRAG = "ssom_list_fragment";
+    public static final String CHAT_LIST_FRAG = "chat_list_fragment";
+    public static final String CHATTING_FRAG = "chatting_fragment";
 
     // ssom string
     public static final String SSOM = "ssom";

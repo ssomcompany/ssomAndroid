@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".fragment.ChatListFragment" >
+
+    <com.ssomcompany.ssomclient.widget.swipelistview.SwipeMenuListView
+        android:id="@+id/list_chatting"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@color/custom_e5e5e5"
+        android:dividerHeight="1dp"
+        android:choiceMode="singleChoice"/>
+</RelativeLayout>

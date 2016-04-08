@@ -10,23 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <RelativeLayout
+    <FrameLayout
+        android:layout_below="@id/ssom_action_bar"
+        android:id="@+id/chat_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <View
         android:layout_below="@id/ssom_action_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ListView
-            android:id="@+id/list_chatting"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@color/custom_e5e5e5"
-            android:dividerHeight="1dp"
-            android:choiceMode="singleChoice"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:background="@drawable/toolbar_dropshadow"/>
-
-    </RelativeLayout>
+        android:layout_height="3dp"
+        android:background="@drawable/toolbar_dropshadow"/>
 </RelativeLayout>

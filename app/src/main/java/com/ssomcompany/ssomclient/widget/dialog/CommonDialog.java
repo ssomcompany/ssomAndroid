@@ -1,15 +1,3 @@
-/*
- *
-Copyright (c) 2013 by Samsung Electronics Co., Ltd. Media Solution Center
- * All rights reserved.
-
-This software is the confidential and proprietary information
- * of Samsung Electronics Co., Ltd("Confidential Information"). You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with Samsung Electronics Co., Ltd.
- */
-
 package com.ssomcompany.ssomclient.widget.dialog;
 
 import android.app.Dialog;
@@ -20,6 +8,7 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -181,7 +170,7 @@ public class CommonDialog extends DialogFragment {
         cancelListener = cancel;
     }
 
-    public void setKeyListener(OnKeyListener listener) {
+    public void setKeyListener(DialogInterface.OnKeyListener listener) {
         keyListener = listener;
     }
 
@@ -281,6 +270,50 @@ public class CommonDialog extends DialogFragment {
                 dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                 ((CustomProgressDialog) dialog).setProgressStyle(DIALOG_STYLE_SPINNER_DIM);
                 break;
+            case DIALOG_STYLE_ALERT_BUTTON:
+                CustomDialog.Builder builder = new CustomDialog.Builder(getActivity());
+                builder.setMessage(message);
+                setButtonEvent(builder);
+                dialog = createDialog(builder);
+                break;
+            case DIALOG_STYLE_ALERT_VERTICAL_BUTTON:
+                CustomDialog.Builder vertical = new CustomDialog.Builder(getActivity());
+                vertical.setMessage(message);
+                vertical.setView(customView);
+                vertical.setVerticalButton(true);
+                setButtonEvent(vertical);
+                dialog = createDialog(vertical);
+                break;
+            case DIALOG_STYLE_LIST:
+                CustomDialog.Builder list = new CustomDialog.Builder(getActivity());
+                if (listAdapter != null) {
+                    list.setSingleChoiceItems(listAdapter, checkItem, itemClickListener, isShowListIcon);
+                }
+                setListHeaderFooter(list);
+                setButtonEvent(list);
+                dialog = createDialog(list);
+                break;
+            case DIALOG_STYLE_SINGLE_CHOICE:
+                CustomDialog.Builder single = new CustomDialog.Builder(getActivity());
+                single.setSingleChoiceItems(choiceList, checkItem, itemClickListener, isShowListIcon);
+                setListHeaderFooter(single);
+                setButtonEvent(single);
+                dialog = createDialog(single);
+                break;
+            case DIALOG_STYLE_MULTI_CHOICE:
+                CustomDialog.Builder multi = new CustomDialog.Builder(getActivity());
+                multi.setMultiChoiceItems(choiceList, checkItems, multiListener, isShowListIcon);
+                setListHeaderFooter(multi);
+                setButtonEvent(multi);
+                dialog = createDialog(multi);
+                break;
+            case DIALOG_STYLE_CUSTOM:
+                CustomDialog.Builder custom = new CustomDialog.Builder(getActivity());
+                custom.setPaddingDialogLayout(dialogLayoutPaddingLeft, dialogLayoutPaddingRight);
+                custom.setView(customView);
+                setButtonEvent(custom);
+                dialog = createDialog(custom);
+                break;
             default:
                 dialog = new Dialog(getActivity());
                 break;
@@ -292,6 +325,31 @@ public class CommonDialog extends DialogFragment {
 
         dialog.setCanceledOnTouchOutside(isTouchCancelable);
         return dialog;
+    }
+
+    private void setButtonEvent(CustomDialog.Builder builder) {
+        if (positiveListener != null && !TextUtils.isEmpty(positiveName)) {
+            builder.setPositiveButton(positiveName, positiveListener);
+        }
+
+        if (negativeListener != null && !TextUtils.isEmpty(negativeName)) {
+            builder.setNegativeButton(negativeName, negativeListener);
+        }
+
+        if (neutralListener != null && !TextUtils.isEmpty(neutralName)) {
+            builder.setNeutralButton(neutralName, neutralListener);
+        }
+    }
+
+    private void setListHeaderFooter(CustomDialog.Builder builder) {
+        builder.setListHeaderView(headerView);
+        builder.setListFooterView(footerView);
+    }
+
+    private Dialog createDialog(CustomDialog.Builder builder) {
+        builder.setTitle(title);
+        builder.setAutoDissmissEnable(autoDissmissEnable);
+        return builder.create();
     }
 
     @Override

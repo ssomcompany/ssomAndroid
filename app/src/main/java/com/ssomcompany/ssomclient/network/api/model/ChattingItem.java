@@ -2,7 +2,7 @@ package com.ssomcompany.ssomclient.network.api.model;
 
 import java.io.Serializable;
 
-public class ChattingItem extends SsomItem implements Serializable {
+public class ChattingItem extends SsomItem {
     private String message;
     private long messageTime;
 

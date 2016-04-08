@@ -128,6 +128,12 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="ssom_font_14_c8c8c8_selector">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@drawable/filter_button_selector</item>
+        <item name="android:typeface">normal</item>
+    </style>
+
     <style name="ssom_font_16_custom_4d4d4d_single">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/custom_4d4d4d</item>
@@ -145,6 +151,13 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/custom_555555</item>
         <item name="android:typeface">normal</item>
+    </style>
+
+    <style name="ssom_font_16_custom_666666_2_lines">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/custom_666666</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:lines">2</item>
     </style>
 
     <style name="ssom_font_16_red_pink">
@@ -192,6 +205,19 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/main_black</item>
         <item name="android:typeface">normal</item>
+    </style>
+
+    <style name="ssom_font_16_c8c8c8_selector">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@drawable/filter_button_selector</item>
+        <item name="android:typeface">normal</item>
+    </style>
+
+    <style name="ssom_font_20_red_pink_single">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/red_pink</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <!-- Dialog Theme -->

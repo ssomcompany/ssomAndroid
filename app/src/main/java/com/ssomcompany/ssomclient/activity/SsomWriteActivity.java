@@ -30,7 +30,6 @@ import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.FilterType;
-import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.UniqueIdGenUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
@@ -367,8 +366,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
             tvSsomBalloon.setTextAppearance(this, R.style.ssom_font_16_white_single);
             tvSsoaBalloon.setTextAppearance(this, R.style.ssom_font_12_white_single);
 
-            tvSsomBalloon.setPadding(0, 0, (int) Util.convertDpToPixel(12), 0);
-            tvSsoaBalloon.setPadding(0, 0, (int) Util.convertDpToPixel(9), 0);
+            tvSsomBalloon.setPadding(0, 0, Util.convertDpToPixel(12), 0);
+            tvSsoaBalloon.setPadding(0, 0, Util.convertDpToPixel(9), 0);
 
             btnApply.setBackgroundResource(R.drawable.btn_write_apply_ssom);
         } else if(v == tvSsoaBalloon) {
@@ -378,8 +377,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
             tvSsomBalloon.setTextAppearance(this, R.style.ssom_font_12_white_single);
             tvSsoaBalloon.setTextAppearance(this, R.style.ssom_font_16_white_single);
 
-            tvSsomBalloon.setPadding(0, 0, (int) Util.convertDpToPixel(9), 0);
-            tvSsoaBalloon.setPadding(0, 0, (int) Util.convertDpToPixel(12), 0);
+            tvSsomBalloon.setPadding(0, 0, Util.convertDpToPixel(9), 0);
+            tvSsoaBalloon.setPadding(0, 0, Util.convertDpToPixel(12), 0);
 
             btnApply.setBackgroundResource(R.drawable.btn_write_apply_ssoa);
         } else if(v == btnApply) {

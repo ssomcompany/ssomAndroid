@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dialog_width"
+    android:layout_height="wrap_content"
+    android:minWidth="@dimen/dialog_width" >
+
+    <LinearLayout
+        android:layout_width="@dimen/dialog_width"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dialog_custom_view_margin"
+        android:layout_marginTop="@dimen/dialog_custom_view_margin"
+        android:background="@drawable/bg_dialog_round"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/dialogTitleLayout"
+            android:layout_width="@dimen/dialog_width"
+            android:layout_height="@dimen/dialog_header_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="0dp" >
+
+            <TextView
+                android:id="@+id/dialogTitle"
+                style="@style/ssom_font_20_red_pink_single"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/dialog_padding_left"
+                android:paddingRight="@dimen/dialog_padding_right" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dialogLayout"
+            android:layout_width="@dimen/dialog_width"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/dialog_padding_left"
+            android:paddingRight="@dimen/dialog_padding_right" >
+
+            <TextView
+                android:id="@+id/dialogTextview"
+                style="@style/ssom_font_16_custom_666666_2_lines"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <ListView
+                android:id="@+id/dialogListview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:listSelector="@android:color/transparent"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dialogButtonLayout"
+            android:layout_width="@dimen/dialog_width"
+            android:layout_height="@dimen/dialog_button_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingRight="@dimen/dialog_button_padding_right"
+            android:splitMotionEvents="false" >
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/dialogNegativeButton"
+                style="@style/ssom_font_16_c8c8c8_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:paddingLeft="@dimen/dialog_button_two_padding" />
+
+            <Button
+                android:id="@+id/dialogNeturalButton"
+                style="@style/ssom_font_16_c8c8c8_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:paddingLeft="@dimen/dialog_button_two_padding"
+                android:paddingRight="@dimen/dialog_button_two_padding" />
+
+            <Button
+                android:id="@+id/dialogPositiveButton"
+                style="@style/ssom_font_16_c8c8c8_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:paddingLeft="@dimen/dialog_button_two_padding"
+                android:paddingRight="@dimen/dialog_button_two_padding" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dialogVerticalButtonLayout"
+            android:layout_width="@dimen/dialog_width"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dialog_vertical_button_margin_bottom"
+            android:paddingRight="@dimen/dialog_vertical_button_padding_right"
+            android:layout_marginTop="@dimen/dialog_vertical_button_margin_top"
+            android:gravity="right"
+            android:orientation="vertical"
+            android:splitMotionEvents="false" >
+
+            <Button
+                android:id="@+id/dialogVerticalNegativeButton"
+                style="@style/ssom_font_16_c8c8c8_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dialog_vertical_button_height"
+                android:background="@null"
+                android:gravity="right|center_vertical" />
+
+            <Button
+                android:id="@+id/dialogVerticalNeturalButton"
+                style="@style/ssom_font_16_c8c8c8_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dialog_vertical_button_height"
+                android:background="@null"
+                android:gravity="right|center_vertical" />
+
+            <Button
+                android:id="@+id/dialogVerticalPositiveButton"
+                style="@style/ssom_font_16_c8c8c8_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dialog_vertical_button_height"
+                android:background="@null"
+                android:gravity="right|center_vertical" />
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

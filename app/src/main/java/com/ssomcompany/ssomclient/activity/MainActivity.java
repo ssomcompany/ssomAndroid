@@ -23,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -41,7 +40,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
-import com.ssomcompany.ssomclient.common.LocationUtil;
 import com.ssomcompany.ssomclient.common.RoundImage;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.Util;
@@ -119,8 +117,6 @@ public class MainActivity extends BaseActivity
     private String selectedTab;
     private FragmentManager fragmentManager;
 
-    // current marker
-    private Marker currentMarker;
     private Location myLocation;
 
     @Override
@@ -130,6 +126,11 @@ public class MainActivity extends BaseActivity
         selectedView = MAP_VIEW;
         selectedTab = CommonConst.SSOM;
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
+
+        locationTracker = LocationTracker.getInstance();
+        if(locationTracker.chkCanGetLocation()) {
+            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
+        }
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -252,7 +253,7 @@ public class MainActivity extends BaseActivity
         takeTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(CommonConst.SSOA.equals(selectedTab)) return;
+                if (CommonConst.SSOA.equals(selectedTab)) return;
 
                 selectedTab = CommonConst.SSOA;
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_red_pink);
@@ -316,15 +317,26 @@ public class MainActivity extends BaseActivity
         ssomActionBar.setChatCount("0");
         ssomActionBar.setHeartCount(0);
         ssomActionBar.setHeartRefillTime("--:--");
-        TextView chatLayout = (TextView) tb.findViewById(R.id.chat_layout);
-        chatLayout.setOnClickListener(new View.OnClickListener() {
+        ssomActionBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.openDrawer(Gravity.LEFT);
+            }
+        });
+        ssomActionBar.setOnHeartBtnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                // TODO heart button action
+            }
+        });
+        ssomActionBar.setOnChattingBtnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SsomChattingActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 // TODO just for test
                 int count = 0;
-                for(SsomItem item : getCurrentPostItems()) {
+                for (SsomItem item : getCurrentPostItems()) {
                     ChattingItem chat = new ChattingItem();
                     chat.setUserId(item.getUserId());
                     chat.setUserCount(item.getUserCount());
@@ -344,13 +356,6 @@ public class MainActivity extends BaseActivity
             }
         });
 
-        ImageView lnbMenu = (ImageView) tb.findViewById(R.id.btn_left_navi);
-        lnbMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawer.openDrawer(Gravity.LEFT);
-            }
-        });
         mapBtn = (TextView) tb.findViewById(R.id.toggle_s_map);
         listBtn = (TextView) tb.findViewById(R.id.toggle_s_list);
         View toggleView = tb.findViewById(R.id.toggle_bg);
@@ -415,8 +420,7 @@ public class MainActivity extends BaseActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
     }
 
@@ -459,11 +463,6 @@ public class MainActivity extends BaseActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.mMap = googleMap;
-        setMapUiSetting();
-        locationTracker = LocationTracker.getInstance();
-        if(locationTracker.chkCanGetLocation()) {
-            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
-        }
 
         // Marshmallow
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -473,7 +472,8 @@ public class MainActivity extends BaseActivity
 //        }
 
         // init start my location
-        moveToMyLocation();
+        moveToMyLocation(true);
+        setMapUiSetting();
 
         // current position settings
         mBtnMapMyLocation.setVisibility(View.VISIBLE);
@@ -485,10 +485,7 @@ public class MainActivity extends BaseActivity
                     return;
                 }
 
-                Location currentLo = locationTracker.getLocation();
-                LatLng currentPosition = new LatLng(currentLo.getLatitude(), currentLo.getLongitude());
-                currentMarker.setPosition(currentPosition);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 13));
+                moveToMyLocation(false);
             }
         });
         requestSsomList();
@@ -548,15 +545,15 @@ public class MainActivity extends BaseActivity
         mMap.getUiSettings().setCompassEnabled(false);
     }
 
-    private void moveToMyLocation() {
+    private void moveToMyLocation(boolean init) {
         if(myLocation == null) {
             myLocation = locationTracker.getLocation();
         }
-        LatLng initPosition = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initPosition, 13));
-
-        if(currentMarker == null) {  // 마커 추가
-            setCurrentMarker(initPosition);
+        LatLng myPosition = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+        if(init) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPosition, 15));
+        } else {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition, 15));
         }
     }
 
@@ -565,8 +562,7 @@ public class MainActivity extends BaseActivity
         @Override
         public void onLocationChanged(Location location) {
             Log.d(TAG, "gpsLocationListener : " + location);
-
-            setMyLocationMarker(location);
+            myLocation = location;
         }
 
         @Override
@@ -590,8 +586,7 @@ public class MainActivity extends BaseActivity
         @Override
         public void onLocationChanged(Location location) {
             Log.d(TAG, "networkLocationListener : " + location);
-
-            setMyLocationMarker(location);
+            myLocation = location;
         }
 
         @Override
@@ -609,23 +604,6 @@ public class MainActivity extends BaseActivity
 
         }
     };
-
-    private void setMyLocationMarker(Location location) {
-        myLocation = location;
-        LatLng updatePosition = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
-
-        if(currentMarker == null) {  // 마커 추가
-            setCurrentMarker(updatePosition);
-        } else {  // 마커 갱신
-            currentMarker.setPosition(updatePosition);
-        }
-    }
-
-    private void setCurrentMarker(LatLng position) {
-        currentMarker = mMap.addMarker(new MarkerOptions()
-                .draggable(false)
-                .position(position));
-    }
 
 //    public Map<String, SsomItem> getCurrentPostMap() {
 //        return CommonConst.SSOM.equals(selectedTab)? Util.convertAllMapToSsomMap(ITEM_MAP) : Util.convertAllMapToSsoaMap(ITEM_MAP);
@@ -683,8 +661,8 @@ public class MainActivity extends BaseActivity
     private BitmapDescriptor getMarkerImage(String ssom , Bitmap imageBitmap){
         Bitmap mergedBitmap = null;
         try {
-            mergedBitmap = Bitmap.createBitmap((int) Util.convertDpToPixel(49),
-                    (int) Util.convertDpToPixel(57), Bitmap.Config.ARGB_8888);
+            mergedBitmap = Bitmap.createBitmap(Util.convertDpToPixel(49),
+                    Util.convertDpToPixel(57), Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(mergedBitmap);
             Bitmap iconBitmap;
             if(CommonConst.SSOM.equals(ssom)){
@@ -697,9 +675,9 @@ public class MainActivity extends BaseActivity
             Drawable imageDrawable = new RoundImage(imageBitmap);
 
             iconDrawable.setBounds(0, 0,
-                    (int) Util.convertDpToPixel(49), (int) Util.convertDpToPixel(57));
-            imageDrawable.setBounds((int) Util.convertDpToPixel(2), (int) Util.convertDpToPixel(2),
-                    (int) Util.convertDpToPixel(47), (int) Util.convertDpToPixel(47));
+                    Util.convertDpToPixel(49), Util.convertDpToPixel(57));
+            imageDrawable.setBounds(Util.convertDpToPixel(2), Util.convertDpToPixel(2),
+                    Util.convertDpToPixel(47), Util.convertDpToPixel(47));
             imageDrawable.draw(c);
             iconDrawable.draw(c);
         } catch (Exception e) {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ssom</string>
+    <string name="app_name">SSOM</string>
     <string name="project_number">189266416861</string>
 
     <string name="title_section1">내 정보</string>
@@ -54,6 +54,7 @@
 
     <!-- chatting -->
     <string name="chat_list_title">Chat list (%1$d)</string>
+    <string name="chat_list_delete">대화 삭제</string>
 
     <!-- button -->
     <string name="ok_upper">확인</string>
@@ -69,6 +70,12 @@
     <string name="cannot_write_with_empty_content">한마디를 작성해 주세요.</string>
     <string name="cannot_write_with_unknown_location">위치정보를 가지고올수 없어 글을 작성할수 없습니다.</string>
     <string name="cannot_write_with_empty_picture">사진을 등록해 주세요.</string>
+
+    <!-- dialog message -->
+    <string name="dialog_notice">알림</string>
+    <string name="dialog_cancel">취소</string>
+    <string name="dialog_delete">삭제하기</string>
+    <string name="dialog_chat_list_delete_message">대화 삭제 시 쏨이 종료됩니다.\n정말 삭제하시겠어요?</string>
 
     <!-- toggle bar -->
     <string name="map">MAP</string>

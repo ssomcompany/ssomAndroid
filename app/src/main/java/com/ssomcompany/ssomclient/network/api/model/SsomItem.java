@@ -1,9 +1,13 @@
 package com.ssomcompany.ssomclient.network.api.model;
 
+import android.util.Log;
+
 import com.ssomcompany.ssomclient.common.ToStringHelperClass;
 import com.ssomcompany.ssomclient.common.Util;
 
-public class SsomItem extends ToStringHelperClass {
+import java.io.Serializable;
+
+public class SsomItem extends ToStringHelperClass implements Serializable {
     private String postId;
     private String userId;
     private String content;
@@ -33,11 +37,11 @@ public class SsomItem extends ToStringHelperClass {
     }
 
     public String getContent() {
-        return content;
+        return Util.getDecodedString(content);
     }
 
     public void setContent(String content) {
-        this.content = Util.getDecodedString(content);
+        this.content = content;
     }
 
     public String getImageUrl() {

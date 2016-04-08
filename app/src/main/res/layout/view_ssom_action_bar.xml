@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="58.5dp"
-    android:id="@+id/ssom_action_bar">
+    android:id="@+id/ssom_action_bar"
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/btn_left_navi"

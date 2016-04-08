@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white" >
+
+    <LinearLayout
+        android:id="@+id/send_layout"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:gravity="center_vertical"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edit_message"
+            style="@style/ssom_font_16_gray_warm"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="23dp"
+            android:lines="4"
+            android:maxLines="4"
+            android:hint="메시지를 입력하세요..."
+            android:textColorHint="@color/c8c8c8"
+            android:background="@null"/>
+
+        <Button
+            android:id="@+id/btn_send"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="13dp"
+            android:background="@drawable/ic_media_play"
+            android:padding="10dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_above="@id/send_layout"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/custom_e5e5e5"/>
+
+    <TextView
+        android:layout_above="@id/send_layout"
+        android:id="@+id/initial_message"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="1dp"
+        android:gravity="center"
+        android:text="두근두근, 대화가 시작 되었쏨 :)"
+        android:background="#fcfcfc"/>
+
+</RelativeLayout>

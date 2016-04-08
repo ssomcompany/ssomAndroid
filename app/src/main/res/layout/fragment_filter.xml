@@ -179,8 +179,7 @@
 
             <TextView
                 android:id="@+id/tv_filter_cancel"
-                android:textColor="@drawable/filter_button_selector"
-                android:textSize="14sp"
+                style="@style/ssom_font_14_c8c8c8_selector"
                 android:gravity="center"
                 android:layout_width="40dp"
                 android:layout_height="30dp"
@@ -188,8 +187,7 @@
 
             <TextView
                 android:id="@+id/tv_filter_apply"
-                android:textColor="@drawable/filter_button_selector"
-                android:textSize="14sp"
+                style="@style/ssom_font_14_c8c8c8_selector"
                 android:gravity="center"
                 android:layout_width="70dp"
                 android:layout_height="30dp"

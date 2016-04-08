@@ -93,7 +93,7 @@ public class SsomActionBarView extends RelativeLayout {
         switch (currentMode) {
             case SSOM_MAIN_MENU :
                 // set action bar height
-                params.height = (int) Util.convertDpToPixel(58.5f);
+                params.height = Util.convertDpToPixel(58.5f);
                 ssomActionBar.setLayoutParams(params);
                 btnLeftNavi.setImageResource(R.drawable.icon_top_menu);
                 toggleView.setVisibility(View.VISIBLE);
@@ -101,13 +101,25 @@ public class SsomActionBarView extends RelativeLayout {
                 break;
             default:
                 // set action bar height
-                params.height = (int) Util.convertDpToPixel(52f);
+                params.height = Util.convertDpToPixel(52f);
                 ssomActionBar.setLayoutParams(params);
                 btnLeftNavi.setImageResource(R.drawable.icon_back);
                 toggleView.setVisibility(View.GONE);
                 ssomBarTitle.setVisibility(View.VISIBLE);
                 break;
         }
+    }
+
+    public void setOnLeftNaviBtnClickListener(View.OnClickListener listener) {
+        if(btnLeftNavi != null) btnLeftNavi.setOnClickListener(listener);
+    }
+
+    public void setOnChattingBtnClickListener(View.OnClickListener listener) {
+        if(chatLayout != null) chatLayout.setOnClickListener(listener);
+    }
+
+    public void setOnHeartBtnClickListener(View.OnClickListener listener) {
+        if(heartLayout != null) heartLayout.setOnClickListener(listener);
     }
 
     // ssom bar title settings

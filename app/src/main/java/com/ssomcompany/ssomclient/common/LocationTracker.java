@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.util.Log;
 
 import com.ssomcompany.ssomclient.BaseApplication;
+import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
 public class LocationTracker {
     // Logging
@@ -65,8 +66,6 @@ public class LocationTracker {
     public Location getLocation() {
         Location myLocation = getLastBestLocation();
 
-        Log.i(TAG, "myLocation null, new location : " + myLocation);
-
         // 위치정보를 가져올 수 없는 경우 기본을 홍대입구 역으로 셋팅
         if(myLocation == null) {
             myLocation = new Location("initial provider");
@@ -121,6 +120,26 @@ public class LocationTracker {
         } else {
             return locationNet;
         }
+    }
+
+    public String getDistanceString(double targetLatitude, double targetLongitude){
+        Location myLocation = getLocation();
+
+        Log.i(TAG, "myLocation : " + myLocation);
+
+        if(myLocation != null) {
+            float[] results = new float[1];
+            Location.distanceBetween(targetLatitude, targetLongitude, myLocation.getLatitude(), myLocation.getLongitude(), results);
+            float distance = results[0];
+            if(distance > 1000){
+                int km = (int) (distance/1000);
+                return km+"km";
+            }else{
+                int m = (int) distance;
+                return m+"m";
+            }
+        }
+        return "";
     }
 
     public boolean chkCanGetLocation() {

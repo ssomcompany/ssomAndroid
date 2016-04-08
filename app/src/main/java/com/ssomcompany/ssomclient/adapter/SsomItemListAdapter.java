@@ -11,12 +11,12 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 import com.ssomcompany.ssomclient.common.CommonConst;
-import com.ssomcompany.ssomclient.common.LocationUtil;
+import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 
 import java.util.ArrayList;
 
@@ -115,7 +115,7 @@ public class SsomItemListAdapter extends BaseAdapter {
         holder.timeTv.setText(Util.getTimeText(Long.valueOf(item.getPostId())));
 
         // distance
-        holder.distanceTv.setText(LocationUtil.getDistanceString(item));
+        holder.distanceTv.setText(LocationTracker.getInstance().getDistanceString(item.getLatitude(), item.getLongitude()));
 
         // content
         holder.contentTv.setText(item.getContent());
