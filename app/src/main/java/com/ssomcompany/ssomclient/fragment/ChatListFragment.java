@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
@@ -111,6 +110,7 @@ public class ChatListFragment extends BaseFragment {
                 menu.addMenuItem(deleteItem);
             }
         });
+        // opened menu click listener
         mListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
@@ -121,17 +121,14 @@ public class ChatListFragment extends BaseFragment {
                 return false;
             }
         });
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        // list item click listener
+        mListView.setOnNormalItemClickListener(new SwipeMenuListView.OnNormalItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(mListView.isListItemOpened(position)) {
-                    mListView.smoothCloseMenu(position);
-                } else {
-                    if (null != mListener) {
-                        // Notify the active callbacks interface (the activity, if the
-                        // fragment is attached to one) that an item has been selected.
-                        mListener.onChatItemClick(position);
-                    }
+            public void onItemClick(int position) {
+                if (null != mListener) {
+                    // Notify the active callbacks interface (the activity, if the
+                    // fragment is attached to one) that an item has been selected.
+                    mListener.onChatItemClick(position);
                 }
             }
         });

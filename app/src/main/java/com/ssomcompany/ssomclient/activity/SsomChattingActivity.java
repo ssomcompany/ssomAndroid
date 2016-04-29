@@ -10,7 +10,6 @@ import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.fragment.ChatListFragment;
 import com.ssomcompany.ssomclient.fragment.ChattingFragment;
-import com.ssomcompany.ssomclient.fragment.DetailFragment;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 
@@ -19,6 +18,11 @@ import java.util.ArrayList;
 public class SsomChattingActivity extends BaseActivity implements ChatListFragment.OnChatItemInteractionListener {
     private static final String TAG = SsomChattingActivity.class.getSimpleName();
     public static final String EXTRA_KEY_CHAT_LIST = "chatList";
+
+    private static final int STATE_CHAT_LIST = 0;
+    private static final int STATE_CHAT_ROOM = 1;
+
+    private static int CURRENT_STATE = STATE_CHAT_LIST;
 
     private FragmentManager fragmentManager;
     private ArrayList<ChattingItem> chatList;
@@ -44,7 +48,14 @@ public class SsomChattingActivity extends BaseActivity implements ChatListFragme
         ssomBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                switch (CURRENT_STATE) {
+                    case STATE_CHAT_LIST :
+                        finish();
+                        break;
+                    case STATE_CHAT_ROOM :
+                        CURRENT_STATE = STATE_CHAT_LIST;
+                        fragmentManager.popBackStack();
+                }
             }
         });
 
@@ -61,6 +72,7 @@ public class SsomChattingActivity extends BaseActivity implements ChatListFragme
     @Override
     public void onChatItemClick(int position) {
         Log.i(TAG, "onPostItemClick() : " + position);
+        CURRENT_STATE = STATE_CHAT_ROOM;
 
         ChattingFragment fragment = ChattingFragment.newInstance();
         fragmentManager.beginTransaction().replace(R.id.chat_container, fragment, CommonConst.CHATTING_FRAG)

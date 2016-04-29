@@ -1,7 +1,6 @@
 package com.ssomcompany.ssomclient.widget.swipelistview;
 
 import android.content.Context;
-import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -33,7 +32,7 @@ public class SwipeMenuListView extends ListView {
 	private Interpolator mOpenInterpolator;
 	private int position;
 
-	private OnNormalItemClick onNormalItemClick;
+	private OnNormalItemClickListener onNormalItemClickListener;
 
 	public SwipeMenuListView(Context context) {
 		super(context);
@@ -101,7 +100,7 @@ public class SwipeMenuListView extends ListView {
 		return super.onInterceptTouchEvent(ev);
 	}
 
-	// POPA At ACTION_UP we call the excuteAction()
+	// ACTION_UP we call the executeAction()
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
 		if (ev.getAction() != MotionEvent.ACTION_DOWN && mTouchView == null)
@@ -174,8 +173,8 @@ public class SwipeMenuListView extends ListView {
 				return true;
 			} else {
 				swipeAction = false;
-				if (onNormalItemClick != null) {
-					onNormalItemClick.executeAction(mTouchView.getPosition());
+				if (mTouchState != TOUCH_STATE_Y && onNormalItemClickListener != null) {
+					onNormalItemClickListener.onItemClick(mTouchView.getPosition());
 				}
 			}
 
@@ -229,8 +228,8 @@ public class SwipeMenuListView extends ListView {
 		this.mOnMenuItemClickListener = onMenuItemClickListener;
 	}
 
-	public void setOnItemClick(OnNormalItemClick onNormalItemClick) {
-		this.onNormalItemClick = onNormalItemClick;
+	public void setOnNormalItemClickListener(OnNormalItemClickListener onNormalItemClickListener) {
+		this.onNormalItemClickListener = onNormalItemClickListener;
 	}
 
 	public void setOnSwipeListener(OnSwipeListener onSwipeListener) {
@@ -247,7 +246,7 @@ public class SwipeMenuListView extends ListView {
 		void onSwipeEnd(int position);
 	}
 
-	public interface OnNormalItemClick {
-		void executeAction(int position);
+	public interface OnNormalItemClickListener {
+		void onItemClick(int position);
 	}
 }
