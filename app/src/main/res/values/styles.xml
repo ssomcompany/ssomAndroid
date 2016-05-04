@@ -19,9 +19,9 @@
         <item name="android:typeface">normal</item>
     </style>
 
-    <style name="ssom_font_9_c8c8c8_single">
+    <style name="ssom_font_9_pinkish_gray_two_single">
         <item name="android:textSize">9sp</item>
-        <item name="android:textColor">@color/c8c8c8</item>
+        <item name="android:textColor">@color/pinkish_gray_two</item>
         <item name="android:typeface">normal</item>
         <item name="android:singleLine">true</item>
     </style>
@@ -100,6 +100,14 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="ssom_font_12_white_2_lines">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:lines">2</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
     <style name="ssom_font_12_grayish_brown_single">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/grayish_brown</item>
@@ -107,9 +115,9 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="ssom_font_12_c8c8c8_single">
+    <style name="ssom_font_12_pinkish_gray_two_single">
         <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@color/c8c8c8</item>
+        <item name="android:textColor">@color/pinkish_gray_two</item>
         <item name="android:typeface">normal</item>
         <item name="android:singleLine">true</item>
     </style>
@@ -128,7 +136,7 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="ssom_font_14_c8c8c8_selector">
+    <style name="ssom_font_14_pinkish_gray_two_selector">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@drawable/filter_button_selector</item>
         <item name="android:typeface">normal</item>
@@ -207,7 +215,7 @@
         <item name="android:typeface">normal</item>
     </style>
 
-    <style name="ssom_font_16_c8c8c8_selector">
+    <style name="ssom_font_16_pinkish_gray_two_selector">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@drawable/filter_button_selector</item>
         <item name="android:typeface">normal</item>

@@ -278,7 +278,7 @@
             <TextView
                 android:layout_below="@id/people_select_option"
                 android:id="@+id/tv_one_letter"
-                style="@style/ssom_font_9_c8c8c8_single"
+                style="@style/ssom_font_9_pinkish_gray_two_single"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="29dp"
@@ -294,12 +294,12 @@
                 android:lines="4"
                 android:maxLines="4"
                 android:hint="@string/write_content_hint"
-                android:textColorHint="@color/c8c8c8"
+                android:textColorHint="@color/pinkish_gray_two"
                 android:background="@null"/>
 
             <ImageView
                 android:layout_below="@id/edit_write_content"
-                android:background="@color/c8c8c8"
+                android:background="@color/pinkish_gray_two"
                 android:layout_marginTop="5dp"
                 android:layout_width="240dp"
                 android:layout_height="1.3dp" />

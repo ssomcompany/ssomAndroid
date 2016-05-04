@@ -54,6 +54,7 @@
 
     <!-- chatting -->
     <string name="chat_list_title">Chat list (%1$d)</string>
+    <string name="chat_room_title">Chat&#160;</string>
     <string name="chat_list_delete">대화 삭제</string>
 
     <!-- button -->

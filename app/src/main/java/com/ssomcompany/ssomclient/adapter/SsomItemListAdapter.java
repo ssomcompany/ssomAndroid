@@ -42,7 +42,7 @@ public class SsomItemListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return itemList.size();
+        return itemList == null? 0 : itemList.size();
     }
 
     @Override
@@ -73,6 +73,7 @@ public class SsomItemListAdapter extends BaseAdapter {
             holder.distanceTv = (TextView) convertView.findViewById(R.id.post_item_distance);
             holder.contentTv = (TextView) convertView.findViewById(R.id.content);
             holder.image = (CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image);
+            holder.iconView = (ImageView) convertView.findViewById(R.id.icon_list_r);
 
             convertView.setTag(holder);
         } else {
@@ -82,6 +83,8 @@ public class SsomItemListAdapter extends BaseAdapter {
         // list view item setting
         SsomItem item = itemList.get(position);
 
+        holder.image.setDefaultImageResId(R.drawable.icon_people);
+        holder.image.setErrorImageResId(R.drawable.icon_people);
         holder.image.setImageUrl(item.getImageUrl(), mImageLoader);
 //        mImageLoader.get(row_pos.getImage(), ImageLoader.getImageListener(image,R.drawable.icon_wirte_photo_emp, R.drawable.icon_wirte_photo_emp));
 //        ImageRequest imageRequest = new ImageRequest(row_pos.getImage(), new Response.Listener<Bitmap>() {
@@ -100,7 +103,6 @@ public class SsomItemListAdapter extends BaseAdapter {
 //        VolleyUtil.getInstance(getContext()).getRequestQueue().add(imageRequest);
 
         //icon
-        holder.iconView = (ImageView) convertView.findViewById(R.id.icon_list_r);
         if(CommonConst.SSOM.equals(item.getSsom())){
             holder.iconView.setImageResource(R.drawable.icon_list_st_g);
         }else{
@@ -109,7 +111,7 @@ public class SsomItemListAdapter extends BaseAdapter {
 
         // title
         holder.titleTv.setText(String.format(context.getResources().getString(R.string.post_title),
-                "20대 초", item.getUserCount()));
+                Util.convertAgeRangeAtBackOneChar(item.getMinAge()), item.getUserCount()));
 
         //time
         holder.timeTv.setText(Util.getTimeText(Long.valueOf(item.getPostId())));

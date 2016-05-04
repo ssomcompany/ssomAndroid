@@ -75,7 +75,7 @@
 
             <Button
                 android:id="@+id/dialogNegativeButton"
-                style="@style/ssom_font_16_c8c8c8_selector"
+                style="@style/ssom_font_16_pinkish_gray_two_selector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"
@@ -83,7 +83,7 @@
 
             <Button
                 android:id="@+id/dialogNeturalButton"
-                style="@style/ssom_font_16_c8c8c8_selector"
+                style="@style/ssom_font_16_pinkish_gray_two_selector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"
@@ -92,7 +92,7 @@
 
             <Button
                 android:id="@+id/dialogPositiveButton"
-                style="@style/ssom_font_16_c8c8c8_selector"
+                style="@style/ssom_font_16_pinkish_gray_two_selector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"
@@ -113,7 +113,7 @@
 
             <Button
                 android:id="@+id/dialogVerticalNegativeButton"
-                style="@style/ssom_font_16_c8c8c8_selector"
+                style="@style/ssom_font_16_pinkish_gray_two_selector"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dialog_vertical_button_height"
                 android:background="@null"
@@ -121,7 +121,7 @@
 
             <Button
                 android:id="@+id/dialogVerticalNeturalButton"
-                style="@style/ssom_font_16_c8c8c8_selector"
+                style="@style/ssom_font_16_pinkish_gray_two_selector"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dialog_vertical_button_height"
                 android:background="@null"
@@ -129,7 +129,7 @@
 
             <Button
                 android:id="@+id/dialogVerticalPositiveButton"
-                style="@style/ssom_font_16_c8c8c8_selector"
+                style="@style/ssom_font_16_pinkish_gray_two_selector"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dialog_vertical_button_height"
                 android:background="@null"

@@ -4,17 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.media.ExifInterface;
 import android.os.Environment;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -23,7 +19,6 @@ import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -270,6 +265,54 @@ public class Util {
                 break;
         }
         return ageRange;
+    }
+
+    /**
+     *  This method converts age to age range of one character at the end
+     *
+     *  @param age int
+     */
+    public static String convertAgeRangeAtBackOneChar(int age) {
+        String ageRange = "";
+        switch (age) {
+            case 20:
+                ageRange = "20대 초";
+                break;
+            case 25:
+                ageRange = "20대 중";
+                break;
+            case 29:
+                ageRange = "20대 후";
+                break;
+            case 30:
+                ageRange = "30대";
+                break;
+        }
+        return ageRange;
+    }
+
+    /**
+     *  This method converts count to people range
+     *
+     *  @param count int
+     */
+    public static String convertPeopleRange(int count) {
+        String peopleRange = "";
+        switch (count) {
+            case 1:
+                peopleRange = "1명";
+                break;
+            case 2:
+                peopleRange = "2명";
+                break;
+            case 3:
+                peopleRange = "3명";
+                break;
+            case 4:
+                peopleRange = "4명 이상";
+                break;
+        }
+        return peopleRange;
     }
 
     public static String getDecodedString(String content) {

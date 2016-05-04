@@ -49,5 +49,7 @@ android {
 
     dexOptions {
         jumboMode = true
+        incremental = true
+        preDexLibraries = false
     }
 }

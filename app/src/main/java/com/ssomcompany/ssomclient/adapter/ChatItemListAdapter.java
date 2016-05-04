@@ -14,6 +14,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
+import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
@@ -40,9 +41,7 @@ public class ChatItemListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        if(itemList == null) return 0;
-
-        return itemList.size();
+        return itemList == null? 0 : itemList.size();
     }
 
     @Override
@@ -84,6 +83,8 @@ public class ChatItemListAdapter extends BaseAdapter {
         ChattingItem item = itemList.get(position);
 
         // profile image
+        holder.image.setDefaultImageResId(R.drawable.icon_people);
+        holder.image.setErrorImageResId(R.drawable.icon_people);
         holder.image.setImageUrl(item.getImageUrl(), mImageLoader);
 
         //icon
@@ -95,7 +96,7 @@ public class ChatItemListAdapter extends BaseAdapter {
 
         // chat info
         holder.tvChatInfo.setText(String.format(context.getResources().getString(R.string.post_title),
-                "20대 초", item.getUserCount()));
+                Util.convertAgeRangeAtBackOneChar(item.getMinAge()), item.getUserCount()));
 
         // content
         holder.tvChatContent.setText(item.getMessage());

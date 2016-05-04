@@ -50,7 +50,6 @@ import com.ssomcompany.ssomclient.fragment.SsomListFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
-import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
@@ -78,8 +77,6 @@ public class MainActivity extends BaseActivity
     private static final String LIST_VIEW = "list";
 
     private ArrayList<SsomItem> ITEM_LIST = new ArrayList<>();
-    private ArrayList<ChattingItem> chatList = new ArrayList<>();
-//    private Map<String, SsomItem> ITEM_MAP = new HashMap<>();
     private HashMap<Marker, String> mIdMap = new HashMap<>();
 
     private SsomActionBarView ssomActionBar;
@@ -192,35 +189,37 @@ public class MainActivity extends BaseActivity
         int age = filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 20);
         int people = filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 1);
 
-        switch(age) {
-            case 20:
-                filterAge = getResources().getString(R.string.filter_age_20_early);
-                break;
-            case 25:
-                filterAge = getResources().getString(R.string.filter_age_20_middle);
-                break;
-            case 29:
-                filterAge = getResources().getString(R.string.filter_age_20_late);
-                break;
-            case 30:
-                filterAge = getResources().getString(R.string.filter_age_30_all);
-                break;
-        }
+//        switch(age) {
+//            case 20:
+//                filterAge = getResources().getString(R.string.filter_age_20_early);
+//                break;
+//            case 25:
+//                filterAge = getResources().getString(R.string.filter_age_20_middle);
+//                break;
+//            case 29:
+//                filterAge = getResources().getString(R.string.filter_age_20_late);
+//                break;
+//            case 30:
+//                filterAge = getResources().getString(R.string.filter_age_30_all);
+//                break;
+//        }
+        filterAge = Util.convertAgeRangeAtBackOneChar(age);
 
-        switch(people) {
-            case 1:
-                filterPeople = getResources().getString(R.string.filter_people_1);
-                break;
-            case 2:
-                filterPeople = getResources().getString(R.string.filter_people_2);
-                break;
-            case 3:
-                filterPeople = getResources().getString(R.string.filter_people_3);
-                break;
-            case 4:
-                filterPeople = getResources().getString(R.string.filter_people_4_n_over);
-                break;
-        }
+//        switch(people) {
+//            case 1:
+//                filterPeople = getResources().getString(R.string.filter_people_1);
+//                break;
+//            case 2:
+//                filterPeople = getResources().getString(R.string.filter_people_2);
+//                break;
+//            case 3:
+//                filterPeople = getResources().getString(R.string.filter_people_3);
+//                break;
+//            case 4:
+//                filterPeople = getResources().getString(R.string.filter_people_4_n_over);
+//                break;
+//        }
+        filterPeople = Util.convertPeopleRange(people);
         filterTv.setText(String.format(getResources().getString(R.string.filter_age_n_count),
                 filterAge, filterPeople));
 
@@ -334,24 +333,6 @@ public class MainActivity extends BaseActivity
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SsomChattingActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                // TODO just for test
-                int count = 0;
-                for (SsomItem item : getCurrentPostItems()) {
-                    ChattingItem chat = new ChattingItem();
-                    chat.setUserId(item.getUserId());
-                    chat.setUserCount(item.getUserCount());
-                    chat.setSsom(item.getSsom());
-                    chat.setMinAge(item.getMinAge());
-                    chat.setLongitude(item.getLongitude());
-                    chat.setLatitude(item.getLatitude());
-                    chat.setImageUrl(item.getImageUrl());
-                    chat.setMessage("test입니당." + count);
-                    chatList.add(chat);
-                    count++;
-                }
-                Log.d(TAG, "chatList size : " + chatList.size());
-                // TODO just for test
-                intent.putExtra(SsomChattingActivity.EXTRA_KEY_CHAT_LIST, chatList);
                 startActivity(intent);
             }
         });

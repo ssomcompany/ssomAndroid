@@ -23,7 +23,7 @@
             android:lines="4"
             android:maxLines="4"
             android:hint="메시지를 입력하세요..."
-            android:textColorHint="@color/c8c8c8"
+            android:textColorHint="@color/pinkish_gray_two"
             android:background="@null"/>
 
         <Button
@@ -51,4 +51,13 @@
         android:text="두근두근, 대화가 시작 되었쏨 :)"
         android:background="#fcfcfc"/>
 
+    <ListView
+        android:id="@+id/chatting"
+        android:headerDividersEnabled="false"
+        android:footerDividersEnabled="false"
+        android:overScrollMode="ifContentScrolls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="55dp" />
 </RelativeLayout>

@@ -6,7 +6,6 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -32,9 +31,12 @@ public class SsomActionBarView extends RelativeLayout {
     private RelativeLayout ssomActionBar;
     private ImageView btnLeftNavi;
     private RelativeLayout toggleView;
+    private LinearLayout ssomBarTitleLayout;
     private TextView ssomBarTitle;
+    private TextView ssomBarSubTitle;
     private TextView chatLayout;
     private LinearLayout heartLayout;
+    private TextView chattingRoomHeart;
     private ImageView imgHeart;
     private TextView heartCount;
     private TextView heartRefillTime;
@@ -80,12 +82,15 @@ public class SsomActionBarView extends RelativeLayout {
         ssomActionBar = (RelativeLayout) findViewById(R.id.ssom_action_bar);
         btnLeftNavi = (ImageView) findViewById(R.id.btn_left_navi);
         toggleView = (RelativeLayout) findViewById(R.id.toggle_bg);
+        ssomBarTitleLayout = (LinearLayout) findViewById(R.id.ssom_bar_title_layout);
         ssomBarTitle = (TextView) findViewById(R.id.ssom_bar_title);
+        ssomBarSubTitle = (TextView) findViewById(R.id.ssom_bar_sub_title);
         chatLayout = (TextView) findViewById(R.id.chat_layout);
         heartLayout = (LinearLayout) findViewById(R.id.heart_layout);
         imgHeart = (ImageView) findViewById(R.id.img_heart);
         heartCount = (TextView) findViewById(R.id.heart_count);
         heartRefillTime = (TextView) findViewById(R.id.heart_refill_time);
+        chattingRoomHeart = (TextView) findViewById(R.id.chatting_room_heart);
     }
 
     private void initLayout() {
@@ -97,7 +102,7 @@ public class SsomActionBarView extends RelativeLayout {
                 ssomActionBar.setLayoutParams(params);
                 btnLeftNavi.setImageResource(R.drawable.icon_top_menu);
                 toggleView.setVisibility(View.VISIBLE);
-                ssomBarTitle.setVisibility(View.GONE);
+                ssomBarTitleLayout.setVisibility(View.GONE);
                 break;
             default:
                 // set action bar height
@@ -105,7 +110,7 @@ public class SsomActionBarView extends RelativeLayout {
                 ssomActionBar.setLayoutParams(params);
                 btnLeftNavi.setImageResource(R.drawable.icon_back);
                 toggleView.setVisibility(View.GONE);
-                ssomBarTitle.setVisibility(View.VISIBLE);
+                ssomBarTitleLayout.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -127,11 +132,18 @@ public class SsomActionBarView extends RelativeLayout {
      * Call this method if want to set SsomBarTitle's visibility. (Default false)
      * @param visibility set true if want this is visible false otherwise
      */
-    public void setSsomBarTitleVisibility(boolean visibility) {
-        ssomBarTitle.setVisibility(visibility ? View.VISIBLE : View.GONE);
+    public void setSsomBarTitleLayoutVisibility(boolean visibility) {
+        ssomBarTitleLayout.setVisibility(visibility ? View.VISIBLE : View.GONE);
     }
 
-    public void setSsomBarTitle(String title) {
+    public void setSsomBarTitleLayoutGravity(int gravity) {
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        params.addRule(gravity);
+
+        ssomBarTitleLayout.setLayoutParams(params);
+    }
+
+    public void setSsomBarTitleText(String title) {
         ssomBarTitle.setText(title);
     }
 
@@ -139,11 +151,16 @@ public class SsomActionBarView extends RelativeLayout {
         ssomBarTitle.setTextAppearance(mContext, styId);
     }
 
-    public void setSsomBarTitleGravity(int gravity) {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        params.addRule(gravity);
+    public void setSsomBarSubTitleVisibility(boolean visibility) {
+        ssomBarSubTitle.setVisibility(visibility ? View.VISIBLE : View.GONE);
+    }
 
-        ssomBarTitle.setLayoutParams(params);
+    public void setSsomBarSubTitleText(String title) {
+        ssomBarSubTitle.setText(title);
+    }
+
+    public void setSsomBarSubTitleStyle(int styId) {
+        ssomBarSubTitle.setTextAppearance(mContext, styId);
     }
 
     // right menu button settings
@@ -153,6 +170,14 @@ public class SsomActionBarView extends RelativeLayout {
      */
     public void setHeartLayoutVisibility(boolean visibility) {
         heartLayout.setVisibility(visibility ? View.VISIBLE : View.GONE);
+    }
+
+    public void setHeartLayoutGravity(int gravity, int additional) {
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(Util.convertDpToPixel(39), LayoutParams.WRAP_CONTENT);
+        params.addRule(gravity);
+        params.addRule(additional);
+
+        heartLayout.setLayoutParams(params);
     }
 
     /**
@@ -190,6 +215,18 @@ public class SsomActionBarView extends RelativeLayout {
 
     public void setChatCount(String count) {
         chatLayout.setText(count);
+    }
+
+    public void setChattingRoomHeartVisibility(boolean visibility) {
+        chattingRoomHeart.setVisibility(visibility ? View.VISIBLE : View.GONE);
+    }
+
+    public void setChattingRoomHeartOnOff(boolean iconOnOff) {
+        chattingRoomHeart.setBackgroundResource(iconOnOff ? R.drawable.icon_chat_room_heart_on : R.drawable.icon_heart);
+    }
+
+    public void setChattingRoomHeartText(String count) {
+        chattingRoomHeart.setText(count);
     }
 
     public int getCurrentMode() {

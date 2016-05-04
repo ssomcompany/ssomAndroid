@@ -13,7 +13,7 @@
     <item name="shadow_white_0" type="color">#00ffffff</item>
     <item name="grayish_brown" type="color">#4a4a4a</item>
     <item name="pinkish_gray" type="color">#bbbbbb</item>
-    <item name="c8c8c8" type="color">#c8c8c8</item>
+    <item name="pinkish_gray_two" type="color">#c8c8c8</item>
     <item name="custom_515151" type="color">#515151</item>
     <item name="custom_555555" type="color">#555555</item>
     <item name="custom_666666" type="color">#666666</item>
