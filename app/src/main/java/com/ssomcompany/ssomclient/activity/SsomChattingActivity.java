@@ -116,18 +116,18 @@ public class SsomChattingActivity extends BaseActivity implements ChatListFragme
         fragment.setChatListData(chatList);
         fragmentManager.beginTransaction().
                 replace(R.id.chat_container, fragment, CommonConst.CHAT_LIST_FRAG).commit();
+//        fragmentManager.executePendingTransactions();
     }
 
     @Override
     public void onChatItemClick(int position) {
-        Log.i(TAG, "onPostItemClick() : " + position);
         CURRENT_STATE = STATE_CHAT_ROOM;
-
         changeSsomBarViewForChattingRoom(position);
 
-        ChattingFragment fragment = ChattingFragment.newInstance();
+        ChattingFragment fragment = new ChattingFragment();
         fragmentManager.beginTransaction().replace(R.id.chat_container, fragment, CommonConst.CHATTING_FRAG)
                 .addToBackStack(CommonConst.CHAT_LIST_FRAG).commit();
+//        fragmentManager.executePendingTransactions();
     }
 
     @Override

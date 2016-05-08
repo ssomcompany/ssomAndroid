@@ -13,7 +13,7 @@
 
         <!-- left profile image layout Start -->
         <FrameLayout
-            android:id="@+id/profile_layout"
+            android:id="@+id/chat_profile_layout"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginLeft="5dp"
@@ -21,14 +21,14 @@
             android:layout_alignParentLeft="true">
 
             <com.ssomcompany.ssomclient.widget.CircularNetworkImageView
-                android:id="@+id/icon_list_image"
+                android:id="@+id/chat_profile_image"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:padding="1dp"
                 android:layout_gravity="center_vertical"/>
 
             <ImageView
-                android:id="@+id/icon_circle"
+                android:id="@+id/chat_profile_circle"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/chat_profile_border_red" />
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_marginLeft="7dp"
-            android:layout_toRightOf="@id/profile_layout"
+            android:layout_toRightOf="@id/chat_profile_layout"
             android:orientation="vertical" >
 
             <TextView
@@ -76,12 +76,12 @@
         android:orientation="vertical"
         android:visibility="gone" >
 
+        <!-- TODO custom textView maxWidth(273dp) and lineSpacing(7sp) -->
         <TextView
             android:id="@+id/send_message"
             style="@style/ssom_font_12_white_2_lines"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:lineSpacingExtra="7sp"
             android:padding="10dp"
             android:ellipsize="end"
             android:background="@drawable/bg_send_message"
@@ -95,4 +95,15 @@
             android:layout_marginTop="3dp"
             android:text="18:04"/>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/initial_message"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="1dp"
+        android:gravity="center"
+        android:text="두근두근, 대화가 시작 되었쏨 :)"
+        android:background="#fcfcfc"
+        android:visibility="gone"/>
+
 </RelativeLayout>

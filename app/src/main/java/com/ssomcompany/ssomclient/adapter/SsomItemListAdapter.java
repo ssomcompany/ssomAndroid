@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,24 +84,10 @@ public class SsomItemListAdapter extends BaseAdapter {
         // list view item setting
         SsomItem item = itemList.get(position);
 
-        holder.image.setDefaultImageResId(R.drawable.icon_people);
-        holder.image.setErrorImageResId(R.drawable.icon_people);
+        // profile
+        holder.image.setDefaultImageResId(R.drawable.profile_img_basic);
+        holder.image.setErrorImageResId(R.drawable.profile_img_basic);
         holder.image.setImageUrl(item.getImageUrl(), mImageLoader);
-//        mImageLoader.get(row_pos.getImage(), ImageLoader.getImageListener(image,R.drawable.icon_wirte_photo_emp, R.drawable.icon_wirte_photo_emp));
-//        ImageRequest imageRequest = new ImageRequest(row_pos.getImage(), new Response.Listener<Bitmap>() {
-//            @Override
-//            public void onResponse(Bitmap bitmap) {
-//                image.setImageDrawable(Util.getCircleBitmap(bitmap, 266));
-//            }
-//        },144, 256, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888
-//                , new Response.ErrorListener(){
-//
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//
-//            }
-//        });
-//        VolleyUtil.getInstance(getContext()).getRequestQueue().add(imageRequest);
 
         //icon
         if(CommonConst.SSOM.equals(item.getSsom())){
@@ -114,7 +101,7 @@ public class SsomItemListAdapter extends BaseAdapter {
                 Util.convertAgeRangeAtBackOneChar(item.getMinAge()), item.getUserCount()));
 
         //time
-        holder.timeTv.setText(Util.getTimeText(Long.valueOf(item.getPostId())));
+        holder.timeTv.setText(Util.getTimeText(TextUtils.isEmpty(item.getPostId()) ? 0 : Long.valueOf(item.getPostId())));
 
         // distance
         holder.distanceTv.setText(LocationTracker.getInstance().getDistanceString(item.getLatitude(), item.getLongitude()));
@@ -122,7 +109,6 @@ public class SsomItemListAdapter extends BaseAdapter {
         // content
         holder.contentTv.setText(item.getContent());
 
-//        if(getCount() - 1 == position) mSsomAdapterListener.onNotifyFinished();
         return convertView;
     }
 

@@ -149,12 +149,12 @@ public class MessageManager {
 //
 //        GetUnreadCount.Request request = new GetUnreadCount.Request().setViewFilter(viewFilter);
 //
-//        NetworkManager.request(request, new TypeToken<CellWeResponse<Integer>>() {
+//        NetworkManager.request(request, new TypeToken<SsomResponse<Integer>>() {
 //        }.getType(),
-//                new NetworkListener<CellWeResponse<Integer>>() {
+//                new NetworkListener<SsomResponse<Integer>>() {
 //
 //                    @Override
-//                    public void onResponse(CellWeResponse<Integer> response) {
+//                    public void onResponse(SsomResponse<Integer> response) {
 //                        if (response.isSuccess()) {
 //                            Integer data = response.getData();
 //

@@ -1,7 +1,7 @@
 package com.ssomcompany.ssomclient.network.api.model;
 
 public class ChattingItem extends SsomItem {
-    enum MessageType {
+    public enum MessageType {
         initial,  // 최초 표기 메시지
         send,   // 보낸 메시지
         receive   // 받은 메시지

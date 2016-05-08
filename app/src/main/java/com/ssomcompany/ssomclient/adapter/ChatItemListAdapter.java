@@ -83,8 +83,8 @@ public class ChatItemListAdapter extends BaseAdapter {
         ChattingItem item = itemList.get(position);
 
         // profile image
-        holder.image.setDefaultImageResId(R.drawable.icon_people);
-        holder.image.setErrorImageResId(R.drawable.icon_people);
+        holder.image.setDefaultImageResId(R.drawable.profile_img_basic);
+        holder.image.setErrorImageResId(R.drawable.profile_img_basic);
         holder.image.setImageUrl(item.getImageUrl(), mImageLoader);
 
         //icon
@@ -115,7 +115,6 @@ public class ChatItemListAdapter extends BaseAdapter {
 //        holder.tvTime.setText(String.valueOf(item.getMessageTime()));
         holder.tvTime.setText("오후 7:44");
 
-//        if(getCount() - 1 == position) mSsomAdapterListener.onNotifyFinished();
         return convertView;
     }
 

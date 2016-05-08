@@ -217,9 +217,9 @@ public class NetworkManager {
             public void onResponse(T response) {
                 Log.i(TAG, "******************** Response Data ********************");
                 Log.d(TAG, "Url: " + url);
-                // CELLWE_PRODUCT_REMOVED_CODES_START
+                // SSOM_PRODUCT_REMOVED_CODES_START
                 Log.d(TAG, "Response: " + (null != response ? response.toString() : "none"));
-                // CELLWE_PRODUCT_REMOVED_CODES_END
+                // SSOM_PRODUCT_REMOVED_CODES_END
                 if (null != listener) {
                     listener.onResponse(response);
                 } else {

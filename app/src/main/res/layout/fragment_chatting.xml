@@ -26,12 +26,12 @@
             android:textColorHint="@color/pinkish_gray_two"
             android:background="@null"/>
 
-        <Button
+        <ImageView
             android:id="@+id/btn_send"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginRight="13dp"
-            android:background="@drawable/ic_media_play"
+            android:src="@drawable/icon_chat_message"
             android:padding="10dp" />
     </LinearLayout>
 
@@ -41,21 +41,15 @@
         android:layout_height="1dp"
         android:background="@color/custom_e5e5e5"/>
 
-    <TextView
-        android:layout_above="@id/send_layout"
-        android:id="@+id/initial_message"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginBottom="1dp"
-        android:gravity="center"
-        android:text="두근두근, 대화가 시작 되었쏨 :)"
-        android:background="#fcfcfc"/>
-
     <ListView
         android:id="@+id/chatting"
         android:headerDividersEnabled="false"
         android:footerDividersEnabled="false"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         android:overScrollMode="ifContentScrolls"
+        android:transcriptMode="alwaysScroll"
+        android:stackFromBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

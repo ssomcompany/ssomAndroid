@@ -1,18 +1,18 @@
 package com.ssomcompany.ssomclient.fragment;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.adapter.ChatItemListAdapter;
+import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
-import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 
@@ -22,23 +22,16 @@ public class ChattingFragment extends BaseFragment {
     /**
      * The fragment's ListView/GridView.
      */
-    private ListView mListView;
+    private ListView chatListView;
+    private EditText editMessage;
+    private ImageView btnSend;
 
     /**
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ChatItemListAdapter mAdapter;
+    private ChattingAdapter mAdapter;
     private ArrayList<ChattingItem> chatList;
-
-    private static ChattingFragment chattingFragment;
-
-    public static ChattingFragment newInstance() {
-        if(chattingFragment == null) {
-            chattingFragment = new ChattingFragment();
-        }
-        return chattingFragment;
-    }
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -52,7 +45,14 @@ public class ChattingFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new ChatItemListAdapter(getActivity(), chatList);
+        // TODO chatting 내역 조회 후 response 에서 list setting
+        if(chatList == null || chatList.isEmpty()) {
+            chatList = new ArrayList<>();
+            ChattingItem initial = new ChattingItem();
+            initial.setType(ChattingItem.MessageType.initial);
+            chatList.add(initial);
+        }
+        mAdapter = new ChattingAdapter(getActivity(), chatList);
     }
 
     @Override
@@ -65,48 +65,30 @@ public class ChattingFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chatting, container, false);
 
+        editMessage = (EditText) view.findViewById(R.id.edit_message);
+        btnSend = (ImageView) view.findViewById(R.id.btn_send);
+        chatListView = (ListView) view.findViewById(R.id.chatting);
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if("".equals(editMessage.getText().toString())) return;
+
+                mAdapter.add(editMessage.getText().toString());
+                editMessage.setText("");
+                // TODO send message network api call & 메시지 추가
+            }
+        });
+
+        chatListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO long click 삭제기능 추가 시 api call
+                return false;
+            }
+        });
+        chatListView.setAdapter(mAdapter);
+
         return view;
-    }
-
-    /**
-     * The default content for this Fragment has a TextView that is shown when
-     * the list is empty. If you would like to change the text, call this method
-     * to supply the text it should use.
-     */
-    public void setEmptyText(CharSequence emptyText) {
-        View emptyView = mListView.getEmptyView();
-
-        if (emptyView instanceof TextView) {
-            ((TextView) emptyView).setText(emptyText);
-        }
-    }
-
-    private void makeCommonDialog(final int position) {
-        CommonDialog dialog;
-        if (getResources() == null) {
-            Log.e(TAG, "getResources() is null!!!!");
-            return;
-        }
-
-        dialog = CommonDialog.getInstance(CommonDialog.DIALOG_STYLE_ALERT_BUTTON);
-        dialog.setTitle(getResources().getString(R.string.dialog_notice));
-        dialog.setMessage(getResources().getString(R.string.dialog_chat_list_delete_message));
-        dialog.setPositiveButton(getResources().getString(R.string.dialog_delete), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // TODO delete chatting api call
-
-                chatList.remove(position);
-                mAdapter.notifyDataSetChanged();
-            }
-        });
-        dialog.setNegativeButton(getResources().getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // do nothing
-            }
-        });
-        dialog.setAutoDissmissEnable(true);
-        dialog.show(getActivity().getFragmentManager(), null);
     }
 }
