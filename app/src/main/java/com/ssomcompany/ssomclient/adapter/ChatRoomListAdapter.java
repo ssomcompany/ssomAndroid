@@ -16,21 +16,21 @@ import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
+import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 
 import java.util.ArrayList;
 
-public class ChatItemListAdapter extends BaseAdapter {
-    private static final String TAG = ChatItemListAdapter.class.getSimpleName();
+public class ChatRoomListAdapter extends BaseAdapter {
+    private static final String TAG = ChatRoomListAdapter.class.getSimpleName();
 
     private LayoutInflater mInflater;
     private Context context;
     private ImageLoader mImageLoader;
     private ChatItemViewHolder holder;
-    private ArrayList<ChattingItem> itemList;
+    private ArrayList<ChatRoomItem> itemList;
 
-    public ChatItemListAdapter(Context context, ArrayList<ChattingItem> itemList){
+    public ChatRoomListAdapter(Context context, ArrayList<ChatRoomItem> itemList){
         this.context = context;
         this.mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -80,7 +80,7 @@ public class ChatItemListAdapter extends BaseAdapter {
         }
 
         // list view item setting
-        ChattingItem item = itemList.get(position);
+        ChatRoomItem item = itemList.get(position);
 
         // profile image
         holder.image.setDefaultImageResId(R.drawable.profile_img_basic);
@@ -99,7 +99,7 @@ public class ChatItemListAdapter extends BaseAdapter {
                 Util.convertAgeRangeAtBackOneChar(item.getMinAge()), item.getUserCount()));
 
         // content
-        holder.tvChatContent.setText(item.getMessage());
+        holder.tvChatContent.setText(item.getLastMessage());
 
         // TODO count 가 없을 경우 view 숨김
         holder.unreadLayout.setVisibility(View.VISIBLE);

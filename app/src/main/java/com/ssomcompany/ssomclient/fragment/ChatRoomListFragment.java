@@ -11,9 +11,9 @@ import android.view.animation.BounceInterpolator;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.adapter.ChatItemListAdapter;
+import com.ssomcompany.ssomclient.adapter.ChatRoomListAdapter;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
+import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 import com.ssomcompany.ssomclient.widget.swipelistview.SwipeMenu;
 import com.ssomcompany.ssomclient.widget.swipelistview.SwipeMenuCreator;
@@ -31,8 +31,8 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link OnChatItemInteractionListener}
  * interface.
  */
-public class ChatListFragment extends BaseFragment {
-    private static final String TAG = ChatListFragment.class.getSimpleName();
+public class ChatRoomListFragment extends BaseFragment {
+    private static final String TAG = ChatRoomListFragment.class.getSimpleName();
 
     /**
      * This interface must be implemented by activities that contain this
@@ -55,27 +55,27 @@ public class ChatListFragment extends BaseFragment {
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ChatItemListAdapter mAdapter;
-    private ArrayList<ChattingItem> chatList;
+    private ChatRoomListAdapter mAdapter;
+    private ArrayList<ChatRoomItem> chatRoomList;
 
-    private static ChatListFragment chatListFragment;
+    private static ChatRoomListFragment chatRoomListFragment;
 
-    public static ChatListFragment newInstance() {
-        if(chatListFragment == null) {
-            chatListFragment = new ChatListFragment();
+    public static ChatRoomListFragment newInstance() {
+        if(chatRoomListFragment == null) {
+            chatRoomListFragment = new ChatRoomListFragment();
         }
-        return chatListFragment;
+        return chatRoomListFragment;
     }
 
-    public void setChatListData(ArrayList<ChattingItem> chatList) {
-        this.chatList = chatList;
+    public void setChatRoomListData(ArrayList<ChatRoomItem> chatRoomList) {
+        this.chatRoomList = chatRoomList;
     }
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public ChatListFragment() {
+    public ChatRoomListFragment() {
         super();
     }
 
@@ -83,7 +83,7 @@ public class ChatListFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new ChatItemListAdapter(getActivity(), chatList);
+        mAdapter = new ChatRoomListAdapter(getActivity(), chatRoomList);
     }
 
     @Override
@@ -183,7 +183,7 @@ public class ChatListFragment extends BaseFragment {
             public void onClick(DialogInterface dialog, int which) {
                 // TODO delete chatting api call
 
-                chatList.remove(position);
+                chatRoomList.remove(position);
                 mAdapter.notifyDataSetChanged();
             }
         });

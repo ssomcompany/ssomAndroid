@@ -27,6 +27,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -102,6 +103,19 @@ public class Util {
         } else {
             return "오래전";
         }
+    }
+
+    public static String getTimeTextForMessage(long timestamp) {
+        try{
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(timestamp);
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.KOREA);
+            Date currentTimeZone = calendar.getTime();
+            return sdf.format(currentTimeZone);
+        }catch (Exception e) {
+            Log.e(TAG, "Failed to get time.");
+        }
+        return "00:00";
     }
 
     ////////////////////////////////////////////////////// image file for camera ///////////////////////////////////////////////////

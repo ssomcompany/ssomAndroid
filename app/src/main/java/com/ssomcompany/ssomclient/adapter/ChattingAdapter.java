@@ -2,8 +2,6 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +15,9 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
-import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 
@@ -33,13 +31,15 @@ public class ChattingAdapter extends BaseAdapter {
     private ImageLoader mImageLoader;
     private ChatMessageViewHolder holder;
     private ArrayList<ChattingItem> itemList;
+    private ChatRoomItem roomItem;
 
-    public ChattingAdapter(Context context, ArrayList<ChattingItem> itemList){
+    public ChattingAdapter(Context context, ChatRoomItem roomItem, ArrayList<ChattingItem> itemList){
         this.context = context;
         this.mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
         this.mImageLoader = NetworkManager.getInstance().getImageLoader();
+        this.roomItem = roomItem;
         this.itemList = itemList;
     }
 
@@ -80,7 +80,9 @@ public class ChattingAdapter extends BaseAdapter {
             holder.sendMessage = (TextView) convertView.findViewById(R.id.send_message);
             holder.sendTime = (TextView) convertView.findViewById(R.id.send_time);
             // initial message
-            holder.initialMessage = (TextView) convertView.findViewById(R.id.initial_message);
+            holder.initialMessage = (LinearLayout) convertView.findViewById(R.id.initial_message);
+            // finish message
+            holder.finishMessage = (TextView) convertView.findViewById(R.id.finish_message);
 
             convertView.setTag(holder);
         } else {
@@ -99,14 +101,14 @@ public class ChattingAdapter extends BaseAdapter {
             // profile image
             holder.chatProfileImage.setDefaultImageResId(holder.chatProfileLayout.getVisibility() == View.VISIBLE ? R.drawable.profile_img_basic : 0);
             holder.chatProfileImage.setErrorImageResId(holder.chatProfileLayout.getVisibility() == View.VISIBLE ? R.drawable.profile_img_basic : 0);
-            holder.chatProfileImage.setImageUrl(holder.chatProfileLayout.getVisibility() == View.VISIBLE ? item.getImageUrl() : null, mImageLoader);
+            holder.chatProfileImage.setImageUrl(holder.chatProfileLayout.getVisibility() == View.VISIBLE ? roomItem.getImageUrl() : null, mImageLoader);
             // profile circle type
             holder.chatProfileCircle.setImageResource(holder.chatProfileLayout.getVisibility() == View.VISIBLE ?
-                    (CommonConst.SSOM.equals(item.getSsom()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red) : 0);
-            holder.receiveMessage.setBackgroundResource(CommonConst.SSOM.equals(item.getSsom()) ? R.drawable.bg_receive_message_green : R.drawable.bg_receive_message_red);
+                    (CommonConst.SSOM.equals(roomItem.getSsom()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red) : 0);
+            holder.receiveMessage.setBackgroundResource(CommonConst.SSOM.equals(roomItem.getSsom()) ? R.drawable.bg_receive_message_green : R.drawable.bg_receive_message_red);
             holder.receiveMessage.setText(item.getMessage());
             // TODO 시간 변경 함수 개발
-            holder.receiveTime.setText(String.valueOf(item.getMessageTime()));
+            holder.receiveTime.setText(Util.getTimeTextForMessage(item.getMessageTime()));
         } else {
             holder.receiveMessageLayout.setVisibility(View.GONE);
         }
@@ -118,7 +120,7 @@ public class ChattingAdapter extends BaseAdapter {
             holder.sendMessageLayout.setVisibility(View.VISIBLE);
             holder.sendMessage.setText(item.getMessage());
             // TODO 시간 변경 함수 개발
-            holder.sendTime.setText(String.valueOf(item.getMessageTime()));
+            holder.sendTime.setText(Util.getTimeTextForMessage(item.getMessageTime()));
         } else {
             holder.sendMessageLayout.setVisibility(View.GONE);
         }
@@ -132,13 +134,24 @@ public class ChattingAdapter extends BaseAdapter {
             holder.initialMessage.setVisibility(View.GONE);
         }
 
+        /**
+         * finish message layout setting
+         */
+        if(item.getType() == ChattingItem.MessageType.finish) {
+            holder.finishMessage.setVisibility(View.VISIBLE);
+        } else {
+            holder.finishMessage.setVisibility(View.GONE);
+        }
+
         return convertView;
     }
 
     public void add(String message) {
         ChattingItem item = new ChattingItem();
+        item.setPostId(roomItem.getPostId());
         item.setType(ChattingItem.MessageType.send);
         item.setMessage(message);
+        item.setMessageTime(System.currentTimeMillis());
         itemList.add(item);
         notifyDataSetChanged();
     }
@@ -169,6 +182,11 @@ public class ChattingAdapter extends BaseAdapter {
         /**
          * Initial ssom message
          */
-        private TextView initialMessage;
+        private LinearLayout initialMessage;
+
+        /**
+         * Finish ssom message
+         */
+        private TextView finishMessage;
     }
 }

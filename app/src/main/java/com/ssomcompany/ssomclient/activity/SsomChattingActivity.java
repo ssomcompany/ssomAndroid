@@ -2,21 +2,20 @@ package com.ssomcompany.ssomclient.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.fragment.ChatListFragment;
+import com.ssomcompany.ssomclient.fragment.ChatRoomListFragment;
 import com.ssomcompany.ssomclient.fragment.ChattingFragment;
-import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
+import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 
 import java.util.ArrayList;
 
-public class SsomChattingActivity extends BaseActivity implements ChatListFragment.OnChatItemInteractionListener {
+public class SsomChattingActivity extends BaseActivity implements ChatRoomListFragment.OnChatItemInteractionListener {
     private static final String TAG = SsomChattingActivity.class.getSimpleName();
 
     private static final int STATE_CHAT_LIST = 0;
@@ -25,7 +24,7 @@ public class SsomChattingActivity extends BaseActivity implements ChatListFragme
     private static int CURRENT_STATE = STATE_CHAT_LIST;
 
     private FragmentManager fragmentManager;
-    private ArrayList<ChattingItem> chatList;
+    private ArrayList<ChatRoomItem> chatRoomList;
     private SsomActionBarView ssomBar;
 
     @Override
@@ -34,28 +33,32 @@ public class SsomChattingActivity extends BaseActivity implements ChatListFragme
         setContentView(R.layout.activity_chatting);
         fragmentManager = getSupportFragmentManager();
         // TODO call chatting list api
-        chatList = new ArrayList<>();
-        ChattingItem item;
+        chatRoomList = new ArrayList<>();
+        ChatRoomItem item;
         double x = 0;
         int count = 0;
         for(int i = 0 ; i < 10 ; i++) {
-            item = new ChattingItem();
+            item = new ChatRoomItem();
+            item.setPostId(String.valueOf(System.currentTimeMillis()));
             item.setContent("123123");
             item.setImageUrl("");
             item.setMinAge(25);
             item.setSsom("ssom");
             item.setUserCount(3);
-            item.setMessage("test chatting message" + count);
+            item.setLastMessage("test chatting message " + count);
             item.setLongitude(127.1020387+x);
             item.setLatitude(37.5160211+x);
-            chatList.add(item);
+            if(i == 3) item.setInfoType(ChatRoomItem.InfoType.sent);
+            if(i == 5) item.setInfoType(ChatRoomItem.InfoType.received);
+            if(i == 7) item.setInfoType(ChatRoomItem.InfoType.success);
+            chatRoomList.add(item);
             x += 0.001;
             count++;
         }
 
         ssomBar = (SsomActionBarView) findViewById(R.id.ssom_action_bar);
         initSsomBarView();
-        startChatListFragment();
+        startChatRoomListFragment();
     }
 
     private void initSsomBarView() {
@@ -76,14 +79,14 @@ public class SsomChattingActivity extends BaseActivity implements ChatListFragme
                         break;
                     case STATE_CHAT_ROOM :
                         CURRENT_STATE = STATE_CHAT_LIST;
-                        changeSsomBarViewForChattingList();
+                        changeSsomBarViewForChatRoomList();
                         fragmentManager.popBackStack();
                 }
             }
         });
     }
 
-    private void changeSsomBarViewForChattingList() {
+    private void changeSsomBarViewForChatRoomList() {
         ssomBar.setCurrentMode(SsomActionBarView.SSOM_CHAT_LIST);
         ssomBar.setChattingRoomHeartVisibility(false);
         ssomBar.setChatLayoutVisibility(true);
@@ -107,13 +110,13 @@ public class SsomChattingActivity extends BaseActivity implements ChatListFragme
         ssomBar.setSsomBarTitleStyle(R.style.ssom_font_16_custom_4d4d4d_single);
         ssomBar.setSsomBarSubTitleVisibility(true);
         ssomBar.setSsomBarSubTitleText(String.format(getResources().getString(R.string.filter_age_n_count),
-                Util.convertAgeRange(chatList.get(position).getMinAge()), Util.convertPeopleRange(chatList.get(position).getUserCount())));
+                Util.convertAgeRange(chatRoomList.get(position).getMinAge()), Util.convertPeopleRange(chatRoomList.get(position).getUserCount())));
         ssomBar.setSsomBarSubTitleStyle(R.style.ssom_font_12_pinkish_gray_two_single);
     }
 
-    private void startChatListFragment() {
-        ChatListFragment fragment = ChatListFragment.newInstance();
-        fragment.setChatListData(chatList);
+    private void startChatRoomListFragment() {
+        ChatRoomListFragment fragment = ChatRoomListFragment.newInstance();
+        fragment.setChatRoomListData(chatRoomList);
         fragmentManager.beginTransaction().
                 replace(R.id.chat_container, fragment, CommonConst.CHAT_LIST_FRAG).commit();
 //        fragmentManager.executePendingTransactions();
@@ -125,6 +128,7 @@ public class SsomChattingActivity extends BaseActivity implements ChatListFragme
         changeSsomBarViewForChattingRoom(position);
 
         ChattingFragment fragment = new ChattingFragment();
+        fragment.setChatRoomItem(chatRoomList.get(position));
         fragmentManager.beginTransaction().replace(R.id.chat_container, fragment, CommonConst.CHATTING_FRAG)
                 .addToBackStack(CommonConst.CHAT_LIST_FRAG).commit();
 //        fragmentManager.executePendingTransactions();
@@ -134,7 +138,7 @@ public class SsomChattingActivity extends BaseActivity implements ChatListFragme
     public void onBackPressed() {
         if(CURRENT_STATE == STATE_CHAT_ROOM) {
             CURRENT_STATE = STATE_CHAT_LIST;
-            changeSsomBarViewForChattingList();
+            changeSsomBarViewForChatRoomList();
         }
         super.onBackPressed();
     }

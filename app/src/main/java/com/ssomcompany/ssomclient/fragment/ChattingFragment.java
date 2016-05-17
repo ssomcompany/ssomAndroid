@@ -1,17 +1,19 @@
 package com.ssomcompany.ssomclient.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
+import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 
 import java.util.ArrayList;
@@ -27,11 +29,20 @@ public class ChattingFragment extends BaseFragment {
     private ImageView btnSend;
 
     /**
+     * The information layout and instance
+     */
+    private LinearLayout infoLayout;
+    private TextView infoText;
+    private TextView infoBtn;
+
+    /**
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
     private ChattingAdapter mAdapter;
     private ArrayList<ChattingItem> chatList;
+
+    private ChatRoomItem roomItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -39,6 +50,10 @@ public class ChattingFragment extends BaseFragment {
      */
     public ChattingFragment() {
         super();
+    }
+
+    public void setChatRoomItem(ChatRoomItem roomItem) {
+        this.roomItem = roomItem;
     }
 
     @Override
@@ -49,10 +64,11 @@ public class ChattingFragment extends BaseFragment {
         if(chatList == null || chatList.isEmpty()) {
             chatList = new ArrayList<>();
             ChattingItem initial = new ChattingItem();
+            initial.setPostId(roomItem.getPostId());
             initial.setType(ChattingItem.MessageType.initial);
             chatList.add(initial);
         }
-        mAdapter = new ChattingAdapter(getActivity(), chatList);
+        mAdapter = new ChattingAdapter(getActivity(), roomItem, chatList);
     }
 
     @Override
@@ -68,6 +84,11 @@ public class ChattingFragment extends BaseFragment {
         editMessage = (EditText) view.findViewById(R.id.edit_message);
         btnSend = (ImageView) view.findViewById(R.id.btn_send);
         chatListView = (ListView) view.findViewById(R.id.chatting);
+        infoLayout = (LinearLayout) view.findViewById(R.id.info_layout);
+        infoText = (TextView) view.findViewById(R.id.info_text);
+        infoBtn = (TextView) view.findViewById(R.id.info_btn);
+
+        setChatRoomInfoLayout(roomItem.getInfoType());
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,15 +101,34 @@ public class ChattingFragment extends BaseFragment {
             }
         });
 
-        chatListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                // TODO long click 삭제기능 추가 시 api call
-                return false;
-            }
-        });
         chatListView.setAdapter(mAdapter);
 
         return view;
+    }
+
+    public void setChatRoomInfoLayout(ChatRoomItem.InfoType type) {
+        if(type == null || type == ChatRoomItem.InfoType.none) {
+            infoLayout.setVisibility(View.GONE);
+            return;
+        }
+
+        infoLayout.setVisibility(View.VISIBLE);
+
+        if(type == ChatRoomItem.InfoType.sent) {
+            infoText.setText(getString(R.string.chat_room_info_text_sent));
+            infoBtn.setText(getString(R.string.chat_room_info_btn_sent));
+            infoBtn.setBackgroundResource(R.drawable.btn_chat_info_cancel);
+        } else if(type == ChatRoomItem.InfoType.received) {
+            infoText.setText(getString(R.string.chat_room_info_text_received));
+            infoBtn.setText(getString(R.string.chat_room_info_btn_received));
+            infoBtn.setBackgroundResource(R.drawable.btn_write_apply_ssoa);
+        } else if(type == ChatRoomItem.InfoType.success) {
+            infoText.setText(getString(R.string.chat_room_info_text_success));
+            infoBtn.setText(getString(R.string.chat_room_info_btn_success));
+            infoBtn.setBackgroundResource(R.drawable.btn_write_apply_ssoa);
+            infoBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_heart_in_white_balloon, 0, 0, 0);
+            infoBtn.setCompoundDrawablePadding(-(Util.convertDpToPixel(15)));
+            infoBtn.setPadding(Util.convertDpToPixel(16), 0, 0, 0);
+        }
     }
 }

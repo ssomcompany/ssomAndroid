@@ -121,6 +121,13 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="ssom_font_13_5_red_pink_bold">
+        <item name="android:textSize">13.5sp</item>
+        <item name="android:textColor">@color/red_pink</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="ssom_font_13_999999_single">
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">@color/custom_999999</item>
