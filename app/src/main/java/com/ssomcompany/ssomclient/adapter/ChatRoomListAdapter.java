@@ -113,7 +113,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
 
         //time
 //        holder.tvTime.setText(String.valueOf(item.getMessageTime()));
-        holder.tvTime.setText("오후 7:44");
+        holder.tvTime.setText(Util.getTimeTextForChatRoom(item.getLastMessageTime()));
 
         return convertView;
     }

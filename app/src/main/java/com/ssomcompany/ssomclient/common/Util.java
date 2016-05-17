@@ -115,7 +115,20 @@ public class Util {
         }catch (Exception e) {
             Log.e(TAG, "Failed to get time.");
         }
-        return "00:00";
+        return "12:00";
+    }
+
+    public static String getTimeTextForChatRoom(long timestamp) {
+        try{
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(timestamp);
+            SimpleDateFormat sdf = new SimpleDateFormat("a h:mm", Locale.KOREA);
+            Date currentTimeZone = calendar.getTime();
+            return sdf.format(currentTimeZone);
+        }catch (Exception e) {
+            Log.e(TAG, "Failed to get time.");
+        }
+        return "오후 12:00";
     }
 
     ////////////////////////////////////////////////////// image file for camera ///////////////////////////////////////////////////

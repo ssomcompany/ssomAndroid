@@ -63,10 +63,19 @@ public class ChattingFragment extends BaseFragment {
         // TODO chatting 내역 조회 후 response 에서 list setting
         if(chatList == null || chatList.isEmpty()) {
             chatList = new ArrayList<>();
-            ChattingItem initial = new ChattingItem();
-            initial.setPostId(roomItem.getPostId());
-            initial.setType(ChattingItem.MessageType.initial);
-            chatList.add(initial);
+            ChattingItem initial;
+            for(int i = 0 ; i < 4 ; i++) {
+                initial = new ChattingItem();
+                initial.setPostId(roomItem.getPostId());
+                if(i == 0) {
+                    initial.setType(ChattingItem.MessageType.initial);
+                } else {
+                    initial.setType(ChattingItem.MessageType.receive);
+                    initial.setMessageTime(System.currentTimeMillis());
+                    initial.setMessage("test message " + i);
+                }
+                chatList.add(initial);
+            }
         }
         mAdapter = new ChattingAdapter(getActivity(), roomItem, chatList);
     }
@@ -106,7 +115,7 @@ public class ChattingFragment extends BaseFragment {
         return view;
     }
 
-    public void setChatRoomInfoLayout(ChatRoomItem.InfoType type) {
+    public void setChatRoomInfoLayout(final ChatRoomItem.InfoType type) {
         if(type == null || type == ChatRoomItem.InfoType.none) {
             infoLayout.setVisibility(View.GONE);
             return;
@@ -130,5 +139,15 @@ public class ChattingFragment extends BaseFragment {
             infoBtn.setCompoundDrawablePadding(-(Util.convertDpToPixel(15)));
             infoBtn.setPadding(Util.convertDpToPixel(16), 0, 0, 0);
         }
+
+        infoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                switch (type) {
+//                    case ChatRoomItem.InfoType.received:
+                }
+            }
+        });
     }
 }

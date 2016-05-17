@@ -62,6 +62,9 @@
     <string name="chat_room_info_btn_sent">요청취소</string>
     <string name="chat_room_info_btn_received">요청보기</string>
     <string name="chat_room_info_btn_success">위치보기</string>
+    <string name="chat_message_initial_first">두근두근,&#160;</string>
+    <string name="chat_message_initial_second">대화가 시작 되었쏨 :)</string>
+    <string name="chat_message_finish">상대방이 쏨을 종료했습니다. (T_T)</string>
 
     <!-- button -->
     <string name="ok_upper">확인</string>

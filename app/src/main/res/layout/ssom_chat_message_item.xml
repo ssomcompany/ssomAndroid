@@ -25,7 +25,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:padding="1dp"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center"/>
 
             <ImageView
                 android:id="@+id/chat_profile_circle"
@@ -52,16 +52,14 @@
                 android:maxWidth="290dp"
                 android:lineSpacingExtra="5sp"
                 android:padding="10dp"
-                android:background="@drawable/bg_receive_message_red"
-                android:text="상대방이 쏴인 경우에는 핑크색이고 쏨인경우에는 초\n록색으로 표현되었으면 좋겠습니다..해주세요.."/>
+                android:background="@drawable/bg_receive_message_red"/>
 
             <TextView
                 android:id="@+id/receive_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="3dp"
-                android:text="18:04"/>
+                android:layout_marginTop="3dp"/>
         </LinearLayout>
 
     </RelativeLayout>
@@ -74,9 +72,8 @@
         android:layout_marginRight="7dp"
         android:layout_alignParentRight="true"
         android:orientation="vertical"
-        android:visibility="visible" >
+        android:visibility="gone" >
 
-        <!-- TODO custom textView maxWidth(290dp) and lineSpacing(5sp) -->
         <TextView
             android:id="@+id/send_message"
             style="@style/ssom_font_12_white"
@@ -86,8 +83,7 @@
             android:maxWidth="290dp"
             android:lineSpacingExtra="5sp"
             android:padding="10dp"
-            android:background="@drawable/bg_send_message"
-            android:text="가장 긴 길이의 메시지를 보냈을 때 이정도의 길이로 표현됩니다. 두줄짜리 샘플이미지에요"/>
+            android:background="@drawable/bg_send_message"/>
 
         <TextView
             android:id="@+id/send_time"
@@ -95,8 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="3dp"
-            android:text="18:04"/>
+            android:layout_marginTop="3dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -113,14 +108,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="두근두근, " />
+            android:text="@string/chat_message_initial_first" />
 
         <TextView
             style="@style/ssom_font_12_pinkish_gray_two_single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="대화가 시작 되었쏨 :)" />
+            android:text="@string/chat_message_initial_second" />
     </LinearLayout>
 
     <TextView
@@ -130,6 +125,6 @@
         android:layout_height="40dp"
         android:gravity="center"
         android:background="#fcfcfc"
-        android:text="상대방이 쏨을 종료했습니다. (T_T)"
+        android:text="@string/chat_message_finish"
         android:visibility="gone"/>
 </RelativeLayout>

@@ -52,7 +52,7 @@ public class ChattingAdapter extends BaseAdapter {
     public ChattingItem getItem(int position) {
         if(getCount() > position) {
             return itemList.get(position);
-        }else{
+        } else {
             return null;
         }
     }
@@ -97,18 +97,29 @@ public class ChattingAdapter extends BaseAdapter {
          */
         if(item.getType() == ChattingItem.MessageType.receive) {
             holder.receiveMessageLayout.setVisibility(View.VISIBLE);
-            holder.chatProfileLayout.setVisibility(item.getMessageTime() != getItem(position - 1).getMessageTime() ? View.VISIBLE : View.INVISIBLE);
-            // profile image
-            holder.chatProfileImage.setDefaultImageResId(holder.chatProfileLayout.getVisibility() == View.VISIBLE ? R.drawable.profile_img_basic : 0);
-            holder.chatProfileImage.setErrorImageResId(holder.chatProfileLayout.getVisibility() == View.VISIBLE ? R.drawable.profile_img_basic : 0);
-            holder.chatProfileImage.setImageUrl(holder.chatProfileLayout.getVisibility() == View.VISIBLE ? roomItem.getImageUrl() : null, mImageLoader);
-            // profile circle type
-            holder.chatProfileCircle.setImageResource(holder.chatProfileLayout.getVisibility() == View.VISIBLE ?
-                    (CommonConst.SSOM.equals(roomItem.getSsom()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red) : 0);
+
+            if(getItem(position - 1) == null || item.getType() != getItem(position - 1).getType()
+                    || !Util.getTimeTextForMessage(item.getMessageTime()).equals(Util.getTimeTextForMessage(getItem(position - 1).getMessageTime()))) {
+                holder.chatProfileLayout.setVisibility(View.VISIBLE);
+                // profile image
+                holder.chatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
+                holder.chatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
+                holder.chatProfileImage.setImageUrl(roomItem.getImageUrl(), mImageLoader);
+                // profile circle type
+                holder.chatProfileCircle.setImageResource(CommonConst.SSOM.equals(roomItem.getSsom()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red);
+            } else {
+                holder.chatProfileLayout.setVisibility(View.INVISIBLE);
+            }
+
             holder.receiveMessage.setBackgroundResource(CommonConst.SSOM.equals(roomItem.getSsom()) ? R.drawable.bg_receive_message_green : R.drawable.bg_receive_message_red);
             holder.receiveMessage.setText(item.getMessage());
-            // TODO 시간 변경 함수 개발
-            holder.receiveTime.setText(Util.getTimeTextForMessage(item.getMessageTime()));
+            if(getItem(position + 1) != null && item.getType() == getItem(position + 1).getType()
+                    && Util.getTimeTextForMessage(item.getMessageTime()).equals(Util.getTimeTextForMessage(getItem(position + 1).getMessageTime()))) {
+                holder.receiveTime.setVisibility(View.GONE);
+            } else {
+                holder.receiveTime.setVisibility(View.VISIBLE);
+                holder.receiveTime.setText(Util.getTimeTextForMessage(item.getMessageTime()));
+            }
         } else {
             holder.receiveMessageLayout.setVisibility(View.GONE);
         }
@@ -119,8 +130,13 @@ public class ChattingAdapter extends BaseAdapter {
         if(item.getType() == ChattingItem.MessageType.send) {
             holder.sendMessageLayout.setVisibility(View.VISIBLE);
             holder.sendMessage.setText(item.getMessage());
-            // TODO 시간 변경 함수 개발
-            holder.sendTime.setText(Util.getTimeTextForMessage(item.getMessageTime()));
+            if(getItem(position + 1) != null && item.getType() == getItem(position + 1).getType()
+                    && Util.getTimeTextForMessage(item.getMessageTime()).equals(Util.getTimeTextForMessage(getItem(position + 1).getMessageTime()))) {
+                holder.sendTime.setVisibility(View.GONE);
+            } else {
+                holder.sendTime.setVisibility(View.VISIBLE);
+                holder.sendTime.setText(Util.getTimeTextForMessage(item.getMessageTime()));
+            }
         } else {
             holder.sendMessageLayout.setVisibility(View.GONE);
         }

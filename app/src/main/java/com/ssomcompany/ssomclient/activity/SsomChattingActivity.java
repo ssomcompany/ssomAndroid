@@ -32,6 +32,7 @@ public class SsomChattingActivity extends BaseActivity implements ChatRoomListFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatting);
         fragmentManager = getSupportFragmentManager();
+
         // TODO call chatting list api
         chatRoomList = new ArrayList<>();
         ChatRoomItem item;
@@ -43,9 +44,10 @@ public class SsomChattingActivity extends BaseActivity implements ChatRoomListFr
             item.setContent("123123");
             item.setImageUrl("");
             item.setMinAge(25);
-            item.setSsom("ssom");
+            item.setSsom(i%2 == 0 ? CommonConst.SSOM : CommonConst.SSOA);
             item.setUserCount(3);
             item.setLastMessage("test chatting message " + count);
+            item.setLastMessageTime(System.currentTimeMillis());
             item.setLongitude(127.1020387+x);
             item.setLatitude(37.5160211+x);
             if(i == 3) item.setInfoType(ChatRoomItem.InfoType.sent);
