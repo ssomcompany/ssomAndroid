@@ -193,7 +193,7 @@ public class ChatRoomListFragment extends BaseFragment {
                 // do nothing
             }
         });
-        dialog.setAutoDissmissEnable(true);
+        dialog.setAutoDismissEnable(true);
         dialog.show(getActivity().getFragmentManager(), null);
     }
 }

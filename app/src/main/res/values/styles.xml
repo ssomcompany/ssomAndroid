@@ -227,11 +227,18 @@
         <item name="android:typeface">normal</item>
     </style>
 
-    <style name="ssom_font_20_red_pink_single">
+    <style name="ssom_font_20_red_pink_bold">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/red_pink</item>
         <item name="android:typeface">normal</item>
-        <item name="android:singleLine">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ssom_font_20_grayish_brown_bold">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/grayish_brown</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <!-- Dialog Theme -->

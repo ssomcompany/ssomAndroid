@@ -1,5 +1,6 @@
 package com.ssomcompany.ssomclient.fragment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
+import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 
@@ -143,11 +145,36 @@ public class ChattingFragment extends BaseFragment {
         infoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                switch (type) {
-//                    case ChatRoomItem.InfoType.received:
+                if(type == ChatRoomItem.InfoType.success){
+                    // TODO 지도 화면으로 이동
+                } else {
+                    makeCommonDialog(type);
                 }
             }
         });
+    }
+
+    private void makeCommonDialog(ChatRoomItem.InfoType type) {
+        CommonDialog dialog = CommonDialog.getInstance(CommonDialog.DIALOG_STYLE_ALERT_BUTTON);
+        dialog.setTitle(getString(R.string.dialog_meet_request));
+        dialog.setTitleStyle(R.style.ssom_font_20_grayish_brown_bold);
+        dialog.setMessage(getString(type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_request_message : R.string.dialog_meet_received_message));
+        dialog.setPositiveButton(getString(R.string.dialog_meet), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO call accept api (만남 승인, 요청취소)
+
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+        dialog.setNegativeButton(getString(type == ChatRoomItem.InfoType.sent ? R.string.dialog_cancel : R.string.dialog_sorry),
+                new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO call reject api (만남 거절, 요청 안 취소)
+            }
+        });
+        dialog.setAutoDismissEnable(true);
+        dialog.show(getActivity().getFragmentManager(), null);
     }
 }

@@ -40,7 +40,11 @@ public class CustomDialog extends Dialog {
         private CharSequence message = null;
         private String posBtnTxt = null;
         private String negBtnTxt = null;
-        private String netBtnTxt = null;
+        private String neuBtnTxt = null;
+        private int titleStyle = 0;
+        private int posBtnResId = 0;
+        private int negBtnResId = 0;
+        private int neuBtnResId = 0;
         private View contentView;
         private View headerView;
         private View footerView;
@@ -49,7 +53,7 @@ public class CustomDialog extends Dialog {
 
         private OnClickListener posBtnClickListener;
         private OnClickListener negBtnClickListener;
-        private OnClickListener netBtnClickListener;
+        private OnClickListener neuBtnClickListener;
         private OnClickListener itemClickListener;
         private OnMultiChoiceClickListener multiListener;
         private OnKeyListener keyListener;
@@ -63,7 +67,7 @@ public class CustomDialog extends Dialog {
         private boolean showListIcon = true;
         private boolean cancelable = true;
         private boolean touchCancelable = false;
-        private boolean autoDissmissEnable = true;
+        private boolean autoDismissEnable = true;
         private int singleChoiceInitCheckItem = -1;
         private int[] multiChoiceInitCheckItems;
         private int dialogLayoutPaddingLeft = -1;
@@ -81,6 +85,11 @@ public class CustomDialog extends Dialog {
 
         public Builder setTitle(CharSequence title) {
             this.title = title;
+            return this;
+        }
+
+        public Builder setTitleStyle(int titleStyle) {
+            this.titleStyle = titleStyle;
             return this;
         }
 
@@ -106,6 +115,13 @@ public class CustomDialog extends Dialog {
             return this;
         }
 
+        public Builder setPositiveButton(String positiveButtonText, int positiveButtonResId, OnClickListener listener) {
+            this.posBtnTxt = positiveButtonText;
+            this.posBtnResId = positiveButtonResId;
+            this.posBtnClickListener = listener;
+            return this;
+        }
+
         public Builder setNegativeButton(int negativeButtonText, OnClickListener listener) {
             this.negBtnTxt = (String) context.getText(negativeButtonText);
             this.negBtnClickListener = listener;
@@ -118,15 +134,29 @@ public class CustomDialog extends Dialog {
             return this;
         }
 
-        public Builder setNeutralButton(int negativeButtonText, OnClickListener listener) {
-            this.netBtnTxt = (String) context.getText(negativeButtonText);
-            this.netBtnClickListener = listener;
+        public Builder setNegativeButton(String negativeButtonText, int negativeButtonResId, OnClickListener listener) {
+            this.negBtnTxt = negativeButtonText;
+            this.negBtnResId = negativeButtonResId;
+            this.negBtnClickListener = listener;
             return this;
         }
 
-        public Builder setNeutralButton(String neturalButtonText, OnClickListener listener) {
-            this.netBtnTxt = neturalButtonText;
-            this.netBtnClickListener = listener;
+        public Builder setNeutralButton(int negativeButtonText, OnClickListener listener) {
+            this.neuBtnTxt = (String) context.getText(negativeButtonText);
+            this.neuBtnClickListener = listener;
+            return this;
+        }
+
+        public Builder setNeutralButton(String neutralButtonText, OnClickListener listener) {
+            this.neuBtnTxt = neutralButtonText;
+            this.neuBtnClickListener = listener;
+            return this;
+        }
+
+        public Builder setNeutralButton(String neutralButtonText, int neutralButtonResId, OnClickListener listener) {
+            this.neuBtnTxt = neutralButtonText;
+            this.neuBtnResId = neutralButtonResId;
+            this.neuBtnClickListener = listener;
             return this;
         }
 
@@ -292,6 +322,8 @@ public class CustomDialog extends Dialog {
             if (titleView != null) {
                 if (!TextUtils.isEmpty(title)) {
                     titleView.setText(title);
+
+                    if(titleStyle != 0) titleView.setTextAppearance(context, titleStyle);
                 } else {
                     View titleLayout = layout.findViewById(R.id.dialogTitleLayout);
                     if (titleLayout != null) {
@@ -302,16 +334,13 @@ public class CustomDialog extends Dialog {
 
             if (verticalButton) {
                 // set the confirm button
-                boolean isPosView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogVerticalPositiveButton), posBtnTxt,
-                        posBtnClickListener,
+                boolean isPosView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogVerticalPositiveButton), posBtnResId, posBtnTxt, posBtnClickListener,
                         DialogInterface.BUTTON_POSITIVE);
                 // set the cancel button
-                boolean isNegView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogVerticalNegativeButton), negBtnTxt,
-                        negBtnClickListener,
+                boolean isNegView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogVerticalNegativeButton), negBtnResId, negBtnTxt, negBtnClickListener,
                         DialogInterface.BUTTON_NEGATIVE);
-                // set the netural button
-                boolean isNetView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogVerticalNeturalButton), netBtnTxt,
-                        netBtnClickListener,
+                // set the neutral button
+                boolean isNetView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogVerticalNeutralButton), neuBtnResId, neuBtnTxt, neuBtnClickListener,
                         DialogInterface.BUTTON_NEUTRAL);
                 if (!isPosView && !isNegView && !isNetView) {
                     layout.findViewById(R.id.dialogVerticalButtonLayout).setVisibility(View.GONE);
@@ -319,13 +348,13 @@ public class CustomDialog extends Dialog {
                 layout.findViewById(R.id.dialogButtonLayout).setVisibility(View.GONE);
             } else {
                 // set the confirm button
-                boolean isPosView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogPositiveButton), posBtnTxt, posBtnClickListener,
+                boolean isPosView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogPositiveButton), posBtnResId, posBtnTxt, posBtnClickListener,
                         DialogInterface.BUTTON_POSITIVE);
                 // set the cancel button
-                boolean isNegView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogNegativeButton), negBtnTxt, negBtnClickListener,
+                boolean isNegView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogNegativeButton), negBtnResId, negBtnTxt, negBtnClickListener,
                         DialogInterface.BUTTON_NEGATIVE);
-                // set the netural button
-                boolean isNetView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogNeturalButton), netBtnTxt, netBtnClickListener,
+                // set the neutral button
+                boolean isNetView = setButtonEvent(dialog, (Button) layout.findViewById(R.id.dialogNeutralButton), neuBtnResId, neuBtnTxt, neuBtnClickListener,
                         DialogInterface.BUTTON_NEUTRAL);
                 if (!isPosView && !isNegView && !isNetView) {
                     layout.findViewById(R.id.dialogButtonLayout).setVisibility(View.GONE);
@@ -355,7 +384,7 @@ public class CustomDialog extends Dialog {
                         dialogListview.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
                     }
 
-                    ArrayList<CharSequence> itemList = new ArrayList<CharSequence>();
+                    ArrayList<CharSequence> itemList = new ArrayList<>();
                     Collections.addAll(itemList, items);
                     choiceAdapter = new CommonDialogChoiceAdapter(context, itemList, showListIcon, singleChoiceInitCheckItem,
                             state == ListState.MULTI);
@@ -368,9 +397,9 @@ public class CustomDialog extends Dialog {
                     dialogListview.setItemChecked(singleChoiceInitCheckItem, true);
                 }
                 if (multiChoiceInitCheckItems != null) {
-                    for (int i = 0; i < multiChoiceInitCheckItems.length; i++) {
-                        dialogListview.setItemChecked(multiChoiceInitCheckItems[i], true);
-                        choiceAdapter.setChoiceItemPosition(multiChoiceInitCheckItems[i]);
+                    for (int item : multiChoiceInitCheckItems) {
+                        dialogListview.setItemChecked(item, true);
+                        choiceAdapter.setChoiceItemPosition(item);
                     }
                 }
 
@@ -400,7 +429,7 @@ public class CustomDialog extends Dialog {
             } else if (contentView != null) {
                 // if no message set add the contentView to the dialog body
                 dialogLayoutView = (ViewGroup) layout.findViewById(R.id.dialogLayout);
-                if (dialogLayoutPaddingLeft != -1 || dialogLayoutPaddingLeft != -1) {
+                if (dialogLayoutPaddingLeft != -1 || dialogLayoutPaddingRight != -1) {
                     dialogLayoutView.setPadding(dialogLayoutPaddingLeft, 0, dialogLayoutPaddingRight, 0);
                 }
 
@@ -420,19 +449,20 @@ public class CustomDialog extends Dialog {
             return dialog;
         }
 
-        private boolean setButtonEvent(final Dialog dialog, Button button, String buttonText, final OnClickListener listener,
+        private boolean setButtonEvent(final Dialog dialog, Button button, int buttonResId, String buttonText, final OnClickListener listener,
                 final int dialogClickInterface) {
             boolean isResult = false;
 
             if (button != null) {
                 if (buttonText != null) {
+                    button.setBackgroundResource(buttonResId);
                     button.setText(buttonText);
                     if (listener != null) {
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 listener.onClick(dialog, dialogClickInterface);
-                                if (autoDissmissEnable) {
+                                if (autoDismissEnable) {
                                     dialog.dismiss();
                                 }
                             }
@@ -448,12 +478,12 @@ public class CustomDialog extends Dialog {
             return isResult;
         }
 
-        public boolean isAutoDissmissEnable() {
-            return autoDissmissEnable;
+        public boolean isAutoDismissEnable() {
+            return autoDismissEnable;
         }
 
-        public void setAutoDissmissEnable(boolean isAutoDissmissEnable) {
-            this.autoDissmissEnable = isAutoDissmissEnable;
+        public void setAutoDismissEnable(boolean isAutoDismissEnable) {
+            this.autoDismissEnable = isAutoDismissEnable;
         }
 
         public boolean isVerticalButton() {

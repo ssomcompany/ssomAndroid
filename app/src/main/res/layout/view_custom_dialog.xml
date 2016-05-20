@@ -22,7 +22,7 @@
 
             <TextView
                 android:id="@+id/dialogTitle"
-                style="@style/ssom_font_20_red_pink_single"
+                style="@style/ssom_font_20_red_pink_bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -82,7 +82,7 @@
                 android:paddingLeft="@dimen/dialog_button_two_padding" />
 
             <Button
-                android:id="@+id/dialogNeturalButton"
+                android:id="@+id/dialogNeutralButton"
                 style="@style/ssom_font_16_pinkish_gray_two_selector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -120,7 +120,7 @@
                 android:gravity="right|center_vertical" />
 
             <Button
-                android:id="@+id/dialogVerticalNeturalButton"
+                android:id="@+id/dialogVerticalNeutralButton"
                 style="@style/ssom_font_16_pinkish_gray_two_selector"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dialog_vertical_button_height"

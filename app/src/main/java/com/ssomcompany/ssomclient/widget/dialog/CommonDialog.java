@@ -37,6 +37,10 @@ public class CommonDialog extends DialogFragment {
 
     private CharSequence title = null;
     private CharSequence message = null;
+    private int titleStyle = 0;
+    private int positiveResId = 0;
+    private int negativeResId = 0;
+    private int neutralResId = 0;
     private String positiveName = null;
     private String negativeName = null;
     private String neutralName = null;
@@ -48,8 +52,8 @@ public class CommonDialog extends DialogFragment {
     // Touch Cancel
     private boolean isTouchCancelable = false;
 
-    // Auto dissmiss Enable
-    private boolean autoDissmissEnable = true;
+    // Auto dismiss Enable
+    private boolean autoDismissEnable = true;
 
     // Listener
     private OnKeyListener keyListener = null;
@@ -112,6 +116,10 @@ public class CommonDialog extends DialogFragment {
         title = BaseApplication.getInstance().getApplicationContext().getResources().getString(id);
     }
 
+    public void setTitleStyle(int titleResId) {
+        titleStyle = titleResId;
+    }
+
     public void setMessage(CharSequence msg) {
         message = msg;
         if (styleNum == DIALOG_STYLE_SPINNER_TITLE) {
@@ -142,9 +150,9 @@ public class CommonDialog extends DialogFragment {
         negativeName = BaseApplication.getInstance().getApplicationContext().getResources().getString(negName);
     }
 
-    public void setNeutralButton(int netName, DialogInterface.OnClickListener listener) {
+    public void setNeutralButton(int neuName, DialogInterface.OnClickListener listener) {
         neutralListener = listener;
-        neutralName = BaseApplication.getInstance().getApplicationContext().getResources().getString(netName);
+        neutralName = BaseApplication.getInstance().getApplicationContext().getResources().getString(neuName);
     }
 
     public void setPositiveButton(String posName, DialogInterface.OnClickListener listener) {
@@ -157,9 +165,27 @@ public class CommonDialog extends DialogFragment {
         negativeName = negName;
     }
 
-    public void setNeutralButton(String netName, DialogInterface.OnClickListener listener) {
+    public void setNeutralButton(String neuName, DialogInterface.OnClickListener listener) {
         neutralListener = listener;
-        neutralName = netName;
+        neutralName = neuName;
+    }
+
+    public void setPositiveButton(int posResId, String posName, DialogInterface.OnClickListener listener) {
+        positiveListener = listener;
+        positiveName = posName;
+        positiveResId = posResId;
+    }
+
+    public void setNegativeButton(int negResId, String negName, DialogInterface.OnClickListener listener) {
+        negativeListener = listener;
+        negativeName = negName;
+        negativeResId = negResId;
+    }
+
+    public void setNeutralButton(int neuResId, String neuName, DialogInterface.OnClickListener listener) {
+        neutralListener = listener;
+        neutralName = neuName;
+        neutralResId = neuResId;
     }
 
     public void setDismissListener(DialogInterface.OnDismissListener dismiss) {
@@ -329,15 +355,15 @@ public class CommonDialog extends DialogFragment {
 
     private void setButtonEvent(CustomDialog.Builder builder) {
         if (positiveListener != null && !TextUtils.isEmpty(positiveName)) {
-            builder.setPositiveButton(positiveName, positiveListener);
+            builder.setPositiveButton(positiveName, positiveResId, positiveListener);
         }
 
         if (negativeListener != null && !TextUtils.isEmpty(negativeName)) {
-            builder.setNegativeButton(negativeName, negativeListener);
+            builder.setNegativeButton(negativeName, negativeResId, negativeListener);
         }
 
         if (neutralListener != null && !TextUtils.isEmpty(neutralName)) {
-            builder.setNeutralButton(neutralName, neutralListener);
+            builder.setNeutralButton(neutralName, neutralResId, neutralListener);
         }
     }
 
@@ -348,7 +374,8 @@ public class CommonDialog extends DialogFragment {
 
     private Dialog createDialog(CustomDialog.Builder builder) {
         builder.setTitle(title);
-        builder.setAutoDissmissEnable(autoDissmissEnable);
+        if(titleStyle != 0) builder.setTitleStyle(titleStyle);
+        builder.setAutoDismissEnable(autoDismissEnable);
         return builder.create();
     }
 
@@ -430,7 +457,7 @@ public class CommonDialog extends DialogFragment {
     public boolean isShowing() {
         boolean result = false;
         if (getDialog() != null && getDialog() instanceof CustomProgressDialog) {
-            result = ((CustomProgressDialog) getDialog()).isShowing();
+            result = getDialog().isShowing();
         }
         return result;
     }
@@ -446,11 +473,11 @@ public class CommonDialog extends DialogFragment {
         return allowStateLoss ? transaction.commitAllowingStateLoss() : transaction.commit();
     }
 
-    public boolean isAutoDissmissEnable() {
-        return autoDissmissEnable;
+    public boolean isAutoDismissEnable() {
+        return autoDismissEnable;
     }
 
-    public void setAutoDissmissEnable(boolean isAutoDissmissEnable) {
-        this.autoDissmissEnable = isAutoDissmissEnable;
+    public void setAutoDismissEnable(boolean isAutoDismissEnable) {
+        this.autoDismissEnable = isAutoDismissEnable;
     }
 }

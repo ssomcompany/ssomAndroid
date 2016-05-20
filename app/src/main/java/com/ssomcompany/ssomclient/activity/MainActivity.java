@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -75,6 +77,8 @@ public class MainActivity extends BaseActivity
     private static final int REQUEST_SSOM_WRITE = 100;
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
+    private static boolean canFinish;
+    private static Toast toast = null;
 
     private ArrayList<SsomItem> ITEM_LIST = new ArrayList<>();
     private HashMap<Marker, String> mIdMap = new HashMap<>();
@@ -180,6 +184,10 @@ public class MainActivity extends BaseActivity
     protected void onResume() {
         super.onResume();
         initFilterView();
+
+        if(locationTracker.chkCanGetLocation()) {
+            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
+        }
     }
 
     private void initFilterView() {
@@ -189,40 +197,10 @@ public class MainActivity extends BaseActivity
         int age = filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 20);
         int people = filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 1);
 
-//        switch(age) {
-//            case 20:
-//                filterAge = getResources().getString(R.string.filter_age_20_early);
-//                break;
-//            case 25:
-//                filterAge = getResources().getString(R.string.filter_age_20_middle);
-//                break;
-//            case 29:
-//                filterAge = getResources().getString(R.string.filter_age_20_late);
-//                break;
-//            case 30:
-//                filterAge = getResources().getString(R.string.filter_age_30_all);
-//                break;
-//        }
         filterAge = Util.convertAgeRangeAtBackOneChar(age);
-
-//        switch(people) {
-//            case 1:
-//                filterPeople = getResources().getString(R.string.filter_people_1);
-//                break;
-//            case 2:
-//                filterPeople = getResources().getString(R.string.filter_people_2);
-//                break;
-//            case 3:
-//                filterPeople = getResources().getString(R.string.filter_people_3);
-//                break;
-//            case 4:
-//                filterPeople = getResources().getString(R.string.filter_people_4_n_over);
-//                break;
-//        }
         filterPeople = Util.convertPeopleRange(people);
         filterTv.setText(String.format(getResources().getString(R.string.filter_age_n_count),
                 filterAge, filterPeople));
-
     }
 
     private void initLayoutWrite(){
@@ -286,7 +264,6 @@ public class MainActivity extends BaseActivity
 
     private void ssomDataChangedListener() {
         if(MAP_VIEW.equals(selectedView)){
-//            initMyLocation(true);
             initMarker();
         } else {
             mTabListener.onTabChangedAction(getCurrentPostItems());
@@ -756,6 +733,27 @@ public class MainActivity extends BaseActivity
     public void onPause() {
         super.onPause();
         locationTracker.stopLocationUpdates();
+    }
+
+
+
+    @Override
+    public void onBackPressed() {
+        if(canFinish) {
+            if(toast != null) toast.cancel();
+            super.onBackPressed();
+        } else {
+            toast = Toast.makeText(this, getString(R.string.app_finish), Toast.LENGTH_SHORT);
+            toast.show();
+            canFinish = true;
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    canFinish = false;
+                }
+            }, 2000);
+        }
     }
 
     public void setOnTabChangedListener(OnTabChangedListener mTabListener) {
