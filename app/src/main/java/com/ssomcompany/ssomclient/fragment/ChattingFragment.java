@@ -147,6 +147,7 @@ public class ChattingFragment extends BaseFragment {
             public void onClick(View v) {
                 if(type == ChatRoomItem.InfoType.success){
                     // TODO 지도 화면으로 이동
+
                 } else {
                     makeCommonDialog(type);
                 }
