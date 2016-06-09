@@ -127,6 +127,10 @@ public class SsomActionBarView extends RelativeLayout {
         if(heartLayout != null) heartLayout.setOnClickListener(listener);
     }
 
+    public void setOnChattingRoomHeartBtnClickListener(View.OnClickListener listener) {
+        if(chattingRoomHeart != null) chattingRoomHeart.setOnClickListener(listener);
+    }
+
     // ssom bar title settings
     /**
      * Call this method if want to set SsomBarTitle's visibility. (Default false)

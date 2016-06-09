@@ -1,16 +1,9 @@
 package com.ssomcompany.ssomclient.fragment;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
-import com.ssomcompany.ssomclient.activity.MainActivity;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
-
-import java.util.ArrayList;
-import java.util.Map;
 
 public abstract class BaseFragment extends Fragment {
     private static final String PROGRESS_DIALOG_TAG = "WAIT";

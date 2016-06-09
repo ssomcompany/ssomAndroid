@@ -1,9 +1,11 @@
 package com.ssomcompany.ssomclient.activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -12,6 +14,7 @@ import com.ssomcompany.ssomclient.fragment.ChatRoomListFragment;
 import com.ssomcompany.ssomclient.fragment.ChattingFragment;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
+import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 
@@ -41,6 +44,7 @@ public class SsomChattingActivity extends BaseActivity implements ChatRoomListFr
         for(int i = 0 ; i < 10 ; i++) {
             item = new ChatRoomItem();
             item.setPostId(String.valueOf(System.currentTimeMillis()));
+            item.setUserId("user_00" + i);
             item.setContent("123123");
             item.setImageUrl("");
             item.setMinAge(25);
@@ -106,6 +110,13 @@ public class SsomChattingActivity extends BaseActivity implements ChatRoomListFr
         // TODO heart count 셋팅 정의
         ssomBar.setChattingRoomHeartOnOff(true);
         ssomBar.setChattingRoomHeartText(String.valueOf(5));
+        ssomBar.setOnChattingRoomHeartBtnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                // TODO 하트가 없는 경우 체크
+                makeCommonDialog();
+            }
+        });
         // TODO MessageManager 해제
         ssomBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomBar.setSsomBarTitleText(getResources().getString(R.string.chat_room_title));
@@ -143,5 +154,30 @@ public class SsomChattingActivity extends BaseActivity implements ChatRoomListFr
             changeSsomBarViewForChatRoomList();
         }
         super.onBackPressed();
+    }
+
+    private void makeCommonDialog() {
+        CommonDialog dialog = CommonDialog.getInstance(CommonDialog.DIALOG_STYLE_ALERT_BUTTON);
+        dialog.setTitle(getString(R.string.dialog_meet_request));
+        dialog.setTitleStyle(R.style.ssom_font_20_grayish_brown_bold);
+        dialog.setMessage(getString(R.string.dialog_meet_request_message));
+        dialog.setPositiveButton(getString(R.string.dialog_meet), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO call accept api (만남 요청)
+                String userId = ((ChattingFragment) getSupportFragmentManager().findFragmentById(R.id.chat_container)).getChatRoomUserId();
+                Toast.makeText(getApplicationContext(), userId + "에게 쏨을 요청함.", Toast.LENGTH_SHORT).show();
+                // TODO userId 로 상대방에게 쏨 요청
+            }
+        });
+        dialog.setNegativeButton(getString(R.string.dialog_cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO call reject api (만남 거절, 요청 안 취소)
+                    }
+                });
+        dialog.setAutoDismissEnable(true);
+        dialog.show(getFragmentManager(), null);
     }
 }

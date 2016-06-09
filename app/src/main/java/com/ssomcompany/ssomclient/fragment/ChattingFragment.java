@@ -28,7 +28,6 @@ public class ChattingFragment extends BaseFragment {
      */
     private ListView chatListView;
     private EditText editMessage;
-    private ImageView btnSend;
 
     /**
      * The information layout and instance
@@ -56,6 +55,10 @@ public class ChattingFragment extends BaseFragment {
 
     public void setChatRoomItem(ChatRoomItem roomItem) {
         this.roomItem = roomItem;
+    }
+
+    public String getChatRoomUserId() {
+        return roomItem.getUserId();
     }
 
     @Override
@@ -92,8 +95,8 @@ public class ChattingFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chatting, container, false);
 
+        ImageView btnSend = (ImageView) view.findViewById(R.id.btn_send);
         editMessage = (EditText) view.findViewById(R.id.edit_message);
-        btnSend = (ImageView) view.findViewById(R.id.btn_send);
         chatListView = (ListView) view.findViewById(R.id.chatting);
         infoLayout = (LinearLayout) view.findViewById(R.id.info_layout);
         infoText = (TextView) view.findViewById(R.id.info_text);
@@ -157,10 +160,10 @@ public class ChattingFragment extends BaseFragment {
 
     private void makeCommonDialog(ChatRoomItem.InfoType type) {
         CommonDialog dialog = CommonDialog.getInstance(CommonDialog.DIALOG_STYLE_ALERT_BUTTON);
-        dialog.setTitle(getString(R.string.dialog_meet_request));
+        dialog.setTitle(getString(type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_cancel : R.string.dialog_meet_request));
         dialog.setTitleStyle(R.style.ssom_font_20_grayish_brown_bold);
-        dialog.setMessage(getString(type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_request_message : R.string.dialog_meet_received_message));
-        dialog.setPositiveButton(getString(R.string.dialog_meet), new DialogInterface.OnClickListener() {
+        dialog.setMessage(getString(type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message));
+        dialog.setPositiveButton(getString(type == ChatRoomItem.InfoType.sent ? R.string.ok_upper : R.string.dialog_meet), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO call accept api (만남 승인, 요청취소)
