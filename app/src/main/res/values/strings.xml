@@ -56,6 +56,7 @@
     <string name="chat_list_title">Chat list (%1$d)</string>
     <string name="chat_room_title">Chat&#160;</string>
     <string name="chat_list_delete">대화 삭제</string>
+    <string name="chat_guide_start">대화 시작!</string>
     <string name="chat_room_info_text_sent">상대방에게 만남을 신청했어요!</string>
     <string name="chat_room_info_text_received">상대방이 만남을 신청했어요!</string>
     <string name="chat_room_info_text_success">쏨과의 만남이 시작되었어요!</string>

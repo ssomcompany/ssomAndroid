@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_chat_guide">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="146dp"
+            android:layout_centerHorizontal="true"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/ssom_font_24_white_bold"
+                android:layout_width="wrap_content"
+                android:layout_height="58dp"
+                android:text="하트를 누르면 \n대화 상대에게"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/ssom_font_24_red_pink_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="만남 요청"/>
+
+                <TextView
+                    style="@style/ssom_font_24_white_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="을 할 수 있쏨!"/>
+            </LinearLayout>
+
+            <TextView
+                style="@style/ssom_font_16_white_bold"
+                android:layout_width="wrap_content"
+                android:layout_height="39dp"
+                android:layout_marginTop="10dp"
+                android:text="만남을 시작하면 딴 사람과 쏨을 탈 수 없고, \n서로의 위치도 확인할 수 있어요!"/>
+
+            <TextView
+                android:id="@+id/btn_chat_start"
+                style="@style/ssom_font_16_white_bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_write_apply_ssoa"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:layout_marginTop="38dp"
+                android:text="@string/chat_guide_start" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="153dp"
+            android:layout_height="64dp"
+            android:src="@drawable/bg_path_guide_heart"
+            android:layout_marginTop="99dp"
+            android:layout_marginRight="27dp"
+            android:layout_alignParentRight="true"/>
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/icon_chat_guide_bow"
+            android:layout_marginTop="81dp"
+            android:layout_marginRight="14.5dp"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+</RelativeLayout>

@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.fragment.ChatRoomListFragment;
 import com.ssomcompany.ssomclient.fragment.ChattingFragment;
@@ -30,11 +31,14 @@ public class SsomChattingActivity extends BaseActivity implements ChatRoomListFr
     private ArrayList<ChatRoomItem> chatRoomList;
     private SsomActionBarView ssomBar;
 
+    private SsomPreferences chatPref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatting);
         fragmentManager = getSupportFragmentManager();
+        chatPref = new SsomPreferences(this, SsomPreferences.CHATTING_PREF);
 
         // TODO call chatting list api
         chatRoomList = new ArrayList<>();
@@ -140,7 +144,7 @@ public class SsomChattingActivity extends BaseActivity implements ChatRoomListFr
         CURRENT_STATE = STATE_CHAT_ROOM;
         changeSsomBarViewForChattingRoom(position);
 
-        ChattingFragment fragment = new ChattingFragment();
+        ChattingFragment fragment = ChattingFragment.newInstance(chatPref.getBoolean(SsomPreferences.PREF_CHATTING_GUIDE_IS_READ, false));
         fragment.setChatRoomItem(chatRoomList.get(position));
         fragmentManager.beginTransaction().replace(R.id.chat_container, fragment, CommonConst.CHATTING_FRAG)
                 .addToBackStack(CommonConst.CHAT_LIST_FRAG).commit();

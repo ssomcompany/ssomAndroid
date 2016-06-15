@@ -5,7 +5,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class SsomPreferences {
-    public static final String FILTER_PREF = "com.ssomcompany.ssomclient.pref";
+    public static final String CHATTING_PREF = "com.ssomcompany.ssomclient.chatting.pref";
+    public static final String FILTER_PREF = "com.ssomcompany.ssomclient.filter.pref";
+
+    // chatting preferences
+    public static final String PREF_CHATTING_GUIDE_IS_READ = "PREF_CHATTING_GUIDE_IS_READ";
 
     // filter preferences
     public static final String PREF_FILTER_AGE = "PREF_FILTER_AGE";
@@ -25,6 +29,13 @@ public class SsomPreferences {
         pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
         editor = pref.edit();
         editor.putString(key, value);
+        editor.apply();
+    }
+
+    public void put(String key, boolean value) {
+        pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
+        editor = pref.edit();
+        editor.putBoolean(key, value);
         editor.apply();
     }
 
@@ -50,6 +61,16 @@ public class SsomPreferences {
 
         try {
             return pref.getInt(key, defValue);
+        } catch(Exception e) {
+            return defValue;
+        }
+    }
+
+    public boolean getBoolean(String key, boolean defValue) {
+        pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
+
+        try {
+            return pref.getBoolean(key, defValue);
         } catch(Exception e) {
             return defValue;
         }

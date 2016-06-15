@@ -76,7 +76,7 @@
 
         <TextView
             android:id="@+id/btn_cancel"
-            style="@style/ssom_font_16_white_bold_single"
+            style="@style/ssom_font_16_white_bold"
             android:layout_width="136dp"
             android:layout_height="46dp"
             android:background="@drawable/btn_write_cancel"
@@ -98,7 +98,7 @@
                 android:src="@drawable/icon_heart_white"/>
 
             <TextView
-                style="@style/ssom_font_16_white_bold_single"
+                style="@style/ssom_font_16_white_bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"

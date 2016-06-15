@@ -192,8 +192,8 @@ public class MainActivity extends BaseActivity
 
     private void initFilterView() {
         TextView filterTv = (TextView) findViewById(R.id.filter_txt_age_n_count);
-        String filterAge = "";
-        String filterPeople = "";
+        String filterAge;
+        String filterPeople;
         int age = filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 20);
         int people = filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 1);
 
@@ -403,7 +403,8 @@ public class MainActivity extends BaseActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+
+//        int id = item.getItemId();
 
         return super.onOptionsItemSelected(item);
     }

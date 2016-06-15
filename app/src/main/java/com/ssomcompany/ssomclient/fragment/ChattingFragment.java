@@ -1,6 +1,7 @@
 package com.ssomcompany.ssomclient.fragment;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
 import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
@@ -22,6 +24,8 @@ import java.util.ArrayList;
 
 public class ChattingFragment extends BaseFragment {
     private static final String TAG = ChattingFragment.class.getSimpleName();
+
+    private static final String IS_READ = "IS_READ";
 
     /**
      * The fragment's ListView/GridView.
@@ -53,6 +57,14 @@ public class ChattingFragment extends BaseFragment {
         super();
     }
 
+    public static ChattingFragment newInstance(boolean isReadGuide) {
+        ChattingFragment chattingFragment = new ChattingFragment();
+        Bundle bundle= new Bundle();
+        bundle.putBoolean(IS_READ, isReadGuide);
+        chattingFragment.setArguments(bundle);
+        return chattingFragment;
+    }
+
     public void setChatRoomItem(ChatRoomItem roomItem) {
         this.roomItem = roomItem;
     }
@@ -64,6 +76,12 @@ public class ChattingFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(getArguments() != null && !getArguments().getBoolean(IS_READ, false)) {
+            Intent intent = new Intent(getActivity(), SsomChattingGuideActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        }
 
         // TODO chatting 내역 조회 후 response 에서 list setting
         if(chatList == null || chatList.isEmpty()) {

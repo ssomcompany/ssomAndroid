@@ -3,7 +3,14 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="android:windowFullscreen">false</item>
+    </style>
 
+    <style name="FullScreenTheme" parent="@android:style/Theme.Holo.NoActionBar.TranslucentDecor">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
 
     <style name="ssom_font_9_pinkish_gray_single">
@@ -199,12 +206,11 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="ssom_font_16_white_bold_single">
+    <style name="ssom_font_16_white_bold">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:typeface">normal</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:singleLine">true</item>
     </style>
 
     <style name="ssom_font_16_grayish_brown_single">
@@ -237,6 +243,20 @@
     <style name="ssom_font_20_grayish_brown_bold">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/grayish_brown</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ssom_font_24_red_pink_bold">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/red_pink</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ssom_font_24_white_bold">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:typeface">normal</item>
         <item name="android:textStyle">bold</item>
     </style>

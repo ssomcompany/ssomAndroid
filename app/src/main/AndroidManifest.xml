@@ -63,6 +63,11 @@
             android:exported="false"
             android:screenOrientation="portrait"/>
 
+        <activity android:name=".activity.SsomChattingGuideActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreenTheme"/>
+
         <receiver
             android:name=".push.PushReceiver"
             android:enabled="true"

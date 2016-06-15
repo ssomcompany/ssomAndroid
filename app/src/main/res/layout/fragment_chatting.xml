@@ -73,7 +73,7 @@
         
         <TextView
             android:id="@+id/info_btn"
-            style="@style/ssom_font_16_white_bold_single"
+            style="@style/ssom_font_16_white_bold"
             android:layout_width="125dp"
             android:layout_height="42.5dp"
             android:layout_marginLeft="11dp"
