@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginRight="14dp"
+        android:layout_marginTop="5dp"
+        android:padding="13dp"
+        android:src="@drawable/icon_close_white"/>
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="315dp"
+            android:layout_height="185dp"
+            android:background="@color/red_pink">
+
+            <TextView
+                style="@style/ssom_font_12_main_black_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="25dp"
+                android:text="@string/login_reg_top_logo" />
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="315dp"
+            android:layout_height="313dp"
+            android:paddingLeft="37.5dp"
+            android:paddingRight="37.5dp"
+            android:paddingTop="23dp"
+            android:background="@color/white">
+
+            <TextView
+                android:id="@+id/tv_login_reg_email"
+                style="@style/ssom_font_9_pinkish_gray_two_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_reg_email"/>
+
+            <TextView
+                android:id="@+id/tv_email_already_exist"
+                style="@style/ssom_font_9_red"
+                android:layout_toRightOf="@id/tv_login_reg_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
+                android:drawableLeft="@drawable/icon_arlet"
+                android:drawablePadding="3dp"
+                android:text="@string/login_email_already_exist"
+                android:visibility="gone"/>
+
+            <EditText
+                android:id="@+id/et_login_reg_email"
+                style="@style/ssom_edit_13_main_black_single"
+                android:layout_width="240dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_edit_underline_selector"
+                android:padding="0dp"
+                android:inputType="textEmailAddress"
+                android:gravity="top"
+                android:layout_below="@id/tv_login_reg_email"
+                android:textColorHint="@color/pinkish_gray_two"
+                android:hint="@string/login_reg_email_hint"/>
+
+            <TextView
+                android:id="@+id/tv_login_reg_password"
+                style="@style/ssom_font_9_pinkish_gray_two_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:layout_below="@id/et_login_reg_email"
+                android:text="@string/login_reg_password"/>
+
+            <EditText
+                android:id="@+id/et_login_reg_password"
+                style="@style/ssom_edit_13_main_black_single"
+                android:layout_width="240dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_edit_underline_selector"
+                android:padding="0dp"
+                android:inputType="textPassword"
+                android:gravity="top"
+                android:layout_below="@id/tv_login_reg_password"
+                android:textColorHint="@color/pinkish_gray_two"
+                android:hint="@string/login_reg_password_hint"/>
+
+            <TextView
+                android:id="@+id/tv_login_reg_pass_confirm"
+                style="@style/ssom_font_9_pinkish_gray_two_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:layout_below="@id/et_login_reg_password"
+                android:text="@string/login_reg_password_confirm"/>
+
+            <TextView
+                android:id="@+id/tv_password_not_match"
+                style="@style/ssom_font_9_red"
+                android:layout_below="@id/et_login_reg_password"
+                android:layout_toRightOf="@id/tv_login_reg_pass_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:layout_marginLeft="7dp"
+                android:drawableLeft="@drawable/icon_arlet"
+                android:drawablePadding="3dp"
+                android:text="@string/login_password_not_match"
+                android:visibility="gone"/>
+
+            <EditText
+                android:id="@+id/et_login_reg_pass_confirm"
+                style="@style/ssom_edit_13_main_black_single"
+                android:layout_width="240dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_edit_underline_selector"
+                android:padding="0dp"
+                android:inputType="textPassword"
+                android:gravity="top"
+                android:layout_below="@id/tv_login_reg_pass_confirm"
+                android:textColorHint="@color/pinkish_gray_two"
+                android:hint="@string/login_reg_password_confirm_hint"/>
+
+            <TextView
+                android:id="@+id/btn_register"
+                style="@style/ssom_font_13_white_bold"
+                android:layout_below="@id/et_login_reg_pass_confirm"
+                android:layout_width="150dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="44dp"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/btn_write_apply_ssoa"
+                android:gravity="center"
+                android:text="@string/login_register"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

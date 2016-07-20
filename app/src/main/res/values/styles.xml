@@ -20,6 +20,12 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="ssom_font_9_red">
+        <item name="android:textSize">9sp</item>
+        <item name="android:textColor">@color/red</item>
+        <item name="android:typeface">normal</item>
+    </style>
+
     <style name="ssom_font_9_white">
         <item name="android:textSize">9sp</item>
         <item name="android:textColor">@color/white</item>
@@ -135,11 +141,34 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="ssom_font_13_pinkish_gray_two_single">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/pinkish_gray_two</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="ssom_edit_13_main_black_single">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/main_black</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:lines">1</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
     <style name="ssom_font_13_999999_single">
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">@color/custom_999999</item>
         <item name="android:typeface">normal</item>
         <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="ssom_font_13_white_bold">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="ssom_font_14_custom_515151_single">

@@ -110,6 +110,16 @@
     <string name="question">문의 하기</string>
 
     <!-- login , logout -->
+    <string name="login_reg_top_logo">쏨을 가입하고 새로운 만남을 시작해보세요 =)</string>
+    <string name="login_reg_email">이메일</string>
+    <string name="login_reg_password">비밀번호</string>
+    <string name="login_reg_password_confirm">비밀번호 확인</string>
+    <string name="login_email_already_exist">이미 사용중인 이메일 주소입니다.</string>
+    <string name="login_password_not_match">입력한 비밀 번호가 다릅니다.</string>
+    <string name="login_reg_email_hint">이메일 주소를 입력 해주세요</string>
+    <string name="login_reg_password_hint">비밀 번호를 입력 해주세요</string>
+    <string name="login_reg_password_confirm_hint">비밀 번호를 다시 한번 입력 해주세요</string>
+    <string name="login_register">가입하기</string>
     <string name="logout">로그아웃</string>
 
     <!-- app 종료 -->
