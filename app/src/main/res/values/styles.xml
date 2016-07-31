@@ -141,6 +141,13 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="ssom_font_13_white_single">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
     <style name="ssom_font_13_pinkish_gray_two_single">
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">@color/pinkish_gray_two</item>

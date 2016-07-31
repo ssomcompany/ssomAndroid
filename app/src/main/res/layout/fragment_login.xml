@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:layout_width="315dp"
+        android:layout_height="185dp"
+        android:background="@drawable/login_top_png">
+
+        <TextView
+            style="@style/ssom_font_13_white_single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="20dp"
+            android:text="@string/login_top_logo" />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="315dp"
+        android:layout_height="313dp"
+        android:paddingLeft="37.5dp"
+        android:paddingRight="37.5dp"
+        android:paddingTop="33dp"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/tv_login_email"
+            style="@style/ssom_font_9_pinkish_gray_two_single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_email"/>
+
+        <EditText
+            android:id="@+id/et_login_email"
+            style="@style/ssom_edit_13_main_black_single"
+            android:layout_width="240dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_edit_underline_selector"
+            android:padding="0dp"
+            android:inputType="textEmailAddress"
+            android:gravity="top"
+            android:layout_below="@id/tv_login_email"
+            android:textColorHint="@color/pinkish_gray_two"
+            android:hint="@string/login_reg_email_hint"/>
+
+        <TextView
+            android:id="@+id/tv_login_password"
+            style="@style/ssom_font_9_pinkish_gray_two_single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:layout_below="@id/et_login_email"
+            android:text="@string/login_password"/>
+
+        <EditText
+            android:id="@+id/et_login_password"
+            style="@style/ssom_edit_13_main_black_single"
+            android:layout_width="240dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_edit_underline_selector"
+            android:padding="0dp"
+            android:inputType="textPassword"
+            android:gravity="top"
+            android:layout_below="@id/tv_login_password"
+            android:textColorHint="@color/pinkish_gray_two"
+            android:hint="@string/login_reg_password_hint"/>
+
+        <TextView
+            android:id="@+id/btn_login"
+            style="@style/ssom_font_13_white_bold"
+            android:layout_below="@id/et_login_password"
+            android:layout_width="150dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/btn_write_apply_ssoa"
+            android:gravity="center"
+            android:text="@string/login"/>
+
+        <TextView
+            android:id="@+id/btn_login_find_password"
+            style="@style/ssom_font_13_white_bold"
+            android:layout_below="@id/btn_login"
+            android:layout_width="150dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="5dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/btn_write_cancel"
+            android:gravity="center"
+            android:text="@string/login_find_password"/>
+
+        <TextView
+            android:id="@+id/btn_login_register"
+            style="@style/ssom_font_13_white_bold"
+            android:layout_below="@id/btn_login_find_password"
+            android:layout_width="150dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="5dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/btn_write_cancel"
+            android:gravity="center"
+            android:text="@string/login_register"/>
+    </RelativeLayout>
+
+</LinearLayout>

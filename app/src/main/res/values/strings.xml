@@ -75,12 +75,14 @@
     <string name="an_unexpected_error_occur">예상하지 못한 에러가 발생했습니다.</string>
     <string name="cannot_upload_over_10m">10Mb 이상의 파일을 업로드 할 수 없습니다.</string>
 
-    <!-- notice message -->
+    <!-- toast message -->
     <string name="notice">공지</string>
     <string name="write_content_max_lines">최대 4줄까지만 입력 가능합니다.</string>
     <string name="cannot_write_with_empty_content">한마디를 작성해 주세요.</string>
     <string name="cannot_write_with_unknown_location">위치정보를 가지고올수 없어 글을 작성할수 없습니다.</string>
     <string name="cannot_write_with_empty_picture">사진을 등록해 주세요.</string>
+    <string name="password_should_be_over_n_letters">비밀번호는 %d자 이상이어야 합니다.</string>
+    <string name="invalid_email_format">사용이 불가능한 이메일 주소입니다. 이메일 주소를 확인해주세요.</string>
 
     <!-- dialog message -->
     <string name="dialog_notice">알림</string>
@@ -111,15 +113,18 @@
 
     <!-- login , logout -->
     <string name="login_reg_top_logo">쏨을 가입하고 새로운 만남을 시작해보세요 =)</string>
-    <string name="login_reg_email">이메일</string>
-    <string name="login_reg_password">비밀번호</string>
     <string name="login_reg_password_confirm">비밀번호 확인</string>
-    <string name="login_email_already_exist">이미 사용중인 이메일 주소입니다.</string>
-    <string name="login_password_not_match">입력한 비밀 번호가 다릅니다.</string>
-    <string name="login_reg_email_hint">이메일 주소를 입력 해주세요</string>
-    <string name="login_reg_password_hint">비밀 번호를 입력 해주세요</string>
-    <string name="login_reg_password_confirm_hint">비밀 번호를 다시 한번 입력 해주세요</string>
+    <string name="login_reg_email_already_exist">이미 사용중인 이메일 주소입니다.</string>
+    <string name="login_reg_password_not_match">입력한 비밀 번호가 다릅니다.</string>
+    <string name="login_reg_email_hint">이메일 주소를 입력 해주세요.</string>
+    <string name="login_reg_password_hint">비밀 번호를 입력 해주세요.</string>
+    <string name="login_reg_password_confirm_hint">비밀 번호를 다시 한번 입력 해주세요.</string>
     <string name="login_register">가입하기</string>
+    <string name="login_email">이메일</string>
+    <string name="login_password">비밀번호</string>
+    <string name="login_find_password">비밀번호 찾기</string>
+    <string name="login_top_logo">쏨 등록을 위해서는 로그인이 필요합니다 =)</string>
+    <string name="login">로그인</string>
     <string name="logout">로그아웃</string>
 
     <!-- app 종료 -->
