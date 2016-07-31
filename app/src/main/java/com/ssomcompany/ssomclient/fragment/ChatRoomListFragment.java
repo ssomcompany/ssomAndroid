@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.adapter.ChatRoomListAdapter;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 import com.ssomcompany.ssomclient.widget.swipelistview.SwipeMenu;
@@ -28,23 +29,13 @@ import java.util.ArrayList;
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnChatItemInteractionListener}
+ * Activities containing this fragment MUST implement the {@link ViewListener.OnChatItemInteractionListener}
  * interface.
  */
 public class ChatRoomListFragment extends BaseFragment {
     private static final String TAG = ChatRoomListFragment.class.getSimpleName();
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnChatItemInteractionListener {
-        void onChatItemClick(int position);
-    }
-
-    private OnChatItemInteractionListener mListener;
+    private ViewListener.OnChatItemInteractionListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -142,7 +133,7 @@ public class ChatRoomListFragment extends BaseFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnChatItemInteractionListener) activity;
+            mListener = (ViewListener.OnChatItemInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnPostItemInteractionListener");

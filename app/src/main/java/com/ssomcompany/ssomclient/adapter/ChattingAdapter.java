@@ -106,12 +106,12 @@ public class ChattingAdapter extends BaseAdapter {
                 holder.chatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
                 holder.chatProfileImage.setImageUrl(roomItem.getImageUrl(), mImageLoader);
                 // profile circle type
-                holder.chatProfileCircle.setImageResource(CommonConst.SSOM.equals(roomItem.getSsom()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red);
+                holder.chatProfileCircle.setImageResource(CommonConst.SSOM.equals(roomItem.getSsomType()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red);
             } else {
                 holder.chatProfileLayout.setVisibility(View.INVISIBLE);
             }
 
-            holder.receiveMessage.setBackgroundResource(CommonConst.SSOM.equals(roomItem.getSsom()) ? R.drawable.bg_receive_message_green : R.drawable.bg_receive_message_red);
+            holder.receiveMessage.setBackgroundResource(CommonConst.SSOM.equals(roomItem.getSsomType()) ? R.drawable.bg_receive_message_green : R.drawable.bg_receive_message_red);
             holder.receiveMessage.setText(item.getMessage());
             if(getItem(position + 1) != null && item.getType() == getItem(position + 1).getType()
                     && Util.getTimeTextForMessage(item.getMessageTime()).equals(Util.getTimeTextForMessage(getItem(position + 1).getMessageTime()))) {

@@ -13,7 +13,7 @@ public class SsomPostCreate {
         private String imageUrl;
         private int minAge;
         private int userCount;
-        private String ssom;
+        private String ssomType;
         private double latitude;
         private double longitude;
 
@@ -75,12 +75,12 @@ public class SsomPostCreate {
             return this;
         }
 
-        public String getSsom() {
-            return ssom;
+        public String getSsomType() {
+            return ssomType;
         }
 
-        public Request setSsom(String ssom) {
-            this.ssom = ssom;
+        public Request setSsomType(String ssomType) {
+            this.ssomType = ssomType;
             return this;
         }
 

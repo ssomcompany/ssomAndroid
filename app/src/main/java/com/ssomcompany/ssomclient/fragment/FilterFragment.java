@@ -13,12 +13,13 @@ import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.FilterType;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
+import com.ssomcompany.ssomclient.control.ViewListener;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FilterFragment.OnFilterFragmentInteractionListener} interface
+ * {@link ViewListener.OnFilterFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link FilterFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -43,7 +44,7 @@ public class FilterFragment extends Fragment {
     private static int age;
     private static int people;
 
-    private OnFilterFragmentInteractionListener mListener;
+    private ViewListener.OnFilterFragmentInteractionListener mListener;
     private static FilterFragment filterFragment;
 
     /**
@@ -171,7 +172,7 @@ public class FilterFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFilterFragmentInteractionListener) activity;
+            mListener = (ViewListener.OnFilterFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFilterFragmentInteractionListener");
@@ -245,19 +246,4 @@ public class FilterFragment extends Fragment {
             }
         }
     };
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFilterFragmentInteractionListener {
-        void onFilterFragmentInteraction(boolean isApply);
-    }
-
 }

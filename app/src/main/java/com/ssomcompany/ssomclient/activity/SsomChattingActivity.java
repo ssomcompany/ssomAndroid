@@ -11,6 +11,7 @@ import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.fragment.ChatRoomListFragment;
 import com.ssomcompany.ssomclient.fragment.ChattingFragment;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
@@ -19,7 +20,7 @@ import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 
-public class SsomChattingActivity extends BaseActivity implements ChatRoomListFragment.OnChatItemInteractionListener {
+public class SsomChattingActivity extends BaseActivity implements ViewListener.OnChatItemInteractionListener {
     private static final String TAG = SsomChattingActivity.class.getSimpleName();
 
     private static final int STATE_CHAT_LIST = 0;
@@ -52,7 +53,7 @@ public class SsomChattingActivity extends BaseActivity implements ChatRoomListFr
             item.setContent("123123");
             item.setImageUrl("");
             item.setMinAge(25);
-            item.setSsom(i%2 == 0 ? CommonConst.SSOM : CommonConst.SSOA);
+            item.setSsomType(i%2 == 0 ? CommonConst.SSOM : CommonConst.SSOA);
             item.setUserCount(3);
             item.setLastMessage("test chatting message " + count);
             item.setLastMessageTime(System.currentTimeMillis());

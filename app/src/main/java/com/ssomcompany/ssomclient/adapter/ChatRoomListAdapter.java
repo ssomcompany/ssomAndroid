@@ -88,7 +88,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
         holder.image.setImageUrl(item.getImageUrl(), mImageLoader);
 
         //icon
-        if(CommonConst.SSOM.equals(item.getSsom())){
+        if(CommonConst.SSOM.equals(item.getSsomType())){
             holder.iconCircle.setImageResource(R.drawable.chat_profile_border_green);
         }else{
             holder.iconCircle.setImageResource(R.drawable.chat_profile_border_red);

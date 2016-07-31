@@ -15,6 +15,7 @@ import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.adapter.SsomItemListAdapter;
 import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
 import java.util.ArrayList;
@@ -25,23 +26,13 @@ import java.util.ArrayList;
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnPostItemInteractionListener}
+ * Activities containing this fragment MUST implement the {@link ViewListener.OnPostItemInteractionListener}
  * interface.
  */
 public class SsomListFragment extends BaseFragment implements AbsListView.OnItemClickListener {
     private static final String TAG = SsomListFragment.class.getSimpleName();
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnPostItemInteractionListener {
-        void onPostItemClick(ArrayList<SsomItem> ssomList, int position);
-    }
-
-    private OnPostItemInteractionListener mListener;
+    private ViewListener.OnPostItemInteractionListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -68,7 +59,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
         this.ssomList = ssomList;
     }
 
-    public void setPostItemClickListener(OnPostItemInteractionListener mListener) {
+    public void setPostItemClickListener(ViewListener.OnPostItemInteractionListener mListener) {
         this.mListener = mListener;
     }
 
@@ -112,7 +103,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnPostItemInteractionListener) activity;
+            mListener = (ViewListener.OnPostItemInteractionListener) activity;
             ((MainActivity) activity).setOnTabChangedListener(mTabListener);
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -153,13 +144,13 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
         mAdapter.notifyDataSetChanged();
     }
 
-    private MainActivity.OnTabChangedListener mTabListener = new MainActivity.OnTabChangedListener() {
+    private ViewListener.OnTabChangedListener mTabListener = new ViewListener.OnTabChangedListener() {
         @Override
         public void onTabChangedAction(ArrayList<SsomItem> ssomList) {
             Log.d(TAG, "onTabChangedAction() called !!");
             setSsomListData(ssomList);
             ssomListNotifyDataSetChanged();
-            mListener = (OnPostItemInteractionListener) getActivity();
+            mListener = (ViewListener.OnPostItemInteractionListener) getActivity();
             ((MainActivity) getActivity()).dismissProgressDialog();
         }
     };

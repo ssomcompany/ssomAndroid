@@ -19,6 +19,7 @@ import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.widget.RoundedNetworkImageView;
@@ -30,7 +31,7 @@ import java.util.Map;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnDetailFragmentInteractionListener} interface
+ * {@link ViewListener.OnDetailFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link DetailFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -42,7 +43,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     private String postId;
 
     private static DetailFragment detailFragment;
-    private OnDetailFragmentInteractionListener mListener;
+    private ViewListener.OnDetailFragmentInteractionListener mListener;
 
     private ArrayList<SsomItem> ssomList;
     private Map<String, SsomItem> ssomMap;
@@ -52,16 +53,6 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     ImageView imgHeart;
     ImageView imgClose;
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnDetailFragmentInteractionListener {
-        void onDetailFragmentInteraction(boolean isApply);
-    }
 
     public DetailFragment() { super(); }
 
@@ -104,7 +95,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         imgHeart = (ImageView) view.findViewById(R.id.img_heart);
         imgClose = (ImageView) view.findViewById(R.id.img_close);
 
-        imgHeart.setImageResource(CommonConst.SSOM.equals(ssomList.get(0).getSsom()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
+        imgHeart.setImageResource(CommonConst.SSOM.equals(ssomList.get(0).getSsomType()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
         imgHeart.setOnClickListener(this);
         imgClose.setOnClickListener(this);
 
@@ -136,7 +127,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnDetailFragmentInteractionListener) activity;
+            mListener = (ViewListener.OnDetailFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnDetailFragmentInteractionListener");
@@ -198,13 +189,13 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             SsomItem item = ssomList.get(position);
             // item setting
             profileImg.setImageUrl(item.getImageUrl(), mImageLoader);
-            centerLine.setBackgroundResource(CommonConst.SSOM.equals(item.getSsom()) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
-            tvCategory.setText(CommonConst.SSOM.equals(item.getSsom()) ? R.string.title_tab_give : R.string.title_tab_take);
+            centerLine.setBackgroundResource(CommonConst.SSOM.equals(item.getSsomType()) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
+            tvCategory.setText(CommonConst.SSOM.equals(item.getSsomType()) ? R.string.title_tab_give : R.string.title_tab_take);
             tvDistance.setText( String.format(getResources().getString(R.string.detail_distance),
                     LocationTracker.getInstance().getDistanceString(item.getLatitude(), item.getLongitude())) );
             tvAgePeople.setText( String.format( getResources().getString(R.string.detail_age_people), Util.convertAgeRange(item.getMinAge()), item.getUserCount()) );
             tvContent.setText(item.getContent());
-            btnApply.setBackgroundResource(CommonConst.SSOM.equals(item.getSsom()) ? R.drawable.btn_write_apply_ssom : R.drawable.btn_write_apply_ssoa);
+            btnApply.setBackgroundResource(CommonConst.SSOM.equals(item.getSsomType()) ? R.drawable.btn_write_apply_ssom : R.drawable.btn_write_apply_ssoa);
 
             // btn setting
             btnCancel.setOnClickListener(this);

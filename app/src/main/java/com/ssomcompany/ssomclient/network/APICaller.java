@@ -26,10 +26,10 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomImageUpload.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void ssomPostCreate(String postId, String userId, String content, String imageUrl, int minAge, int userCount, String ssom,
+    public static <T extends BaseResponse> void ssomPostCreate(String postId, String userId, String content, String imageUrl, int minAge, int userCount, String ssomType,
                                                                double lat, double lon, NetworkManager.NetworkListener<T> listener) {
         SsomPostCreate.Request request = new SsomPostCreate.Request().setPostId(postId).setUserId(userId).setContent(content).setImageUrl(imageUrl)
-                .setMinAge(minAge).setUserCount(userCount).setSsom(ssom).setLatitude(lat).setLongitude(lon);
+                .setMinAge(minAge).setUserCount(userCount).setSsomType(ssomType).setLatitude(lat).setLongitude(lon);
 
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomImageUpload.Response>>() {}.getType(), listener);
     }
