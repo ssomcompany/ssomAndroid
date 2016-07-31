@@ -31,11 +31,15 @@ public class NetworkConstant {
 
     // API start
     public static class API {
-        public static class SSOM {
-            public static final String SSOM_LIST = "/posts";
-            public static final String SSOM_POST = "/posts";
-            public static final String IMAGE_PATH = "/file/images/";
-            public static final String IMAGE_FILE_UPLOAD = "/file/upload";
-        }
+        public static final String SSOM_LIST = "/posts";
+        public static final String SSOM_POST = "/posts";
+        public static final String IMAGE_PATH = "/file/images/";
+        public static final String IMAGE_FILE_UPLOAD = "/file/upload";
+        public static final String SSOM_LOGIN = "/login";
+        public static final String SSOM_REGISTER_USER = "/users";
+        public static final String CHAT_ROOM_LIST = "/chatroom";
+        public static final String CREATE_ROOM = "/chatroom";
+        public static final String SEND_MESSAGE = "/chatroom/$1%d/chats?lastTimestamp=$2%d";
+        public static final String CHAT_LIST = "/chatroom/%d/chats";
     }
 }

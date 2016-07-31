@@ -3,6 +3,8 @@ package com.ssomcompany.ssomclient.fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +18,18 @@ import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
 import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.network.APICaller;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.GetChattingList;
+import com.ssomcompany.ssomclient.network.api.SendChattingMessage;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
+import com.ssomcompany.ssomclient.network.model.BaseResponse;
+import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class ChattingFragment extends BaseFragment {
     private static final String TAG = ChattingFragment.class.getSimpleName();
@@ -83,24 +92,29 @@ public class ChattingFragment extends BaseFragment {
             startActivity(intent);
         }
 
-        // TODO chatting 내역 조회 후 response 에서 list setting
-        if(chatList == null || chatList.isEmpty()) {
-            chatList = new ArrayList<>();
-            ChattingItem initial;
-            for(int i = 0 ; i < 4 ; i++) {
-                initial = new ChattingItem();
-                initial.setPostId(roomItem.getPostId());
-                if(i == 0) {
-                    initial.setType(ChattingItem.MessageType.initial);
-                } else {
-                    initial.setType(ChattingItem.MessageType.receive);
-                    initial.setMessageTime(System.currentTimeMillis());
-                    initial.setMessage("test message " + i);
-                }
-                chatList.add(initial);
-            }
-        }
-        mAdapter = new ChattingAdapter(getActivity(), roomItem, chatList);
+        requestChattingList();
+    }
+
+    private void requestChattingList() {
+        showProgressDialog();
+        APICaller.getChattingList(getToken(), roomItem.getId(),
+                new NetworkManager.NetworkListener<SsomResponse<GetChattingList.Response>>() {
+                    @Override
+                    public void onResponse(SsomResponse<GetChattingList.Response> response) {
+                        if(response.isSuccess()) {
+                            Log.e(TAG, "response : " + response);
+                            if(response.getData() != null) {
+                                chatList = response.getData().getChattingList();
+                            } else {
+                                Log.e(TAG, "unexpected error, data is null");
+                            }
+                        } else {
+                            Log.e(TAG, "Response error with code " + response.getResultCode() +
+                                    ", message : " + response.getMessage(), response.getError());
+                            showErrorMessage();
+                        }
+                    }
+                });
     }
 
     @Override
@@ -125,14 +139,32 @@ public class ChattingFragment extends BaseFragment {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if("".equals(editMessage.getText().toString())) return;
+                if(TextUtils.isEmpty(editMessage.getText())) return;
 
                 mAdapter.add(editMessage.getText().toString());
                 editMessage.setText("");
-                // TODO send message network api call & 메시지 추가
+                APICaller.sendChattingMessage(getToken(), roomItem.getId(), System.currentTimeMillis(),
+                        roomItem.getOwnerId(), editMessage.getText().toString(),
+                        new NetworkManager.NetworkListener<SsomResponse<SendChattingMessage.Response>>() {
+                            @Override
+                            public void onResponse(SsomResponse<SendChattingMessage.Response> response) {
+                                if(response.isSuccess()) {
+                                    Log.e(TAG, "response : " + response);
+                                    if(response.getData() != null) {
+                                    } else {
+                                        Log.e(TAG, "unexpected error, data is null");
+                                    }
+                                } else {
+                                    Log.e(TAG, "Response error with code " + response.getResultCode() +
+                                            ", message : " + response.getMessage(), response.getError());
+                                    showErrorMessage();
+                                }
+                            }
+                        });
             }
         });
 
+        mAdapter = new ChattingAdapter(getActivity(), roomItem, chatList);
         chatListView.setAdapter(mAdapter);
 
         return view;

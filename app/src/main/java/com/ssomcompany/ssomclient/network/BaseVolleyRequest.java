@@ -1,5 +1,6 @@
 package com.ssomcompany.ssomclient.network;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -7,11 +8,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 
+import java.util.Map;
+
 
 public class BaseVolleyRequest extends Request<NetworkResponse> {
 
     private final Response.Listener<NetworkResponse> mListener;
     private final Response.ErrorListener mErrorListener;
+
+    private String token;
 
     public BaseVolleyRequest(String url, Response.Listener<NetworkResponse> listener, Response.ErrorListener errorListener) {
         super(0, url, errorListener);
@@ -19,11 +24,19 @@ public class BaseVolleyRequest extends Request<NetworkResponse> {
         this.mErrorListener = errorListener;
     }
 
-    public BaseVolleyRequest(int method, String url, Response.Listener<NetworkResponse> listener, Response.ErrorListener errorListener) {
+    public BaseVolleyRequest(String token, int method, String url, Response.Listener<NetworkResponse> listener, Response.ErrorListener errorListener) {
         super(method, NetworkUtil.getSsomHostUrl() + url, errorListener);
+        this.token = token;
         this.mListener = listener;
         this.mErrorListener = errorListener;
     }
+
+//    @Override
+//    public Map<String, String> getHeaders() throws AuthFailureError {
+//        Map<String, String> headers = super.getHeaders();
+//        headers.put(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+//        return headers;
+//    }
 
     @Override
     protected Response<NetworkResponse> parseNetworkResponse(NetworkResponse response) {

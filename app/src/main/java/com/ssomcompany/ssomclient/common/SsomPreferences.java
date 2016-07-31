@@ -7,6 +7,11 @@ import android.content.SharedPreferences;
 public class SsomPreferences {
     public static final String CHATTING_PREF = "com.ssomcompany.ssomclient.chatting.pref";
     public static final String FILTER_PREF = "com.ssomcompany.ssomclient.filter.pref";
+    public static final String LOGIN_PREF = "com.ssomcompany.ssomclient.login.pref";
+
+    // session
+    public static final String PREF_SESSION_TOKEN = "PREF_SESSION_TOKEN";
+    public static final String PREF_SESSION_EMAIL = "PREF_SESSION_EMAIL";
 
     // chatting preferences
     public static final String PREF_CHATTING_GUIDE_IS_READ = "PREF_CHATTING_GUIDE_IS_READ";
@@ -14,6 +19,7 @@ public class SsomPreferences {
     // filter preferences
     public static final String PREF_FILTER_AGE = "PREF_FILTER_AGE";
     public static final String PREF_FILTER_PEOPLE = "PREF_FILTER_PEOPLE";
+
 
     private final Context mContext;
     private SharedPreferences pref;

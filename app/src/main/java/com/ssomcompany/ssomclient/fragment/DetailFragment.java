@@ -119,7 +119,11 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     public void onAdapterButtonPressed(boolean apply) {
         if (mListener != null) {
-            mListener.onDetailFragmentInteraction(apply);
+            if(apply) {
+                mListener.onDetailFragmentInteraction(true, postId, ssomList.get(getCurrentPosition(postId)).getUserId());
+            } else {
+                mListener.onDetailFragmentInteraction(false, null, null);
+            }
         }
     }
 

@@ -32,9 +32,27 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Util {
     private static final String TAG = Util.class.getSimpleName();
+
+    // 이메일정규식
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    //비밀번호정규식
+    public static final Pattern VALID_PASSWOLD_REGEX_ALPHA_NUM = Pattern.compile("^[a-zA-Z0-9!@.#$%^&*?_~]{6,16}$"); // 6자리 ~ 16자리까지 가능
+
+    public static boolean validateEmail(String emailStr) {
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
+        return matcher.find();
+    }
+
+    public static boolean validatePassword(String pwStr) {
+        Matcher matcher = VALID_PASSWOLD_REGEX_ALPHA_NUM.matcher(pwStr);
+        return matcher.matches();
+    }
 
     public static RoundImage getCircleBitmap(Bitmap bitmap, int size) {
         float width = bitmap.getWidth();
@@ -222,7 +240,7 @@ public class Util {
     public static ArrayList<SsomItem> convertAllListToSsomList(ArrayList<SsomItem> allList) {
         ArrayList<SsomItem> toList = new ArrayList<>();
         for(SsomItem item : allList) {
-            if(CommonConst.SSOM.equals(item.getSsom())) toList.add(item);
+            if(CommonConst.SSOM.equals(item.getSsomType())) toList.add(item);
         }
 
         return toList;
@@ -236,7 +254,7 @@ public class Util {
     public static ArrayList<SsomItem> convertAllListToSsoaList(ArrayList<SsomItem> allList) {
         ArrayList<SsomItem> toList = new ArrayList<>();
         for(SsomItem item : allList) {
-            if(!CommonConst.SSOM.equals(item.getSsom())) toList.add(item);
+            if(!CommonConst.SSOM.equals(item.getSsomType())) toList.add(item);
         }
 
         return toList;
@@ -250,7 +268,7 @@ public class Util {
     public static Map<String, SsomItem> convertAllMapToSsomMap(Map<String, SsomItem> allMap) {
         Map<String, SsomItem> toMap = new HashMap<>();
         for(Map.Entry<String, SsomItem> item : allMap.entrySet()) {
-            if(CommonConst.SSOM.equals(item.getValue().getSsom())) toMap.put(item.getKey(), item.getValue());
+            if(CommonConst.SSOM.equals(item.getValue().getSsomType())) toMap.put(item.getKey(), item.getValue());
         }
 
         return toMap;
@@ -264,7 +282,7 @@ public class Util {
     public static Map<String, SsomItem> convertAllMapToSsoaMap(Map<String, SsomItem> allMap) {
         Map<String, SsomItem> toMap = new HashMap<>();
         for(Map.Entry<String, SsomItem> item : allMap.entrySet()) {
-            if(!CommonConst.SSOM.equals(item.getValue().getSsom())) toMap.put(item.getKey(), item.getValue());
+            if(!CommonConst.SSOM.equals(item.getValue().getSsomType())) toMap.put(item.getKey(), item.getValue());
         }
 
         return toMap;

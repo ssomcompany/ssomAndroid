@@ -8,12 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.control.ViewListener;
+import com.ssomcompany.ssomclient.network.APICaller;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.SsomLogin;
+import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
 /**
  * Created by AaronMac on 2016. 7. 28..
@@ -58,8 +62,36 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_login :
+                showProgressDialog();
+                APICaller.ssomLogin(String.valueOf(etLoginEmail.getText()), String.valueOf(etLoginPass.getText()),
+                        new NetworkManager.NetworkListener<SsomResponse<SsomLogin.Response>>() {
+                            @Override
+                            public void onResponse(SsomResponse<SsomLogin.Response> response) {
+                                if(response.isSuccess()) {
+                                    if(response.getData() != null) {
+                                        getSession().put(SsomPreferences.PREF_SESSION_TOKEN, response.getData().getToken());
+                                        getSession().put(SsomPreferences.PREF_SESSION_EMAIL, etLoginEmail.getText().toString());
+                                        mListener.onLoginFragmentInteraction(R.id.btn_login);
+                                    } else {
+                                        Log.e(TAG, "unexpected error, data is null");
+                                    }
+                                } else {
+                                    Log.e(TAG, "Response error with code " + response.getStatusCode() +
+                                            ", message : " + response.getMessage(), response.getError());
+
+                                    if(response.getStatusCode() == 401) {
+                                        UiUtils.makeToastMessage(getActivity(),
+                                                getString(R.string.login_failed));
+                                    } else {
+                                        showErrorMessage();
+                                    }
+                                }
+                                dismissProgressDialog();
+                            }
+                        });
+                break;
             case R.id.btn_login_find_password :
-            case R.id.btn_login_register:
+            case R.id.btn_login_register :
                 mListener.onLoginFragmentInteraction(v.getId());
                 break;
             default :

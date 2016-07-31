@@ -9,6 +9,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.ssomcompany.ssomclient.common.SsomPreferences;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BaseApplication extends Application implements ActivityLifecycleCallbacks {

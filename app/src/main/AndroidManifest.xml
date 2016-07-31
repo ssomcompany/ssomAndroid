@@ -68,6 +68,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/FullScreenTheme"/>
 
+        <activity android:name=".activity.SsomLoginBaseActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Translucent"/>
+
         <receiver
             android:name=".push.PushReceiver"
             android:enabled="true"

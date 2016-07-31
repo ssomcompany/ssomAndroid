@@ -19,8 +19,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.ssomcompany.ssomclient.BaseApplication;
+import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.AdvancedHandler;
 import com.ssomcompany.ssomclient.common.LocationTracker;
+import com.ssomcompany.ssomclient.common.SsomPreferences;
+import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.push.MessageManager;
@@ -31,19 +34,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class BaseActivity extends AppCompatActivity {
     protected static final String TAG = BaseActivity.class.getSimpleName();
 
+    private static final String KEY_ACTIVITY_CREATE_TIME = "activity_create_time";
     private static final String PROGRESS_DIALOG_TAG = "WAIT";
     private CommonDialog mProgressDialog = null;
     private static ActivityManager mActivityManager;
-    protected static LocationTracker locationTracker;
 
+    protected static LocationTracker locationTracker;
     private int progressCount = 0;
     private MessageManager messageManager;
     private long activityCreatedTime;
+    private static SsomPreferences session;
+
     private final AtomicBoolean paused = new AtomicBoolean(false);
-
     protected final AdvancedHandler aHandler = new AdvancedHandler();
-
-    private static final String KEY_ACTIVITY_CREATE_TIME = "activity_create_time";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (0 == this.activityCreatedTime) {
             this.activityCreatedTime = System.currentTimeMillis();
+        }
+
+        if(session == null) {
+            session = new SsomPreferences(this, SsomPreferences.LOGIN_PREF);
         }
     }
 
@@ -335,5 +342,17 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public boolean isPaused() {
         return this.paused.get();
+    }
+
+    public void showErrorMessage() {
+        UiUtils.makeToastMessage(this, getString(R.string.error_occurred));
+    }
+
+    public SsomPreferences getSession() {
+        return session;
+    }
+
+    public String getToken() {
+        return session.getString(SsomPreferences.PREF_SESSION_TOKEN, "");
     }
 }

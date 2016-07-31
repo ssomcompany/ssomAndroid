@@ -77,12 +77,16 @@
 
     <!-- toast message -->
     <string name="notice">공지</string>
+    <string name="error_occurred">실패하였습니다. 다시 시도해주세요.</string>
     <string name="write_content_max_lines">최대 4줄까지만 입력 가능합니다.</string>
     <string name="cannot_write_with_empty_content">한마디를 작성해 주세요.</string>
     <string name="cannot_write_with_unknown_location">위치정보를 가지고올수 없어 글을 작성할수 없습니다.</string>
     <string name="cannot_write_with_empty_picture">사진을 등록해 주세요.</string>
     <string name="password_should_be_over_n_letters">비밀번호는 %d자 이상이어야 합니다.</string>
-    <string name="invalid_email_format">사용이 불가능한 이메일 주소입니다. 이메일 주소를 확인해주세요.</string>
+    <string name="invalid_password_format">비밀번호에 사용이 불가능한 문자가 포함되어 있습니다.</string>
+    <string name="invalid_email_format">사용이 불가능한 이메일 주소입니다.</string>
+    <string name="login_failed">로그인에 실패하였습니다. 아이디 혹은 비밀번호를 확인해주세요.</string>
+    <string name="success_registration">회원가입을 완료했습니다.</string>
 
     <!-- dialog message -->
     <string name="dialog_notice">알림</string>
@@ -90,9 +94,11 @@
     <string name="dialog_meet_cancel">만남취소</string>
     <string name="dialog_meet">만나요</string>
     <string name="dialog_sorry">미안해요</string>
+    <string name="dialog_okay">확인</string>
     <string name="dialog_close">닫기</string>
     <string name="dialog_cancel">취소</string>
     <string name="dialog_delete">삭제하기</string>
+    <string name="dialog_require_login">로그인이 필요한 서비스입니다.\n로그인 하시겠어요?</string>
     <string name="dialog_write_delete_message">쏨 등록이 완료되지 않았어요.\n작성했던 내용을 삭제 하시겠어요?</string>
     <string name="dialog_meet_request_message">현재 대화상대에게\n만남을 요청 하시겠어요?</string>
     <string name="dialog_meet_request_cancel_message">요청 취소 시에도 하트는 복구되지\n않습니다. 요청을 취소 하시겠어요?</string>

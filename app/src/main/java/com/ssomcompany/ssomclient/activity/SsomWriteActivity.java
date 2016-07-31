@@ -248,14 +248,14 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         // set crop properties
         cropIntent.putExtra("crop", "true");
         // indicate aspect of desired crop
-        cropIntent.putExtra("aspectX", 390);
-        cropIntent.putExtra("aspectY", 320);
+        cropIntent.putExtra("aspectX", 480);
+        cropIntent.putExtra("aspectY", 360);
         // indicate output X and Y
-        cropIntent.putExtra("outputX", 780);
-        cropIntent.putExtra("outputY", 640);
+        cropIntent.putExtra("outputX", 480);
+        cropIntent.putExtra("outputY", 360);
 
         // if thumbnail needed below
-//        cropIntent.putExtra("scale", true);
+        cropIntent.putExtra("scale", true);
 //        cropIntent.putExtra("scaleUpIfNeeded", true);
 //        cropIntent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
 //        cropIntent.putExtra("return-data", false);
@@ -275,11 +275,12 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                     break;
                 case REQUEST_IMAGE_CROP:
                     Bundle extras = data.getExtras();
-                    if (extras != null) {
+                    Log.d(TAG, "crop finished : " + extras);
+//                    if (extras != null) {
                         imgProfile.setImageURI(mContentUri);
                         imgEmpty.setVisibility(View.INVISIBLE);
                         imgShadow.setVisibility(View.INVISIBLE);
-                    }
+//                    }
                     break;
                 default:
                     break;
@@ -500,7 +501,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         final int maxBufferSize = 1024 * 1024;
 
         showProgressDialog();
-        BaseVolleyRequest baseVolleyRequest = new BaseVolleyRequest(Request.Method.POST, NetworkConstant.API.SSOM.IMAGE_FILE_UPLOAD, new Response.Listener<NetworkResponse>() {
+        BaseVolleyRequest baseVolleyRequest = new BaseVolleyRequest(getToken(), Request.Method.POST,
+                NetworkConstant.API.IMAGE_FILE_UPLOAD, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
                 String jsonData = new String(response.data);
@@ -570,8 +572,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     private void createPost(String fileId) {
         Log.d(TAG, "createPost()");
 
-        APICaller.ssomPostCreate("" + System.currentTimeMillis(), UniqueIdGenUtil.getId(getApplicationContext()), Util.getEncodedString(editWriteContent.getText().toString()),
-                NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.SSOM.IMAGE_PATH).concat(fileId), age.getValue(), people.getValue(),
+        APICaller.ssomPostCreate(getToken(), "" + System.currentTimeMillis(), UniqueIdGenUtil.getId(getApplicationContext()), Util.getEncodedString(editWriteContent.getText().toString()),
+                NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId), age.getValue(), people.getValue(),
                 tvSsomBalloon.isSelected() ? CommonConst.SSOM : CommonConst.SSOA, myLocation.getLatitude(), myLocation.getLongitude(),
                 new NetworkManager.NetworkListener<SsomResponse<SsomPostCreate.Response>>() {
                     @Override

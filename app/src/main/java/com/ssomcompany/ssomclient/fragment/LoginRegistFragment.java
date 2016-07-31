@@ -14,7 +14,13 @@ import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.UiUtils;
+import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
+import com.ssomcompany.ssomclient.network.APICaller;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.GetSsomList;
+import com.ssomcompany.ssomclient.network.api.SsomRegisterUser;
+import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
 /**
  * Created by AaronMac on 2016. 7. 27..
@@ -22,8 +28,6 @@ import com.ssomcompany.ssomclient.control.ViewListener;
 public class LoginRegistFragment extends BaseFragment implements View.OnClickListener {
     private static final String TAG = LoginFragment.class.getSimpleName();
 
-    // should set email length
-    static final int MIN_EMAIL_LENGTH = 10;
     // should set password length
     static final int MIN_PASSWORD_LENGTH = 6;
 
@@ -89,7 +93,11 @@ public class LoginRegistFragment extends BaseFragment implements View.OnClickLis
             return false;
         }
 
-        // TODO - 이상한 문자 입력 시 반환
+        // password 형식 체크
+        if(!Util.validatePassword(password)) {
+            UiUtils.makeToastMessage(getActivity(), getString(R.string.invalid_password_format));
+            return false;
+        }
 
         return true;
     }
@@ -97,8 +105,10 @@ public class LoginRegistFragment extends BaseFragment implements View.OnClickLis
     private boolean checkPossibleEmail() {
         String email = String.valueOf(etLoginRegEmail.getText());
 
-        if(email.length() < MIN_EMAIL_LENGTH || !email.contains(".") || !email.contains("@"))
+        if(!Util.validateEmail(email)) {
             UiUtils.makeToastMessage(getActivity(), getString(R.string.invalid_email_format));
+            return false;
+        }
 
         return true;
     }
@@ -111,7 +121,24 @@ public class LoginRegistFragment extends BaseFragment implements View.OnClickLis
                 if(checkEmptyBox() || !checkPossibleEmail()
                         || !checkPossiblePassword() || !checkPasswordMatched()) return;
 
-                mListener.onLoginFragmentInteraction(v.getId());
+                showProgressDialog();
+                APICaller.ssomRegisterUser(String.valueOf(etLoginRegEmail.getText()), String.valueOf(etLoginRegPass.getText()),
+                        new NetworkManager.NetworkListener<SsomResponse<SsomRegisterUser.Response>>() {
+                            @Override
+                            public void onResponse(SsomResponse<SsomRegisterUser.Response> response) {
+                                if(response.isSuccess()) {
+                                    UiUtils.makeToastMessage(getActivity(),
+                                            getString(R.string.success_registration));
+                                    mListener.onLoginFragmentInteraction(R.id.btn_register);
+                                } else {
+                                    Log.e(TAG, "Response error with code " + response.getResultCode() +
+                                            ", message : " + response.getMessage(), response.getError());
+                                    showErrorMessage();
+                                }
+                                dismissProgressDialog();
+                            }
+
+                        });
                 break;
             default :
                 Log.d(TAG, "default, do nothing..");

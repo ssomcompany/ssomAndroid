@@ -13,7 +13,7 @@ public class SsomImageUpload {
         private byte[] bitmapData;
 
         public Request() {
-            super(API.SSOM.IMAGE_FILE_UPLOAD);
+            super(API.IMAGE_FILE_UPLOAD);
         }
 
         public Request setBitmapData(byte[] bitmapData) {

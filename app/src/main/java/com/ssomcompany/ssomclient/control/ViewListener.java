@@ -16,7 +16,13 @@ public class ViewListener {
     }
 
     public interface OnDetailFragmentInteractionListener {
-        void onDetailFragmentInteraction(boolean isApply);
+        /**
+         *
+         * @param isApply set true if positive button clicked, else false
+         * @param postId if isApply is false, ignored this parameter
+         * @param userId if isApply is false, ignored this parameter
+         */
+        void onDetailFragmentInteraction(boolean isApply, String postId, String userId);
     }
 
     public interface OnPostItemInteractionListener {
@@ -36,6 +42,6 @@ public class ViewListener {
     }
 
     public interface OnLoginFragmentInteractionListener {
-        void onLoginFragmentInteraction(int redId);
+        void onLoginFragmentInteraction(int resId);
     }
 }

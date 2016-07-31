@@ -16,6 +16,8 @@ public class CommonConst {
     public static final String SSOM_LIST_FRAG = "ssom_list_fragment";
     public static final String CHAT_LIST_FRAG = "chat_list_fragment";
     public static final String CHATTING_FRAG = "chatting_fragment";
+    public static final String LOGIN_FRAGMENT = "login_fragment";
+    public static final String LOGIN_REGIST_FRAGMENT = "login_regist_fragment";
 
     // ssom string
     public static final String SSOM = "ssom";
@@ -23,4 +25,9 @@ public class CommonConst {
 
     // image file size
     public static final int LIMIT_IMAGE_SIZE = 1024 * 1024 * 10;
+
+    public class Intent {
+        public static final String POST_ID = "post_id";
+        public static final String USER_ID = "user_id";
+    }
 }

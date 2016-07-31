@@ -202,6 +202,7 @@ public class GsonRequest<T extends BaseResponse> extends Request<T> {
                 Log.i("GsonRequest", "raw data : " + json);
 
                 if(json.startsWith("[")) json = "{\"data\":{\"list\":" + json + "}}";
+                else if(json.startsWith("{")) json = "{\"data\":" + json + "}";
 
                 Log.i("GsonRequest", "raw data : " + json);
                 obj = gson.fromJson(json, type);

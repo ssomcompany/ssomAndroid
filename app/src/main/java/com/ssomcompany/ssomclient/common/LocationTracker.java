@@ -24,10 +24,10 @@ public class LocationTracker {
     private LocationListener networkLocationListener;
 
     // 위치 정보 업데이트 거리 (미터)
-    private static final long MIN_DISTANCE_UPDATES = 3;
+    private static final long MIN_DISTANCE_UPDATES = 100;
 
     // 위치 정보 업데이트 시간 (1/1000)
-    private static final long MIN_TIME_UPDATES = 1000;
+    private static final long MIN_TIME_UPDATES = 30000;
 
     private LocationTracker() {
         super();

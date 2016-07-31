@@ -18,7 +18,7 @@ public class SsomPostCreate {
         private double longitude;
 
         public Request() {
-            super(NetworkConstant.API.SSOM.SSOM_POST);
+            super(NetworkConstant.API.SSOM_POST);
         }
 
         public String getPostId() {

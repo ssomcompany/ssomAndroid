@@ -3,6 +3,8 @@ package com.ssomcompany.ssomclient.fragment;
 import android.content.DialogInterface;
 import android.support.v4.app.Fragment;
 
+import com.ssomcompany.ssomclient.activity.BaseActivity;
+import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 public abstract class BaseFragment extends Fragment {
@@ -89,5 +91,26 @@ public abstract class BaseFragment extends Fragment {
     public void setProgressDialogKeyListener(DialogInterface.OnKeyListener listener) {
         makeProgressDialog();
         mProgressDialog.setKeyListener(listener);
+    }
+
+    /**
+     * Error message
+     */
+    public void showErrorMessage() {
+        ((BaseActivity) getActivity()).showErrorMessage();
+    }
+
+    /**
+     * Get Session preference
+     */
+    public SsomPreferences getSession() {
+        return ((BaseActivity) getActivity()).getSession();
+    }
+
+    /**
+     * Get Session Token
+     */
+    public String getToken() {
+        return ((BaseActivity) getActivity()).getToken();
     }
 }

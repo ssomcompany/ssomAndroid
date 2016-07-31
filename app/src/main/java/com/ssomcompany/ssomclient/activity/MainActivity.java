@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -45,6 +47,7 @@ import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.RoundImage;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.fragment.DetailFragment;
 import com.ssomcompany.ssomclient.fragment.FilterFragment;
 import com.ssomcompany.ssomclient.fragment.NavigationDrawerFragment;
@@ -57,33 +60,33 @@ import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.PushManageService;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
+import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class MainActivity extends BaseActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
-        SsomListFragment.OnPostItemInteractionListener, DetailFragment.OnDetailFragmentInteractionListener,
-        OnMapReadyCallback, FilterFragment.OnFilterFragmentInteractionListener, MessageCountCheck {
+        implements ViewListener.NavigationDrawerCallbacks,
+        ViewListener.OnPostItemInteractionListener, ViewListener.OnDetailFragmentInteractionListener,
+        OnMapReadyCallback, ViewListener.OnFilterFragmentInteractionListener, MessageCountCheck {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    public interface OnTabChangedListener {
-        void onTabChangedAction(ArrayList<SsomItem> ssomList);
-    }
-
-    private OnTabChangedListener mTabListener;
-
     private static final int REQUEST_SSOM_WRITE = 100;
+    private static final int REQUEST_SSOM_LOGIN = 200;
+
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
     private static boolean canFinish;
     private static Toast toast = null;
 
+    private ViewListener.OnTabChangedListener mTabListener;
     private ArrayList<SsomItem> ITEM_LIST = new ArrayList<>();
     private HashMap<Marker, String> mIdMap = new HashMap<>();
 
     private SsomActionBarView ssomActionBar;
+    private DrawerLayout drawer;
 
     /**
      * The fragment's Tabs
@@ -133,28 +136,33 @@ public class MainActivity extends BaseActivity
             locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
         }
 
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
 
-        //set up the toolbar
-        initToolbar();
-        initLayoutWrite();
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        //set up the toolbar
+        initToolbar();
+        initLayoutWrite();
+
+        Log.i(TAG, "drawer open state : " + drawer.isDrawerOpen(Gravity.LEFT));
+        if(drawer.isDrawerOpen(Gravity.LEFT)) drawer.closeDrawers();
 
         startMapFragment();
         startService(new Intent(this, PushManageService.class));
     }
 
     private void requestSsomList() {
-        showProgressDialog();
-
         APICaller.getSsomList(new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
 
             @Override
             public void onResponse(SsomResponse<GetSsomList.Response> response) {
+                Log.i(TAG, "response : " + response.isSuccess());
                 if (response.isSuccess()) {
                     GetSsomList.Response data = response.getData();
                     if (data != null && data.getSsomList() != null && data.getSsomList().size() > 0) {
@@ -248,6 +256,11 @@ public class MainActivity extends BaseActivity
         btn_write.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
+                    requestLogin();
+                    return;
+                }
+
                 Intent i = new Intent();
                 i.setClass(context, SsomWriteActivity.class);
                 startActivityForResult(i, REQUEST_SSOM_WRITE);
@@ -283,10 +296,6 @@ public class MainActivity extends BaseActivity
         Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(tb);
         fragmentManager = getSupportFragmentManager();
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        Log.i(TAG, "drawer open state : " + drawer.isDrawerOpen(Gravity.LEFT));
-        if(drawer.isDrawerOpen(Gravity.LEFT)) drawer.closeDrawers();
 
         ssomActionBar = (SsomActionBarView) tb.findViewById(R.id.ssom_action_bar);
         // TODO set message count by calling getMessageCount api
@@ -308,6 +317,11 @@ public class MainActivity extends BaseActivity
         ssomActionBar.setOnChattingBtnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
+                    requestLogin();
+                    return;
+                }
+
                 Intent intent = new Intent(MainActivity.this, SsomChattingActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(intent);
@@ -596,11 +610,9 @@ public class MainActivity extends BaseActivity
             public void onResponse(Bitmap bitmap) {
                 marker = mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                        .title(item.getContent()).draggable(false).icon(getMarkerImage(item.getSsom(), bitmap)));
+                        .title(item.getContent()).draggable(false).icon(getMarkerImage(item.getSsomType(), bitmap)));
 
                 mIdMap.put(marker, item.getPostId());
-
-                if(isLastItem) dismissProgressDialog();
             }
         }
         , 144  // max width
@@ -646,6 +658,40 @@ public class MainActivity extends BaseActivity
         return BitmapDescriptorFactory.fromBitmap(mergedBitmap);
     }
 
+    private void startLoginActivity() {
+        startActivityForResult(new Intent(this, SsomLoginBaseActivity.class), REQUEST_SSOM_LOGIN);
+    }
+
+    private void startChattingActivity(String postId, String userId, boolean ssomRequest) {
+        Intent chattingIntent = new Intent(this, SsomChattingActivity.class);
+        chattingIntent.putExtra(CommonConst.Intent.POST_ID, postId);
+        chattingIntent.putExtra(CommonConst.Intent.USER_ID, userId);
+        startActivity(chattingIntent);
+    }
+
+    private void requestLogin() {
+        CommonDialog dialog = CommonDialog.getInstance(CommonDialog.DIALOG_STYLE_ALERT_BUTTON);
+        dialog.setTitle(getString(R.string.dialog_notice));
+        dialog.setTitleStyle(R.style.ssom_font_20_grayish_brown_bold);
+        dialog.setMessage(getString(R.string.dialog_require_login));
+        dialog.setPositiveButton(getString(R.string.dialog_okay), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.i(TAG, "Move to LoginActivity");
+                startLoginActivity();
+            }
+        });
+        dialog.setNegativeButton(getString(R.string.dialog_close),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                });
+        dialog.setAutoDismissEnable(true);
+        dialog.show(getFragmentManager(), null);
+    }
+
 //    @Override
 //    public void onMyLocationChange(Location location) {
 //        if(isFirstTimeChangeLocation && LocationUtil.getMyLocation(this)==null){
@@ -667,15 +713,21 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    public void onDetailFragmentInteraction(boolean isApply) {
+    public void onDetailFragmentInteraction(boolean isApply, String postId, String userId) {
         Log.i(TAG, "detail interaction : " + isApply);
+
+        if(isApply) {
+            // login check
+            if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
+                requestLogin();
+                return;
+            }
+
+            startChattingActivity(postId, userId, true);
+        }
+
         fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
         fragmentManager.popBackStack();
-
-        // TODO - if true, go to chatting activity
-        if(isApply) {
-
-        }
     }
 
     @Override
@@ -684,6 +736,9 @@ public class MainActivity extends BaseActivity
             switch (requestCode) {
                 case REQUEST_SSOM_WRITE :
                     requestSsomList();
+                    break;
+                case REQUEST_SSOM_LOGIN :
+                    // TODO drawer login user 영역 변경
                     break;
                 default:
                     break;
@@ -740,6 +795,12 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onBackPressed() {
+        if(fragmentManager.findFragmentById(R.id.top_container) != null ||
+                fragmentManager.findFragmentById(R.id.whole_container) != null) {
+            super.onBackPressed();
+            return;
+        }
+
         if(canFinish) {
             if(toast != null) toast.cancel();
             super.onBackPressed();
@@ -757,7 +818,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    public void setOnTabChangedListener(OnTabChangedListener mTabListener) {
+    public void setOnTabChangedListener(ViewListener.OnTabChangedListener mTabListener) {
         this.mTabListener = mTabListener;
     }
 }
