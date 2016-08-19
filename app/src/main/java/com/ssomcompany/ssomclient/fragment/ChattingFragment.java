@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -54,7 +55,7 @@ public class ChattingFragment extends BaseFragment {
      * Views.
      */
     private ChattingAdapter mAdapter;
-    private ArrayList<ChattingItem> chatList;
+    private ArrayList<ChattingItem> chatList = new ArrayList<>();
 
     private ChatRoomItem roomItem;
 
@@ -78,6 +79,10 @@ public class ChattingFragment extends BaseFragment {
         this.roomItem = roomItem;
     }
 
+    public void setChattingList(ArrayList<ChattingItem> chattingList) {
+        this.chatList = chattingList;
+    }
+
     public String getChatRoomUserId() {
         return roomItem.getUserId();
     }
@@ -92,29 +97,8 @@ public class ChattingFragment extends BaseFragment {
             startActivity(intent);
         }
 
-        requestChattingList();
-    }
-
-    private void requestChattingList() {
-        showProgressDialog();
-        APICaller.getChattingList(getToken(), roomItem.getId(),
-                new NetworkManager.NetworkListener<SsomResponse<GetChattingList.Response>>() {
-                    @Override
-                    public void onResponse(SsomResponse<GetChattingList.Response> response) {
-                        if(response.isSuccess()) {
-                            Log.e(TAG, "response : " + response);
-                            if(response.getData() != null) {
-                                chatList = response.getData().getChattingList();
-                            } else {
-                                Log.e(TAG, "unexpected error, data is null");
-                            }
-                        } else {
-                            Log.e(TAG, "Response error with code " + response.getResultCode() +
-                                    ", message : " + response.getMessage(), response.getError());
-                            showErrorMessage();
-                        }
-                    }
-                });
+        mAdapter = new ChattingAdapter(getActivity(), roomItem);
+        mAdapter.setItemList(chatList);
     }
 
     @Override
@@ -164,7 +148,6 @@ public class ChattingFragment extends BaseFragment {
             }
         });
 
-        mAdapter = new ChattingAdapter(getActivity(), roomItem, chatList);
         chatListView.setAdapter(mAdapter);
 
         return view;

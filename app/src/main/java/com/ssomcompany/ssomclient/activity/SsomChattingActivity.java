@@ -18,8 +18,10 @@ import com.ssomcompany.ssomclient.fragment.ChattingFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
+import com.ssomcompany.ssomclient.network.api.GetChattingList;
 import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
+import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
@@ -36,6 +38,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
 
     private FragmentManager fragmentManager;
     private ArrayList<ChatRoomItem> chatRoomList;
+    private ArrayList<ChattingItem> chattingList;
     private SsomActionBarView ssomBar;
 
     private SsomPreferences chatPref;
@@ -49,7 +52,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         ssomBar = (SsomActionBarView) findViewById(R.id.ssom_action_bar);
         initIntentData();
         initSsomBarView();
-        requestChattingList();
+        requestChattingRoomList();
     }
 
     private void initIntentData() {
@@ -140,7 +143,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
 //        fragmentManager.executePendingTransactions();
     }
 
-    private void requestChattingList() {
+    private void requestChattingRoomList() {
         showProgressDialog();
         APICaller.getChattingRoomList(getToken(), new NetworkManager.NetworkListener<SsomResponse<GetChattingRoomList.Response>>() {
             @Override
@@ -152,33 +155,47 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                     } else {
                         Log.e(TAG, "unexpected error, data is null");
                     }
-                    dismissProgressDialog();
                 } else {
-                    dismissProgressDialog();
-
-                    if(response.getStatusCode() == 404) {
-                        // chat room 없는 사람
-                        //TODO show empty list
-                        return;
-                    }
-
                     showErrorMessage();
-                    finish();
                 }
+                dismissProgressDialog();
             }
         });
     }
 
     @Override
-    public void onChatItemClick(int position) {
-        CURRENT_STATE = STATE_CHAT_ROOM;
-        changeSsomBarViewForChattingRoom(position);
-        startChattingFragment(chatRoomList.get(position));
+    public void onChatItemClick(final int position) {
+        showProgressDialog();
+        APICaller.getChattingList(getToken(), chatRoomList.get(position).getId(),
+                new NetworkManager.NetworkListener<SsomResponse<GetChattingList.Response>>() {
+                    @Override
+                    public void onResponse(SsomResponse<GetChattingList.Response> response) {
+                        if(response.isSuccess()) {
+                            Log.e(TAG, "response : " + response);
+                            if(response.getData() != null) {
+                                CURRENT_STATE = STATE_CHAT_ROOM;
+                                changeSsomBarViewForChattingRoom(position);
+
+                                chattingList = response.getData().getChattingList();
+                                chattingList.add(0, new ChattingItem().setType(ChattingItem.MessageType.initial));
+                                startChattingFragment(chatRoomList.get(position));
+                            } else {
+                                Log.e(TAG, "unexpected error, data is null");
+                            }
+                        } else {
+                            Log.e(TAG, "Response error with code " + response.getResultCode() +
+                                    ", message : " + response.getMessage(), response.getError());
+                            showErrorMessage();
+                        }
+                        dismissProgressDialog();
+                    }
+                });
     }
 
     private void startChattingFragment(ChatRoomItem chatRoomItem) {
         ChattingFragment fragment = ChattingFragment.newInstance(chatPref.getBoolean(SsomPreferences.PREF_CHATTING_GUIDE_IS_READ, false));
         fragment.setChatRoomItem(chatRoomItem);
+        fragment.setChattingList(chattingList);
         fragmentManager.beginTransaction().replace(R.id.chat_container, fragment, CommonConst.CHATTING_FRAG)
                 .addToBackStack(CommonConst.CHAT_LIST_FRAG).commit();
     }

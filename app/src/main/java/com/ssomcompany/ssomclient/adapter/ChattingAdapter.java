@@ -33,13 +33,16 @@ public class ChattingAdapter extends BaseAdapter {
     private ArrayList<ChattingItem> itemList;
     private ChatRoomItem roomItem;
 
-    public ChattingAdapter(Context context, ChatRoomItem roomItem, ArrayList<ChattingItem> itemList){
+    public ChattingAdapter(Context context, ChatRoomItem roomItem){
         this.context = context;
         this.mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
         this.mImageLoader = NetworkManager.getInstance().getImageLoader();
         this.roomItem = roomItem;
+    }
+
+    public void setItemList(ArrayList<ChattingItem> itemList) {
         this.itemList = itemList;
     }
 
