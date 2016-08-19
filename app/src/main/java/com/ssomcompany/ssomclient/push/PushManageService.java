@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.ssomcompany.ssomclient.BaseApplication;
-import com.ssomcompany.ssomclient.R;
 
 import java.io.IOException;
 

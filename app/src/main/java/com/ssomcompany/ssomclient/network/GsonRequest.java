@@ -199,7 +199,6 @@ public class GsonRequest<T extends BaseResponse> extends Request<T> {
             } else {
                 json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
                 Log.i("GsonRequest", "raw header : " + response.headers);
-                Log.i("GsonRequest", "raw data : " + json);
 
                 if(json.startsWith("[")) json = "{\"data\":{\"list\":" + json + "}}";
                 else if(json.startsWith("{")) json = "{\"data\":" + json + "}";

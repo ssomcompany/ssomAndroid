@@ -39,7 +39,9 @@ public class NetworkConstant {
         public static final String SSOM_REGISTER_USER = "/users";
         public static final String CHAT_ROOM_LIST = "/chatroom";
         public static final String CREATE_ROOM = "/chatroom";
-        public static final String SEND_MESSAGE = "/chatroom/$1%d/chats?lastTimestamp=$2%d";
+        // $1 : roomId, $2 : currentTimeStamp
+        public static final String SEND_MESSAGE = "/chatroom/%d/chats?lastTimestamp=%d";
+        // $1 : roomId
         public static final String CHAT_LIST = "/chatroom/%d/chats";
     }
 }
