@@ -41,7 +41,8 @@ public class ChattingItem {
         return type;
     }
 
-    public void setType(MessageType type) {
+    public ChattingItem setType(MessageType type) {
         this.type = type;
+        return this;
     }
 }
