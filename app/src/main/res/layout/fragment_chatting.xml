@@ -20,9 +20,10 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginLeft="23dp"
+            android:inputType="text"
             android:lines="4"
             android:maxLines="4"
-            android:hint="메시지를 입력하세요..."
+            android:hint="@string/chat_message_hint"
             android:textColorHint="@color/pinkish_gray_two"
             android:background="@null"/>
 
