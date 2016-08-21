@@ -17,108 +17,95 @@
         android:layout_height="wrap_content"
         android:paddingLeft="15dp"
         android:paddingRight="18dp"
-        android:paddingBottom="34dp"
+        android:paddingTop="11dp"
+        android:paddingBottom="17dp"
         android:orientation="vertical" >
 
         <RelativeLayout
+            android:id="@+id/login_email_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp" >
-
-            <ImageView
-                android:id="@+id/icon_people"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/icon_people"/>
+            android:paddingTop="17dp"
+            android:paddingBottom="17dp"
+            android:visibility="gone">
 
             <TextView
-                android:layout_toRightOf="@id/icon_people"
+                android:id="@+id/tv_login_email"
                 style="@style/ssom_font_14_custom_515151_single"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="11.5dp"
+                android:drawablePadding="11.5dp"
+                android:drawableLeft="@drawable/icon_people"
                 android:ellipsize="end"
                 android:text="test@angrymomo.com"/>
 
             <TextView
+                android:id="@+id/tv_confirm_email"
                 style="@style/ssom_font_12_pinkish_gray_two_single"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
+                android:layout_alignBaseline="@id/tv_login_email"
                 android:layout_alignParentRight="true"
-                android:text="@string/logout"/>
+                android:text="@string/login_email_confirm"/>
         </RelativeLayout>
 
         <TextView
+            style="@style/ssom_font_13_pinkish_gray_two_single"
+            android:id="@+id/tv_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="11.5dp"
+            android:drawableLeft="@drawable/icon_people"
+            android:paddingTop="17dp"
+            android:paddingBottom="17dp"
+            android:text="@string/login_needed"/>
+
+        <TextView
+            android:id="@+id/tv_noti_setting"
             style="@style/ssom_font_16_custom_555555"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="34dp"
-            android:layout_centerVertical="true"
+            android:paddingTop="17dp"
+            android:paddingBottom="17dp"
             android:drawablePadding="11.5dp"
             android:drawableLeft="@drawable/icon_noti"
             android:text="@string/noti_setting"/>
 
         <TextView
+            android:id="@+id/tv_make_heart"
             style="@style/ssom_font_16_red_pink"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="34dp"
-            android:layout_centerVertical="true"
+            android:paddingTop="17dp"
+            android:paddingBottom="17dp"
             android:drawablePadding="11.5dp"
             android:drawableLeft="@drawable/icon_drawer_heart"
             android:text="@string/make_heart"/>
     </LinearLayout>
 
-    <View
+    <ListView
+        android:id="@+id/lv_drawer_menu"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/custom_e5e5e5"/>
+        android:layout_height="151dp"
+        android:divider="@color/custom_e5e5e5"
+        android:dividerHeight="1dp"
+        android:listSelector="@android:color/transparent"
+        android:headerDividersEnabled="true"
+        android:footerDividersEnabled="true"
+        android:scrollbars="none"
+        android:requiresFadingEdge="none"
+        tools:listitem="@layout/view_drawer_menu"/>
 
     <TextView
-        style="@style/ssom_font_13_999999_single"
-        android:layout_width="match_parent"
-        android:layout_height="49dp"
-        android:paddingLeft="17dp"
-        android:gravity="center_vertical"
-        android:drawablePadding="14dp"
-        android:drawableLeft="@drawable/icon_lock"
-        android:text="@string/private_information"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/custom_e5e5e5"/>
-
-    <TextView
-        style="@style/ssom_font_13_999999_single"
-        android:layout_width="match_parent"
-        android:layout_height="49dp"
-        android:paddingLeft="15.5dp"
-        android:gravity="center_vertical"
-        android:drawablePadding="13dp"
-        android:drawableLeft="@drawable/icon_book"
-        android:text="@string/use_policy"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/custom_e5e5e5"/>
-
-    <TextView
-        style="@style/ssom_font_13_999999_single"
-        android:layout_width="match_parent"
-        android:layout_height="49dp"
-        android:paddingLeft="13dp"
-        android:gravity="center_vertical"
-        android:drawablePadding="10dp"
-        android:drawableLeft="@drawable/icon_mail"
-        android:text="@string/question"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/custom_e5e5e5"/>
+        android:id="@+id/tv_logout"
+        style="@style/ssom_font_12_pinkish_gray_two_single"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:drawablePadding="5dp"
+        android:drawableLeft="@drawable/icon_logout"
+        android:padding="6dp"
+        android:text="@string/logout"/>
 
 </LinearLayout>

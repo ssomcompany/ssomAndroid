@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -24,6 +25,8 @@ public class SsomLoginBaseActivity extends BaseActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        // X button click event
+        findViewById(R.id.btn_cancel).setOnClickListener(this);
 
         fragmentManager = getSupportFragmentManager();
         LoginFragment loginFragment = new LoginFragment();

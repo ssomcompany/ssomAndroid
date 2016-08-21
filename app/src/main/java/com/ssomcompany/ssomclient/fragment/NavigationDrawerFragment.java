@@ -5,12 +5,13 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,11 +20,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.adapter.DrawerMenuAdapter;
+import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.control.ViewListener;
 
 /**
@@ -56,12 +60,23 @@ public class NavigationDrawerFragment extends Fragment {
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerListView;
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 0;
+//    private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
+
+    // session 으로 email 영역 컨트롤
+    private SsomPreferences session;
+
+    /**
+     * Left menu list 구성
+     */
+    private ListView mDrawerListView;
+    private TextView tvLogin;
+    private TextView tvLogout;
+    private RelativeLayout loginEmailLayout;
+    private TextView tvLoginEmail;
 
     public NavigationDrawerFragment() {
     }
@@ -76,12 +91,14 @@ public class NavigationDrawerFragment extends Fragment {
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         if (savedInstanceState != null) {
-            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+//            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
         }
 
+        session = BaseApplication.getInstance().getSession();
+
         // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+//        selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -94,28 +111,56 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        mDrawerListView = (ListView) inflater.inflate(
-//                R.layout.fragment_navigation_drawer, container, false);
-//        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                selectItem(position);
-//            }
-//        });
-//        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-//                getActivity(),
-//                android.R.layout.simple_list_item_activated_1,
-//                android.R.id.text1,
-//                new String[]{
-//                        getString(R.string.title_section1),
-//                        getString(R.string.title_section2),
-//                        getString(R.string.title_section3),
-//                }));
-//        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-//        return mDrawerListView;
+
         View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+        tvLogin = (TextView) view.findViewById(R.id.tv_login);
+        tvLogout = (TextView) view.findViewById(R.id.tv_logout);
+        loginEmailLayout = (RelativeLayout) view.findViewById(R.id.login_email_layout);
+        tvLoginEmail = (TextView) view.findViewById(R.id.tv_login_email);
+        TextView tvConfirmEmail = (TextView) view.findViewById(R.id.tv_confirm_email);
+        TextView tvNotiSetting = (TextView) view.findViewById(R.id.tv_noti_setting);
+        TextView tvMakeHeart = (TextView) view.findViewById(R.id.tv_make_heart);
+
+        tvLogin.setOnClickListener(menuItemClickListener);
+        tvLogout.setOnClickListener(menuItemClickListener);
+        tvConfirmEmail.setOnClickListener(menuItemClickListener);
+        tvNotiSetting.setOnClickListener(menuItemClickListener);
+        tvMakeHeart.setOnClickListener(menuItemClickListener);
+
+        // email 영역 셋팅
+        setLoginEmailLayout();
+
+        mDrawerListView = (ListView) view.findViewById(R.id.lv_drawer_menu);
+        // dummy view for header divider
+        mDrawerListView.addHeaderView(new View(getActivity()));
+        mDrawerListView.setAdapter(new DrawerMenuAdapter(getActivity()));
+        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItem(position);
+            }
+        });
+//        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
         return view;
+    }
+
+    /**
+     * login 여부 체크 후 email 영역 셋팅
+     */
+    public void setLoginEmailLayout() {
+        // user logged in
+        if(session != null && !TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_TOKEN, ""))
+                && !TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_EMAIL, ""))) {
+            tvLogin.setVisibility(View.GONE);
+            loginEmailLayout.setVisibility(View.VISIBLE);
+            tvLoginEmail.setText(session.getString(SsomPreferences.PREF_SESSION_EMAIL, ""));
+            tvLogout.setVisibility(View.VISIBLE);
+        } else { // otherwise
+            tvLogin.setVisibility(View.VISIBLE);
+            loginEmailLayout.setVisibility(View.GONE);
+            tvLogout.setVisibility(View.GONE);
+        }
     }
 
     public boolean isDrawerOpen() {
@@ -140,7 +185,6 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(),                    /* host Activity */
                 mDrawerLayout,                    /* DrawerLayout object */
-                R.drawable.ic_drawer,             /* nav drawer image to replace 'Up' caret */
                 R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
                 R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
         ) {
@@ -192,10 +236,10 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
-        }
+//        mCurrentSelectedPosition = position;
+//        if (mDrawerListView != null) {
+//            mDrawerListView.setItemChecked(position, true);
+//        }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
@@ -203,6 +247,13 @@ public class NavigationDrawerFragment extends Fragment {
             mCallbacks.onNavigationDrawerItemSelected(position);
         }
     }
+
+    private View.OnClickListener menuItemClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            selectItem(v.getId());
+        }
+    };
 
     @Override
     public void onAttach(Activity activity) {
@@ -223,7 +274,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+//        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
     }
 
     @Override

@@ -1,9 +1,12 @@
 package com.ssomcompany.ssomclient.common;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.ssomcompany.ssomclient.BaseApplication;
@@ -31,6 +34,15 @@ public class LocationTracker {
 
     private LocationTracker() {
         super();
+
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(BaseApplication.getInstance(),
+                        android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(BaseApplication.getInstance(),
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
         if(locationManager == null) {
             locationManager = (LocationManager) BaseApplication.getInstance().getSystemService(Context.LOCATION_SERVICE);
         }

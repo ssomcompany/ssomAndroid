@@ -3,6 +3,7 @@ package com.ssomcompany.ssomclient.fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,10 +59,24 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
         return loginView;
     }
 
+    // email, password, password confirm must not be empty
+    private boolean checkEmptyBox() {
+        if(TextUtils.isEmpty(etLoginEmail.getText())) {
+            UiUtils.makeToastMessage(getActivity(), getString(R.string.login_reg_email_hint));
+            return true;
+        } else if(TextUtils.isEmpty(etLoginPass.getText())) {
+            UiUtils.makeToastMessage(getActivity(), getString(R.string.login_reg_password_hint));
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_login :
+                if(checkEmptyBox()) return;
+
                 showProgressDialog();
                 APICaller.ssomLogin(String.valueOf(etLoginEmail.getText()), String.valueOf(etLoginPass.getText()),
                         new NetworkManager.NetworkListener<SsomResponse<SsomLogin.Response>>() {

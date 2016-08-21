@@ -22,16 +22,21 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
     private static BaseApplication mInstance;
 
     private static AtomicInteger activityCount = null;
-
     private Activity mCurrentActivity;
 
     private Configuration mOldConfig;
+
+    private static SsomPreferences session;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mInstance = this;
         Log.d(TAG, TAG + " Created!!");
+
+        if(session == null) {
+            session = new SsomPreferences(this, SsomPreferences.LOGIN_PREF);
+        }
 
         mOldConfig = new Configuration(getResources().getConfiguration());
 
@@ -134,5 +139,9 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
      */
     public void masterReset() {
         Log.v(TAG, "master reset called");
+    }
+
+    public SsomPreferences getSession() {
+        return session;
     }
 }

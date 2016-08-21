@@ -1,9 +1,11 @@
 package com.ssomcompany.ssomclient.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -15,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -150,8 +153,8 @@ public class MainActivity extends BaseActivity
         initToolbar();
         initLayoutWrite();
 
-        Log.i(TAG, "drawer open state : " + drawer.isDrawerOpen(Gravity.LEFT));
-        if(drawer.isDrawerOpen(Gravity.LEFT)) drawer.closeDrawers();
+//        Log.i(TAG, "drawer open state : " + drawer.isDrawerOpen(Gravity.LEFT));
+//        if(drawer.isDrawerOpen(Gravity.LEFT)) drawer.closeDrawers();
 
         startMapFragment();
         startService(new Intent(this, PushManageService.class));
@@ -392,8 +395,27 @@ public class MainActivity extends BaseActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        switch (position) {
+            case R.id.tv_login:
+                startLoginActivity();
+                break;
+            case R.id.tv_confirm_email:
+                break;
+            case R.id.tv_noti_setting:
+                break;
+            case R.id.tv_make_heart:
+                break;
+            /**
+             *  list menu item click event
+             *  0 : 개인정보 , 1 : 이용약관 , 2 : 문의하기
+             */
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+        }
     }
 
     public void onSectionAttached(int number) {
@@ -440,6 +462,7 @@ public class MainActivity extends BaseActivity
         // Marshmallow
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 //                == PackageManager.PERMISSION_GRANTED) {
+//            return;
 //        } else {
 //            // Show rationale and request permission.
 //        }
@@ -738,7 +761,7 @@ public class MainActivity extends BaseActivity
                     requestSsomList();
                     break;
                 case REQUEST_SSOM_LOGIN :
-                    // TODO drawer login user 영역 변경
+                    mNavigationDrawerFragment.setLoginEmailLayout();
                     break;
                 default:
                     break;

@@ -15,10 +15,7 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
@@ -27,11 +24,9 @@ import com.google.gson.reflect.TypeToken;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
 
 import org.apache.http.protocol.HTTP;
-import org.json.JSONArray;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Map;
 
 public class GsonRequest<T extends BaseResponse> extends Request<T> {

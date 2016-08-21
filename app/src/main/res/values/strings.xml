@@ -128,11 +128,13 @@
     <string name="login_reg_password_confirm_hint">비밀 번호를 다시 한번 입력 해주세요.</string>
     <string name="login_register">가입하기</string>
     <string name="login_email">이메일</string>
+    <string name="login_email_confirm"><u>이메일 인증</u></string>
     <string name="login_password">비밀번호</string>
     <string name="login_find_password">비밀번호 찾기</string>
     <string name="login_top_logo">쏨 등록을 위해서는 로그인이 필요합니다 =)</string>
     <string name="login">로그인</string>
-    <string name="logout">로그아웃</string>
+    <string name="login_needed"><u>로그인하러 가기</u></string>
+    <string name="logout"><u>로그아웃</u></string>
 
     <!-- app 종료 -->
     <string name="app_finish">정말 종료하실 거에요? (T.T)</string>

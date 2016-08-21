@@ -43,7 +43,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     private int progressCount = 0;
     private MessageManager messageManager;
     private long activityCreatedTime;
-    private static SsomPreferences session;
 
     private final AtomicBoolean paused = new AtomicBoolean(false);
     protected final AdvancedHandler aHandler = new AdvancedHandler();
@@ -62,10 +61,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (0 == this.activityCreatedTime) {
             this.activityCreatedTime = System.currentTimeMillis();
-        }
-
-        if(session == null) {
-            session = new SsomPreferences(this, SsomPreferences.LOGIN_PREF);
         }
     }
 
@@ -349,10 +344,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public SsomPreferences getSession() {
-        return session;
+        return BaseApplication.getInstance().getSession();
     }
 
     public String getToken() {
-        return "JWT " + session.getString(SsomPreferences.PREF_SESSION_TOKEN, "");
+        return "JWT " + getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, "");
     }
 }
