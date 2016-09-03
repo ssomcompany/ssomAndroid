@@ -1,5 +1,6 @@
 package com.ssomcompany.ssomclient.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,6 +31,7 @@ import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.FilterType;
+import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.UniqueIdGenUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
@@ -39,6 +41,7 @@ import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.NetworkUtil;
 import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -357,7 +360,19 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         if(v == btnBack || v == btnCancel) {
-            finish();
+            if(!TextUtils.isEmpty(editWriteContent.getText())) {
+                UiUtils.makeCommonDialog(SsomWriteActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
+                        R.string.dialog_notice, 0, R.string.dialog_write_delete_message,
+                        R.string.dialog_delete, R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        }, null);
+            } else {
+                finish();
+            }
         } else if(v == imgCamera) {
             moveToCamera();
         } else if(v == tvSsomBalloon) {
@@ -386,7 +401,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
             if(imgEmpty.getVisibility() == View.VISIBLE) {
                 showToastMessageShort(R.string.cannot_write_with_empty_picture);
                 return;
-            } else if("".equals(editWriteContent.getText().toString())) {
+            } else if(TextUtils.isEmpty(editWriteContent.getText())) {
                 showToastMessageShort(R.string.cannot_write_with_empty_content);
                 return;
             }

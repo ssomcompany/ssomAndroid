@@ -84,8 +84,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
                             public void onResponse(SsomResponse<SsomLogin.Response> response) {
                                 if(response.isSuccess()) {
                                     if(response.getData() != null) {
-                                        getSession().put(SsomPreferences.PREF_SESSION_TOKEN, response.getData().getToken());
-                                        getSession().put(SsomPreferences.PREF_SESSION_EMAIL, etLoginEmail.getText().toString());
+                                        setSessionInfo(response.getData().getToken(), String.valueOf(etLoginEmail.getText()));
                                         mListener.onLoginFragmentInteraction(R.id.btn_login);
                                     } else {
                                         Log.e(TAG, "unexpected error, data is null");

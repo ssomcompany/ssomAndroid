@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
+import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.fragment.ChatRoomListFragment;
@@ -122,7 +123,23 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             @Override
             public void onClick(View v) {
                 // TODO 하트가 없는 경우 체크
-                makeCommonDialog();
+                UiUtils.makeCommonDialog(SsomChattingActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
+                        R.string.dialog_meet_request, R.style.ssom_font_20_grayish_brown_bold,
+                        R.string.dialog_meet_request_message, R.string.dialog_meet, R.string.dialog_cancel,
+                        new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO call accept api (만남 요청)
+                        String userId = ((ChattingFragment) getSupportFragmentManager().findFragmentById(R.id.chat_container)).getChatRoomUserId();
+                        Toast.makeText(getApplicationContext(), userId + "에게 쏨을 요청함.", Toast.LENGTH_SHORT).show();
+                        // TODO userId 로 상대방에게 쏨 요청
+                    }
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO call reject api (만남 거절, 요청 안 취소)
+                    }
+                });
             }
         });
         // TODO MessageManager 해제
@@ -207,30 +224,5 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             changeSsomBarViewForChatRoomList();
         }
         super.onBackPressed();
-    }
-
-    private void makeCommonDialog() {
-        CommonDialog dialog = CommonDialog.getInstance(CommonDialog.DIALOG_STYLE_ALERT_BUTTON);
-        dialog.setTitle(getString(R.string.dialog_meet_request));
-        dialog.setTitleStyle(R.style.ssom_font_20_grayish_brown_bold);
-        dialog.setMessage(getString(R.string.dialog_meet_request_message));
-        dialog.setPositiveButton(getString(R.string.dialog_meet), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // TODO call accept api (만남 요청)
-                String userId = ((ChattingFragment) getSupportFragmentManager().findFragmentById(R.id.chat_container)).getChatRoomUserId();
-                Toast.makeText(getApplicationContext(), userId + "에게 쏨을 요청함.", Toast.LENGTH_SHORT).show();
-                // TODO userId 로 상대방에게 쏨 요청
-            }
-        });
-        dialog.setNegativeButton(getString(R.string.dialog_cancel),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO call reject api (만남 거절, 요청 안 취소)
-                    }
-                });
-        dialog.setAutoDismissEnable(true);
-        dialog.show(getFragmentManager(), null);
     }
 }

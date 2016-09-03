@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
 import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
+import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
@@ -185,33 +186,27 @@ public class ChattingFragment extends BaseFragment {
                     // TODO 지도 화면으로 이동
 
                 } else {
-                    makeCommonDialog(type);
+                    UiUtils.makeCommonDialog(getActivity(), CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
+                            type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_cancel : R.string.dialog_meet_request,
+                            R.style.ssom_font_20_grayish_brown_bold,
+                            type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message,
+                            type == ChatRoomItem.InfoType.sent ? R.string.ok_upper : R.string.dialog_meet,
+                            type == ChatRoomItem.InfoType.sent ? R.string.dialog_cancel : R.string.dialog_sorry,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // TODO call accept api (만남 승인, 요청취소)
+
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            }, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // TODO call reject api (만남 거절, 요청 안 취소)
+                                }
+                            });
                 }
             }
         });
-    }
-
-    private void makeCommonDialog(ChatRoomItem.InfoType type) {
-        CommonDialog dialog = CommonDialog.getInstance(CommonDialog.DIALOG_STYLE_ALERT_BUTTON);
-        dialog.setTitle(getString(type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_cancel : R.string.dialog_meet_request));
-        dialog.setTitleStyle(R.style.ssom_font_20_grayish_brown_bold);
-        dialog.setMessage(getString(type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message));
-        dialog.setPositiveButton(getString(type == ChatRoomItem.InfoType.sent ? R.string.ok_upper : R.string.dialog_meet), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // TODO call accept api (만남 승인, 요청취소)
-
-                mAdapter.notifyDataSetChanged();
-            }
-        });
-        dialog.setNegativeButton(getString(type == ChatRoomItem.InfoType.sent ? R.string.dialog_cancel : R.string.dialog_sorry),
-                new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // TODO call reject api (만남 거절, 요청 안 취소)
-            }
-        });
-        dialog.setAutoDismissEnable(true);
-        dialog.show(getActivity().getFragmentManager(), null);
     }
 }

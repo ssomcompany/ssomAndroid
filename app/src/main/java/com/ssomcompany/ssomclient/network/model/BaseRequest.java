@@ -55,7 +55,7 @@ public abstract class BaseRequest {
      */
     public String putHeader(String key, String value) {
         if (null == header) {
-            header = new HashMap<String, String>();
+            header = new HashMap<>();
         }
         return header.put(key, value);
     }

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.adapter.ChatRoomListAdapter;
+import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
@@ -104,10 +105,20 @@ public class ChatRoomListFragment extends BaseFragment {
         // opened menu click listener
         mListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
-            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+            public boolean onMenuItemClick(final int position, SwipeMenu menu, int index) {
                 if (index == 0) {
                     // delete chatting list item
-                    makeCommonDialog(position);
+                    UiUtils.makeCommonDialog(getActivity(), CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
+                            R.string.dialog_notice, 0, R.string.dialog_chat_list_delete_message,
+                            R.string.dialog_finish, R.string.dialog_cancel,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // TODO delete chatting api call
+                                    chatRoomList.remove(position);
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            }, null);
                 }
                 return false;
             }
@@ -157,34 +168,5 @@ public class ChatRoomListFragment extends BaseFragment {
         if (emptyView instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
         }
-    }
-
-    private void makeCommonDialog(final int position) {
-        CommonDialog dialog;
-        if (getResources() == null) {
-            Log.e(TAG, "getResources() is null!!!!");
-            return;
-        }
-
-        dialog = CommonDialog.getInstance(CommonDialog.DIALOG_STYLE_ALERT_BUTTON);
-        dialog.setTitle(getResources().getString(R.string.dialog_notice));
-        dialog.setMessage(getResources().getString(R.string.dialog_chat_list_delete_message));
-        dialog.setPositiveButton(getResources().getString(R.string.dialog_delete), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // TODO delete chatting api call
-
-                chatRoomList.remove(position);
-                mAdapter.notifyDataSetChanged();
-            }
-        });
-        dialog.setNegativeButton(getResources().getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // do nothing
-            }
-        });
-        dialog.setAutoDismissEnable(true);
-        dialog.show(getActivity().getFragmentManager(), null);
     }
 }

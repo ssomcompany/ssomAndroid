@@ -350,4 +350,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     public String getToken() {
         return "JWT " + getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, "");
     }
+
+    public void setSessionInfo(String token, String email) {
+        getSession().put(SsomPreferences.PREF_SESSION_TOKEN, token);
+        getSession().put(SsomPreferences.PREF_SESSION_EMAIL, email);
+    }
 }

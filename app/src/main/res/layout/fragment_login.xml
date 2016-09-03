@@ -7,7 +7,7 @@
     <FrameLayout
         android:layout_width="315dp"
         android:layout_height="185dp"
-        android:background="@drawable/login_top_png">
+        android:background="@drawable/login_top">
 
         <TextView
             style="@style/ssom_font_13_white_single"

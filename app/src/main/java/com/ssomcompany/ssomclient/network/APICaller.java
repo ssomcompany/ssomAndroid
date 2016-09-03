@@ -1,6 +1,7 @@
 package com.ssomcompany.ssomclient.network;
 
 import android.util.Base64;
+import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
@@ -15,6 +16,8 @@ import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
 import com.ssomcompany.ssomclient.network.api.SsomRegisterUser;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
+
+import java.util.Locale;
 
 public class APICaller {
     private static final int TIME_OUT_LONG = 60000;
@@ -43,8 +46,9 @@ public class APICaller {
 
     public static <T extends BaseResponse> void ssomLogin(String email, String password, NetworkManager.NetworkListener<T> listener) {
         SsomLogin.Request request = new SsomLogin.Request();
+        Log.d("login log", "login id : " + email + ", pass : " + password);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION,
-                "Basic " + Base64.encodeToString((email + ":" + password).getBytes(), Base64.NO_WRAP));
+                "Basic " + Base64.encodeToString((String.format(Locale.getDefault(),"%s:%s", email, password)).getBytes(), Base64.DEFAULT));
 
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomLogin.Response>>() {}.getType(), listener);
     }

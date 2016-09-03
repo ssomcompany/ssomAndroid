@@ -113,4 +113,11 @@ public abstract class BaseFragment extends Fragment {
     public String getToken() {
         return ((BaseActivity) getActivity()).getToken();
     }
+
+    /**
+     * Set Session info
+     */
+    public void setSessionInfo(String token, String email) {
+        ((BaseActivity) getActivity()).setSessionInfo(token, email);
+    }
 }

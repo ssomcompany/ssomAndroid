@@ -49,6 +49,7 @@ import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.RoundImage;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
+import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.fragment.DetailFragment;
@@ -404,6 +405,17 @@ public class MainActivity extends BaseActivity
             case R.id.tv_noti_setting:
                 break;
             case R.id.tv_make_heart:
+                break;
+            case R.id.tv_logout:
+                UiUtils.makeCommonDialog(MainActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
+                        R.string.dialog_logout_message, R.string.dialog_okay, R.string.dialog_cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                setSessionInfo("", "");
+                                mNavigationDrawerFragment.setLoginEmailLayout();
+                            }
+                        }, null);
                 break;
             /**
              *  list menu item click event

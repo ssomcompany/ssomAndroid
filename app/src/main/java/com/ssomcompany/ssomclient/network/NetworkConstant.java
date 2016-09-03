@@ -6,7 +6,7 @@ public class NetworkConstant {
 
     public static final String HTTP_SCHME = "http://";
     public static final String HTTPS_SCHME = "https://";
-    public static final String HOST = "54.64.154.188";
+    public static final String HOST = "52.78.137.209:3000";
 
     public static class HeaderParam {
         public static final String CACHE_CONTROL = "Cache-Control";
