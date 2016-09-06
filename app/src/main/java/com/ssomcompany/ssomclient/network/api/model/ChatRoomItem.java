@@ -12,8 +12,8 @@ public class ChatRoomItem extends SsomItem {
     private String ownerId;
     private String participantId;
     private long createdTimestamp;
-    private String lastMessage;
-    private long lastMessageTime;
+    private String lastMsg;
+    private long lastTimestamp;
     private InfoType infoType;
 
     public int getId() {
@@ -40,22 +40,6 @@ public class ChatRoomItem extends SsomItem {
         this.participantId = participantId;
     }
 
-    public String getLastMessage() {
-        return lastMessage;
-    }
-
-    public void setLastMessage(String lastMessage) {
-        this.lastMessage = lastMessage;
-    }
-
-    public long getLastMessageTime() {
-        return lastMessageTime;
-    }
-
-    public void setLastMessageTime(long lastMessageTime) {
-        this.lastMessageTime = lastMessageTime;
-    }
-
     public InfoType getInfoType() {
         return infoType;
     }
@@ -70,5 +54,21 @@ public class ChatRoomItem extends SsomItem {
 
     public void setCreatedTimestamp(long createdTimestamp) {
         this.createdTimestamp = createdTimestamp;
+    }
+
+    public String getLastMsg() {
+        return lastMsg;
+    }
+
+    public void setLastMsg(String lastMsg) {
+        this.lastMsg = lastMsg;
+    }
+
+    public long getLastTimestamp() {
+        return lastTimestamp;
+    }
+
+    public void setLastTimestamp(long lastTimestamp) {
+        this.lastTimestamp = lastTimestamp;
     }
 }

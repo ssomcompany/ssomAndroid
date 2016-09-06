@@ -12,6 +12,7 @@ public class SsomPreferences {
     // session
     public static final String PREF_SESSION_TOKEN = "PREF_SESSION_TOKEN";
     public static final String PREF_SESSION_EMAIL = "PREF_SESSION_EMAIL";
+    public static final String PREF_SESSION_USER_ID = "PREF_SESSION_USER_ID";
 
     // chatting preferences
     public static final String PREF_CHATTING_GUIDE_IS_READ = "PREF_CHATTING_GUIDE_IS_READ";

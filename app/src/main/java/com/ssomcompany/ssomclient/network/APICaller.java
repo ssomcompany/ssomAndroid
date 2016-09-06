@@ -81,9 +81,8 @@ public class APICaller {
     }
 
     public static <T extends BaseResponse> void sendChattingMessage(String token, int roomId, long lastMessageTime,
-                                           String toUserId, String msg, NetworkManager.NetworkListener<T> listener) {
-        SendChattingMessage.Request request = new SendChattingMessage.Request(roomId, lastMessageTime)
-                .setToUserId(toUserId).setMsg(msg);
+                                           String msg, NetworkManager.NetworkListener<T> listener) {
+        SendChattingMessage.Request request = new SendChattingMessage.Request(roomId, lastMessageTime).setMsg(msg);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
         NetworkManager.request(request, new TypeToken<SsomResponse<SendChattingMessage.Response>>() {}.getType(), listener);

@@ -126,16 +126,20 @@ public class ChattingFragment extends BaseFragment {
             public void onClick(View v) {
                 if(TextUtils.isEmpty(editMessage.getText())) return;
 
-                mAdapter.add(editMessage.getText().toString());
-                editMessage.setText("");
-                APICaller.sendChattingMessage(getToken(), roomItem.getId(), System.currentTimeMillis(),
-                        roomItem.getOwnerId(), editMessage.getText().toString(),
+                APICaller.sendChattingMessage(getToken(), roomItem.getId(), System.currentTimeMillis(), String.valueOf(editMessage.getText()),
                         new NetworkManager.NetworkListener<SsomResponse<SendChattingMessage.Response>>() {
                             @Override
                             public void onResponse(SsomResponse<SendChattingMessage.Response> response) {
                                 if(response.isSuccess()) {
-                                    Log.e(TAG, "response : " + response);
+                                    Log.d(TAG, "response : " + response);
+                                    editMessage.setText("");
                                     if(response.getData() != null) {
+                                        Log.d(TAG, "sent a message successfully.");
+                                        for(ChattingItem item : response.getData().getChattingList()) {
+                                            mAdapter.add(item);
+                                        }
+                                        mAdapter.notifyDataSetChanged();
+                                        mAdapter.add(String.valueOf(editMessage.getText()));
                                     } else {
                                         Log.e(TAG, "unexpected error, data is null");
                                     }

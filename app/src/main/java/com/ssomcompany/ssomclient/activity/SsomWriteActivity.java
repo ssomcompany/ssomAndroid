@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -58,6 +59,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
     private static final int REQUEST_IMAGE_CAPTURE = 10001;
     private static final int REQUEST_IMAGE_CROP = 10002;
+    private static final int REQUEST_SELECT_PICTURE = 10003;
 
     ////// view 영역 //////
     private FrameLayout btnBack;
@@ -96,6 +98,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     private String mCurrentPhotoPath;
     private Bitmap imageBitmap;
     private Uri mContentUri;
+    private String picturePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,6 +212,17 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         tvOnePeople.setSelected(true);
     }
 
+    // gallery 실행
+    private void moveToGallery() {
+        Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(i, REQUEST_SELECT_PICTURE);
+//        Intent intent = new Intent();
+//        intent.setType("image/*");
+//        intent.setAction(Intent.ACTION_GET_CONTENT);
+//
+//        startActivityForResult(Intent.createChooser(intent,"Select Picture"), REQUEST_SELECT_PICTURE);
+    }
+
     // camera app 실행
     private void moveToCamera() {
         Log.d(TAG, "moveToCamera()");
@@ -274,16 +288,40 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_IMAGE_CAPTURE:
-                    cropImage();
+//                    cropImage();
+                    Bundle extras = data.getExtras();
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    imgProfile.setImageBitmap(imageBitmap);
+                    imgEmpty.setVisibility(View.INVISIBLE);
+                    imgShadow.setVisibility(View.INVISIBLE);
                     break;
                 case REQUEST_IMAGE_CROP:
-                    Bundle extras = data.getExtras();
-                    Log.d(TAG, "crop finished : " + extras);
+//                    Bundle extras = data.getExtras();
+//                    Log.d(TAG, "crop finished : " + extras);
 //                    if (extras != null) {
                         imgProfile.setImageURI(mContentUri);
                         imgEmpty.setVisibility(View.INVISIBLE);
                         imgShadow.setVisibility(View.INVISIBLE);
 //                    }
+                    break;
+                case REQUEST_SELECT_PICTURE:
+                    Log.d(TAG, "data : " + data);
+                    if(data != null) {
+                        Uri selectedImage = data.getData();
+                        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                        Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+                        Log.d(TAG, "cursor : " + cursor);
+                        if(cursor != null) {
+                            cursor.moveToFirst();
+                            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                            picturePath = cursor.getString(columnIndex);
+                            cursor.close();
+                        }
+                        Log.d(TAG, "path : " + picturePath);
+                        imgEmpty.setVisibility(View.INVISIBLE);
+                        imgShadow.setVisibility(View.INVISIBLE);
+                        imgProfile.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+                    }
                     break;
                 default:
                     break;
@@ -374,7 +412,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                 finish();
             }
         } else if(v == imgCamera) {
-            moveToCamera();
+//            moveToCamera();
+            moveToGallery();
         } else if(v == tvSsomBalloon) {
             tvSsomBalloon.setSelected(true);
             tvSsoaBalloon.setSelected(false);
@@ -539,7 +578,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
             @Override
             public byte[] getBody() throws AuthFailureError {
-                imageBitmap = BitmapFactory.decodeFile(mContentUri.getPath());
+//                imageBitmap = BitmapFactory.decodeFile(mContentUri.getPath());
+                imageBitmap = BitmapFactory.decodeFile(picturePath);
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 imageBitmap.compress(Bitmap.CompressFormat.PNG, 1, byteArrayOutputStream);
                 byte[] bitmapData = byteArrayOutputStream.toByteArray();

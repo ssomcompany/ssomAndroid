@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Created by AaronMac on 2016. 7. 28..
  */
 public class ViewListener {
-    public static interface NavigationDrawerCallbacks {
+    public interface NavigationDrawerCallbacks {
         /**
          * Called when an item in the navigation drawer is selected.
          */
@@ -43,5 +43,11 @@ public class ViewListener {
 
     public interface OnLoginFragmentInteractionListener {
         void onLoginFragmentInteraction(int resId);
+    }
+
+    public interface OnPermissionListener {
+        void onPermissionGranted();
+
+        void onPermissionDenied(ArrayList<String> deniedPermissions);
     }
 }

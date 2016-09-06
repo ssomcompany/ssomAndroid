@@ -191,11 +191,12 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                             Log.e(TAG, "response : " + response);
                             if(response.getData() != null) {
                                 CURRENT_STATE = STATE_CHAT_ROOM;
-                                changeSsomBarViewForChattingRoom(position);
 
                                 chattingList = response.getData().getChattingList();
                                 chattingList.add(0, new ChattingItem().setType(ChattingItem.MessageType.initial));
+
                                 startChattingFragment(chatRoomList.get(position));
+                                changeSsomBarViewForChattingRoom(position);
                             } else {
                                 Log.e(TAG, "unexpected error, data is null");
                             }

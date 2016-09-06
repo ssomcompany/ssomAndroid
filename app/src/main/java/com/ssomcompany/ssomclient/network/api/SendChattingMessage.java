@@ -2,8 +2,10 @@ package com.ssomcompany.ssomclient.network.api;
 
 import com.ssomcompany.ssomclient.common.ToStringHelperClass;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
+import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.network.model.SsomPostRequest;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class SendChattingMessage {
@@ -35,5 +37,15 @@ public class SendChattingMessage {
         }
     }
     
-    public static class Response extends ToStringHelperClass {}
+    public static class Response extends ToStringHelperClass {
+        ArrayList<ChattingItem> list;
+
+        public ArrayList<ChattingItem> getChattingList() {
+            return list;
+        }
+
+        public void setList(ArrayList<ChattingItem> list) {
+            this.list = list;
+        }
+    }
 }

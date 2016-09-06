@@ -123,12 +123,28 @@ public class Util {
         }
     }
 
+    /**
+     * 채팅 메시지를 동일시간에 보여주지 않기 위해 비교하는 함수
+     * @param beforeTime 비교대상 1
+     * @param afterTime 비교대상 2
+     * @return 1분 이내이고 같은 시간인 경우 true, otherwise false
+     */
+    public static boolean isSameTimeBetweenTwoTimes(long beforeTime, long afterTime) {
+        Calendar beforeCalendar = Calendar.getInstance();
+        beforeCalendar.setTimeInMillis(beforeTime);
+        Calendar afterCalendar = Calendar.getInstance();
+        afterCalendar.setTimeInMillis(afterTime);
+        long gap = Math.abs(afterTime - beforeTime);
+        return gap < 60 * 1000 && beforeCalendar.get(Calendar.MINUTE) == afterCalendar.get(Calendar.MINUTE);
+    }
+
     public static String getTimeTextForMessage(long timestamp) {
         try{
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(timestamp);
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.KOREA);
             Date currentTimeZone = calendar.getTime();
+            Log.d(TAG, "message time : " + sdf.format(currentTimeZone));
             return sdf.format(currentTimeZone);
         }catch (Exception e) {
             Log.e(TAG, "Failed to get time.");

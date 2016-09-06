@@ -13,12 +13,17 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -51,6 +56,7 @@ import com.ssomcompany.ssomclient.common.RoundImage;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.control.SsomPermission;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.fragment.DetailFragment;
 import com.ssomcompany.ssomclient.fragment.FilterFragment;
@@ -68,7 +74,6 @@ import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class MainActivity extends BaseActivity
@@ -79,6 +84,7 @@ public class MainActivity extends BaseActivity
 
     private static final int REQUEST_SSOM_WRITE = 100;
     private static final int REQUEST_SSOM_LOGIN = 200;
+    private static final int REQUEST_CHECK_LOCATION_PERMISSION = 300;
 
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
@@ -135,13 +141,7 @@ public class MainActivity extends BaseActivity
         selectedTab = CommonConst.SSOM;
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
 
-        locationTracker = LocationTracker.getInstance();
-        if(locationTracker.chkCanGetLocation()) {
-            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
-        }
-
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
 
@@ -152,13 +152,79 @@ public class MainActivity extends BaseActivity
 
         //set up the toolbar
         initToolbar();
+
+        // TODO change to tablayout
         initLayoutWrite();
 
-//        Log.i(TAG, "drawer open state : " + drawer.isDrawerOpen(Gravity.LEFT));
-//        if(drawer.isDrawerOpen(Gravity.LEFT)) drawer.closeDrawers();
+        startService(new Intent(this, PushManageService.class));
+
+        SsomPermission.getInstance()
+                .setPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
+                .setOnPermissionListener(mPermissionListener)
+                .checkPermission();
+    }
+
+    private ViewListener.OnPermissionListener mPermissionListener = new ViewListener.OnPermissionListener() {
+        @Override
+        public void onPermissionGranted() {
+            continueProcess();
+        }
+
+        @Override
+        public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    deniedPermissions.toArray(new String[deniedPermissions.size()]), REQUEST_CHECK_LOCATION_PERMISSION);
+        }
+    };
+
+    private void showActivateGPSPopup() {
+        // GPS OFF 일때 Dialog 표시
+        AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
+        gsDialog.setTitle("위치 서비스 설정");
+        gsDialog.setMessage("무선 네트워크 사용, GPS 위성 사용을 모두 체크하셔야 정확한 위치 서비스가 가능합니다.\n위치 서비스 기능을 설정하시겠습니까?");
+        gsDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // GPS설정 화면으로 이동
+                Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                startActivity(intent);
+            }
+        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                }).create().show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == REQUEST_CHECK_LOCATION_PERMISSION) {
+            if(grantResults[0] == PackageManager.PERMISSION_DENIED
+                    && grantResults[1] == PackageManager.PERMISSION_DENIED) {
+                UiUtils.makeToastMessage(this, "쏨에 위치 권한이 필요합니다.");
+                Intent i = new Intent();
+                i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                i.addCategory(Intent.CATEGORY_DEFAULT);
+                i.setData(Uri.parse("package:" + getPackageName()));
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                startActivityForResult(i, REQUEST_CHECK_LOCATION_PERMISSION);
+            } else {
+                continueProcess();
+            }
+        }
+    }
+
+    private void continueProcess() {
+        locationTracker = LocationTracker.getInstance();
+        if(locationTracker.chkCanGetLocation()) {
+            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
+        } else {
+            showActivateGPSPopup();
+        }
 
         startMapFragment();
-        startService(new Intent(this, PushManageService.class));
     }
 
     private void requestSsomList() {
@@ -197,7 +263,7 @@ public class MainActivity extends BaseActivity
         super.onResume();
         initFilterView();
 
-        if(locationTracker.chkCanGetLocation()) {
+        if(locationTracker != null && locationTracker.chkCanGetLocation()) {
             locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
         }
     }
@@ -412,7 +478,7 @@ public class MainActivity extends BaseActivity
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                setSessionInfo("", "");
+                                setSessionInfo("", "", "");
                                 mNavigationDrawerFragment.setLoginEmailLayout();
                             }
                         }, null);
@@ -488,7 +554,7 @@ public class MainActivity extends BaseActivity
         mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!locationTracker.chkCanGetLocation()) {
+                if (locationTracker != null && !locationTracker.chkCanGetLocation()) {
                     showActivateGPSPopup();
                     return;
                 }
@@ -619,10 +685,6 @@ public class MainActivity extends BaseActivity
 
     public ArrayList<SsomItem> getCurrentPostItems() {
         return CommonConst.SSOM.equals(selectedTab)? Util.convertAllListToSsomList(ITEM_LIST) : Util.convertAllListToSsoaList(ITEM_LIST);
-    }
-
-    private void showActivateGPSPopup() {
-        // TODO - GPS on dialog popup
     }
 
     private void initMarker() {
@@ -775,48 +837,12 @@ public class MainActivity extends BaseActivity
                 case REQUEST_SSOM_LOGIN :
                     mNavigationDrawerFragment.setLoginEmailLayout();
                     break;
+                case REQUEST_CHECK_LOCATION_PERMISSION:
+                    setMapUiSetting();
+                    break;
                 default:
                     break;
             }
-        }
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_main, container, false);
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
 
@@ -825,8 +851,6 @@ public class MainActivity extends BaseActivity
         super.onPause();
         locationTracker.stopLocationUpdates();
     }
-
-
 
     @Override
     public void onBackPressed() {

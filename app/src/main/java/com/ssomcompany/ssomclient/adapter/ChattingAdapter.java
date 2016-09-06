@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
@@ -96,81 +98,83 @@ public class ChattingAdapter extends BaseAdapter {
         ChattingItem item = itemList.get(position);
 
         /**
-         * receive layout setting
-         */
-        if(item.getType() == ChattingItem.MessageType.receive) {
-            holder.receiveMessageLayout.setVisibility(View.VISIBLE);
-
-            if(getItem(position - 1) == null || item.getType() != getItem(position - 1).getType()
-                    || !Util.getTimeTextForMessage(item.getMessageTime()).equals(Util.getTimeTextForMessage(getItem(position - 1).getMessageTime()))) {
-                holder.chatProfileLayout.setVisibility(View.VISIBLE);
-                // profile image
-                holder.chatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
-                holder.chatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
-                holder.chatProfileImage.setImageUrl(roomItem.getImageUrl(), mImageLoader);
-                // profile circle type
-                holder.chatProfileCircle.setImageResource(CommonConst.SSOM.equals(roomItem.getSsomType()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red);
-            } else {
-                holder.chatProfileLayout.setVisibility(View.INVISIBLE);
-            }
-
-            holder.receiveMessage.setBackgroundResource(CommonConst.SSOM.equals(roomItem.getSsomType()) ? R.drawable.bg_receive_message_green : R.drawable.bg_receive_message_red);
-            holder.receiveMessage.setText(item.getMessage());
-            if(getItem(position + 1) != null && item.getType() == getItem(position + 1).getType()
-                    && Util.getTimeTextForMessage(item.getMessageTime()).equals(Util.getTimeTextForMessage(getItem(position + 1).getMessageTime()))) {
-                holder.receiveTime.setVisibility(View.GONE);
-            } else {
-                holder.receiveTime.setVisibility(View.VISIBLE);
-                holder.receiveTime.setText(Util.getTimeTextForMessage(item.getMessageTime()));
-            }
-        } else {
-            holder.receiveMessageLayout.setVisibility(View.GONE);
-        }
-
-        /**
-         * send layout setting
-         */
-        if(item.getType() == ChattingItem.MessageType.send) {
-            holder.sendMessageLayout.setVisibility(View.VISIBLE);
-            holder.sendMessage.setText(item.getMessage());
-            if(getItem(position + 1) != null && item.getType() == getItem(position + 1).getType()
-                    && Util.getTimeTextForMessage(item.getMessageTime()).equals(Util.getTimeTextForMessage(getItem(position + 1).getMessageTime()))) {
-                holder.sendTime.setVisibility(View.GONE);
-            } else {
-                holder.sendTime.setVisibility(View.VISIBLE);
-                holder.sendTime.setText(Util.getTimeTextForMessage(item.getMessageTime()));
-            }
-        } else {
-            holder.sendMessageLayout.setVisibility(View.GONE);
-        }
-
-        /**
          * initial message layout setting
          */
         if(item.getType() == ChattingItem.MessageType.initial) {
             holder.initialMessage.setVisibility(View.VISIBLE);
+            holder.finishMessage.setVisibility(View.GONE);
+            holder.sendMessageLayout.setVisibility(View.GONE);
+            holder.receiveMessageLayout.setVisibility(View.GONE);
+        } else if(item.getType() == ChattingItem.MessageType.finish) {
+            /**
+             * finish message layout setting
+             */
+            holder.initialMessage.setVisibility(View.GONE);
+            holder.finishMessage.setVisibility(View.VISIBLE);
+            holder.sendMessageLayout.setVisibility(View.GONE);
+            holder.receiveMessageLayout.setVisibility(View.GONE);
         } else {
             holder.initialMessage.setVisibility(View.GONE);
-        }
-
-        /**
-         * finish message layout setting
-         */
-        if(item.getType() == ChattingItem.MessageType.finish) {
-            holder.finishMessage.setVisibility(View.VISIBLE);
-        } else {
             holder.finishMessage.setVisibility(View.GONE);
+
+            /**
+             * receive layout setting
+             */
+            if(!((BaseActivity) context).getUserId().equals(item.getFromUserId())) {
+                holder.sendMessageLayout.setVisibility(View.GONE);
+                holder.receiveMessageLayout.setVisibility(View.VISIBLE);
+
+                if(getItem(position - 1) == null || !item.getFromUserId().equals(getItem(position - 1).getFromUserId())
+                        || !Util.isSameTimeBetweenTwoTimes(item.getTimestamp(), getItem(position - 1).getTimestamp())) {
+                    holder.chatProfileLayout.setVisibility(View.VISIBLE);
+                    // profile image
+                    holder.chatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
+                    holder.chatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
+                    holder.chatProfileImage.setImageUrl(roomItem.getImageUrl(), mImageLoader);
+                    // profile circle type
+                    holder.chatProfileCircle.setImageResource(CommonConst.SSOM.equals(roomItem.getSsomType()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red);
+                } else {
+                    holder.chatProfileLayout.setVisibility(View.INVISIBLE);
+                }
+
+                holder.receiveMessage.setBackgroundResource(CommonConst.SSOM.equals(roomItem.getSsomType()) ? R.drawable.bg_receive_message_green : R.drawable.bg_receive_message_red);
+                holder.receiveMessage.setText(item.getMsg());
+                if(getItem(position + 1) != null && item.getFromUserId().equals(getItem(position + 1).getFromUserId())
+                        && Util.isSameTimeBetweenTwoTimes(item.getTimestamp(), getItem(position + 1).getTimestamp())) {
+                    holder.receiveTime.setVisibility(View.GONE);
+                } else {
+                    holder.receiveTime.setVisibility(View.VISIBLE);
+                    holder.receiveTime.setText(Util.getTimeTextForMessage(item.getTimestamp()));
+                }
+            } else {
+                /**
+                 * send layout setting
+                 */
+                holder.receiveMessageLayout.setVisibility(View.GONE);
+                holder.sendMessageLayout.setVisibility(View.VISIBLE);
+                holder.sendMessage.setText(item.getMsg());
+                if(getItem(position + 1) != null && item.getFromUserId().equals(getItem(position + 1).getFromUserId())
+                        && Util.isSameTimeBetweenTwoTimes(item.getTimestamp(), getItem(position + 1).getTimestamp())) {
+                    holder.sendTime.setVisibility(View.GONE);
+                } else {
+                    holder.sendTime.setVisibility(View.VISIBLE);
+                    holder.sendTime.setText(Util.getTimeTextForMessage(item.getTimestamp()));
+                }
+            }
         }
 
         return convertView;
     }
 
+    public void add(ChattingItem item) {
+        itemList.add(item);
+    }
+
     public void add(String message) {
         ChattingItem item = new ChattingItem();
-        item.setPostId(roomItem.getPostId());
-        item.setType(ChattingItem.MessageType.send);
-        item.setMessage(message);
-        item.setMessageTime(System.currentTimeMillis());
+        item.setMsg(message);
+        item.setFromUserId(((BaseActivity) context).getUserId());
+        item.setTimestamp(System.currentTimeMillis());
         itemList.add(item);
         notifyDataSetChanged();
     }

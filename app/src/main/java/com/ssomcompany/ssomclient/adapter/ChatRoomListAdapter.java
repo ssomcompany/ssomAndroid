@@ -99,7 +99,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
                 Util.convertAgeRangeAtBackOneChar(item.getMinAge()), item.getUserCount()));
 
         // content
-        holder.tvChatContent.setText(item.getLastMessage());
+        holder.tvChatContent.setText(item.getLastMsg());
 
         // TODO count 가 없을 경우 view 숨김
         holder.unreadLayout.setVisibility(View.VISIBLE);
@@ -113,7 +113,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
 
         //time
 //        holder.tvTime.setText(String.valueOf(item.getMessageTime()));
-        holder.tvTime.setText(Util.getTimeTextForChatRoom(item.getLastMessageTime()));
+        holder.tvTime.setText(Util.getTimeTextForChatRoom(item.getLastTimestamp()));
 
         return convertView;
     }

@@ -1,16 +1,12 @@
 package com.ssomcompany.ssomclient.common;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.ssomcompany.ssomclient.BaseApplication;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
 public class LocationTracker {
     // Logging
@@ -34,14 +30,6 @@ public class LocationTracker {
 
     private LocationTracker() {
         super();
-
-        if (Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission(BaseApplication.getInstance(),
-                        android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(BaseApplication.getInstance(),
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
 
         if(locationManager == null) {
             locationManager = (LocationManager) BaseApplication.getInstance().getSystemService(Context.LOCATION_SERVICE);
@@ -87,6 +75,7 @@ public class LocationTracker {
         return myLocation;
     }
 
+    @SuppressWarnings("MissingPermission")
     public void startLocationUpdates(LocationListener gpsListener, LocationListener netListener) {
         gpsLocationListener = gpsListener;
         networkLocationListener = netListener;
@@ -104,6 +93,7 @@ public class LocationTracker {
         }
     }
 
+    @SuppressWarnings("MissingPermission")
     public void stopLocationUpdates() {
         if(locationManager != null) {
             if(isGpsEnabled) locationManager.removeUpdates(gpsLocationListener);
@@ -114,6 +104,7 @@ public class LocationTracker {
     /**
      * @return the last know best location
      */
+    @SuppressWarnings("MissingPermission")
     private Location getLastBestLocation() {
         Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         Location locationNet = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
