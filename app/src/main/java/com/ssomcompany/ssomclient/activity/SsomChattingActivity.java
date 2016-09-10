@@ -108,7 +108,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     private void changeSsomBarViewForChatRoomList() {
         ssomBar.setCurrentMode(SsomActionBarView.SSOM_CHAT_LIST);
         ssomBar.setChattingRoomHeartVisibility(false);
-        ssomBar.setChatLayoutVisibility(true);
+        ssomBar.setChatLayoutVisibility(false);
         // TODO MessageManager 등록하고 초기 message count 셋팅
         ssomBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomBar.setSsomBarTitleText(String.format(getResources().getString(R.string.chat_list_title), 0));
