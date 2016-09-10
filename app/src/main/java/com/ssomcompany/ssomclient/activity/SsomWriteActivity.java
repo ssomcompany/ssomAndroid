@@ -400,7 +400,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         if(v == btnBack || v == btnCancel) {
             if(!TextUtils.isEmpty(editWriteContent.getText())) {
                 UiUtils.makeCommonDialog(SsomWriteActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
-                        R.string.dialog_notice, 0, R.string.dialog_write_delete_message,
+                        R.string.dialog_notice, 0, R.string.dialog_write_delete_message, 0,
                         R.string.dialog_delete, R.string.cancel,
                         new DialogInterface.OnClickListener() {
                             @Override

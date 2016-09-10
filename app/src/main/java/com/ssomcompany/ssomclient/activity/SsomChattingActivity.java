@@ -1,10 +1,12 @@
 package com.ssomcompany.ssomclient.activity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -43,11 +45,13 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     private SsomActionBarView ssomBar;
 
     private SsomPreferences chatPref;
+    private InputMethodManager imm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatting);
+        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         fragmentManager = getSupportFragmentManager();
         chatPref = new SsomPreferences(this, SsomPreferences.CHATTING_PREF);
         ssomBar = (SsomActionBarView) findViewById(R.id.ssom_action_bar);
@@ -125,7 +129,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 // TODO 하트가 없는 경우 체크
                 UiUtils.makeCommonDialog(SsomChattingActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
                         R.string.dialog_meet_request, R.style.ssom_font_20_grayish_brown_bold,
-                        R.string.dialog_meet_request_message, R.string.dialog_meet, R.string.dialog_cancel,
+                        R.string.dialog_meet_request_message, 0, R.string.dialog_meet, R.string.dialog_cancel,
                         new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -220,6 +224,11 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
 
     @Override
     public void onBackPressed() {
+        if(imm.isAcceptingText()) {
+            imm.hideSoftInputFromWindow(null, 0);
+            return;
+        }
+
         if(CURRENT_STATE == STATE_CHAT_ROOM) {
             CURRENT_STATE = STATE_CHAT_LIST;
             changeSsomBarViewForChatRoomList();

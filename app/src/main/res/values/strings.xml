@@ -96,6 +96,7 @@
     <string name="dialog_meet">만나요</string>
     <string name="dialog_sorry">미안해요</string>
     <string name="dialog_okay">확인</string>
+    <string name="dialog_move">이동하기</string>
     <string name="dialog_close">닫기</string>
     <string name="dialog_cancel">취소</string>
     <string name="dialog_delete">삭제하기</string>
@@ -108,6 +109,7 @@
     <string name="dialog_meet_cancel_message">만남 취소 시 하트 1개가 소모됩니다.\n만남을 취소 하시겠어요?</string>
     <string name="dialog_chat_list_delete_message">끝낸 쏨은 되돌릴 수 없어요...\n쏨을 정말로 끝내시겠어요?</string>
     <string name="dialog_logout_message">로그아웃 하시겠어요?</string>
+    <string name="dialog_explain_permission_message">위치에 접근할 권한이 없습니다. \n위치권한이 없는경우 정확한 위치서비스를 제공할 수 없습니다.\n\n[앱]->[권한]에서 위치 권한을 허용해주세요.</string>
 
     <!-- toggle bar -->
     <string name="map">MAP</string>

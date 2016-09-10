@@ -43,9 +43,10 @@
 
             <TextView
                 android:id="@+id/dialogTextview"
-                style="@style/ssom_font_16_custom_666666_2_lines"
+                style="@style/ssom_font_16_custom_666666"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="6"
                 android:visibility="gone" />
 
             <ListView

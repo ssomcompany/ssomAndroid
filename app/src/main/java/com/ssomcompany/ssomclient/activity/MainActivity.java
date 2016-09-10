@@ -1,7 +1,7 @@
 package com.ssomcompany.ssomclient.activity;
 
 import android.Manifest;
-import android.app.Activity;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,13 +14,12 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -28,11 +27,9 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,6 +71,7 @@ import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class MainActivity extends BaseActivity
@@ -82,9 +80,10 @@ public class MainActivity extends BaseActivity
         OnMapReadyCallback, ViewListener.OnFilterFragmentInteractionListener, MessageCountCheck {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private static final int REQUEST_SSOM_WRITE = 100;
-    private static final int REQUEST_SSOM_LOGIN = 200;
-    private static final int REQUEST_CHECK_LOCATION_PERMISSION = 300;
+    private static final int REQUEST_SSOM_WRITE = 1;
+    private static final int REQUEST_SSOM_LOGIN = 2;
+    private static final int REQUEST_CHECK_LOCATION_PERMISSION = 3;
+    private static final int REQUEST_CHECK_DETAIL_LOCATION_PERMISSION = 4;
 
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
@@ -152,30 +151,70 @@ public class MainActivity extends BaseActivity
 
         //set up the toolbar
         initToolbar();
-
-        // TODO change to tablayout
         initLayoutWrite();
 
         startService(new Intent(this, PushManageService.class));
 
-        SsomPermission.getInstance()
-                .setPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
-                .setOnPermissionListener(mPermissionListener)
-                .checkPermission();
+        checkLocationServiceEnabled();
     }
 
     private ViewListener.OnPermissionListener mPermissionListener = new ViewListener.OnPermissionListener() {
         @Override
         public void onPermissionGranted() {
-            continueProcess();
+            startMapFragment();
         }
 
         @Override
         public void onPermissionDenied(ArrayList<String> deniedPermissions) {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    deniedPermissions.toArray(new String[deniedPermissions.size()]), REQUEST_CHECK_LOCATION_PERMISSION);
+            Log.d(TAG, "denied permission size : " + deniedPermissions.size());
+
+            // 이 권한을 필요한 이유를 설명해야하는가?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // 다이어로그같은것을 띄워서 사용자에게 해당 권한이 필요한 이유에 대해 설명합니다
+                // 해당 설명이 끝난뒤 requestPermissions()함수를 호출하여 권한허가를 요청해야 합니다
+                makeDialogForRequestLocationPermission();
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        deniedPermissions.toArray(new String[deniedPermissions.size()]), REQUEST_CHECK_DETAIL_LOCATION_PERMISSION);
+            }
         }
     };
+
+    private void makeDialogForRequestLocationPermission() {
+        UiUtils.makeCommonDialog(this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
+                R.string.dialog_explain_permission_message, R.style.ssom_font_16_custom_666666,
+                R.string.dialog_move, R.string.dialog_close,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i = new Intent();
+                        i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        i.addCategory(Intent.CATEGORY_DEFAULT);
+                        i.setData(Uri.parse("package:" + getPackageName()));
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                        startActivityForResult(i, REQUEST_CHECK_DETAIL_LOCATION_PERMISSION);
+                    }
+                }, null);
+    }
+
+    private void checkLocationServiceEnabled() {
+        locationTracker = LocationTracker.getInstance();
+        if(locationTracker.chkCanGetLocation()) {
+            continueProcess();
+        } else {
+            showActivateGPSPopup();
+        }
+    }
+
+    private void continueProcess() {
+        SsomPermission.getInstance()
+                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                .setOnPermissionListener(mPermissionListener)
+                .checkPermission();
+    }
 
     private void showActivateGPSPopup() {
         // GPS OFF 일때 Dialog 표시
@@ -187,44 +226,28 @@ public class MainActivity extends BaseActivity
                 // GPS설정 화면으로 이동
                 Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 intent.addCategory(Intent.CATEGORY_DEFAULT);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CHECK_LOCATION_PERMISSION);
             }
-        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                }).create().show();
+        }).setNegativeButton("Cancel", null).create().show();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == REQUEST_CHECK_LOCATION_PERMISSION) {
-            if(grantResults[0] == PackageManager.PERMISSION_DENIED
-                    && grantResults[1] == PackageManager.PERMISSION_DENIED) {
-                UiUtils.makeToastMessage(this, "쏨에 위치 권한이 필요합니다.");
-                Intent i = new Intent();
-                i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                i.addCategory(Intent.CATEGORY_DEFAULT);
-                i.setData(Uri.parse("package:" + getPackageName()));
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                startActivityForResult(i, REQUEST_CHECK_LOCATION_PERMISSION);
+        if(requestCode == REQUEST_CHECK_DETAIL_LOCATION_PERMISSION) {
+            Map<String, Integer> permissionMap = new HashMap<>();
+
+            for (int i = 0 ; i < permissions.length ; i++) {
+                permissionMap.put(permissions[i], grantResults[i]);
+            }
+
+            // 거절을 클릭 한 경우에 해당함
+            if(grantResults.length > 0 &&
+                    permissionMap.get(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                makeDialogForRequestLocationPermission();
             } else {
-                continueProcess();
+                startMapFragment();
             }
         }
-    }
-
-    private void continueProcess() {
-        locationTracker = LocationTracker.getInstance();
-        if(locationTracker.chkCanGetLocation()) {
-            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
-        } else {
-            showActivateGPSPopup();
-        }
-
-        startMapFragment();
     }
 
     private void requestSsomList() {
@@ -263,9 +286,9 @@ public class MainActivity extends BaseActivity
         super.onResume();
         initFilterView();
 
-        if(locationTracker != null && locationTracker.chkCanGetLocation()) {
-            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
-        }
+//        if(locationTracker != null && locationTracker.chkCanGetLocation()) {
+//            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
+//        }
     }
 
     private void initFilterView() {
@@ -290,14 +313,15 @@ public class MainActivity extends BaseActivity
 
         // Set tab click listener
         giveTv.setOnClickListener(new View.OnClickListener() {
+            @TargetApi(Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
                 if (CommonConst.SSOM.equals(selectedTab)) return;
 
                 selectedTab = CommonConst.SSOM;
-                giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_green_blue);
+                giveTv.setTextAppearance(R.style.ssom_font_16_green_blue);
                 giveBtmBar.setVisibility(View.VISIBLE);
-                takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
+                takeTv.setTextAppearance(R.style.ssom_font_16_gray_warm);
                 takeBtmBar.setVisibility(View.GONE);
 
                 SsomListFragment.newInstance().setPostItemClickListener(null);
@@ -306,14 +330,15 @@ public class MainActivity extends BaseActivity
         });
 
         takeTv.setOnClickListener(new View.OnClickListener() {
+            @TargetApi(Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
                 if (CommonConst.SSOA.equals(selectedTab)) return;
 
                 selectedTab = CommonConst.SSOA;
-                takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_red_pink);
+                takeTv.setTextAppearance(R.style.ssom_font_16_red_pink);
                 takeBtmBar.setVisibility(View.VISIBLE);
-                giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
+                giveTv.setTextAppearance(R.style.ssom_font_16_gray_warm);
                 giveBtmBar.setVisibility(View.GONE);
 
                 SsomListFragment.newInstance().setPostItemClickListener(null);
@@ -435,18 +460,20 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     private void setToggleButtonUI() {
-        mapBtn.setTextAppearance(this, MAP_VIEW.equals(selectedView)? R.style.ssom_font_12_white_single : R.style.ssom_font_12_grayish_brown_single);
+        mapBtn.setTextAppearance(MAP_VIEW.equals(selectedView)? R.style.ssom_font_12_white_single : R.style.ssom_font_12_grayish_brown_single);
         mapBtn.setBackgroundResource(MAP_VIEW.equals(selectedView) ? R.drawable.bg_main_toggle_on : 0);
-        listBtn.setTextAppearance(this, LIST_VIEW.equals(selectedView) ? R.style.ssom_font_12_white_single : R.style.ssom_font_12_grayish_brown_single);
+        listBtn.setTextAppearance(LIST_VIEW.equals(selectedView) ? R.style.ssom_font_12_white_single : R.style.ssom_font_12_grayish_brown_single);
         listBtn.setBackgroundResource(LIST_VIEW.equals(selectedView) ? R.drawable.bg_main_toggle_on : 0);
     }
 
     private void startMapFragment(){
+        locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
         selectedView = MAP_VIEW;
         SupportMapFragment mapFragment = SupportMapFragment.newInstance();
         fragmentManager.beginTransaction().
-                replace(R.id.container, mapFragment).commit();
+                replace(R.id.container, mapFragment).commitAllowingStateLoss();
         mapFragment.getMapAsync(this);
     }
 
@@ -474,7 +501,7 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.tv_logout:
                 UiUtils.makeCommonDialog(MainActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
-                        R.string.dialog_logout_message, R.string.dialog_okay, R.string.dialog_cancel,
+                        R.string.dialog_logout_message, 0, R.string.dialog_okay, R.string.dialog_cancel,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -537,14 +564,6 @@ public class MainActivity extends BaseActivity
     public void onMapReady(GoogleMap googleMap) {
         this.mMap = googleMap;
 
-        // Marshmallow
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-//                == PackageManager.PERMISSION_GRANTED) {
-//            return;
-//        } else {
-//            // Show rationale and request permission.
-//        }
-
         // init start my location
         moveToMyLocation(true);
         setMapUiSetting();
@@ -554,7 +573,7 @@ public class MainActivity extends BaseActivity
         mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (locationTracker != null && !locationTracker.chkCanGetLocation()) {
+                if (locationTracker == null || !LocationTracker.getInstance().chkCanGetLocation()) {
                     showActivateGPSPopup();
                     return;
                 }
@@ -829,27 +848,34 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case REQUEST_SSOM_WRITE :
+        Log.d(TAG, "onActivityResult called : " + requestCode + ", reusltCode : " + resultCode);
+
+        switch (requestCode) {
+            case REQUEST_SSOM_WRITE :
+                if(resultCode == RESULT_OK) {
                     requestSsomList();
-                    break;
-                case REQUEST_SSOM_LOGIN :
+                }
+                break;
+            case REQUEST_SSOM_LOGIN :
+                if(resultCode == RESULT_OK) {
                     mNavigationDrawerFragment.setLoginEmailLayout();
-                    break;
-                case REQUEST_CHECK_LOCATION_PERMISSION:
-                    setMapUiSetting();
-                    break;
-                default:
-                    break;
-            }
+                }
+                break;
+            case REQUEST_CHECK_LOCATION_PERMISSION:
+//                checkLocationServiceEnabled();
+//                break;
+            case REQUEST_CHECK_DETAIL_LOCATION_PERMISSION:
+                continueProcess();
+                break;
+            default:
+                break;
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        locationTracker.stopLocationUpdates();
+        if(locationTracker != null) locationTracker.stopLocationUpdates();
     }
 
     @Override

@@ -23,7 +23,7 @@ public class UiUtils {
     }
 
     public static void makeCommonDialog(Activity context, int buttonStyle, int title, int titleStyle,
-                                        int message, int positiveBtnTitle, int negativeBtnTitle,
+                                        int message, int messageStyle, int positiveBtnTitle, int negativeBtnTitle,
                                         final DialogInterface.OnClickListener positiveBtnListener,
                                         final DialogInterface.OnClickListener negativeBtnListener) {
         if (context.getResources() == null) {
@@ -35,6 +35,7 @@ public class UiUtils {
         dialog.setTitle(context.getString(title));
         if(titleStyle != 0) dialog.setTitleStyle(titleStyle);
         dialog.setMessage(context.getString(message));
+        if(messageStyle != 0) dialog.setMessageStyle(messageStyle);
         dialog.setPositiveButton(context.getString(positiveBtnTitle), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

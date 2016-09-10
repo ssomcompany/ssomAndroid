@@ -34,14 +34,14 @@ public class LocationTracker {
         if(locationManager == null) {
             locationManager = (LocationManager) BaseApplication.getInstance().getSystemService(Context.LOCATION_SERVICE);
         }
-
-        getMyLocation();
     }
 
     public static synchronized LocationTracker getInstance() {
         if(locationTracker == null) {
             locationTracker = new LocationTracker();
         }
+
+        locationTracker.getMyLocation();
 
         return locationTracker;
     }
@@ -59,7 +59,7 @@ public class LocationTracker {
             // permission denied
         }
 
-        canGetLocation = !(!isGpsEnabled && !isNetEnabled);
+        canGetLocation = isGpsEnabled || isNetEnabled;
         Log.d(TAG, "getMyLocation() : " + canGetLocation);
     }
 
@@ -96,8 +96,8 @@ public class LocationTracker {
     @SuppressWarnings("MissingPermission")
     public void stopLocationUpdates() {
         if(locationManager != null) {
-            if(isGpsEnabled) locationManager.removeUpdates(gpsLocationListener);
-            if(isNetEnabled) locationManager.removeUpdates(networkLocationListener);
+            if(gpsLocationListener != null) locationManager.removeUpdates(gpsLocationListener);
+            if(networkLocationListener != null) locationManager.removeUpdates(networkLocationListener);
         }
     }
 
@@ -106,8 +106,14 @@ public class LocationTracker {
      */
     @SuppressWarnings("MissingPermission")
     private Location getLastBestLocation() {
-        Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        Location locationNet = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        Location locationGPS = null;
+        Location locationNet = null;
+        if(locationTracker.chkCanGetLocation()) {
+            if(isGpsEnabled) locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if(isNetEnabled) locationNet = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        } else {
+            return null;
+        }
 
         long GPSLocationTime = 0;
         if (null != locationGPS) { GPSLocationTime = locationGPS.getTime(); }

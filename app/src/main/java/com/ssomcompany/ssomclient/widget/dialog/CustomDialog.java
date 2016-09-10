@@ -1,8 +1,10 @@
 package com.ssomcompany.ssomclient.widget.dialog;
 
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -38,6 +40,7 @@ public class CustomDialog extends Dialog {
         private final Context context;
         private CharSequence title = null;
         private CharSequence message = null;
+        private int messageStyle = 0;
         private String posBtnTxt = null;
         private String negBtnTxt = null;
         private String neuBtnTxt = null;
@@ -100,6 +103,11 @@ public class CustomDialog extends Dialog {
 
         public Builder setMessage(int message) {
             this.message = context.getText(message);
+            return this;
+        }
+
+        public Builder setMessageStyle(int messageStyle) {
+            this.messageStyle = messageStyle;
             return this;
         }
 
@@ -367,6 +375,7 @@ public class CustomDialog extends Dialog {
                 TextView messageView = (TextView) layout.findViewById(R.id.dialogTextview);
                 messageView.setVisibility(View.VISIBLE);
                 messageView.setText(message);
+                if(messageStyle != 0) messageView.setTextAppearance(context, messageStyle);
             } else if (items != null || itemAdapter != null) {
                 ListView dialogListview = (ListView) layout.findViewById(R.id.dialogListview);
                 dialogListview.setVisibility(View.VISIBLE);

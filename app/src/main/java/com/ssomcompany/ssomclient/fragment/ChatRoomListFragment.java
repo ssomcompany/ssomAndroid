@@ -109,7 +109,7 @@ public class ChatRoomListFragment extends BaseFragment {
                 if (index == 0) {
                     // delete chatting list item
                     UiUtils.makeCommonDialog(getActivity(), CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
-                            R.string.dialog_notice, 0, R.string.dialog_chat_list_delete_message,
+                            R.string.dialog_notice, 0, R.string.dialog_chat_list_delete_message, 0,
                             R.string.dialog_finish, R.string.dialog_cancel,
                             new DialogInterface.OnClickListener() {
                                 @Override

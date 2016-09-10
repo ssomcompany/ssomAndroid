@@ -2,7 +2,6 @@ package com.ssomcompany.ssomclient.fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,16 +21,13 @@ import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.GetChattingList;
 import com.ssomcompany.ssomclient.network.api.SendChattingMessage;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
-import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class ChattingFragment extends BaseFragment {
     private static final String TAG = ChattingFragment.class.getSimpleName();
@@ -132,14 +128,13 @@ public class ChattingFragment extends BaseFragment {
                             public void onResponse(SsomResponse<SendChattingMessage.Response> response) {
                                 if(response.isSuccess()) {
                                     Log.d(TAG, "response : " + response);
-                                    editMessage.setText("");
                                     if(response.getData() != null) {
                                         Log.d(TAG, "sent a message successfully.");
                                         for(ChattingItem item : response.getData().getChattingList()) {
                                             mAdapter.add(item);
                                         }
+                                        editMessage.setText("");
                                         mAdapter.notifyDataSetChanged();
-                                        mAdapter.add(String.valueOf(editMessage.getText()));
                                     } else {
                                         Log.e(TAG, "unexpected error, data is null");
                                     }
@@ -154,6 +149,7 @@ public class ChattingFragment extends BaseFragment {
         });
 
         chatListView.setAdapter(mAdapter);
+        editMessage.setSelected(true);
 
         return view;
     }
@@ -193,7 +189,7 @@ public class ChattingFragment extends BaseFragment {
                     UiUtils.makeCommonDialog(getActivity(), CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
                             type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_cancel : R.string.dialog_meet_request,
                             R.style.ssom_font_20_grayish_brown_bold,
-                            type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message,
+                            type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message, 0,
                             type == ChatRoomItem.InfoType.sent ? R.string.ok_upper : R.string.dialog_meet,
                             type == ChatRoomItem.InfoType.sent ? R.string.dialog_cancel : R.string.dialog_sorry,
                             new DialogInterface.OnClickListener() {

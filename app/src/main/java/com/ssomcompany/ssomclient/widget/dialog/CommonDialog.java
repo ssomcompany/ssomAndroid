@@ -37,6 +37,7 @@ public class CommonDialog extends DialogFragment {
 
     private CharSequence title = null;
     private CharSequence message = null;
+    private int messageStyle = 0;
     private int titleStyle = 0;
     private int positiveResId = 0;
     private int negativeResId = 0;
@@ -138,6 +139,10 @@ public class CommonDialog extends DialogFragment {
             }
             ((CustomProgressDialog) getDialog()).setMessage(message);
         }
+    }
+
+    public void setMessageStyle(int style) {
+        messageStyle = style;
     }
 
     public void setPositiveButton(int posName, DialogInterface.OnClickListener listener) {
@@ -298,7 +303,7 @@ public class CommonDialog extends DialogFragment {
                 break;
             case DIALOG_STYLE_ALERT_BUTTON:
                 CustomDialog.Builder builder = new CustomDialog.Builder(getActivity());
-                builder.setMessage(message);
+                builder.setMessage(message).setMessageStyle(messageStyle);
                 setButtonEvent(builder);
                 dialog = createDialog(builder);
                 break;
