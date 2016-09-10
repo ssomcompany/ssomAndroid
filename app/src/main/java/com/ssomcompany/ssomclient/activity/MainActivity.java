@@ -141,6 +141,8 @@ public class MainActivity extends BaseActivity
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        // 슬라이드 열기 막기
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
 
