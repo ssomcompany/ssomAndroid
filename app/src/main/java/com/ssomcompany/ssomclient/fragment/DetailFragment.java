@@ -1,11 +1,15 @@
 package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +20,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.SsomImageDetailActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
@@ -41,6 +46,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     
     private static final String POST_ID = "postId";
     private String postId;
+    private int currentPos;
 
     private static DetailFragment detailFragment;
     private ViewListener.OnDetailFragmentInteractionListener mListener;
@@ -80,10 +86,12 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         Log.i(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            postId = getArguments().getString(POST_ID);
-            Log.i(TAG, "postId : " + postId);
-        }
+//        if (getArguments() != null) {
+//            postId = getArguments().getString(POST_ID);
+//            Log.i(TAG, "postId : " + postId);
+//        }
+
+        currentPos = getCurrentPosition(postId);
     }
 
     @Override
@@ -110,7 +118,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         mViewPager.post(new Runnable() {
             @Override
             public void run() {
-                mViewPager.setCurrentItem(getCurrentPosition(postId), false);
+                mViewPager.setCurrentItem(currentPos, false);
             }
         });
 
@@ -120,22 +128,69 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     public void onAdapterButtonPressed(boolean apply) {
         if (mListener != null) {
             if(apply) {
-                mListener.onDetailFragmentInteraction(true, postId, ssomList.get(getCurrentPosition(postId)).getUserId());
+                mListener.onDetailFragmentInteraction(true, ssomList.get(currentPos));
             } else {
-                mListener.onDetailFragmentInteraction(false, null, null);
+                mListener.onDetailFragmentInteraction(false, null);
             }
         }
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         try {
-            mListener = (ViewListener.OnDetailFragmentInteractionListener) activity;
+            mListener = (ViewListener.OnDetailFragmentInteractionListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnDetailFragmentInteractionListener");
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            try {
+                mListener = (ViewListener.OnDetailFragmentInteractionListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnDetailFragmentInteractionListener");
+            }
+        }
+    }
+
+    private ViewPager.OnPageChangeListener mPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
+        @Override
+        public void onPageSelected(int position) {
+            postId = ssomList.get(position).getPostId();
+            currentPos = position;
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(mViewPager == null) {
+            Log.d(TAG, "viewPager is null");
+            return;
+        }
+
+        mViewPager.addOnPageChangeListener(mPageChangeListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if(mViewPager == null) {
+            Log.d(TAG, "viewPager is null");
+            return;
+        }
+
+        mViewPager.removeOnPageChangeListener(mPageChangeListener);
     }
 
     @Override
@@ -160,7 +215,10 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         if(ssomList == null) return position;
 
         for(int i=0 ; i<ssomList.size() ; i++) {
-            if(postId.equals(ssomList.get(i).getPostId())) position = i;
+            if(postId.equals(ssomList.get(i).getPostId())) {
+                position = i;
+                break;
+            }
         }
 
         Log.i(TAG, "getCurrentPosition() : " + position);
@@ -193,6 +251,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             SsomItem item = ssomList.get(position);
             // item setting
             profileImg.setImageUrl(item.getImageUrl(), mImageLoader);
+            profileImg.setOnClickListener(this);
             centerLine.setBackgroundResource(CommonConst.SSOM.equals(item.getSsomType()) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
             tvCategory.setText(CommonConst.SSOM.equals(item.getSsomType()) ? R.string.title_tab_give : R.string.title_tab_take);
             tvDistance.setText( String.format(getResources().getString(R.string.detail_distance),
@@ -200,12 +259,16 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             tvAgePeople.setText( String.format( getResources().getString(R.string.detail_age_people), Util.convertAgeRange(item.getMinAge()), item.getUserCount()) );
             tvContent.setText(item.getContent());
             btnApply.setBackgroundResource(CommonConst.SSOM.equals(item.getSsomType()) ? R.drawable.btn_write_apply_ssom : R.drawable.btn_write_apply_ssoa);
+            if(!TextUtils.isEmpty(item.getUserId()) && item.getUserId().equals(getUserId())) {
+                btnApply.getChildAt(0).setVisibility(View.GONE);
+                ((TextView) btnApply.getChildAt(1)).setText(getResources().getString(R.string.dialog_delete));
+            }
 
             // btn setting
             btnCancel.setOnClickListener(this);
             btnApply.setOnClickListener(this);
 
-            ((ViewPager)container).addView(mView);
+            container.addView(mView);
             return mView;
         }
 
@@ -213,10 +276,18 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         public void onClick(View v) {
             int id = v.getId();
 
-            if(id == R.id.btn_cancel) {
-                onAdapterButtonPressed(false);
-            } else {
-                onAdapterButtonPressed(true);
+            switch (id) {
+                case R.id.btn_cancel:
+                    onAdapterButtonPressed(false);
+                    break;
+                case R.id.btn_apply:
+                    onAdapterButtonPressed(true);
+                    break;
+                case R.id.profile_img:
+                    Intent intent = new Intent(getActivity(), SsomImageDetailActivity.class);
+                    intent.putExtra(CommonConst.Intent.IMAGE_URL, ssomList.get(currentPos).getImageUrl());
+                    startActivity(intent);
+                    break;
             }
         }
 

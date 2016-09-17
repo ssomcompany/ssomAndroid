@@ -120,4 +120,12 @@ public abstract class BaseFragment extends Fragment {
     public void setSessionInfo(String token, String email, String userId) {
         ((BaseActivity) getActivity()).setSessionInfo(token, email, userId);
     }
+
+    /**
+     * Get Session UserId
+     */
+    public String getUserId() {
+        return ((BaseActivity) getActivity()).getUserId();
+    }
+
 }

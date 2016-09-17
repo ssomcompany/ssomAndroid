@@ -10,9 +10,12 @@ import com.ssomcompany.ssomclient.network.api.GetChattingList;
 import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
 import com.ssomcompany.ssomclient.network.api.SendChattingMessage;
+import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
+import com.ssomcompany.ssomclient.network.api.SsomExistMyPost;
 import com.ssomcompany.ssomclient.network.api.SsomImageUpload;
 import com.ssomcompany.ssomclient.network.api.SsomLogin;
 import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
+import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
 import com.ssomcompany.ssomclient.network.api.SsomRegisterUser;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
@@ -41,7 +44,21 @@ public class APICaller {
                 .setMinAge(minAge).setUserCount(userCount).setSsomType(ssomType).setLatitude(lat).setLongitude(lon);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
-        NetworkManager.request(request, new TypeToken<SsomResponse<SsomImageUpload.Response>>() {}.getType(), listener);
+        NetworkManager.request(request, new TypeToken<SsomResponse<SsomPostCreate.Response>>() {}.getType(), listener);
+    }
+
+    public static <T extends BaseResponse> void ssomExistMyPost(String token, NetworkManager.NetworkListener<T> listener) {
+        SsomExistMyPost.Request request = new SsomExistMyPost.Request();
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+
+        NetworkManager.request(request, new TypeToken<SsomResponse<SsomExistMyPost.Response>>() {}.getType(), listener);
+    }
+
+    public static <T extends BaseResponse> void ssomPostDelete(String token, String postId, NetworkManager.NetworkListener<T> listener) {
+        SsomPostDelete.Request request = new SsomPostDelete.Request(postId);
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+
+        NetworkManager.request(request, new TypeToken<SsomResponse<SsomPostDelete.Response>>() {}.getType(), listener);
     }
 
     public static <T extends BaseResponse> void ssomLogin(String email, String password, NetworkManager.NetworkListener<T> listener) {
@@ -78,6 +95,13 @@ public class APICaller {
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
         NetworkManager.request(request, new TypeToken<SsomResponse<CreateChattingRoom.Response>>() {}.getType(), listener);
+    }
+
+    public static <T extends BaseResponse> void totalChatUnreadCount(String token, NetworkManager.NetworkListener<T> listener) {
+        SsomChatUnreadCount.Request request = new SsomChatUnreadCount.Request();
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+
+        NetworkManager.request(request, new TypeToken<SsomResponse<SsomChatUnreadCount.Response>>() {}.getType(), listener);
     }
 
     public static <T extends BaseResponse> void sendChattingMessage(String token, int roomId, long lastMessageTime,

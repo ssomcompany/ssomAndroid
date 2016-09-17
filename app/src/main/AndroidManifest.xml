@@ -64,10 +64,16 @@
 
         <activity android:name=".activity.SsomChattingActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:configChanges="keyboardHidden|screenSize"
             android:screenOrientation="portrait"/>
 
         <activity android:name=".activity.SsomChattingGuideActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreenTheme"/>
+
+        <activity android:name=".activity.SsomImageDetailActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/FullScreenTheme"/>

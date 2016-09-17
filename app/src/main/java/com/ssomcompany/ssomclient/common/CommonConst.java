@@ -29,5 +29,8 @@ public class CommonConst {
     public class Intent {
         public static final String POST_ID = "post_id";
         public static final String USER_ID = "user_id";
+        public static final String IMAGE_URL = "image_url";
+        public static final String SSOM_TYPE = "ssom_type";
+        public static final String SSOM_ITEM = "ssom_item";
     }
 }

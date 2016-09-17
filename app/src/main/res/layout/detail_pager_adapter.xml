@@ -89,15 +89,18 @@
             android:layout_height="46dp"
             android:layout_marginLeft="8dp"
             android:gravity="center"
+            android:orientation="horizontal"
             android:background="@drawable/btn_write_apply_ssom">
             
             <ImageView
+                android:id="@+id/btn_apply_heart"
                 android:layout_width="23dp"
                 android:layout_height="21dp"
                 android:layout_marginTop="2dp"
                 android:src="@drawable/icon_heart_white"/>
 
             <TextView
+                android:id="@+id/tv_btn_apply"
                 style="@style/ssom_font_16_white_bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

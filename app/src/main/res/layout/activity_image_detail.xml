@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" 
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+    
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/detail_image"
+        android:layout_width="match_parent"
+        android:layout_height="360dp"
+        android:layout_centerInParent="true"/>
+
+    <TextView
+        style="@style/ssom_font_16_white_bold"
+        android:id="@+id/btn_close"
+        android:layout_width="136dp"
+        android:layout_height="47dp"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/dialog_close"
+        android:background="@drawable/btn_chat_info_cancel"
+        android:gravity="center"/>
+</RelativeLayout>

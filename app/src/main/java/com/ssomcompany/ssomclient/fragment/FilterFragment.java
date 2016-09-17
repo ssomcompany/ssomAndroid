@@ -118,6 +118,12 @@ public class FilterFragment extends Fragment {
                 closeView(false);
             }
         });
+        view.findViewById(R.id.icon_circle).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeView(false);
+            }
+        });
         tvApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

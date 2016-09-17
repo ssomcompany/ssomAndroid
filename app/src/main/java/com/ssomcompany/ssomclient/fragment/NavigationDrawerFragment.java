@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -75,7 +76,7 @@ public class NavigationDrawerFragment extends Fragment {
     private ListView mDrawerListView;
     private TextView tvLogin;
     private TextView tvLogout;
-    private RelativeLayout loginEmailLayout;
+    private LinearLayout loginEmailLayout;
     private TextView tvLoginEmail;
 
     public NavigationDrawerFragment() {
@@ -115,7 +116,7 @@ public class NavigationDrawerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         tvLogin = (TextView) view.findViewById(R.id.tv_login);
         tvLogout = (TextView) view.findViewById(R.id.tv_logout);
-        loginEmailLayout = (RelativeLayout) view.findViewById(R.id.login_email_layout);
+        loginEmailLayout = (LinearLayout) view.findViewById(R.id.login_email_layout);
         tvLoginEmail = (TextView) view.findViewById(R.id.tv_login_email);
         TextView tvConfirmEmail = (TextView) view.findViewById(R.id.tv_confirm_email);
         TextView tvNotiSetting = (TextView) view.findViewById(R.id.tv_noti_setting);

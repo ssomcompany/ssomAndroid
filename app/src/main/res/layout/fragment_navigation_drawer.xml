@@ -21,23 +21,24 @@
         android:paddingBottom="17dp"
         android:orientation="vertical" >
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/login_email_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="17dp"
             android:paddingBottom="17dp"
+            android:orientation="horizontal"
             android:visibility="gone">
 
             <TextView
                 android:id="@+id/tv_login_email"
                 style="@style/ssom_font_14_custom_515151_single"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:drawablePadding="11.5dp"
                 android:drawableLeft="@drawable/icon_people"
-                android:ellipsize="end"
-                android:text="test@angrymomo.com"/>
+                android:ellipsize="end"/>
 
             <TextView
                 android:id="@+id/tv_confirm_email"
@@ -47,7 +48,7 @@
                 android:layout_alignBaseline="@id/tv_login_email"
                 android:layout_alignParentRight="true"
                 android:text="@string/login_email_confirm"/>
-        </RelativeLayout>
+        </LinearLayout>
 
         <TextView
             style="@style/ssom_font_13_pinkish_gray_two_single"

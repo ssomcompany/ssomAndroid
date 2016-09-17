@@ -19,10 +19,9 @@ public class ViewListener {
         /**
          *
          * @param isApply set true if positive button clicked, else false
-         * @param postId if isApply is false, ignored this parameter
-         * @param userId if isApply is false, ignored this parameter
+         * @param ssomItem set SsomItem
          */
-        void onDetailFragmentInteraction(boolean isApply, String postId, String userId);
+        void onDetailFragmentInteraction(boolean isApply, SsomItem ssomItem);
     }
 
     public interface OnPostItemInteractionListener {

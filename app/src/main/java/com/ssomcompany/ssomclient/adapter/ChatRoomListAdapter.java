@@ -2,6 +2,11 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,14 +104,19 @@ public class ChatRoomListAdapter extends BaseAdapter {
                 Util.convertAgeRangeAtBackOneChar(item.getMinAge()), item.getUserCount()));
 
         // content
-        holder.tvChatContent.setText(item.getLastMsg());
+        holder.tvChatContent.setText(TextUtils.isEmpty(item.getLastMsg()) ? getEmptyLastMsg() : item.getLastMsg(),
+                TextUtils.isEmpty(item.getLastMsg()) ? TextView.BufferType.SPANNABLE : TextView.BufferType.NORMAL);
 
-        // TODO count 가 없을 경우 view 숨김
-        holder.unreadLayout.setVisibility(View.VISIBLE);
-        // TODO 쏨 요청이 왔을 때 하트로 변경 icon_heart_ssom_ing
-        holder.imgUnreadCount.setImageResource(R.drawable.icon_chat_unread_count);
-        // TODO 쏨 요청이 왔을 때 count view 숨김
-        holder.unreadCount.setText("3");
+        if(item.getUnreadCount() > 0) {
+            holder.unreadLayout.setVisibility(View.VISIBLE);
+            // TODO 쏨 요청이 왔을 때 하트로 변경 icon_heart_ssom_ing
+            holder.imgUnreadCount.setImageResource(R.drawable.icon_chat_unread_count);
+            // TODO 쏨 요청이 왔을 때 count view 숨김
+            holder.unreadCount.setText(item.getUnreadCount());
+        } else {
+            // TODO 쏨 요청이 왔을 경우에는 하트로 변경해야 함
+            holder.unreadLayout.setVisibility(View.INVISIBLE);
+        }
 
         // distance
         holder.tvDistance.setText(LocationTracker.getInstance().getDistanceString(item.getLatitude(), item.getLongitude()));
@@ -116,6 +126,20 @@ public class ChatRoomListAdapter extends BaseAdapter {
         holder.tvTime.setText(Util.getTimeTextForChatRoom(item.getLastTimestamp()));
 
         return convertView;
+    }
+
+    private SpannableStringBuilder getEmptyLastMsg() {
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        String firstStr = context.getString(R.string.chat_message_initial_first);
+        SpannableString redSpannable= new SpannableString(firstStr);
+        redSpannable.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.red_pink)), 0, firstStr.length(), 0);
+        builder.append(redSpannable);
+        String secondStr = context.getString(R.string.chat_message_initial_second);
+        SpannableString whiteSpannable= new SpannableString(secondStr);
+        whiteSpannable.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.pinkish_gray_two)), 0, secondStr.length(), 0);
+        builder.append(whiteSpannable);
+
+        return builder;
     }
 
     private class ChatItemViewHolder {

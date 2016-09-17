@@ -3,6 +3,7 @@ package com.ssomcompany.ssomclient.fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.GetChattingList;
 import com.ssomcompany.ssomclient.network.api.SendChattingMessage;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
@@ -56,6 +58,9 @@ public class ChattingFragment extends BaseFragment {
 
     private ChatRoomItem roomItem;
 
+    // send btn 제어
+    boolean isSending = false;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -74,10 +79,6 @@ public class ChattingFragment extends BaseFragment {
 
     public void setChatRoomItem(ChatRoomItem roomItem) {
         this.roomItem = roomItem;
-    }
-
-    public void setChattingList(ArrayList<ChattingItem> chattingList) {
-        this.chatList = chattingList;
     }
 
     public String getChatRoomUserId() {
@@ -118,10 +119,17 @@ public class ChattingFragment extends BaseFragment {
         setChatRoomInfoLayout(roomItem.getInfoType());
 
         btnSend.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+                if(isSending) {
+                    return;
+                }
+
+                // TODO message 없는 경우 있는 경우 send 버튼의 이미지가 다르게 설정 할지 문의
                 if(TextUtils.isEmpty(editMessage.getText())) return;
 
+                isSending = true;
                 APICaller.sendChattingMessage(getToken(), roomItem.getId(), System.currentTimeMillis(), String.valueOf(editMessage.getText()),
                         new NetworkManager.NetworkListener<SsomResponse<SendChattingMessage.Response>>() {
                             @Override
@@ -143,6 +151,7 @@ public class ChattingFragment extends BaseFragment {
                                             ", message : " + response.getMessage(), response.getError());
                                     showErrorMessage();
                                 }
+                                isSending = false;
                             }
                         });
             }
@@ -152,6 +161,35 @@ public class ChattingFragment extends BaseFragment {
         editMessage.setSelected(true);
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        showProgressDialog();
+        APICaller.getChattingList(getToken(), roomItem.getId(),
+                new NetworkManager.NetworkListener<SsomResponse<GetChattingList.Response>>() {
+                    @Override
+                    public void onResponse(SsomResponse<GetChattingList.Response> response) {
+                        if(response.isSuccess()) {
+                            Log.d(TAG, "response : " + response);
+                            if(response.getData() != null) {
+                                chatList = response.getData().getChattingList();
+                                chatList.add(0, new ChattingItem().setType(ChattingItem.MessageType.initial));
+                                mAdapter.setItemList(chatList);
+                                mAdapter.notifyDataSetChanged();
+                            } else {
+                                Log.e(TAG, "unexpected error, data is null");
+                            }
+                        } else {
+                            Log.e(TAG, "Response error with code " + response.getResultCode() +
+                                    ", message : " + response.getMessage(), response.getError());
+                            showErrorMessage();
+                        }
+                        dismissProgressDialog();
+                    }
+                });
     }
 
     public void setChatRoomInfoLayout(final ChatRoomItem.InfoType type) {

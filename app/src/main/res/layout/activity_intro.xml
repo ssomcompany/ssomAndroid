@@ -30,7 +30,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Service \u0026 Design by 쏨컴패니 2015. All right reserved"
+        android:text="Service \u0026 Design by 쏨컴파니 2015. All right reserved"
         android:textSize="10sp"
         android:textColor="#c2c2c2"
         android:layout_below="@id/btn_start"

@@ -152,6 +152,7 @@ public class LocationTracker {
     }
 
     public boolean chkCanGetLocation() {
+        getMyLocation();
         return canGetLocation;
     }
 

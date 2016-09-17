@@ -15,6 +15,9 @@ public class ChatRoomItem extends SsomItem {
     private String lastMsg;
     private long lastTimestamp;
     private InfoType infoType;
+    private int unreadCount;
+    private String requestId;
+    private String status;
 
     public int getId() {
         return id;
@@ -70,5 +73,29 @@ public class ChatRoomItem extends SsomItem {
 
     public void setLastTimestamp(long lastTimestamp) {
         this.lastTimestamp = lastTimestamp;
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

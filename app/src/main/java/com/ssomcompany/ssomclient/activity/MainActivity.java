@@ -1,6 +1,7 @@
 package com.ssomcompany.ssomclient.activity;
 
 import android.Manifest;
+import android.accounts.NetworkErrorException;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,7 +21,9 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -34,6 +37,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NetworkError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
@@ -62,12 +66,18 @@ import com.ssomcompany.ssomclient.fragment.SsomListFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
+import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
+import com.ssomcompany.ssomclient.network.api.SsomExistMyPost;
+import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.PushManageService;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,8 +139,13 @@ public class MainActivity extends BaseActivity
     private String selectedView;
     private String selectedTab;
     private FragmentManager fragmentManager;
+    private FragmentTransaction ft;
 
     private Location myLocation;
+    private ImageView btnWrite;
+
+    private String myPostId;
+    private String myPostSsomType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,7 +214,13 @@ public class MainActivity extends BaseActivity
                         i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                         startActivityForResult(i, REQUEST_CHECK_DETAIL_LOCATION_PERMISSION);
                     }
-                }, null);
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        UiUtils.makeToastMessage(getApplicationContext(), "위치권한이 없어 앱을 사용하실 수 없습니다.");
+                        finish();
+                    }
+                });
     }
 
     private void checkLocationServiceEnabled() {
@@ -230,7 +251,12 @@ public class MainActivity extends BaseActivity
                 intent.addCategory(Intent.CATEGORY_DEFAULT);
                 startActivityForResult(intent, REQUEST_CHECK_LOCATION_PERMISSION);
             }
-        }).setNegativeButton("Cancel", null).create().show();
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                continueProcess();
+            }
+        }).create().show();
     }
 
     @Override
@@ -253,6 +279,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void requestSsomList() {
+        showProgressDialog(false);
         APICaller.getSsomList(new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
 
             @Override
@@ -278,6 +305,7 @@ public class MainActivity extends BaseActivity
                 } else {
                     Log.e(TAG, "Response error with code " + response.getResultCode() + ", message : " + response.getMessage(),
                             response.getError());
+                    dismissProgressDialog();
                 }
             }
         });
@@ -286,24 +314,10 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onResume() {
         super.onResume();
-        initFilterView();
 
 //        if(locationTracker != null && locationTracker.chkCanGetLocation()) {
 //            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
 //        }
-    }
-
-    private void initFilterView() {
-        TextView filterTv = (TextView) findViewById(R.id.filter_txt_age_n_count);
-        String filterAge;
-        String filterPeople;
-        int age = filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 20);
-        int people = filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 1);
-
-        filterAge = Util.convertAgeRangeAtBackOneChar(age);
-        filterPeople = Util.convertPeopleRange(people);
-        filterTv.setText(String.format(getResources().getString(R.string.filter_age_n_count),
-                filterAge, filterPeople));
     }
 
     private void initLayoutWrite(){
@@ -348,9 +362,11 @@ public class MainActivity extends BaseActivity
             }
         });
 
-        ImageView btn_write = (ImageView) findViewById(R.id.btn_write);
+        btnWrite = (ImageView) findViewById(R.id.btn_write);
+        setSsomWriteButtonImage();
+
         final Context context = this;
-        btn_write.setOnClickListener(new View.OnClickListener() {
+        btnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
@@ -358,18 +374,42 @@ public class MainActivity extends BaseActivity
                     return;
                 }
 
-                Intent i = new Intent();
-                i.setClass(context, SsomWriteActivity.class);
-                startActivityForResult(i, REQUEST_SSOM_WRITE);
+                if(!TextUtils.isEmpty(myPostId)) {
+                    startDetailFragment(getMyPostTypeItems(myPostSsomType), myPostId);
+                } else {
+                    Intent i = new Intent();
+                    i.setClass(context, SsomWriteActivity.class);
+                    startActivityForResult(i, REQUEST_SSOM_WRITE);
+                }
             }
         });
 
-        View filter = findViewById(R.id.filter_txt_layout);
         View filterImgLayout = findViewById(R.id.filter_img);
-
-        // listener register
-        filter.setOnClickListener(filterClickListener);
         filterImgLayout.setOnClickListener(filterClickListener);
+    }
+
+    private void setSsomWriteButtonImage() {
+        if(!TextUtils.isEmpty(getToken())) {
+            APICaller.ssomExistMyPost(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomExistMyPost.Response>>() {
+
+                @Override
+                public void onResponse(SsomResponse<SsomExistMyPost.Response> response) {
+                    if (response.isSuccess() && response.getData() != null
+                            && !TextUtils.isEmpty(response.getData().getPostId())) {
+                        myPostId = response.getData().getPostId();
+                        myPostSsomType = response.getData().getSsomType();
+                        btnWrite.setImageResource(R.drawable.my_btn);
+                    } else {
+                        Log.d(TAG, "get my post is failed");
+                        myPostId = "";
+                        btnWrite.setImageResource(R.drawable.btn_write);
+                    }
+                }
+            });
+        } else {
+            myPostId = "";
+            btnWrite.setImageResource(R.drawable.btn_write);
+        }
     }
 
     private void ssomDataChangedListener() {
@@ -384,8 +424,7 @@ public class MainActivity extends BaseActivity
         @Override
         public void onClick(View v) {
             FilterFragment filterFragment = FilterFragment.newInstance();
-            fragmentManager.beginTransaction().replace(R.id.top_container, filterFragment, CommonConst.FILTER_FRAG)
-                    .addToBackStack(null).commit();
+            replaceFragment(R.id.top_container, filterFragment, CommonConst.FILTER_FRAG, true);
         }
     };
 
@@ -396,7 +435,20 @@ public class MainActivity extends BaseActivity
 
         ssomActionBar = (SsomActionBarView) tb.findViewById(R.id.ssom_action_bar);
         // TODO set message count by calling getMessageCount api
-        ssomActionBar.setChatCount("0");
+        APICaller.totalChatUnreadCount(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomChatUnreadCount.Response>>() {
+            @Override
+            public void onResponse(SsomResponse<SsomChatUnreadCount.Response> response) {
+                if(response.isSuccess() && response.getData() != null) {
+                    if(response.getData().getUnreadCount() > 0) {
+                        ssomActionBar.setChatIconOnOff(true);
+                        ssomActionBar.setChatCount(String.valueOf(response.getData().getUnreadCount()));
+                    } else {
+                        ssomActionBar.setChatIconOnOff(false);
+                        ssomActionBar.setChatCount("0");
+                    }
+                }
+            }
+        });
         ssomActionBar.setHeartCount(0);
         ssomActionBar.setHeartRefillTime("--:--");
         ssomActionBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
@@ -488,6 +540,12 @@ public class MainActivity extends BaseActivity
                 replace(R.id.container, fragment, CommonConst.SSOM_LIST_FRAG).commit();
     }
 
+    private void startDetailFragment(ArrayList<SsomItem> ssomList, String postId) {
+        DetailFragment fragment = DetailFragment.newInstance(postId);
+        fragment.setSsomListData(ssomList);
+        replaceFragment(R.id.whole_container, fragment, CommonConst.DETAIL_FRAG, true);
+    }
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -509,6 +567,7 @@ public class MainActivity extends BaseActivity
                             public void onClick(DialogInterface dialog, int which) {
                                 setSessionInfo("", "", "");
                                 mNavigationDrawerFragment.setLoginEmailLayout();
+                                setSsomWriteButtonImage();
                             }
                         }, null);
                 break;
@@ -556,10 +615,7 @@ public class MainActivity extends BaseActivity
     public void onPostItemClick(ArrayList<SsomItem> ssomList, int position) {
         Log.i(TAG, "onPostItemClick() : " + position);
 
-        DetailFragment fragment = DetailFragment.newInstance(ssomList.get(position).getPostId());
-        fragment.setSsomListData(ssomList);
-        fragmentManager.beginTransaction().replace(R.id.whole_container, fragment, CommonConst.DETAIL_FRAG)
-                .addToBackStack(null).commit();
+        startDetailFragment(ssomList, ssomList.get(position).getPostId());
     }
 
     @Override
@@ -598,10 +654,7 @@ public class MainActivity extends BaseActivity
                         + marker.getPosition().latitude + ", longitude ="
                         + marker.getPosition().longitude);
 
-                DetailFragment fragment = DetailFragment.newInstance(postId);
-                fragment.setSsomListData(getCurrentPostItems());
-                fragmentManager.beginTransaction().replace(R.id.whole_container, fragment, CommonConst.DETAIL_FRAG)
-                        .addToBackStack(null).commit();
+                startDetailFragment(getCurrentPostItems(), postId);
                 return false;
             }
         });
@@ -704,6 +757,10 @@ public class MainActivity extends BaseActivity
 //        return CommonConst.SSOM.equals(selectedTab)? Util.convertAllMapToSsomMap(ITEM_MAP) : Util.convertAllMapToSsoaMap(ITEM_MAP);
 //    }
 
+    private ArrayList<SsomItem> getMyPostTypeItems(String myPostSsomType) {
+        return CommonConst.SSOM.equals(myPostSsomType)? Util.convertAllListToSsomList(ITEM_LIST) : Util.convertAllListToSsoaList(ITEM_LIST);
+    }
+
     public ArrayList<SsomItem> getCurrentPostItems() {
         return CommonConst.SSOM.equals(selectedTab)? Util.convertAllListToSsomList(ITEM_LIST) : Util.convertAllListToSsoaList(ITEM_LIST);
     }
@@ -713,8 +770,9 @@ public class MainActivity extends BaseActivity
         if(items != null && items.size()>0){
             if(mMap != null) mMap.clear();
             mIdMap.clear();
+            boolean isLastItem;
             for (int i=0 ; i<items.size() ; i++) {
-                boolean isLastItem = (i == items.size() - 1);
+                isLastItem = (i == items.size() - 1);
                 addMarker(items.get(i), isLastItem);
             }
         }
@@ -731,6 +789,7 @@ public class MainActivity extends BaseActivity
                         .title(item.getContent()).draggable(false).icon(getMarkerImage(item.getSsomType(), bitmap)));
 
                 mIdMap.put(marker, item.getPostId());
+                if(isLastItem) dismissProgressDialog();
             }
         }
         , 144  // max width
@@ -761,7 +820,8 @@ public class MainActivity extends BaseActivity
             }
 
             Drawable iconDrawable = new BitmapDrawable(getApplicationContext().getResources(), iconBitmap);
-            Drawable imageDrawable = new RoundImage(imageBitmap);
+            Drawable imageDrawable = new RoundImage(Bitmap.createScaledBitmap(imageBitmap, Util.convertDpToPixel(47),
+                    Util.convertDpToPixel(47), false));
 
             iconDrawable.setBounds(0, 0,
                     Util.convertDpToPixel(49), Util.convertDpToPixel(57));
@@ -780,10 +840,9 @@ public class MainActivity extends BaseActivity
         startActivityForResult(new Intent(this, SsomLoginBaseActivity.class), REQUEST_SSOM_LOGIN);
     }
 
-    private void startChattingActivity(String postId, String userId, boolean ssomRequest) {
+    private void startChattingActivity(SsomItem ssomItem, boolean ssomRequest) {
         Intent chattingIntent = new Intent(this, SsomChattingActivity.class);
-        chattingIntent.putExtra(CommonConst.Intent.POST_ID, postId);
-        chattingIntent.putExtra(CommonConst.Intent.USER_ID, userId);
+        chattingIntent.putExtra(CommonConst.Intent.SSOM_ITEM, ssomItem);
         startActivity(chattingIntent);
     }
 
@@ -827,11 +886,10 @@ public class MainActivity extends BaseActivity
         Log.i(TAG, "filter interaction : " + isApply);
         fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.FILTER_FRAG)).commit();
         fragmentManager.popBackStack();
-        if(isApply) initFilterView();
     }
 
     @Override
-    public void onDetailFragmentInteraction(boolean isApply, String postId, String userId) {
+    public void onDetailFragmentInteraction(boolean isApply, SsomItem ssomItem) {
         Log.i(TAG, "detail interaction : " + isApply);
 
         if(isApply) {
@@ -841,7 +899,25 @@ public class MainActivity extends BaseActivity
                 return;
             }
 
-            startChattingActivity(postId, userId, true);
+            if(ssomItem != null && !TextUtils.isEmpty(getUserId()) && getUserId().equals(ssomItem.getUserId())) {
+                APICaller.ssomPostDelete(getToken(), ssomItem.getPostId(),
+                        new NetworkManager.NetworkListener<SsomResponse<SsomPostDelete.Response>>() {
+                    @Override
+                    public void onResponse(SsomResponse<SsomPostDelete.Response> response) {
+                        if(response.isSuccess()) {
+                            Log.d(TAG, "delete success : " + response);
+                            fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
+                            fragmentManager.popBackStack();
+                            requestSsomList();
+                            myPostId = "";
+                            btnWrite.setImageResource(R.drawable.btn_write);
+                        }
+                    }
+                });
+                return;
+            }
+
+            startChattingActivity(ssomItem, true);
         }
 
         fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
@@ -856,11 +932,13 @@ public class MainActivity extends BaseActivity
             case REQUEST_SSOM_WRITE :
                 if(resultCode == RESULT_OK) {
                     requestSsomList();
+                    setSsomWriteButtonImage();
                 }
                 break;
             case REQUEST_SSOM_LOGIN :
                 if(resultCode == RESULT_OK) {
                     mNavigationDrawerFragment.setLoginEmailLayout();
+                    setSsomWriteButtonImage();
                 }
                 break;
             case REQUEST_CHECK_LOCATION_PERMISSION:
@@ -888,6 +966,10 @@ public class MainActivity extends BaseActivity
             return;
         }
 
+        if(mNavigationDrawerFragment.isDrawerOpen()) {
+            drawer.closeDrawers();
+        }
+
         if(canFinish) {
             if(toast != null) toast.cancel();
             super.onBackPressed();
@@ -907,5 +989,13 @@ public class MainActivity extends BaseActivity
 
     public void setOnTabChangedListener(ViewListener.OnTabChangedListener mTabListener) {
         this.mTabListener = mTabListener;
+    }
+
+    private void replaceFragment(int containerId, Fragment fragment, String tagName, boolean isBackStack) {
+        ft = fragmentManager.beginTransaction();
+        ft.replace(containerId, fragment, tagName);
+        if(isBackStack) ft.addToBackStack(null);
+        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+        ft.commit();
     }
 }

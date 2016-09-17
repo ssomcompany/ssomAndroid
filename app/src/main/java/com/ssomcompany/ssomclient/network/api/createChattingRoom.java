@@ -2,7 +2,11 @@ package com.ssomcompany.ssomclient.network.api;
 
 import com.ssomcompany.ssomclient.common.ToStringHelperClass;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
+import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
+import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.network.model.SsomPostRequest;
+
+import java.util.ArrayList;
 
 public class CreateChattingRoom {
 
@@ -23,5 +27,15 @@ public class CreateChattingRoom {
         }
     }
     
-    public static class Response extends ToStringHelperClass {}
+    public static class Response extends ToStringHelperClass {
+        private int chatroomId;
+
+        public int getChatroomId() {
+            return chatroomId;
+        }
+
+        public void setChatroomId(int chatroomId) {
+            this.chatroomId = chatroomId;
+        }
+    }
 }
