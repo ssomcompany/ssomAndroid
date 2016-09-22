@@ -31,7 +31,7 @@ public class NetworkConstant {
 
     // API start
     public static class API {
-        public static final String SSOM_LIST = "/posts";
+        public static final String SSOM_LIST = "/posts?lat=%f&lng=%f";
         public static final String SSOM_POST = "/posts";
         public static final String SSOM_MY_POST = "/posts/mine";
         public static final String IMAGE_PATH = "/file/images/";

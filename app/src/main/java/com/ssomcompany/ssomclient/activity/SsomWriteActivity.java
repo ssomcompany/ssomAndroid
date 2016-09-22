@@ -627,6 +627,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     private void createPost(String fileId) {
         Log.d(TAG, "createPost()");
 
+        showProgressDialog(false);
         APICaller.ssomPostCreate(getToken(), "" + System.currentTimeMillis(), UniqueIdGenUtil.getId(getApplicationContext()), Util.getEncodedString(editWriteContent.getText().toString()),
                 NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId), age.getValue(), people.getValue(),
                 tvSsomBalloon.isSelected() ? CommonConst.SSOM : CommonConst.SSOA, myLocation.getLatitude(), myLocation.getLongitude(),
@@ -640,6 +641,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                                 finish();
                             } else {
                                 Log.d(TAG, "failed to create post!");
+                                showErrorMessage();
                             }
                         }
                     }

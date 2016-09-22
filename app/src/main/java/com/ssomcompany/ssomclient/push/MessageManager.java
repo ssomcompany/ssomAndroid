@@ -12,9 +12,14 @@ import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.reflect.TypeToken;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.MainActivity;
+import com.ssomcompany.ssomclient.network.APICaller;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
+import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
 public class MessageManager {
     public static final String TAG = MessageManager.class.getSimpleName();
@@ -45,11 +50,11 @@ public class MessageManager {
         return mInstance;
     }
 
-    public void getMessageCount() {
+    public void getMessageCount(String token) {
         Log.d(TAG, "getMessageCount call");
 
         // TODO method 정의
-//        getUnreadCount(currentAppName);
+        getUnreadCount(token);
     }
 
     // TODO push message setting 화면
@@ -138,40 +143,33 @@ public class MessageManager {
     /**
      * Remove the message
      */
-    public void dismissPushMessage() {
+    private void dismissPushMessage() {
         NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_ID);
     }
 
-    // TODO message api 정의
-//    private void getUnreadCount(String viewFilter) {
-//        Log.i(TAG, "::getUnreadCount:viewFilter=" + viewFilter);
-//
-//        GetUnreadCount.Request request = new GetUnreadCount.Request().setViewFilter(viewFilter);
-//
-//        NetworkManager.request(request, new TypeToken<SsomResponse<Integer>>() {
-//        }.getType(),
-//                new NetworkListener<SsomResponse<Integer>>() {
-//
-//                    @Override
-//                    public void onResponse(SsomResponse<Integer> response) {
-//                        if (response.isSuccess()) {
-//                            Integer data = response.getData();
-//
-//                            changeCount(data);
-//
-//                            Log.d(TAG, "alarmCount : " + data);
-//
-//                        } else {
-//                            Log.i(TAG,
-//                                    "getUnreadCount error with code " + response.getResultCode() + ", message : " + response.getMessage(),
-//                                    response.getError());
-//                        }
-//                    }
-//                });
-//    }
+    private void getUnreadCount(String token) {
+        Log.i(TAG, "::getUnreadCount:");
 
-    public void changeCount(Integer count) {
+        APICaller.totalChatUnreadCount(token, new NetworkManager.NetworkListener<SsomResponse<SsomChatUnreadCount.Response>>() {
+            @Override
+            public void onResponse(SsomResponse<SsomChatUnreadCount.Response> response) {
+                if(response.isSuccess() && response.getData() != null) {
+                    Integer data = response.getData().getUnreadCount();
+
+                    changeCount(data);
+
+                    Log.d(TAG, "alarmCount : " + data);
+                } else {
+                    Log.i(TAG,
+                            "getUnreadCount error with code " + response.getResultCode() + ", message : " + response.getMessage(),
+                            response.getError());
+                }
+            }
+        });
+    }
+
+    private void changeCount(Integer count) {
         if (count == null) {
             alarmCount = 0;
         } else {
@@ -186,7 +184,7 @@ public class MessageManager {
         localBroadcastManager.sendBroadcast(countChangeIntent);
     }
 
-    public void receivedPush() {
+    private void receivedPush() {
         Log.d(TAG, "sendBroadcast: action=BROADCAST_MESSAGE_RECEIVED_PUSH");
 
         Intent pushIntent = new Intent(BROADCAST_MESSAGE_RECEIVED_PUSH);
@@ -194,7 +192,7 @@ public class MessageManager {
         localBroadcastManager.sendBroadcast(pushIntent);
     }
 
-    public void increasePushCount() {
+    private void increasePushCount() {
         pushCount++;
 
         Log.v(TAG, "::increasePushCount: count=" + pushCount);

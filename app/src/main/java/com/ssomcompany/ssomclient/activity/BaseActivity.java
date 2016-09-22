@@ -44,6 +44,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     private MessageManager messageManager;
     private long activityCreatedTime;
 
+    private SsomPreferences session;
+
     private final AtomicBoolean paused = new AtomicBoolean(false);
     protected final AdvancedHandler aHandler = new AdvancedHandler();
 
@@ -57,6 +59,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (null != savedInstanceState) {
             this.activityCreatedTime = savedInstanceState.getLong(KEY_ACTIVITY_CREATE_TIME);
+        }
+
+        if(session == null) {
+            session = new SsomPreferences(this, SsomPreferences.LOGIN_PREF);
         }
 
         if (0 == this.activityCreatedTime) {
@@ -138,7 +144,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     };
 
     protected void refreshMessageCount() {
-        messageManager.getMessageCount();
+        messageManager.getMessageCount(getToken());
     }
 
     // this method must be overwritten when use notification count on the activity
@@ -344,7 +350,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public SsomPreferences getSession() {
-        return BaseApplication.getInstance().getSession();
+        return session;
     }
 
     public String getToken() {

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.onesignal.OneSignal;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
@@ -78,32 +79,46 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
                 if(checkEmptyBox()) return;
 
                 showProgressDialog();
-                APICaller.ssomLogin(String.valueOf(etLoginEmail.getText()), String.valueOf(etLoginPass.getText()),
-                        new NetworkManager.NetworkListener<SsomResponse<SsomLogin.Response>>() {
-                            @Override
-                            public void onResponse(SsomResponse<SsomLogin.Response> response) {
-                                if(response.isSuccess()) {
-                                    if(response.getData() != null) {
-                                        setSessionInfo(response.getData().getToken(),
-                                                String.valueOf(etLoginEmail.getText()), response.getData().getUserId());
-                                        mListener.onLoginFragmentInteraction(R.id.btn_login);
-                                    } else {
-                                        Log.e(TAG, "unexpected error, data is null");
-                                    }
-                                } else {
-                                    Log.e(TAG, "Response error with code " + response.getStatusCode() +
-                                            ", message : " + response.getMessage(), response.getError());
+                OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+                    @Override
+                    public void idsAvailable(String userId, String registrationId) {
+                        Log.d(TAG, "User:" + userId);
+                        if (registrationId != null) Log.d(TAG, "registrationId:" + registrationId);
 
-                                    if(response.getStatusCode() == 401) {
-                                        UiUtils.makeToastMessage(getActivity(),
-                                                getString(R.string.login_failed));
-                                    } else {
-                                        showErrorMessage();
+                        if(TextUtils.isEmpty(userId)) {
+                            Log.d(TAG, "User id is invalid.. cannot log in");
+                            dismissProgressDialog();
+                            return;
+                        }
+
+                        APICaller.ssomLogin(String.valueOf(etLoginEmail.getText()), String.valueOf(etLoginPass.getText()),
+                                userId, new NetworkManager.NetworkListener<SsomResponse<SsomLogin.Response>>() {
+                                    @Override
+                                    public void onResponse(SsomResponse<SsomLogin.Response> response) {
+                                        if(response.isSuccess()) {
+                                            if(response.getData() != null) {
+                                                setSessionInfo(response.getData().getToken(),
+                                                        String.valueOf(etLoginEmail.getText()), response.getData().getUserId());
+                                                mListener.onLoginFragmentInteraction(R.id.btn_login);
+                                            } else {
+                                                Log.e(TAG, "unexpected error, data is null");
+                                            }
+                                        } else {
+                                            Log.e(TAG, "Response error with code " + response.getStatusCode() +
+                                                    ", message : " + response.getMessage(), response.getError());
+
+                                            if(response.getStatusCode() == 401) {
+                                                UiUtils.makeToastMessage(getActivity(),
+                                                        getString(R.string.login_failed));
+                                            } else {
+                                                showErrorMessage();
+                                            }
+                                        }
+                                        dismissProgressDialog();
                                     }
-                                }
-                                dismissProgressDialog();
-                            }
-                        });
+                                });
+                    }
+                });
                 break;
             case R.id.btn_login_find_password :
             case R.id.btn_login_register :

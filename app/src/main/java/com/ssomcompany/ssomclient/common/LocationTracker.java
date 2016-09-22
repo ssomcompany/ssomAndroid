@@ -80,7 +80,7 @@ public class LocationTracker {
         gpsLocationListener = gpsListener;
         networkLocationListener = netListener;
 
-        if(locationManager != null) {
+        if(locationManager != null && locationTracker.chkCanGetLocation()) {
             if(isGpsEnabled) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_UPDATES,
                         MIN_DISTANCE_UPDATES, gpsListener);

@@ -35,12 +35,15 @@ public class ChatRoomListAdapter extends BaseAdapter {
     private ChatItemViewHolder holder;
     private ArrayList<ChatRoomItem> itemList;
 
-    public ChatRoomListAdapter(Context context, ArrayList<ChatRoomItem> itemList){
+    public ChatRoomListAdapter(Context context){
         this.context = context;
         this.mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
         this.mImageLoader = NetworkManager.getInstance().getImageLoader();
+    }
+
+    public void setChatRoomList(ArrayList<ChatRoomItem> itemList) {
         this.itemList = itemList;
     }
 

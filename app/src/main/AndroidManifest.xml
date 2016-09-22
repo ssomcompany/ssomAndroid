@@ -85,33 +85,6 @@
             android:configChanges="keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Translucent"/>
 
-        <receiver
-            android:name=".push.PushReceiver"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <action android:name="com.google.android.c2dm.intent.REGISTER" />
-
-                <category android:name="com.ssomcompany.ssomclient" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name=".push.PushManageService"
-            android:enabled="true"
-            android:exported="true"
-            android:label="com.ssomcompany.ssomclient.push.PushManageService" >
-            <intent-filter>
-                <action android:name="com.ssomcompany.ssomclient.MainActivity" />
-                <action android:name="com.ssomcompany.ssomclient.push.pushReceiver" />
-
-                <category android:name="com.ssomcompany.ssomclient" />
-            </intent-filter>
-        </service>
-
     </application>
 
 </manifest>

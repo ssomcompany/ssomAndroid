@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.adapter.DrawerMenuAdapter;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.control.ViewListener;
@@ -96,7 +97,7 @@ public class NavigationDrawerFragment extends Fragment {
             mFromSavedInstanceState = true;
         }
 
-        session = BaseApplication.getInstance().getSession();
+        session = ((BaseActivity) getActivity()).getSession();
 
         // Select either the default item (0) or the last selected item.
 //        selectItem(mCurrentSelectedPosition);

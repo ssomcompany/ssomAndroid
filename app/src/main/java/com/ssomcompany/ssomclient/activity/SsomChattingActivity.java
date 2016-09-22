@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -43,7 +44,6 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     private ChatRoomListFragment roomListFragment;
 
     private FragmentManager fragmentManager;
-    private ArrayList<ChatRoomItem> chatRoomList;
     private SsomActionBarView ssomBar;
 
     private SsomPreferences chatPref;
@@ -86,11 +86,13 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
 //                        } else {
 //                            Log.d(TAG, "chat began");
 //                        }
+                    } else {
+                        showErrorMessage();
                     }
                 }
             });
         } else {
-            requestChattingRoomList();
+            startChatRoomListFragment();
         }
     }
 
@@ -107,27 +109,37 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 if(response.isSuccess() && response.getData() != null) {
                     ssomBar.setSsomBarTitleText(String.format(getResources().getString(R.string.chat_list_title),
                             response.getData().getUnreadCount()));
+                } else {
+                    showErrorMessage();
                 }
             }
         });
         ssomBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(imm.hideSoftInputFromWindow(null, 0)) {
-                    return;
-                }
-
                 switch (CURRENT_STATE) {
                     case STATE_CHAT_LIST :
                         finish();
                         break;
                     case STATE_CHAT_ROOM :
+//                        if(getCurrentFocus() != null)
+//                            imm.hideSoftInputFromInputMethod(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
                         CURRENT_STATE = STATE_CHAT_LIST;
                         changeSsomBarViewForChatRoomList();
-                        requestChattingRoomList();
+                        startChatRoomListFragment();
+                        hideSoftKeyboard();
                 }
             }
         });
+    }
+
+    private void hideSoftKeyboard() {
+        View view = this.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(this);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     private void changeSsomBarViewForChatRoomList() {
@@ -183,7 +195,6 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
 
     private void startChatRoomListFragment() {
         if(roomListFragment == null) roomListFragment = ChatRoomListFragment.newInstance();
-        roomListFragment.setChatRoomListData(chatRoomList);
         fragmentManager.beginTransaction().replace(R.id.chat_container, roomListFragment, CommonConst.CHAT_LIST_FRAG).commit();
 //        fragmentManager.executePendingTransactions();
     }
@@ -194,32 +205,13 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         fragmentManager.beginTransaction().replace(R.id.chat_container, fragment, CommonConst.CHATTING_FRAG).commit();
     }
 
-    private void requestChattingRoomList() {
-        showProgressDialog();
-        APICaller.getChattingRoomList(getToken(), new NetworkManager.NetworkListener<SsomResponse<GetChattingRoomList.Response>>() {
-            @Override
-            public void onResponse(SsomResponse<GetChattingRoomList.Response> response) {
-                if(response.isSuccess()) {
-                    if(response.getData() != null) {
-                        chatRoomList = response.getData().getChattingRoomList();
-                        startChatRoomListFragment();
-                    } else {
-                        Log.e(TAG, "unexpected error, data is null");
-                    }
-                } else {
-                    showErrorMessage();
-                }
-                dismissProgressDialog();
-            }
-        });
-    }
-
     @Override
     public void onChatItemClick(final int position) {
         CURRENT_STATE = STATE_CHAT_ROOM;
-        startChattingFragment(chatRoomList.get(position));
-        changeSsomBarViewForChattingRoom(chatRoomList.get(position).getMinAge(),
-                chatRoomList.get(position).getUserCount());
+        ChatRoomItem chatRoom = roomListFragment.getChatRoomList().get(position);
+        startChattingFragment(chatRoom);
+        changeSsomBarViewForChattingRoom(chatRoom.getMinAge(),
+                chatRoom.getUserCount());
     }
 
     @Override
@@ -231,7 +223,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         if(CURRENT_STATE == STATE_CHAT_ROOM) {
             CURRENT_STATE = STATE_CHAT_LIST;
             changeSsomBarViewForChatRoomList();
-            requestChattingRoomList();
+            startChatRoomListFragment();
         } else {
             super.onBackPressed();
         }

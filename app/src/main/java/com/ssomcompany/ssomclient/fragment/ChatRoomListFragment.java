@@ -3,6 +3,7 @@ package com.ssomcompany.ssomclient.fragment;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,11 @@ import com.ssomcompany.ssomclient.adapter.ChatRoomListAdapter;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
+import com.ssomcompany.ssomclient.network.APICaller;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
+import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 import com.ssomcompany.ssomclient.widget.swipelistview.SwipeMenu;
 import com.ssomcompany.ssomclient.widget.swipelistview.SwipeMenuCreator;
@@ -59,10 +64,6 @@ public class ChatRoomListFragment extends BaseFragment {
         return chatRoomListFragment;
     }
 
-    public void setChatRoomListData(ArrayList<ChatRoomItem> chatRoomList) {
-        this.chatRoomList = chatRoomList;
-    }
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -71,11 +72,15 @@ public class ChatRoomListFragment extends BaseFragment {
         super();
     }
 
+    public ArrayList<ChatRoomItem> getChatRoomList() {
+        return chatRoomList;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new ChatRoomListAdapter(getActivity(), chatRoomList);
+        mAdapter = new ChatRoomListAdapter(getActivity());
     }
 
     @Override
@@ -138,6 +143,30 @@ public class ChatRoomListFragment extends BaseFragment {
         mListView.setAdapter(mAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        showProgressDialog();
+        APICaller.getChattingRoomList(getToken(), new NetworkManager.NetworkListener<SsomResponse<GetChattingRoomList.Response>>() {
+            @Override
+            public void onResponse(SsomResponse<GetChattingRoomList.Response> response) {
+                if(response.isSuccess()) {
+                    if(response.getData() != null) {
+                        chatRoomList = response.getData().getChattingRoomList();
+                        mAdapter.setChatRoomList(chatRoomList);
+                        mAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.e(TAG, "unexpected error, data is null");
+                    }
+                } else {
+                    showErrorMessage();
+                }
+                dismissProgressDialog();
+            }
+        });
     }
 
     @Override

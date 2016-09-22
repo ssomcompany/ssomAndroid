@@ -17,6 +17,7 @@ import com.ssomcompany.ssomclient.network.api.SsomLogin;
 import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
 import com.ssomcompany.ssomclient.network.api.SsomRegisterUser;
+import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
@@ -25,8 +26,11 @@ import java.util.Locale;
 public class APICaller {
     private static final int TIME_OUT_LONG = 60000;
 
-    public static <T extends BaseResponse> void getSsomList(NetworkManager.NetworkListener<T> listener) {
-        GetSsomList.Request request = new GetSsomList.Request();
+    public static <T extends BaseResponse> void getSsomList(double latitude, double longitude, String userId,
+                                                            int ageFilter, int countFilter, NetworkManager.NetworkListener<T> listener) {
+        GetSsomList.Request request;
+        if(ageFilter == 0 || countFilter == 0) request = new GetSsomList.Request(latitude, longitude, userId);
+        else request = new GetSsomList.Request(latitude, longitude, userId, ageFilter, countFilter);
 
         NetworkManager.request(request, new TypeToken<SsomResponse<GetSsomList.Response>>() {}.getType(), listener);
     }
@@ -51,7 +55,7 @@ public class APICaller {
         SsomExistMyPost.Request request = new SsomExistMyPost.Request();
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
-        NetworkManager.request(request, new TypeToken<SsomResponse<SsomExistMyPost.Response>>() {}.getType(), listener);
+        NetworkManager.request(request, new TypeToken<SsomResponse<SsomItem>>() {}.getType(), listener);
     }
 
     public static <T extends BaseResponse> void ssomPostDelete(String token, String postId, NetworkManager.NetworkListener<T> listener) {
@@ -61,9 +65,9 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomPostDelete.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void ssomLogin(String email, String password, NetworkManager.NetworkListener<T> listener) {
-        SsomLogin.Request request = new SsomLogin.Request();
-        Log.d("login log", "login id : " + email + ", pass : " + password);
+    public static <T extends BaseResponse> void ssomLogin(String email, String password, String playerId,
+                                                          NetworkManager.NetworkListener<T> listener) {
+        SsomLogin.Request request = new SsomLogin.Request().setPlayerId(playerId);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION,
                 "Basic " + Base64.encodeToString((String.format(Locale.getDefault(),"%s:%s", email, password)).getBytes(), Base64.DEFAULT));
 

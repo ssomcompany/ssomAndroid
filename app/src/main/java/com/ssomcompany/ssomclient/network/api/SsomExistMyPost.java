@@ -12,25 +12,4 @@ public class SsomExistMyPost {
             super(API.SSOM_MY_POST);
         }
     }
-
-    public static class Response extends ToStringHelperClass {
-        private String postId;
-        private String ssomType;
-
-        public String getPostId() {
-            return postId;
-        }
-
-        public void setPostId(String postId) {
-            this.postId = postId;
-        }
-
-        public String getSsomType() {
-            return ssomType;
-        }
-
-        public void setSsomType(String ssomType) {
-            this.ssomType = ssomType;
-        }
-    }
 }

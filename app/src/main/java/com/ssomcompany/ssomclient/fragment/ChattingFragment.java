@@ -141,6 +141,7 @@ public class ChattingFragment extends BaseFragment {
                                         for(ChattingItem item : response.getData().getChattingList()) {
                                             mAdapter.add(item);
                                         }
+                                        mAdapter.add(String.valueOf(editMessage.getText()));
                                         editMessage.setText("");
                                         mAdapter.notifyDataSetChanged();
                                     } else {

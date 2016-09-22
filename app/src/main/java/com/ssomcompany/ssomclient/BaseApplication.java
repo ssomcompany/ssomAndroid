@@ -9,13 +9,14 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.onesignal.OneSignal;
+import com.onesignal.OneSignalDbHelper;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
+import com.ssomcompany.ssomclient.push.SsomNotiOpenedHandler;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BaseApplication extends Application implements ActivityLifecycleCallbacks {
-
-    private static final String GCM_SENDER_ID = "189266416861";
 
     public String TAG = this.getClass().getSimpleName();
 
@@ -26,17 +27,20 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
 
     private Configuration mOldConfig;
 
-    private static SsomPreferences session;
-
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Logging set to help debug issues, remove before releasing your app.
+        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.DEBUG, OneSignal.LOG_LEVEL.WARN);
+
+        OneSignal.startInit(this)
+                .setNotificationOpenedHandler(new SsomNotiOpenedHandler())
+                .autoPromptLocation(true)
+                .init();
+
         mInstance = this;
         Log.d(TAG, TAG + " Created!!");
-
-        if(session == null) {
-            session = new SsomPreferences(this, SsomPreferences.LOGIN_PREF);
-        }
 
         mOldConfig = new Configuration(getResources().getConfiguration());
 
@@ -130,18 +134,10 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
         return this.mCurrentActivity;
     }
 
-    public String getGCMSenderID() {
-        return GCM_SENDER_ID;
-    }
-
     /**
      * Clears all application data, resetting its state back to initial install state
      */
     public void masterReset() {
         Log.v(TAG, "master reset called");
-    }
-
-    public SsomPreferences getSession() {
-        return session;
     }
 }
