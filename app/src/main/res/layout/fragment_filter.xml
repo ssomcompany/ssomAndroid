@@ -15,13 +15,28 @@
         android:background="@drawable/bg_filter"
         android:orientation="vertical">
 
-        <TextView
-            style="@style/ssom_font_16_main_black_bold"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="18dp"
-            android:text="@string/filter_ssom_title"/>
+            android:layout_marginRight="33dp"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/ssom_font_16_main_black_bold"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_ssom_title"/>
+            
+            <TextView
+                android:id="@+id/btn_select_all"
+                style="@style/ssom_font_16_red_pink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_select_all"/>
+        </LinearLayout>
 
         <!-- 나이 선택 영역 -->
         <TextView
@@ -45,51 +60,40 @@
                 style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
+                android:textIsSelectable="false"
                 android:gravity="center"
                 android:background="@drawable/filter_option_selector"
                 android:textColor="@drawable/filter_option_color_selector"
                 android:text="@string/filter_age_20_early" />
-
-            <View
-                android:layout_width="0.2dp"
-                android:layout_height="match_parent"
-                android:background="#979797"/>
 
             <TextView
                 android:id="@+id/tv_filter_age_20_middle"
                 style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
+                android:textIsSelectable="false"
                 android:gravity="center"
                 android:background="@drawable/filter_option_selector"
                 android:textColor="@drawable/filter_option_color_selector"
                 android:text="@string/filter_age_20_middle" />
-
-            <View
-                android:layout_width="0.2dp"
-                android:layout_height="match_parent"
-                android:background="#979797"/>
 
             <TextView
                 android:id="@+id/tv_filter_age_20_late"
                 style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
+                android:textIsSelectable="false"
                 android:gravity="center"
                 android:background="@drawable/filter_option_selector"
                 android:textColor="@drawable/filter_option_color_selector"
                 android:text="@string/filter_age_20_late" />
-
-            <View
-                android:layout_width="0.2dp"
-                android:layout_height="match_parent"
-                android:background="#979797"/>
 
             <TextView
                 android:id="@+id/tv_filter_age_30_all"
                 style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
+                android:textIsSelectable="false"
                 android:gravity="center"
                 android:background="@drawable/filter_option_selector"
                 android:textColor="@drawable/filter_option_color_selector"
@@ -118,51 +122,40 @@
                 style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
+                android:textIsSelectable="false"
                 android:gravity="center"
                 android:background="@drawable/filter_option_selector"
                 android:textColor="@drawable/filter_option_color_selector"
                 android:text="@string/filter_people_1" />
-
-            <View
-                android:layout_width="0.2dp"
-                android:layout_height="match_parent"
-                android:background="#979797"/>
 
             <TextView
                 android:id="@+id/tv_filter_people_2"
                 style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
+                android:textIsSelectable="false"
                 android:gravity="center"
                 android:background="@drawable/filter_option_selector"
                 android:textColor="@drawable/filter_option_color_selector"
                 android:text="@string/filter_people_2" />
-
-            <View
-                android:layout_width="0.2dp"
-                android:layout_height="match_parent"
-                android:background="#979797"/>
 
             <TextView
                 android:id="@+id/tv_filter_people_3"
                 style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
+                android:textIsSelectable="false"
                 android:gravity="center"
                 android:background="@drawable/filter_option_selector"
                 android:textColor="@drawable/filter_option_color_selector"
                 android:text="@string/filter_people_3" />
-
-            <View
-                android:layout_width="0.2dp"
-                android:layout_height="match_parent"
-                android:background="#979797"/>
 
             <TextView
                 android:id="@+id/tv_filter_people_4_n_over"
                 style="@style/ssom_font_12_gray_warm_bold"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
+                android:textIsSelectable="false"
                 android:gravity="center"
                 android:background="@drawable/filter_option_selector"
                 android:textColor="@drawable/filter_option_color_selector"

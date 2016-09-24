@@ -1,7 +1,6 @@
 package com.ssomcompany.ssomclient.activity;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -65,7 +63,6 @@ import com.ssomcompany.ssomclient.fragment.SsomListFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
-import com.ssomcompany.ssomclient.network.api.SsomExistMyPost;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
@@ -134,6 +131,11 @@ public class MainActivity extends BaseActivity
     private String selectedView;
     private String selectedTab;
     private FragmentManager fragmentManager;
+
+    // fragment instance 저장
+    private FilterFragment filterFragment;
+    private SupportMapFragment mapFragment;
+    private SsomListFragment ssomListFragment;
 
     private Location myLocation;
     private ImageView btnWrite;
@@ -331,7 +333,7 @@ public class MainActivity extends BaseActivity
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 takeBtmBar.setVisibility(View.GONE);
 
-                SsomListFragment.newInstance().setPostItemClickListener(null);
+                ssomListFragment.setPostItemClickListener(null);
                 requestSsomList(0, 0);
             }
         });
@@ -348,7 +350,7 @@ public class MainActivity extends BaseActivity
                 giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 giveBtmBar.setVisibility(View.GONE);
 
-                SsomListFragment.newInstance().setPostItemClickListener(null);
+                ssomListFragment.setPostItemClickListener(null);
                 requestSsomList(0, 0);
             }
         });
@@ -414,7 +416,7 @@ public class MainActivity extends BaseActivity
     private View.OnClickListener filterClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            FilterFragment filterFragment = FilterFragment.newInstance();
+            if(filterFragment == null) filterFragment = new FilterFragment();
             replaceFragment(R.id.top_container, filterFragment, CommonConst.FILTER_FRAG, true);
         }
     };
@@ -502,7 +504,7 @@ public class MainActivity extends BaseActivity
     private void startMapFragment(){
         locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
         selectedView = MAP_VIEW;
-        SupportMapFragment mapFragment = SupportMapFragment.newInstance();
+        if(mapFragment == null) mapFragment = SupportMapFragment.newInstance();
         fragmentManager.beginTransaction().
                 replace(R.id.container, mapFragment).commitAllowingStateLoss();
         mapFragment.getMapAsync(this);
@@ -511,10 +513,10 @@ public class MainActivity extends BaseActivity
     private void startListFragment() {
         selectedView = LIST_VIEW;
         mBtnMapMyLocation.setVisibility(View.INVISIBLE);
-        SsomListFragment fragment = SsomListFragment.newInstance();
-        fragment.setSsomListData(getCurrentPostItems());
+        if(ssomListFragment == null) ssomListFragment = new SsomListFragment();
+        ssomListFragment.setSsomListData(getCurrentPostItems());
         fragmentManager.beginTransaction().
-                replace(R.id.container, fragment, CommonConst.SSOM_LIST_FRAG).commit();
+                replace(R.id.container, ssomListFragment, CommonConst.SSOM_LIST_FRAG).commit();
     }
 
     private void startDetailFragment(ArrayList<SsomItem> ssomList, String postId) {

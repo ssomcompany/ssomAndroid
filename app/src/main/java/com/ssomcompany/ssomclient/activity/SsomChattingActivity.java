@@ -194,7 +194,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     }
 
     private void startChatRoomListFragment() {
-        if(roomListFragment == null) roomListFragment = ChatRoomListFragment.newInstance();
+        if(roomListFragment == null) roomListFragment = new ChatRoomListFragment();
         fragmentManager.beginTransaction().replace(R.id.chat_container, roomListFragment, CommonConst.CHAT_LIST_FRAG).commit();
 //        fragmentManager.executePendingTransactions();
     }

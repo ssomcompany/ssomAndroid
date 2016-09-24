@@ -15,6 +15,7 @@
     <!-- filter -->
     <string name="filter_age_n_count">%1$s, %2$s</string>
     <string name="filter_ssom_title">쏨 탐색기</string>
+    <string name="filter_select_all"><u>모두선택</u></string>
     <string name="filter_how_old_do_you_like">몇 살이 좋아?</string>
     <string name="filter_how_many_do_you_like">몇 명이 좋아?</string>
     <string name="filter_age_20_early">20대 초</string>

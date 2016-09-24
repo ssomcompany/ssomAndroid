@@ -1,6 +1,8 @@
 package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -22,9 +24,6 @@ import com.ssomcompany.ssomclient.network.api.GetSsomList;
 import com.ssomcompany.ssomclient.network.api.SsomRegisterUser;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
-/**
- * Created by AaronMac on 2016. 7. 27..
- */
 public class LoginRegistFragment extends BaseFragment implements View.OnClickListener {
     private static final String TAG = LoginFragment.class.getSimpleName();
 
@@ -146,13 +145,29 @@ public class LoginRegistFragment extends BaseFragment implements View.OnClickLis
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            try {
+                mListener = (ViewListener.OnLoginFragmentInteractionListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnLoginFragmentInteractionListener");
+            }
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
         try {
-            mListener = (ViewListener.OnLoginFragmentInteractionListener) activity;
+            mListener = (ViewListener.OnLoginFragmentInteractionListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnLoginFragmentInteractionListener");
         }
     }

@@ -1,7 +1,9 @@
 package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -54,23 +56,6 @@ public class ChatRoomListFragment extends BaseFragment {
      */
     private ChatRoomListAdapter mAdapter;
     private ArrayList<ChatRoomItem> chatRoomList;
-
-    private static ChatRoomListFragment chatRoomListFragment;
-
-    public static ChatRoomListFragment newInstance() {
-        if(chatRoomListFragment == null) {
-            chatRoomListFragment = new ChatRoomListFragment();
-        }
-        return chatRoomListFragment;
-    }
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public ChatRoomListFragment() {
-        super();
-    }
 
     public ArrayList<ChatRoomItem> getChatRoomList() {
         return chatRoomList;
@@ -169,13 +154,29 @@ public class ChatRoomListFragment extends BaseFragment {
         });
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            try {
+                mListener = (ViewListener.OnChatItemInteractionListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnPostItemInteractionListener");
+            }
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
         try {
-            mListener = (ViewListener.OnChatItemInteractionListener) activity;
+            mListener = (ViewListener.OnChatItemInteractionListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnPostItemInteractionListener");
         }
     }

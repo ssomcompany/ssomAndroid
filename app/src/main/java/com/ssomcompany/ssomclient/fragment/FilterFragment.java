@@ -1,6 +1,8 @@
 package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -10,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.FilterType;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.control.ViewListener;
@@ -21,14 +22,12 @@ import com.ssomcompany.ssomclient.control.ViewListener;
  * Activities that contain this fragment must implement the
  * {@link ViewListener.OnFilterFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FilterFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class FilterFragment extends Fragment {
     private static final String TAG = "FilterFragment";
 
     // set preferences
-    private static SsomPreferences filterPref;
+    private SsomPreferences filterPref;
 
     // set views
     private TextView tvTwentyEarly;
@@ -45,23 +44,6 @@ public class FilterFragment extends Fragment {
     private static int people;
 
     private ViewListener.OnFilterFragmentInteractionListener mListener;
-    private static FilterFragment filterFragment;
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment FilterFragment.
-     */
-    public static FilterFragment newInstance() {
-        if(filterFragment == null) {
-            filterFragment = new FilterFragment();
-        }
-
-        return filterFragment;
-    }
-
-    public FilterFragment() { super(); }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,21 +79,37 @@ public class FilterFragment extends Fragment {
         tvThreePeople = (TextView) view.findViewById(R.id.tv_filter_people_3);
         tvFourPeopleOrMore = (TextView) view.findViewById(R.id.tv_filter_people_4_n_over);
 
-        tvTwentyEarly.setOnClickListener(filterAgeClickListener);
-        tvTwentyMiddle.setOnClickListener(filterAgeClickListener);
-        tvTwentyLate.setOnClickListener(filterAgeClickListener);
-        tvThirtyAll.setOnClickListener(filterAgeClickListener);
+        tvTwentyEarly.setOnClickListener(filterItemClickListener);
+        tvTwentyMiddle.setOnClickListener(filterItemClickListener);
+        tvTwentyLate.setOnClickListener(filterItemClickListener);
+        tvThirtyAll.setOnClickListener(filterItemClickListener);
 
-        tvOnePeople.setOnClickListener(filterPeopleClickListener);
-        tvTwoPeople.setOnClickListener(filterPeopleClickListener);
-        tvThreePeople.setOnClickListener(filterPeopleClickListener);
-        tvFourPeopleOrMore.setOnClickListener(filterPeopleClickListener);
+        tvOnePeople.setOnClickListener(filterItemClickListener);
+        tvTwoPeople.setOnClickListener(filterItemClickListener);
+        tvThreePeople.setOnClickListener(filterItemClickListener);
+        tvFourPeopleOrMore.setOnClickListener(filterItemClickListener);
 
         // view for buttons
         TextView tvCancel = (TextView) view.findViewById(R.id.tv_filter_cancel);
         TextView tvApply = (TextView) view.findViewById(R.id.tv_filter_apply);
 
         // listener 등록
+        view.findViewById(R.id.btn_select_all).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // age filter
+                tvTwentyEarly.setSelected(true);
+                tvTwentyMiddle.setSelected(true);
+                tvTwentyLate.setSelected(true);
+                tvThirtyAll.setSelected(true);
+
+                // people filter
+                tvOnePeople.setSelected(true);
+                tvTwoPeople.setSelected(true);
+                tvThreePeople.setSelected(true);
+                tvFourPeopleOrMore.setSelected(true);
+            }
+        });
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,8 +125,6 @@ public class FilterFragment extends Fragment {
         tvApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                filterPref.put(SsomPreferences.PREF_FILTER_AGE, age);
-                filterPref.put(SsomPreferences.PREF_FILTER_PEOPLE, people);
                 closeView(true);
             }
         });
@@ -174,13 +170,29 @@ public class FilterFragment extends Fragment {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            try {
+                mListener = (ViewListener.OnFilterFragmentInteractionListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnFilterFragmentInteractionListener");
+            }
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
         try {
-            mListener = (ViewListener.OnFilterFragmentInteractionListener) activity;
+            mListener = (ViewListener.OnFilterFragmentInteractionListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnFilterFragmentInteractionListener");
         }
     }
@@ -191,64 +203,36 @@ public class FilterFragment extends Fragment {
         mListener = null;
     }
 
-    View.OnClickListener filterAgeClickListener = new View.OnClickListener() {
+    View.OnClickListener filterItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(v == tvTwentyEarly) {
-                tvTwentyEarly.setSelected(true);
-                tvTwentyMiddle.setSelected(false);
-                tvTwentyLate.setSelected(false);
-                tvThirtyAll.setSelected(false);
-                age = FilterType.twentyEarly.getValue();
-            } else if(v == tvTwentyMiddle) {
-                tvTwentyEarly.setSelected(false);
-                tvTwentyMiddle.setSelected(true);
-                tvTwentyLate.setSelected(false);
-                tvThirtyAll.setSelected(false);
-                age = FilterType.twentyMiddle.getValue();
-            } else if(v == tvTwentyLate) {
-                tvTwentyEarly.setSelected(false);
-                tvTwentyMiddle.setSelected(false);
-                tvTwentyLate.setSelected(true);
-                tvThirtyAll.setSelected(false);
-                age = FilterType.twentyLate.getValue();
-            } else if(v == tvThirtyAll) {
-                tvTwentyEarly.setSelected(false);
-                tvTwentyMiddle.setSelected(false);
-                tvTwentyLate.setSelected(false);
-                tvThirtyAll.setSelected(true);
-                age = FilterType.thirtyOver.getValue();
-            }
-        }
-    };
+            v.setSelected(!v.isSelected());
 
-    View.OnClickListener filterPeopleClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(v == tvOnePeople) {
-                tvOnePeople.setSelected(true);
-                tvTwoPeople.setSelected(false);
-                tvThreePeople.setSelected(false);
-                tvFourPeopleOrMore.setSelected(false);
-                people = FilterType.onePerson.getValue();
-            } else if(v == tvTwoPeople) {
-                tvOnePeople.setSelected(false);
-                tvTwoPeople.setSelected(true);
-                tvThreePeople.setSelected(false);
-                tvFourPeopleOrMore.setSelected(false);
-                people = FilterType.twoPeople.getValue();
-            } else if(v == tvThreePeople) {
-                tvOnePeople.setSelected(false);
-                tvTwoPeople.setSelected(false);
-                tvThreePeople.setSelected(true);
-                tvFourPeopleOrMore.setSelected(false);
-                people = FilterType.threePeople.getValue();
-            } else if(v == tvFourPeopleOrMore) {
-                tvOnePeople.setSelected(false);
-                tvTwoPeople.setSelected(false);
-                tvThreePeople.setSelected(false);
-                tvFourPeopleOrMore.setSelected(true);
-                people = FilterType.fourPeople.getValue();
+            switch (v.getId()) {
+                case R.id.tv_filter_age_20_early :
+                    age = FilterType.twentyEarly.getValue();
+                    break;
+                case R.id.tv_filter_age_20_middle :
+                    age = FilterType.twentyMiddle.getValue();
+                    break;
+                case R.id.tv_filter_age_20_late :
+                    age = FilterType.twentyLate.getValue();
+                    break;
+                case R.id.tv_filter_age_30_all :
+                    age = FilterType.thirtyOver.getValue();
+                    break;
+                case R.id.tv_filter_people_1 :
+                    people = FilterType.onePerson.getValue();
+                    break;
+                case R.id.tv_filter_people_2 :
+                    people = FilterType.twoPeople.getValue();
+                    break;
+                case R.id.tv_filter_people_3 :
+                    people = FilterType.threePeople.getValue();
+                    break;
+                case R.id.tv_filter_people_4_n_over :
+                    people = FilterType.fourPeople.getValue();
+                    break;
             }
         }
     };

@@ -37,17 +37,12 @@ public class ChattingFragment extends BaseFragment {
     private static final String IS_READ = "IS_READ";
 
     /**
-     * The fragment's ListView/GridView.
-     */
-    private ListView chatListView;
-    private EditText editMessage;
-
-    /**
      * The information layout and instance
      */
     private LinearLayout infoLayout;
     private TextView infoText;
     private TextView infoBtn;
+    private EditText editMessage;
 
     /**
      * The Adapter which will be used to populate the ListView/GridView with
@@ -111,7 +106,7 @@ public class ChattingFragment extends BaseFragment {
 
         ImageView btnSend = (ImageView) view.findViewById(R.id.btn_send);
         editMessage = (EditText) view.findViewById(R.id.edit_message);
-        chatListView = (ListView) view.findViewById(R.id.chatting);
+        ListView chatListView = (ListView) view.findViewById(R.id.chatting);
         infoLayout = (LinearLayout) view.findViewById(R.id.info_layout);
         infoText = (TextView) view.findViewById(R.id.info_text);
         infoBtn = (TextView) view.findViewById(R.id.info_btn);

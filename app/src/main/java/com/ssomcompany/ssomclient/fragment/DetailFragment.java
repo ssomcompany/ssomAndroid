@@ -30,7 +30,6 @@ import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.widget.RoundedNetworkImageView;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 
 /**
@@ -43,8 +42,7 @@ import java.util.Map;
  */
 public class DetailFragment extends BaseFragment implements View.OnClickListener {
     private static final String TAG = DetailFragment.class.getSimpleName();
-    
-    private static final String POST_ID = "postId";
+
     private String postId;
     private int currentPos;
 
@@ -52,7 +50,6 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     private ViewListener.OnDetailFragmentInteractionListener mListener;
 
     private ArrayList<SsomItem> ssomList;
-    private Map<String, SsomItem> ssomMap;
 
     ViewPager mViewPager;
     PagerAdapter mPagerAdapter;
@@ -69,11 +66,6 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
         detailFragment.postId = postId;
 
-//        Bundle args = new Bundle();
-//        args.putString(POST_ID, postId);
-//        args.putParcelable("map", items);
-//        detailFragment.setArguments(args);
-
         return detailFragment;
     }
 
@@ -85,11 +77,6 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-
-//        if (getArguments() != null) {
-//            postId = getArguments().getString(POST_ID);
-//            Log.i(TAG, "postId : " + postId);
-//        }
 
         currentPos = getCurrentPosition(postId);
     }
@@ -229,7 +216,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         LayoutInflater inflater;
         ImageLoader mImageLoader;
 
-        public DetailPagerAdapter(LayoutInflater inflater) {
+        DetailPagerAdapter(LayoutInflater inflater) {
             super();
             this.inflater = inflater;
             this.mImageLoader = NetworkManager.getInstance().getImageLoader();
@@ -294,7 +281,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         @Override
         public void destroyItem(ViewGroup collection, int position, Object view) {
             //must be overridden else throws exception as not overridden.
-            ((ViewPager)collection).removeView((View) view);
+            collection.removeView((View) view);
         }
 
         @Override

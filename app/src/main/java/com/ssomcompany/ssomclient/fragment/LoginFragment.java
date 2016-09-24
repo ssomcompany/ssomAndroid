@@ -1,6 +1,8 @@
 package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -13,7 +15,6 @@ import android.widget.TextView;
 
 import com.onesignal.OneSignal;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.APICaller;
@@ -21,9 +22,6 @@ import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.SsomLogin;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
-/**
- * Created by AaronMac on 2016. 7. 28..
- */
 public class LoginFragment extends BaseFragment implements View.OnClickListener {
     private static final String TAG = LoginFragment.class.getSimpleName();
 
@@ -130,13 +128,30 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
         }
     }
 
+
+    @SuppressWarnings("deprecation")
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            try {
+                mListener = (ViewListener.OnLoginFragmentInteractionListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnLoginFragmentInteractionListener");
+            }
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
         try {
-            mListener = (ViewListener.OnLoginFragmentInteractionListener) activity;
+            mListener = (ViewListener.OnLoginFragmentInteractionListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnLoginFragmentInteractionListener");
         }
     }

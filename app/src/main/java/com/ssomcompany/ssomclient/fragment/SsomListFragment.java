@@ -1,6 +1,8 @@
 package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,10 +13,8 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.adapter.SsomItemListAdapter;
-import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
@@ -45,15 +45,6 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
      */
     private SsomItemListAdapter mAdapter;
     private ArrayList<SsomItem> ssomList;
-
-    private static SsomListFragment ssomListFragment;
-
-    public static SsomListFragment newInstance() {
-        if(ssomListFragment == null) {
-            ssomListFragment = new SsomListFragment();
-        }
-        return ssomListFragment;
-    }
 
     public void setSsomListData(ArrayList<SsomItem> ssomList) {
         this.ssomList = ssomList;
@@ -99,14 +90,31 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
         return view;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            try {
+                mListener = (ViewListener.OnPostItemInteractionListener) activity;
+                ((MainActivity) activity).setOnTabChangedListener(mTabListener);
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnPostItemInteractionListener");
+            }
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
         try {
-            mListener = (ViewListener.OnPostItemInteractionListener) activity;
-            ((MainActivity) activity).setOnTabChangedListener(mTabListener);
+            mListener = (ViewListener.OnPostItemInteractionListener) context;
+            ((MainActivity) context).setOnTabChangedListener(mTabListener);
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnPostItemInteractionListener");
         }
     }

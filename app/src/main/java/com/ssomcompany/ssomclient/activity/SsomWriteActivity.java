@@ -214,7 +214,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
     // gallery 실행
     private void moveToGallery() {
-        Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(i, REQUEST_SELECT_PICTURE);
 //        Intent intent = new Intent();
 //        intent.setType("image/*");
