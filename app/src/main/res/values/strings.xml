@@ -28,12 +28,13 @@
     <string name="filter_people_4_n_over">4명 이상</string>
     <string name="filter_btn_cancel">취소</string>
     <string name="filter_btn_apply">적용하기</string>
+    <string name="filter_apply_complete">쏨 탐색기가 적용 되었습니다 =)</string>
 
     <!-- write post -->
     <string name="write_age_20_early">20대 초반 이</string>
     <string name="write_age_20_middle">20대 중반 이</string>
     <string name="write_age_20_late">20대 후반 이</string>
-    <string name="write_age_30_all">30대</string>
+    <string name="write_age_30_all">30대&#160;</string>
     <string name="write_select_our_age">우리 나이는 %1$s에요</string>
     <string name="write_select_our_people">%1$s이 기다리고 있어요</string>
     <string name="write_one_letter">한마디</string>

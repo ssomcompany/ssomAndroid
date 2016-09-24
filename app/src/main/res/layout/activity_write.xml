@@ -118,231 +118,196 @@
             />
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_below="@id/image_category_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/white"
-        android:orientation="vertical" >
+        android:gravity="center_horizontal"
+        android:layout_alignParentBottom="true">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <!-- 나이 선택 영역 -->
+        <TextView
+            android:id="@+id/tv_our_age"
+            style="@style/ssom_font_12_gray_warm"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
-
-            <!-- 나이 선택 영역 -->
-            <TextView
-                android:id="@+id/tv_our_age"
-                style="@style/ssom_font_12_gray_warm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"/>
-
-            <LinearLayout
-                android:layout_below="@id/tv_our_age"
-                android:id="@+id/age_select_option"
-                android:layout_width="240dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="6dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tv_write_age_20_early"
-                    style="@style/ssom_font_12_gray_warm_bold"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:gravity="center"
-                    android:background="@drawable/filter_option_selector"
-                    android:textColor="@drawable/filter_option_color_selector"
-                    android:text="@string/filter_age_20_early" />
-
-                <View
-                    android:layout_width="0.2dp"
-                    android:layout_height="match_parent"
-                    android:background="#979797"/>
-
-                <TextView
-                    android:id="@+id/tv_write_age_20_middle"
-                    style="@style/ssom_font_12_gray_warm_bold"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:gravity="center"
-                    android:background="@drawable/filter_option_selector"
-                    android:textColor="@drawable/filter_option_color_selector"
-                    android:text="@string/filter_age_20_middle" />
-
-                <View
-                    android:layout_width="0.2dp"
-                    android:layout_height="match_parent"
-                    android:background="#979797"/>
-
-                <TextView
-                    android:id="@+id/tv_write_age_20_late"
-                    style="@style/ssom_font_12_gray_warm_bold"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:gravity="center"
-                    android:background="@drawable/filter_option_selector"
-                    android:textColor="@drawable/filter_option_color_selector"
-                    android:text="@string/filter_age_20_late" />
-
-                <View
-                    android:layout_width="0.2dp"
-                    android:layout_height="match_parent"
-                    android:background="#979797"/>
-
-                <TextView
-                    android:id="@+id/tv_write_age_30_all"
-                    style="@style/ssom_font_12_gray_warm_bold"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:gravity="center"
-                    android:background="@drawable/filter_option_selector"
-                    android:textColor="@drawable/filter_option_color_selector"
-                    android:text="@string/filter_age_30_all" />
-            </LinearLayout>
-
-            <!-- 사람 선택 영역 -->
-            <TextView
-                android:layout_below="@id/age_select_option"
-                android:id="@+id/tv_our_people"
-                style="@style/ssom_font_12_gray_warm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="13dp"/>
-
-            <LinearLayout
-                android:layout_below="@id/tv_our_people"
-                android:id="@+id/people_select_option"
-                android:layout_width="240dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="6dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tv_write_people_1"
-                    style="@style/ssom_font_12_gray_warm_bold"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:gravity="center"
-                    android:background="@drawable/filter_option_selector"
-                    android:textColor="@drawable/filter_option_color_selector"
-                    android:text="@string/filter_people_1" />
-
-                <View
-                    android:layout_width="0.2dp"
-                    android:layout_height="match_parent"
-                    android:background="#979797"/>
-
-                <TextView
-                    android:id="@+id/tv_write_people_2"
-                    style="@style/ssom_font_12_gray_warm_bold"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:gravity="center"
-                    android:background="@drawable/filter_option_selector"
-                    android:textColor="@drawable/filter_option_color_selector"
-                    android:text="@string/filter_people_2" />
-
-                <View
-                    android:layout_width="0.2dp"
-                    android:layout_height="match_parent"
-                    android:background="#979797"/>
-
-                <TextView
-                    android:id="@+id/tv_write_people_3"
-                    style="@style/ssom_font_12_gray_warm_bold"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:gravity="center"
-                    android:background="@drawable/filter_option_selector"
-                    android:textColor="@drawable/filter_option_color_selector"
-                    android:text="@string/filter_people_3" />
-
-                <View
-                    android:layout_width="0.2dp"
-                    android:layout_height="match_parent"
-                    android:background="#979797"/>
-
-                <TextView
-                    android:id="@+id/tv_write_people_4_n_over"
-                    style="@style/ssom_font_12_gray_warm_bold"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:gravity="center"
-                    android:background="@drawable/filter_option_selector"
-                    android:textColor="@drawable/filter_option_color_selector"
-                    android:text="@string/filter_people_4_n_over" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_below="@id/people_select_option"
-                android:id="@+id/tv_one_letter"
-                style="@style/ssom_font_9_pinkish_gray_two_single"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="29dp"
-                android:text="@string/write_one_letter"/>
-
-            <EditText
-                android:layout_below="@id/tv_one_letter"
-                android:id="@+id/edit_write_content"
-                style="@style/ssom_font_16_gray_warm"
-                android:layout_width="240dp"
-                android:layout_height="94dp"
-                android:layout_marginTop="7.5dp"
-                android:lines="4"
-                android:maxLines="4"
-                android:hint="@string/write_content_hint"
-                android:textColorHint="@color/pinkish_gray_two"
-                android:background="@null"/>
-
-            <ImageView
-                android:layout_below="@id/edit_write_content"
-                android:background="@color/pinkish_gray_two"
-                android:layout_marginTop="5dp"
-                android:layout_width="240dp"
-                android:layout_height="1.3dp" />
-        </RelativeLayout>
+            android:layout_marginTop="15dp"/>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="46dp"
-            android:layout_marginTop="47dp"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal">
+            android:layout_below="@id/tv_our_age"
+            android:id="@+id/age_select_option"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/btn_cancel"
+                android:id="@+id/tv_write_age_20_early"
+                style="@style/ssom_font_12_gray_warm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_age_20_early" />
+
+            <TextView
+                android:id="@+id/tv_write_age_20_middle"
+                style="@style/ssom_font_12_gray_warm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_age_20_middle" />
+
+            <TextView
+                android:id="@+id/tv_write_age_20_late"
+                style="@style/ssom_font_12_gray_warm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_age_20_late" />
+
+            <TextView
+                android:id="@+id/tv_write_age_30_all"
+                style="@style/ssom_font_12_gray_warm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_age_30_all" />
+        </LinearLayout>
+
+        <!-- 사람 선택 영역 -->
+        <TextView
+            android:layout_below="@id/age_select_option"
+            android:id="@+id/tv_our_people"
+            style="@style/ssom_font_12_gray_warm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"/>
+
+        <LinearLayout
+            android:layout_below="@id/tv_our_people"
+            android:id="@+id/people_select_option"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_write_people_1"
+                style="@style/ssom_font_12_gray_warm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_people_1" />
+
+            <TextView
+                android:id="@+id/tv_write_people_2"
+                style="@style/ssom_font_12_gray_warm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_people_2" />
+
+            <TextView
+                android:id="@+id/tv_write_people_3"
+                style="@style/ssom_font_12_gray_warm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_people_3" />
+
+            <TextView
+                android:id="@+id/tv_write_people_4_n_over"
+                style="@style/ssom_font_12_gray_warm_bold"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@drawable/filter_option_selector"
+                android:textColor="@drawable/filter_option_color_selector"
+                android:text="@string/filter_people_4_n_over" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_below="@id/people_select_option"
+            android:id="@+id/tv_one_letter"
+            style="@style/ssom_font_9_pinkish_gray_two_single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="29dp"
+            android:text="@string/write_one_letter"/>
+
+        <EditText
+            android:layout_below="@id/tv_one_letter"
+            android:id="@+id/edit_write_content"
+            style="@style/ssom_font_16_gray_warm"
+            android:layout_width="240dp"
+            android:layout_height="94dp"
+            android:layout_marginTop="7.5dp"
+            android:lines="4"
+            android:maxLines="4"
+            android:hint="@string/write_content_hint"
+            android:textColorHint="@color/pinkish_gray_two"
+            android:background="@null"/>
+
+        <ImageView
+            android:layout_below="@id/edit_write_content"
+            android:background="@color/pinkish_gray_two"
+            android:layout_marginTop="5dp"
+            android:layout_width="240dp"
+            android:layout_height="1.3dp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="46dp"
+        android:layout_marginBottom="21dp"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:id="@+id/btn_cancel"
+            style="@style/ssom_font_16_white_bold"
+            android:layout_width="136dp"
+            android:layout_height="46dp"
+            android:background="@drawable/btn_write_cancel"
+            android:gravity="center"
+            android:text="@string/detail_cancel"/>
+
+        <LinearLayout
+            android:id="@+id/btn_apply"
+            android:layout_width="136dp"
+            android:layout_height="46dp"
+            android:layout_marginLeft="7dp"
+            android:gravity="center"
+            android:background="@drawable/btn_write_apply_ssom">
+
+            <ImageView
+                android:layout_width="23dp"
+                android:layout_height="21dp"
+                android:layout_marginTop="2dp"
+                android:src="@drawable/icon_heart_white"/>
+
+            <TextView
                 style="@style/ssom_font_16_white_bold"
-                android:layout_width="136dp"
-                android:layout_height="46dp"
-                android:background="@drawable/btn_write_cancel"
-                android:gravity="center"
-                android:text="@string/detail_cancel"/>
-
-            <LinearLayout
-                android:id="@+id/btn_apply"
-                android:layout_width="136dp"
-                android:layout_height="46dp"
-                android:layout_marginLeft="7dp"
-                android:gravity="center"
-                android:background="@drawable/btn_write_apply_ssom">
-
-                <ImageView
-                    android:layout_width="23dp"
-                    android:layout_height="21dp"
-                    android:layout_marginTop="2dp"
-                    android:src="@drawable/icon_heart_white"/>
-
-                <TextView
-                    style="@style/ssom_font_16_white_bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:text="@string/write_apply"/>
-            </LinearLayout>
-
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="@string/write_apply"/>
         </LinearLayout>
 
     </LinearLayout>

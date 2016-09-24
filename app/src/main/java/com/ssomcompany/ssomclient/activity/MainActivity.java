@@ -273,7 +273,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void requestSsomList(int ageFilter, int countFilter) {
+    private void requestSsomList(int ageFilter, int countFilter, final boolean needFilterToast) {
         showProgressDialog(false);
         APICaller.getSsomList(locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude(),
                 getUserId(), ageFilter, countFilter, new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
@@ -290,6 +290,9 @@ public class MainActivity extends BaseActivity
                         Log.i(TAG, "data is null !! nothing to show");
                     }
                     ssomDataChangedListener();
+
+                    if(needFilterToast) Toast.makeText(getApplicationContext(),
+                            getString(R.string.filter_apply_complete), Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e(TAG, "Response error with code " + response.getResultCode() + ", message : " + response.getMessage(),
                             response.getError());
@@ -333,8 +336,8 @@ public class MainActivity extends BaseActivity
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 takeBtmBar.setVisibility(View.GONE);
 
-                ssomListFragment.setPostItemClickListener(null);
-                requestSsomList(0, 0);
+                if(ssomListFragment != null) ssomListFragment.setPostItemClickListener(null);
+                requestSsomList(0, 0, false);
             }
         });
 
@@ -350,8 +353,8 @@ public class MainActivity extends BaseActivity
                 giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
                 giveBtmBar.setVisibility(View.GONE);
 
-                ssomListFragment.setPostItemClickListener(null);
-                requestSsomList(0, 0);
+                if(ssomListFragment != null) ssomListFragment.setPostItemClickListener(null);
+                requestSsomList(0, 0, false);
             }
         });
 
@@ -379,6 +382,9 @@ public class MainActivity extends BaseActivity
 
         View filterImgLayout = findViewById(R.id.filter_img);
         filterImgLayout.setOnClickListener(filterClickListener);
+
+        // TODO online user count setting
+//        ((TextView) findViewById(R.id.tv_online_user)).setText();
     }
 
     private void setSsomWriteButtonImage() {
@@ -387,11 +393,16 @@ public class MainActivity extends BaseActivity
 
                 @Override
                 public void onResponse(SsomResponse<SsomItem> response) {
-                    if (response.isSuccess() && response.getData() != null) {
-                        myPost = response.getData();
-                        myPostId = response.getData().getPostId();
-                        myPostSsomType = response.getData().getSsomType();
-                        btnWrite.setImageResource(R.drawable.my_btn);
+                    if (response.isSuccess()) {
+                        if(response.getData() != null && !TextUtils.isEmpty(response.getData().getPostId())) {
+                            myPost = response.getData();
+                            myPostId = response.getData().getPostId();
+                            myPostSsomType = response.getData().getSsomType();
+                            btnWrite.setImageResource(R.drawable.my_btn);
+                        } else {
+                            myPostId = "";
+                            btnWrite.setImageResource(R.drawable.btn_write);
+                        }
                     } else {
                         Log.d(TAG, "get my post is failed");
                         myPostId = "";
@@ -619,7 +630,7 @@ public class MainActivity extends BaseActivity
                 moveToMyLocation(false);
             }
         });
-        requestSsomList(0, 0);
+        requestSsomList(0, 0, false);
 
         // 마커 클릭 리스너
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -868,7 +879,8 @@ public class MainActivity extends BaseActivity
     public void onFilterFragmentInteraction(boolean isApply) {
         Log.i(TAG, "filter interaction : " + isApply);
         if(isApply) {
-            requestSsomList(filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 0), filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 0));
+            requestSsomList(filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 0),
+                    filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 0), true);
         }
 
         fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.FILTER_FRAG)).commit();
@@ -895,7 +907,7 @@ public class MainActivity extends BaseActivity
                             Log.d(TAG, "delete success : " + response);
                             fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
                             fragmentManager.popBackStack();
-                            requestSsomList(0, 0);
+                            requestSsomList(0, 0, false);
                             myPostId = "";
                             btnWrite.setImageResource(R.drawable.btn_write);
                         } else {
@@ -920,7 +932,7 @@ public class MainActivity extends BaseActivity
         switch (requestCode) {
             case REQUEST_SSOM_WRITE :
                 if(resultCode == RESULT_OK) {
-                    requestSsomList(0, 0);
+                    requestSsomList(0, 0, false);
                     setSsomWriteButtonImage();
                 }
                 break;
@@ -972,7 +984,7 @@ public class MainActivity extends BaseActivity
                 public void run() {
                     canFinish = false;
                 }
-            }, 2000);
+            }, 1500);
         }
     }
 

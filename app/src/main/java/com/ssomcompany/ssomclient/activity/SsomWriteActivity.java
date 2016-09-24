@@ -11,8 +11,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -153,8 +156,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         btnApply = (LinearLayout) findViewById(R.id.btn_apply);
 
         // text 입력
-        tvOurAge.setText(String.format(getResources().getString(R.string.write_select_our_age), age.getTitle()));
-        tvOurPeople.setText(String.format(getResources().getString(R.string.write_select_our_people), people.getTitle()));
+        tvOurAge.setText(getSpannableText(R.string.write_select_our_age, age.getTitle()));
+        tvOurPeople.setText(getSpannableText(R.string.write_select_our_people, people.getTitle()));
 
         ////////// listener 등록 ////////////
         // content line 4줄 max 설정
@@ -358,7 +361,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                 age = FilterType.thirtyOver;
             }
 
-            tvOurAge.setText(String.format(getResources().getString(R.string.write_select_our_age), age.getTitle()));
+            tvOurAge.setText(getSpannableText(R.string.write_select_our_age, age.getTitle()));
         }
     };
 
@@ -391,9 +394,20 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                 people = FilterType.fourPeople;
             }
 
-            tvOurPeople.setText(String.format(getResources().getString(R.string.write_select_our_people), people.getTitle()));
+            tvOurPeople.setText(getSpannableText(R.string.write_select_our_people, people.getTitle()));
         }
     };
+
+    private SpannableStringBuilder getSpannableText(int strRes, String count) {
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        String firstStr = String.format(getString(strRes), count);
+        SpannableString redSpannable= new SpannableString(firstStr);
+        redSpannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.red_pink)),
+                strRes == R.string.write_select_our_people ? 0 : 7,
+                strRes == R.string.write_select_our_people ? count.length() : 7 + count.length() - 1, 0);
+        builder.append(redSpannable);
+        return builder;
+    }
 
     @Override
     public void onClick(View v) {
