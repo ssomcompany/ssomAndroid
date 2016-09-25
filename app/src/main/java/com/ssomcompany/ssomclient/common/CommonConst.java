@@ -32,5 +32,12 @@ public class CommonConst {
         public static final String IMAGE_URL = "image_url";
         public static final String SSOM_TYPE = "ssom_type";
         public static final String SSOM_ITEM = "ssom_item";
+
+        // for push message
+        public static final String FROM_USER_ID = "fromUserId";
+        public static final String TO_USER_ID = "toUserId";
+        public static final String TIMESTAMP = "timestamp";
+        public static final String CHAT_ROOM_ID = "chatroomId";
+        public static final String MESSAGE = "message";
     }
 }

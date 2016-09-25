@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.activity;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -25,14 +26,16 @@ import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
 import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
 import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
+import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 
-public class SsomChattingActivity extends BaseActivity implements ViewListener.OnChatItemInteractionListener {
+public class SsomChattingActivity extends BaseActivity implements ViewListener.OnChatItemInteractionListener, MessageCountCheck {
     private static final String TAG = SsomChattingActivity.class.getSimpleName();
 
     private static final int STATE_CHAT_LIST = 0;
@@ -48,6 +51,8 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
 
     private SsomPreferences chatPref;
     private InputMethodManager imm;
+
+    private int unreadCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,13 +107,12 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         ssomBar.setChatLayoutVisibility(false);
         ssomBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomBar.setSsomBarTitleStyle(R.style.ssom_font_16_custom_4d4d4d_single);
-        // TODO MessageManager 등록하고 초기 message count 셋팅
         APICaller.totalChatUnreadCount(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomChatUnreadCount.Response>>() {
             @Override
             public void onResponse(SsomResponse<SsomChatUnreadCount.Response> response) {
                 if(response.isSuccess() && response.getData() != null) {
-                    ssomBar.setSsomBarTitleText(String.format(getResources().getString(R.string.chat_list_title),
-                            response.getData().getUnreadCount()));
+                    unreadCount = response.getData().getUnreadCount();
+                    ssomBar.setSsomBarTitleText(String.format(getResources().getString(R.string.chat_list_title), unreadCount));
                 } else {
                     showErrorMessage();
                 }
@@ -146,9 +150,8 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         ssomBar.setCurrentMode(SsomActionBarView.SSOM_CHAT_LIST);
         ssomBar.setChattingRoomHeartVisibility(false);
         ssomBar.setChatLayoutVisibility(false);
-        // TODO MessageManager 등록하고 초기 message count 셋팅
         ssomBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
-        ssomBar.setSsomBarTitleText(String.format(getResources().getString(R.string.chat_list_title), 0));
+        ssomBar.setSsomBarTitleText(String.format(getResources().getString(R.string.chat_list_title), unreadCount));
         ssomBar.setSsomBarTitleStyle(R.style.ssom_font_16_custom_4d4d4d_single);
         ssomBar.setSsomBarSubTitleVisibility(false);
     }
@@ -226,6 +229,56 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             startChatRoomListFragment();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void receivedPushMessage(Intent intent) {
+        super.receivedPushMessage(intent);
+        Log.d(TAG, "receivedPushMessage............");
+
+        if(fragmentManager == null) {
+            Log.d(TAG, "fragmentManager is null");
+            return;
+        }
+
+        if(intent == null) {
+            Log.d(TAG, "intent is null");
+            return;
+        }
+
+        if(fragmentManager.findFragmentById(R.id.chat_container) instanceof ChatRoomListFragment) {
+            // chatting room 화면을 보고 있는 경우에 채팅룸 갱신
+            ArrayList<ChatRoomItem> roomList = roomListFragment.getChatRoomList();
+            int chatRoomId = Integer.parseInt(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID));
+            int roomIndex = 0;
+
+            for(int i = 0 ; i < roomList.size() ; i++) {
+                if(roomList.get(i).getId() == chatRoomId) {
+                    roomIndex = i;
+                    break;
+                }
+            }
+            ChatRoomItem tempItem = roomList.get(roomIndex);
+            tempItem.setLastMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
+            tempItem.setUnreadCount(tempItem.getUnreadCount() + 1);
+            roomList.remove(roomIndex);
+            roomList.add(0, tempItem);
+            roomListFragment.setChatRoomListAndNotify(roomList);
+            ssomBar.setSsomBarTitleText(String.format(getResources().getString(R.string.chat_list_title), ++unreadCount));
+        } else {
+            // 푸시를 받은 방에서 chatting 중이라면 메시지를 추가해서 보여줌
+            ChattingFragment chatting = (ChattingFragment) fragmentManager.findFragmentByTag(CommonConst.CHATTING_FRAG);
+            if(chatting.getChatRoomId().equalsIgnoreCase(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID))) {
+                ChattingItem chat = new ChattingItem();
+                chat.setMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
+                chat.setFromUserId(intent.getStringExtra(CommonConst.Intent.FROM_USER_ID));
+                chat.setToUserId(intent.getStringExtra(CommonConst.Intent.TO_USER_ID));
+                chat.setTimestamp(intent.getLongExtra(CommonConst.Intent.TIMESTAMP, 0));
+                chatting.addChatting(chat);
+            } else {
+                unreadCount++;
+            }
         }
     }
 }

@@ -101,7 +101,7 @@ public class SsomItemListAdapter extends BaseAdapter {
                 Util.convertAgeRangeAtBackOneChar(item.getMinAge()), item.getUserCount()));
 
         //time
-        holder.timeTv.setText(Util.getTimeText(TextUtils.isEmpty(item.getPostId()) ? 0 : Long.valueOf(item.getPostId())));
+        holder.timeTv.setText(Util.getTimeText(item.getCreatedTimestamp() == 0 ? 0 : item.getCreatedTimestamp()));
 
         // distance
         holder.distanceTv.setText(LocationTracker.getInstance().getDistanceString(item.getLatitude(), item.getLongitude()));

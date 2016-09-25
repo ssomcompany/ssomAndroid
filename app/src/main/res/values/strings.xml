@@ -68,7 +68,8 @@
     <string name="chat_message_initial_first">두근두근,&#160;</string>
     <string name="chat_message_initial_second">대화가 시작 되었쏨 :)</string>
     <string name="chat_message_finish">상대방이 쏨을 종료했습니다. (T_T)</string>
-    <string name="chat_message_hint">메시지를 입력하세요...</string>
+    <string name="chat_message_hint">메시지를 입력하세요&#8230;</string>
+    <string name="chat_room_no_info">정보가 없어요&#8230;</string>
 
     <!-- button -->
     <string name="ok_upper">확인</string>

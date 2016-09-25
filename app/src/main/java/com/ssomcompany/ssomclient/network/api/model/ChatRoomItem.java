@@ -11,7 +11,6 @@ public class ChatRoomItem extends SsomItem {
     private int id;
     private String ownerId;
     private String participantId;
-    private long createdTimestamp;
     private String lastMsg;
     private long lastTimestamp;
     private InfoType infoType;
@@ -49,14 +48,6 @@ public class ChatRoomItem extends SsomItem {
 
     public void setInfoType(InfoType infoType) {
         this.infoType = infoType;
-    }
-
-    public long getCreatedTimestamp() {
-        return createdTimestamp;
-    }
-
-    public void setCreatedTimestamp(long createdTimestamp) {
-        this.createdTimestamp = createdTimestamp;
     }
 
     public String getLastMsg() {

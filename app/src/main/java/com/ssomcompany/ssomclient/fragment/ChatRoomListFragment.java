@@ -61,6 +61,12 @@ public class ChatRoomListFragment extends BaseFragment {
         return chatRoomList;
     }
 
+    public void setChatRoomListAndNotify(ArrayList<ChatRoomItem> chatRoomList) {
+        this.chatRoomList = chatRoomList;
+        mAdapter.setChatRoomList(this.chatRoomList);
+        mAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,7 +92,7 @@ public class ChatRoomListFragment extends BaseFragment {
                 deleteItem.setBackground(R.drawable.bg_chat_delete);
                 deleteItem.setWidth(Util.convertDpToPixel(70));
                 deleteItem.setIcon(R.drawable.icon_trash);
-                deleteItem.setTitle(getResources().getString(R.string.chat_list_delete));
+                deleteItem.setTitle(getString(R.string.chat_list_delete));
                 deleteItem.setTitleStyle(R.style.ssom_font_12_white_single);
                 deleteItem.setMarginBetweenIconAndText(Util.convertDpToPixel(7.5f));
                 menu.addMenuItem(deleteItem);

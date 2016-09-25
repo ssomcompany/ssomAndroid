@@ -52,8 +52,6 @@ public class MessageManager {
 
     public void getMessageCount(String token) {
         Log.d(TAG, "getMessageCount call");
-
-        // TODO method 정의
         getUnreadCount(token);
     }
 

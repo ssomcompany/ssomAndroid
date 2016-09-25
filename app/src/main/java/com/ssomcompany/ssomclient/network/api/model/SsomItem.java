@@ -16,6 +16,7 @@ public class SsomItem extends ToStringHelperClass implements Serializable {
     private int minAge;
     private int maxAge;
     private int userCount;
+    private long createdTimestamp;
     private String ssomType;
     private double latitude;
     private double longitude;
@@ -106,5 +107,13 @@ public class SsomItem extends ToStringHelperClass implements Serializable {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public long getCreatedTimestamp() {
+        return createdTimestamp;
+    }
+
+    public void setCreatedTimestamp(long createdTimestamp) {
+        this.createdTimestamp = createdTimestamp;
     }
 }

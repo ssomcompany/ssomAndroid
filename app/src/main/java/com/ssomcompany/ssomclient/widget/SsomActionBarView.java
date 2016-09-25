@@ -212,13 +212,16 @@ public class SsomActionBarView extends RelativeLayout {
      * Call this method if want to set ChatLayout's icon. (Default off)
      * @param iconOnOff set true if want this is on false otherwise
      */
-    @SuppressLint("NewApi")
     public void setChatIconOnOff(final boolean iconOnOff) {
         chatLayout.setCompoundDrawablesWithIntrinsicBounds(0, iconOnOff ? R.drawable.icon_chat_red : R.drawable.icon_chat, 0, 0);
     }
 
     public void setChatCount(String count) {
         chatLayout.setText(count);
+    }
+
+    public int getChatCount() {
+        return Integer.parseInt(String.valueOf(chatLayout.getText()));
     }
 
     public void setChattingRoomHeartVisibility(boolean visibility) {

@@ -309,7 +309,7 @@ public class MainActivity extends BaseActivity
 
         // message count 얻어오기
         if(getSession() != null && !TextUtils.isEmpty(getUserId()))
-            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH));
+            MessageManager.getInstance().getMessageCount(getToken());
 
 //        if(locationTracker != null && locationTracker.chkCanGetLocation()) {
 //            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
@@ -394,6 +394,7 @@ public class MainActivity extends BaseActivity
                 @Override
                 public void onResponse(SsomResponse<SsomItem> response) {
                     if (response.isSuccess()) {
+                        Log.d(TAG, "data : " + response.getData());
                         if(response.getData() != null && !TextUtils.isEmpty(response.getData().getPostId())) {
                             myPost = response.getData();
                             myPostId = response.getData().getPostId();
@@ -483,6 +484,22 @@ public class MainActivity extends BaseActivity
                 setToggleButtonUI();
             }
         });
+    }
+
+    @Override
+    protected void receivedPushMessage(Intent intent) {
+        super.receivedPushMessage(intent);
+
+        if(ssomActionBar == null) {
+            Log.d(TAG, "ssomActionBar is null");
+            return;
+        }
+
+        if(ssomActionBar.getChatCount() == 0) {
+            ssomActionBar.setChatIconOnOff(true);
+        }
+
+        ssomActionBar.setChatCount(String.valueOf(ssomActionBar.getChatCount() + 1));
     }
 
     @Override

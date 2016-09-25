@@ -32,7 +32,6 @@ public class ChatRoomListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private Context context;
     private ImageLoader mImageLoader;
-    private ChatItemViewHolder holder;
     private ArrayList<ChatRoomItem> itemList;
 
     public ChatRoomListAdapter(Context context){
@@ -68,19 +67,21 @@ public class ChatRoomListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ChatItemViewHolder holder;
+
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.ssom_chat_list_item, null);
 
             holder = new ChatItemViewHolder();
-            holder.image = (CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image);
-            holder.iconCircle = (ImageView) convertView.findViewById(R.id.icon_circle);
-            holder.tvChatInfo = (TextView) convertView.findViewById(R.id.chat_information);
-            holder.tvChatContent = (TextView) convertView.findViewById(R.id.chat_content);
-            holder.unreadLayout = (FrameLayout) convertView.findViewById(R.id.unread_layout);
-            holder.imgUnreadCount = (ImageView) convertView.findViewById(R.id.bg_unread_count);
-            holder.unreadCount = (TextView) convertView.findViewById(R.id.unread_count);
-            holder.tvDistance = (TextView) convertView.findViewById(R.id.tv_distance);
-            holder.tvTime = (TextView) convertView.findViewById(R.id.tv_time);
+            holder.setImage((CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image));
+            holder.setIconCircle((ImageView) convertView.findViewById(R.id.icon_circle));
+            holder.setTvChatInfo((TextView) convertView.findViewById(R.id.chat_information));
+            holder.setTvChatContent((TextView) convertView.findViewById(R.id.chat_content));
+            holder.setUnreadLayout((FrameLayout) convertView.findViewById(R.id.unread_layout));
+            holder.setImgUnreadCount((ImageView) convertView.findViewById(R.id.bg_unread_count));
+            holder.setUnreadCount((TextView) convertView.findViewById(R.id.unread_count));
+            holder.setTvDistance((TextView) convertView.findViewById(R.id.tv_distance));
+            holder.setTvTime((TextView) convertView.findViewById(R.id.tv_time));
 
             convertView.setTag(holder);
         } else {
@@ -91,42 +92,45 @@ public class ChatRoomListAdapter extends BaseAdapter {
         ChatRoomItem item = itemList.get(position);
 
         // profile image
-        holder.image.setDefaultImageResId(R.drawable.profile_img_basic);
-        holder.image.setErrorImageResId(R.drawable.profile_img_basic);
-        holder.image.setImageUrl(item.getImageUrl(), mImageLoader);
+        holder.getImage().setDefaultImageResId(R.drawable.profile_img_basic);
+        holder.getImage().setErrorImageResId(R.drawable.profile_img_basic);
+        holder.getImage().setImageUrl(item.getImageUrl(), mImageLoader);
 
         //icon
         if(CommonConst.SSOM.equals(item.getSsomType())){
-            holder.iconCircle.setImageResource(R.drawable.chat_profile_border_green);
+            holder.getIconCircle().setImageResource(R.drawable.chat_profile_border_green);
         }else{
-            holder.iconCircle.setImageResource(R.drawable.chat_profile_border_red);
+            holder.getIconCircle().setImageResource(R.drawable.chat_profile_border_red);
         }
 
         // chat info
-        holder.tvChatInfo.setText(String.format(context.getResources().getString(R.string.post_title),
-                Util.convertAgeRangeAtBackOneChar(item.getMinAge()), item.getUserCount()));
+        if(item.getMinAge() == 0 || item.getUserCount() == 0) {
+            holder.getTvChatInfo().setText(context.getString(R.string.chat_room_no_info));
+        } else {
+            holder.getTvChatInfo().setText(String.format(context.getResources().getString(R.string.post_title),
+                    Util.convertAgeRangeAtBackOneChar(item.getMinAge()), item.getUserCount()));
+        }
 
         // content
-        holder.tvChatContent.setText(TextUtils.isEmpty(item.getLastMsg()) ? getEmptyLastMsg() : item.getLastMsg(),
+        holder.getTvChatContent().setText(TextUtils.isEmpty(item.getLastMsg()) ? getEmptyLastMsg() : item.getLastMsg(),
                 TextUtils.isEmpty(item.getLastMsg()) ? TextView.BufferType.SPANNABLE : TextView.BufferType.NORMAL);
 
         if(item.getUnreadCount() > 0) {
-            holder.unreadLayout.setVisibility(View.VISIBLE);
+            holder.getUnreadLayout().setVisibility(View.VISIBLE);
             // TODO 쏨 요청이 왔을 때 하트로 변경 icon_heart_ssom_ing
-            holder.imgUnreadCount.setImageResource(R.drawable.icon_chat_unread_count);
+            holder.getImgUnreadCount().setImageResource(R.drawable.icon_chat_unread_count);
             // TODO 쏨 요청이 왔을 때 count view 숨김
-            holder.unreadCount.setText(item.getUnreadCount());
+            holder.getUnreadCount().setText(String.valueOf(item.getUnreadCount()));
         } else {
             // TODO 쏨 요청이 왔을 경우에는 하트로 변경해야 함
-            holder.unreadLayout.setVisibility(View.INVISIBLE);
+            holder.getUnreadLayout().setVisibility(View.INVISIBLE);
         }
 
         // distance
-        holder.tvDistance.setText(LocationTracker.getInstance().getDistanceString(item.getLatitude(), item.getLongitude()));
+        holder.getTvDistance().setText(LocationTracker.getInstance().getDistanceString(item.getLatitude(), item.getLongitude()));
 
         //time
-//        holder.tvTime.setText(String.valueOf(item.getMessageTime()));
-        holder.tvTime.setText(Util.getTimeTextForChatRoom(item.getLastTimestamp()));
+        holder.getTvTime().setText(Util.getTimeTextForChatRoom(item.getLastTimestamp()));
 
         return convertView;
     }
@@ -149,14 +153,86 @@ public class ChatRoomListAdapter extends BaseAdapter {
         /**
          * holder for list items
          */
-        public CircularNetworkImageView image;
-        public ImageView iconCircle;
-        public TextView tvChatInfo;
-        public TextView tvChatContent;
-        public FrameLayout unreadLayout;
-        public ImageView imgUnreadCount;
-        public TextView unreadCount;
-        public TextView tvDistance;
-        public TextView tvTime;
+        private CircularNetworkImageView image;
+        private ImageView iconCircle;
+        private TextView tvChatInfo;
+        private TextView tvChatContent;
+        private FrameLayout unreadLayout;
+        private ImageView imgUnreadCount;
+        private TextView unreadCount;
+        private TextView tvDistance;
+        private TextView tvTime;
+
+        public CircularNetworkImageView getImage() {
+            return image;
+        }
+
+        public void setImage(CircularNetworkImageView image) {
+            this.image = image;
+        }
+
+        public ImageView getIconCircle() {
+            return iconCircle;
+        }
+
+        public void setIconCircle(ImageView iconCircle) {
+            this.iconCircle = iconCircle;
+        }
+
+        public TextView getTvChatInfo() {
+            return tvChatInfo;
+        }
+
+        public void setTvChatInfo(TextView tvChatInfo) {
+            this.tvChatInfo = tvChatInfo;
+        }
+
+        public TextView getTvChatContent() {
+            return tvChatContent;
+        }
+
+        public void setTvChatContent(TextView tvChatContent) {
+            this.tvChatContent = tvChatContent;
+        }
+
+        public FrameLayout getUnreadLayout() {
+            return unreadLayout;
+        }
+
+        public void setUnreadLayout(FrameLayout unreadLayout) {
+            this.unreadLayout = unreadLayout;
+        }
+
+        public ImageView getImgUnreadCount() {
+            return imgUnreadCount;
+        }
+
+        public void setImgUnreadCount(ImageView imgUnreadCount) {
+            this.imgUnreadCount = imgUnreadCount;
+        }
+
+        public TextView getUnreadCount() {
+            return unreadCount;
+        }
+
+        public void setUnreadCount(TextView unreadCount) {
+            this.unreadCount = unreadCount;
+        }
+
+        public TextView getTvDistance() {
+            return tvDistance;
+        }
+
+        public void setTvDistance(TextView tvDistance) {
+            this.tvDistance = tvDistance;
+        }
+
+        public TextView getTvTime() {
+            return tvTime;
+        }
+
+        public void setTvTime(TextView tvTime) {
+            this.tvTime = tvTime;
+        }
     }
 }

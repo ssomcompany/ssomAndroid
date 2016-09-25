@@ -140,12 +140,16 @@ public class LocationTracker {
             float[] results = new float[1];
             Location.distanceBetween(targetLatitude, targetLongitude, myLocation.getLatitude(), myLocation.getLongitude(), results);
             float distance = results[0];
-            if(distance > 1000){
+            if(distance > 1000000) {
+                return "? m";
+            }
+
+            if(distance > 1000) {
                 int km = (int) (distance/1000);
-                return km+"km";
-            }else{
+                return km + "km";
+            } else {
                 int m = (int) distance;
-                return m+"m";
+                return m + "m";
             }
         }
         return "";

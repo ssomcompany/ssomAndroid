@@ -137,14 +137,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
                 setMessageCount(msText);
             } else if (MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equals(action)) {
-                refreshMessageCount();
+                receivedPushMessage(intent);
             }
         }
 
     };
 
-    protected void refreshMessageCount() {
-        messageManager.getMessageCount(getToken());
+    protected void receivedPushMessage(Intent intent) {
+        Log.d(TAG, "receivedPushMessage called");
     }
 
     // this method must be overwritten when use notification count on the activity

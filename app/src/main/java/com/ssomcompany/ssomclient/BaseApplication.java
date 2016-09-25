@@ -13,6 +13,7 @@ import com.onesignal.OneSignal;
 import com.onesignal.OneSignalDbHelper;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.push.SsomNotiOpenedHandler;
+import com.ssomcompany.ssomclient.push.SsomNotiReceiveHandler;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,8 +35,16 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
         // Logging set to help debug issues, remove before releasing your app.
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.DEBUG, OneSignal.LOG_LEVEL.WARN);
 
+        // sound on
+        OneSignal.enableSound(true);
+
+        // vibrate on
+        OneSignal.enableVibrate(true);
+
         OneSignal.startInit(this)
                 .setNotificationOpenedHandler(new SsomNotiOpenedHandler())
+                .setNotificationReceivedHandler(new SsomNotiReceiveHandler())
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None)
                 .autoPromptLocation(true)
                 .init();
 
@@ -132,6 +141,10 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
 
     public Activity getCurrentActivity() {
         return this.mCurrentActivity;
+    }
+
+    public AtomicInteger getCurrentActivityCount() {
+        return activityCount;
     }
 
     /**

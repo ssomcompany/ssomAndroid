@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
 import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
 import com.ssomcompany.ssomclient.common.UiUtils;
@@ -76,8 +77,17 @@ public class ChattingFragment extends BaseFragment {
         this.roomItem = roomItem;
     }
 
+    public String getChatRoomId() {
+        return String.valueOf(roomItem.getId());
+    }
+
     public String getChatRoomUserId() {
         return roomItem.getUserId();
+    }
+
+    public void addChatting(ChattingItem chat) {
+        mAdapter.add(chat);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
