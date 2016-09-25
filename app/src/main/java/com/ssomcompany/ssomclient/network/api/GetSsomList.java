@@ -17,9 +17,9 @@ public class GetSsomList {
             super(String.format(Locale.getDefault(), API.SSOM_LIST, lat, lng) + (TextUtils.isEmpty(userId) ? "" : ("&userId=" + userId)));
         }
 
-        public Request(double lat, double lng, String userId, int age, int count) {
+        public Request(double lat, double lng, String userId, String age, String count) {
             super(String.format(Locale.getDefault(), API.SSOM_LIST, lat, lng) +
-                    (TextUtils.isEmpty(userId) ? "" : ("&userId=" + userId) + "&ageFilter=" + age + "&countFilter=" + count));
+                    ((TextUtils.isEmpty(userId) ? "" : ("&userId=" + userId)) + "&ageFilter=" + age + "&countFilter=" + count));
         }
     }
 

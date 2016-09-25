@@ -11,8 +11,8 @@ public class SsomPostCreate {
         private String userId;
         private String content;
         private String imageUrl;
-        private int minAge;
-        private int userCount;
+        private String minAge;
+        private String userCount;
         private String ssomType;
         private double latitude;
         private double longitude;
@@ -57,20 +57,20 @@ public class SsomPostCreate {
             return this;
         }
 
-        public int getMinAge() {
+        public String getMinAge() {
             return minAge;
         }
 
-        public Request setMinAge(int minAge) {
+        public Request setMinAge(String minAge) {
             this.minAge = minAge;
             return this;
         }
 
-        public int getUserCount() {
+        public String getUserCount() {
             return userCount;
         }
 
-        public Request setUserCount(int userCount) {
+        public Request setUserCount(String userCount) {
             this.userCount = userCount;
             return this;
         }

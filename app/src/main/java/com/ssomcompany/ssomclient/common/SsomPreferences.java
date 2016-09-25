@@ -3,6 +3,10 @@ package com.ssomcompany.ssomclient.common;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
+
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class SsomPreferences {
     public static final String CHATTING_PREF = "com.ssomcompany.ssomclient.chatting.pref";
@@ -24,7 +28,6 @@ public class SsomPreferences {
 
     private final Context mContext;
     private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
     private final String prefName;
 
     public SsomPreferences(Context ctx, String prefName) {
@@ -34,23 +37,27 @@ public class SsomPreferences {
 
     public void put(String key, String value) {
         pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
-        editor = pref.edit();
-        editor.putString(key, value);
-        editor.apply();
+        pref.edit().putString(key, value).apply();
     }
 
     public void put(String key, boolean value) {
         pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
-        editor = pref.edit();
-        editor.putBoolean(key, value);
-        editor.apply();
+        pref.edit().putBoolean(key, value).apply();
     }
 
     public void put(String key, int value) {
         pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
-        editor = pref.edit();
-        editor.putInt(key, value);
-        editor.apply();
+        pref.edit().putInt(key, value).apply();
+    }
+
+    public void put(String key, ArrayList<String> value) {
+        pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
+        StringBuilder str = new StringBuilder();
+        for (int i=0 ; i<value.size() ; i++) {
+            str.append(value.get(i));
+            if(i != value.size() - 1) str.append(",");
+        }
+        pref.edit().putString(key, str.toString()).apply();
     }
 
     public String getString(String key, String defValue) {
@@ -81,5 +88,21 @@ public class SsomPreferences {
         } catch(Exception e) {
             return defValue;
         }
+    }
+
+    public ArrayList<String> getStringArray(String key, ArrayList<String> defValue) {
+        pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
+
+        String savedString = pref.getString(key, "");
+        if(TextUtils.isEmpty(savedString)) {
+            return defValue;
+        }
+
+        StringTokenizer st = new StringTokenizer(savedString, ",");
+        ArrayList<String> savedList = new ArrayList<>();
+        while (st.hasMoreTokens()) {
+            savedList.add(st.nextToken());
+        }
+        return savedList;
     }
 }

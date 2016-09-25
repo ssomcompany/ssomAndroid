@@ -16,6 +16,8 @@ import com.ssomcompany.ssomclient.common.FilterType;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.control.ViewListener;
 
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,8 +42,8 @@ public class FilterFragment extends Fragment {
     private TextView tvFourPeopleOrMore;
 
     // set global filter params
-    private static int age;
-    private static int people;
+    private static ArrayList<String> ageArr;
+    private static ArrayList<String> peopleArr;
 
     private ViewListener.OnFilterFragmentInteractionListener mListener;
 
@@ -64,8 +66,8 @@ public class FilterFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
 
-        age = filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, FilterType.twentyEarly.getValue());
-        people = filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, FilterType.onePerson.getValue());
+        ageArr = filterPref.getStringArray(SsomPreferences.PREF_FILTER_AGE, new ArrayList<String>());
+        peopleArr = filterPref.getStringArray(SsomPreferences.PREF_FILTER_PEOPLE, new ArrayList<String>());
 
         // view for age settings
         tvTwentyEarly = (TextView) view.findViewById(R.id.tv_filter_age_20_early);
@@ -102,12 +104,22 @@ public class FilterFragment extends Fragment {
                 tvTwentyMiddle.setSelected(true);
                 tvTwentyLate.setSelected(true);
                 tvThirtyAll.setSelected(true);
+                if(!ageArr.contains(FilterType.twentyEarly.getValue())) ageArr.add(FilterType.twentyEarly.getValue());
+                if(!ageArr.contains(FilterType.twentyMiddle.getValue())) ageArr.add(FilterType.twentyMiddle.getValue());
+                if(!ageArr.contains(FilterType.twentyLate.getValue())) ageArr.add(FilterType.twentyLate.getValue());
+                if(!ageArr.contains(FilterType.thirtyOver.getValue())) ageArr.add(FilterType.thirtyOver.getValue());
+                Log.d(TAG, "ageArr : " + ageArr.size());
 
                 // people filter
                 tvOnePeople.setSelected(true);
                 tvTwoPeople.setSelected(true);
                 tvThreePeople.setSelected(true);
                 tvFourPeopleOrMore.setSelected(true);
+                if(!peopleArr.contains(FilterType.onePerson.getValue())) peopleArr.add(FilterType.onePerson.getValue());
+                if(!peopleArr.contains(FilterType.twoPeople.getValue())) peopleArr.add(FilterType.twoPeople.getValue());
+                if(!peopleArr.contains(FilterType.threePeople.getValue())) peopleArr.add(FilterType.threePeople.getValue());
+                if(!peopleArr.contains(FilterType.fourPeople.getValue())) peopleArr.add(FilterType.fourPeople.getValue());
+                Log.d(TAG, "people : " + peopleArr.size());
             }
         });
         tvCancel.setOnClickListener(new View.OnClickListener() {
@@ -136,33 +148,37 @@ public class FilterFragment extends Fragment {
 
     // setting init information
     private void initView() {
-        Log.i(TAG, "initView() age : " + age);
-        if(age == FilterType.twentyEarly.getValue()) {
-            tvTwentyEarly.setSelected(true);
-        } else if(age == FilterType.twentyMiddle.getValue()) {
-            tvTwentyMiddle.setSelected(true);
-        } else if(age == FilterType.twentyLate.getValue()) {
-            tvTwentyLate.setSelected(true);
-        } else if(age == FilterType.thirtyOver.getValue()) {
-            tvThirtyAll.setSelected(true);
+        Log.i(TAG, "initView() age : " + ageArr.size());
+        for(String age : ageArr) {
+            if (FilterType.twentyEarly.getValue().equals(age)) {
+                tvTwentyEarly.setSelected(true);
+            } else if (FilterType.twentyMiddle.getValue().equals(age)) {
+                tvTwentyMiddle.setSelected(true);
+            } else if (FilterType.twentyLate.getValue().equals(age)) {
+                tvTwentyLate.setSelected(true);
+            } else if (FilterType.thirtyOver.getValue().equals(age)) {
+                tvThirtyAll.setSelected(true);
+            }
         }
 
-        Log.i(TAG, "initView() people : " + people);
-        if(people == FilterType.onePerson.getValue()) {
-            tvOnePeople.setSelected(true);
-        } else if(people == FilterType.twoPeople.getValue()) {
-            tvTwoPeople.setSelected(true);
-        } else if(people == FilterType.threePeople.getValue()) {
-            tvThreePeople.setSelected(true);
-        } else if(people == FilterType.fourPeople.getValue()) {
-            tvFourPeopleOrMore.setSelected(true);
+        Log.i(TAG, "initView() people : " + peopleArr.size());
+        for(String people : peopleArr) {
+            if (FilterType.onePerson.getValue().equals(people)) {
+                tvOnePeople.setSelected(true);
+            } else if (FilterType.twoPeople.getValue().equals(people)) {
+                tvTwoPeople.setSelected(true);
+            } else if (FilterType.threePeople.getValue().equals(people)) {
+                tvThreePeople.setSelected(true);
+            } else if (FilterType.fourPeople.getValue().equals(people)) {
+                tvFourPeopleOrMore.setSelected(true);
+            }
         }
     }
 
     public void closeView(boolean isApply) {
         if(isApply) {
-            filterPref.put(SsomPreferences.PREF_FILTER_AGE, age);
-            filterPref.put(SsomPreferences.PREF_FILTER_PEOPLE, people);
+            filterPref.put(SsomPreferences.PREF_FILTER_AGE, ageArr);
+            filterPref.put(SsomPreferences.PREF_FILTER_PEOPLE, peopleArr);
         }
 
         if (mListener != null) {
@@ -210,28 +226,60 @@ public class FilterFragment extends Fragment {
 
             switch (v.getId()) {
                 case R.id.tv_filter_age_20_early :
-                    age = FilterType.twentyEarly.getValue();
+                    if(v.isSelected()) {
+                        ageArr.add(FilterType.twentyEarly.getValue());
+                    } else {
+                        ageArr.remove(FilterType.twentyEarly.getValue());
+                    }
                     break;
                 case R.id.tv_filter_age_20_middle :
-                    age = FilterType.twentyMiddle.getValue();
+                    if(v.isSelected()) {
+                        ageArr.add(FilterType.twentyMiddle.getValue());
+                    } else {
+                        ageArr.remove(FilterType.twentyMiddle.getValue());
+                    }
                     break;
                 case R.id.tv_filter_age_20_late :
-                    age = FilterType.twentyLate.getValue();
+                    if(v.isSelected()) {
+                        ageArr.add(FilterType.twentyLate.getValue());
+                    } else {
+                        ageArr.remove(FilterType.twentyLate.getValue());
+                    }
                     break;
                 case R.id.tv_filter_age_30_all :
-                    age = FilterType.thirtyOver.getValue();
+                    if(v.isSelected()) {
+                        ageArr.add(FilterType.thirtyOver.getValue());
+                    } else {
+                        ageArr.remove(FilterType.thirtyOver.getValue());
+                    }
                     break;
                 case R.id.tv_filter_people_1 :
-                    people = FilterType.onePerson.getValue();
+                    if(v.isSelected()) {
+                        peopleArr.add(FilterType.onePerson.getValue());
+                    } else {
+                        peopleArr.remove(FilterType.onePerson.getValue());
+                    }
                     break;
                 case R.id.tv_filter_people_2 :
-                    people = FilterType.twoPeople.getValue();
+                    if(v.isSelected()) {
+                        peopleArr.add(FilterType.twoPeople.getValue());
+                    } else {
+                        peopleArr.remove(FilterType.twoPeople.getValue());
+                    }
                     break;
                 case R.id.tv_filter_people_3 :
-                    people = FilterType.threePeople.getValue();
+                    if(v.isSelected()) {
+                        peopleArr.add(FilterType.threePeople.getValue());
+                    } else {
+                        peopleArr.remove(FilterType.threePeople.getValue());
+                    }
                     break;
                 case R.id.tv_filter_people_4_n_over :
-                    people = FilterType.fourPeople.getValue();
+                    if(v.isSelected()) {
+                        peopleArr.add(FilterType.fourPeople.getValue());
+                    } else {
+                        peopleArr.remove(FilterType.fourPeople.getValue());
+                    }
                     break;
             }
         }

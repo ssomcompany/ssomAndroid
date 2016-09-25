@@ -273,7 +273,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void requestSsomList(int ageFilter, int countFilter, final boolean needFilterToast) {
+    private void requestSsomList(String ageFilter, String countFilter, final boolean needFilterToast) {
         showProgressDialog(false);
         APICaller.getSsomList(locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude(),
                 getUserId(), ageFilter, countFilter, new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
@@ -337,7 +337,7 @@ public class MainActivity extends BaseActivity
                 takeBtmBar.setVisibility(View.GONE);
 
                 if(ssomListFragment != null) ssomListFragment.setPostItemClickListener(null);
-                requestSsomList(0, 0, false);
+                requestSsomList(null, null, false);
             }
         });
 
@@ -354,7 +354,7 @@ public class MainActivity extends BaseActivity
                 giveBtmBar.setVisibility(View.GONE);
 
                 if(ssomListFragment != null) ssomListFragment.setPostItemClickListener(null);
-                requestSsomList(0, 0, false);
+                requestSsomList(null, null, false);
             }
         });
 
@@ -630,7 +630,7 @@ public class MainActivity extends BaseActivity
                 moveToMyLocation(false);
             }
         });
-        requestSsomList(0, 0, false);
+        requestSsomList(null, null, false);
 
         // 마커 클릭 리스너
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -879,8 +879,8 @@ public class MainActivity extends BaseActivity
     public void onFilterFragmentInteraction(boolean isApply) {
         Log.i(TAG, "filter interaction : " + isApply);
         if(isApply) {
-            requestSsomList(filterPref.getInt(SsomPreferences.PREF_FILTER_AGE, 0),
-                    filterPref.getInt(SsomPreferences.PREF_FILTER_PEOPLE, 0), true);
+            requestSsomList(filterPref.getString(SsomPreferences.PREF_FILTER_AGE, ""),
+                    filterPref.getString(SsomPreferences.PREF_FILTER_PEOPLE, ""), true);
         }
 
         fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.FILTER_FRAG)).commit();
@@ -907,7 +907,7 @@ public class MainActivity extends BaseActivity
                             Log.d(TAG, "delete success : " + response);
                             fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
                             fragmentManager.popBackStack();
-                            requestSsomList(0, 0, false);
+                            requestSsomList(null, null, false);
                             myPostId = "";
                             btnWrite.setImageResource(R.drawable.btn_write);
                         } else {
@@ -932,7 +932,7 @@ public class MainActivity extends BaseActivity
         switch (requestCode) {
             case REQUEST_SSOM_WRITE :
                 if(resultCode == RESULT_OK) {
-                    requestSsomList(0, 0, false);
+                    requestSsomList(null, null, false);
                     setSsomWriteButtonImage();
                 }
                 break;

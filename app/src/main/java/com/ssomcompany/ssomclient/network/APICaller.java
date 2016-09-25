@@ -1,5 +1,6 @@
 package com.ssomcompany.ssomclient.network;
 
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
@@ -24,14 +25,15 @@ import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import java.util.Locale;
 
 public class APICaller {
-    private static final int TIME_OUT_LONG = 60000;
+    private static final int TIME_OUT_LONG = 10000;
 
     public static <T extends BaseResponse> void getSsomList(double latitude, double longitude, String userId,
-                                                            int ageFilter, int countFilter, NetworkManager.NetworkListener<T> listener) {
+                                                            String ageFilter, String countFilter, NetworkManager.NetworkListener<T> listener) {
         GetSsomList.Request request;
-        if(ageFilter == 0 || countFilter == 0) request = new GetSsomList.Request(latitude, longitude, userId);
+        if(TextUtils.isEmpty(ageFilter) || TextUtils.isEmpty(countFilter)) request = new GetSsomList.Request(latitude, longitude, userId);
         else request = new GetSsomList.Request(latitude, longitude, userId, ageFilter, countFilter);
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<GetSsomList.Response>>() {}.getType(), listener);
     }
 
@@ -39,15 +41,18 @@ public class APICaller {
         SsomImageUpload.Request request = new SsomImageUpload.Request();
 
         request.setBitmapData(bitmapData);
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomImageUpload.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void ssomPostCreate(String token, String postId, String userId, String content, String imageUrl, int minAge, int userCount, String ssomType,
+    public static <T extends BaseResponse> void ssomPostCreate(String token, String postId, String userId, String content,
+                                                               String imageUrl, String minAge, String userCount, String ssomType,
                                                                double lat, double lon, NetworkManager.NetworkListener<T> listener) {
         SsomPostCreate.Request request = new SsomPostCreate.Request().setPostId(postId).setUserId(userId).setContent(content).setImageUrl(imageUrl)
                 .setMinAge(minAge).setUserCount(userCount).setSsomType(ssomType).setLatitude(lat).setLongitude(lon);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomPostCreate.Response>>() {}.getType(), listener);
     }
 
@@ -55,6 +60,7 @@ public class APICaller {
         SsomExistMyPost.Request request = new SsomExistMyPost.Request();
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomItem>>() {}.getType(), listener);
     }
 
@@ -62,6 +68,7 @@ public class APICaller {
         SsomPostDelete.Request request = new SsomPostDelete.Request(postId);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomPostDelete.Response>>() {}.getType(), listener);
     }
 
@@ -71,12 +78,14 @@ public class APICaller {
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION,
                 "Basic " + Base64.encodeToString((String.format(Locale.getDefault(),"%s:%s", email, password)).getBytes(), Base64.DEFAULT));
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomLogin.Response>>() {}.getType(), listener);
     }
 
     public static <T extends BaseResponse> void ssomRegisterUser(String email, String password, NetworkManager.NetworkListener<T> listener) {
         SsomRegisterUser.Request request = new SsomRegisterUser.Request().setEmail(email).setPassword(password);
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomRegisterUser.Response>>() {}.getType(), listener);
     }
 
@@ -84,6 +93,7 @@ public class APICaller {
         GetChattingRoomList.Request request = new GetChattingRoomList.Request();
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<GetChattingRoomList.Response>>() {}.getType(), listener);
     }
 
@@ -91,6 +101,7 @@ public class APICaller {
         GetChattingList.Request request = new GetChattingList.Request(roomId);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<GetChattingList.Response>>() {}.getType(), listener);
     }
 
@@ -98,6 +109,7 @@ public class APICaller {
         CreateChattingRoom.Request request = new CreateChattingRoom.Request().setPostId(postId);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<CreateChattingRoom.Response>>() {}.getType(), listener);
     }
 
@@ -105,6 +117,7 @@ public class APICaller {
         SsomChatUnreadCount.Request request = new SsomChatUnreadCount.Request();
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomChatUnreadCount.Response>>() {}.getType(), listener);
     }
 
@@ -113,6 +126,7 @@ public class APICaller {
         SendChattingMessage.Request request = new SendChattingMessage.Request(roomId, lastMessageTime).setMsg(msg);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SendChattingMessage.Response>>() {}.getType(), listener);
     }
 }
