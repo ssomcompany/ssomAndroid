@@ -23,6 +23,10 @@ public class CommonConst {
     public static final String SSOM = "ssom";
     public static final String SSOA = "ssoseyo";
 
+    // request string
+    public static final String MEETING_REQUEST = "request";
+    public static final String MEETING_APPROVE = "approve";
+
     // image file size
     public static final int LIMIT_IMAGE_SIZE = 1024 * 1024 * 10;
 

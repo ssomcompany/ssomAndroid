@@ -1,6 +1,5 @@
 package com.ssomcompany.ssomclient.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -36,7 +35,7 @@ public class SsomActionBarView extends RelativeLayout {
     private TextView ssomBarSubTitle;
     private TextView chatLayout;
     private LinearLayout heartLayout;
-    private TextView chattingRoomHeart;
+    private TextView btnChattingRoomMeeting;
     private ImageView imgHeart;
     private TextView heartCount;
     private TextView heartRefillTime;
@@ -90,7 +89,7 @@ public class SsomActionBarView extends RelativeLayout {
         imgHeart = (ImageView) findViewById(R.id.img_heart);
         heartCount = (TextView) findViewById(R.id.heart_count);
         heartRefillTime = (TextView) findViewById(R.id.heart_refill_time);
-        chattingRoomHeart = (TextView) findViewById(R.id.chatting_room_heart);
+        btnChattingRoomMeeting = (TextView) findViewById(R.id.btn_chatting_room_meeting);
     }
 
     private void initLayout() {
@@ -127,8 +126,8 @@ public class SsomActionBarView extends RelativeLayout {
         if(heartLayout != null) heartLayout.setOnClickListener(listener);
     }
 
-    public void setOnChattingRoomHeartBtnClickListener(View.OnClickListener listener) {
-        if(chattingRoomHeart != null) chattingRoomHeart.setOnClickListener(listener);
+    public void setOnChattingRoomMeetingBtnClickListener(View.OnClickListener listener) {
+        if(btnChattingRoomMeeting != null) btnChattingRoomMeeting.setOnClickListener(listener);
     }
 
     // ssom bar title settings
@@ -224,16 +223,20 @@ public class SsomActionBarView extends RelativeLayout {
         return Integer.parseInt(String.valueOf(chatLayout.getText()));
     }
 
-    public void setChattingRoomHeartVisibility(boolean visibility) {
-        chattingRoomHeart.setVisibility(visibility ? View.VISIBLE : View.GONE);
+    public void setChattingRoomBtnMeetingVisibility(boolean visibility) {
+        btnChattingRoomMeeting.setVisibility(visibility ? View.VISIBLE : View.GONE);
     }
 
-    public void setChattingRoomHeartOnOff(boolean iconOnOff) {
-        chattingRoomHeart.setBackgroundResource(iconOnOff ? R.drawable.icon_chat_room_heart_on : R.drawable.icon_heart);
+    public void setChattingRoomBtnMeetingOnOff(boolean iconOnOff) {
+        btnChattingRoomMeeting.setBackgroundResource(iconOnOff ? R.drawable.btn_write_apply_ssoa : R.drawable.btn_chat_info_cancel);
     }
 
-    public void setChattingRoomHeartText(String count) {
-        chattingRoomHeart.setText(count);
+    public void setChattingRoomBtnMeetingTitle(String title) {
+        btnChattingRoomMeeting.setText(title);
+    }
+
+    public void setChattingRoomBtnMeetingDrawable(int drawableRes) {
+        btnChattingRoomMeeting.setCompoundDrawablesWithIntrinsicBounds(drawableRes, 0, 0, 0);
     }
 
     public int getCurrentMode() {

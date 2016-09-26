@@ -37,12 +37,6 @@ public class ChattingFragment extends BaseFragment {
 
     private static final String IS_READ = "IS_READ";
 
-    /**
-     * The information layout and instance
-     */
-    private LinearLayout infoLayout;
-    private TextView infoText;
-    private TextView infoBtn;
     private EditText editMessage;
 
     /**
@@ -117,11 +111,6 @@ public class ChattingFragment extends BaseFragment {
         ImageView btnSend = (ImageView) view.findViewById(R.id.btn_send);
         editMessage = (EditText) view.findViewById(R.id.edit_message);
         ListView chatListView = (ListView) view.findViewById(R.id.chatting);
-        infoLayout = (LinearLayout) view.findViewById(R.id.info_layout);
-        infoText = (TextView) view.findViewById(R.id.info_text);
-        infoBtn = (TextView) view.findViewById(R.id.info_btn);
-
-        setChatRoomInfoLayout(roomItem.getInfoType());
 
         btnSend.setOnClickListener(new View.OnClickListener() {
 
@@ -135,7 +124,9 @@ public class ChattingFragment extends BaseFragment {
                 if(TextUtils.isEmpty(editMessage.getText())) return;
 
                 isSending = true;
-                APICaller.sendChattingMessage(getToken(), roomItem.getId(), System.currentTimeMillis(), String.valueOf(editMessage.getText()),
+                // 내가 보고 있는 목록의 가장 마지막 메시지의 시간을 가져와서 보내주면 그 사이 받은 메시지를 return 해줌
+                APICaller.sendChattingMessage(getToken(), roomItem.getId(),
+                        mAdapter.getItemList().get(mAdapter.getItemList().size() - 1).getTimestamp(), String.valueOf(editMessage.getText()),
                         new NetworkManager.NetworkListener<SsomResponse<SendChattingMessage.Response>>() {
                             @Override
                             public void onResponse(SsomResponse<SendChattingMessage.Response> response) {
@@ -196,61 +187,5 @@ public class ChattingFragment extends BaseFragment {
                         dismissProgressDialog();
                     }
                 });
-    }
-
-    public void setChatRoomInfoLayout(final ChatRoomItem.InfoType type) {
-        if(type == null || type == ChatRoomItem.InfoType.none) {
-            infoLayout.setVisibility(View.GONE);
-            return;
-        }
-
-        infoLayout.setVisibility(View.VISIBLE);
-
-        if(type == ChatRoomItem.InfoType.sent) {
-            infoText.setText(getString(R.string.chat_room_info_text_sent));
-            infoBtn.setText(getString(R.string.chat_room_info_btn_sent));
-            infoBtn.setBackgroundResource(R.drawable.btn_chat_info_cancel);
-        } else if(type == ChatRoomItem.InfoType.received) {
-            infoText.setText(getString(R.string.chat_room_info_text_received));
-            infoBtn.setText(getString(R.string.chat_room_info_btn_received));
-            infoBtn.setBackgroundResource(R.drawable.btn_write_apply_ssoa);
-        } else if(type == ChatRoomItem.InfoType.success) {
-            infoText.setText(getString(R.string.chat_room_info_text_success));
-            infoBtn.setText(getString(R.string.chat_room_info_btn_success));
-            infoBtn.setBackgroundResource(R.drawable.btn_write_apply_ssoa);
-            infoBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_heart_in_white_balloon, 0, 0, 0);
-            infoBtn.setCompoundDrawablePadding(-(Util.convertDpToPixel(15)));
-            infoBtn.setPadding(Util.convertDpToPixel(16), 0, 0, 0);
-        }
-
-        infoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(type == ChatRoomItem.InfoType.success){
-                    // TODO 지도 화면으로 이동
-
-                } else {
-                    UiUtils.makeCommonDialog(getActivity(), CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
-                            type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_cancel : R.string.dialog_meet_request,
-                            R.style.ssom_font_20_grayish_brown_bold,
-                            type == ChatRoomItem.InfoType.sent ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message, 0,
-                            type == ChatRoomItem.InfoType.sent ? R.string.ok_upper : R.string.dialog_meet,
-                            type == ChatRoomItem.InfoType.sent ? R.string.dialog_cancel : R.string.dialog_sorry,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // TODO call accept api (만남 승인, 요청취소)
-
-                                    mAdapter.notifyDataSetChanged();
-                                }
-                            }, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // TODO call reject api (만남 거절, 요청 안 취소)
-                                }
-                            });
-                }
-            }
-        });
     }
 }

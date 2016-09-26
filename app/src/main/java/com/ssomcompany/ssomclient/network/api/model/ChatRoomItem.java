@@ -1,22 +1,16 @@
 package com.ssomcompany.ssomclient.network.api.model;
 
 public class ChatRoomItem extends SsomItem {
-    public enum InfoType {
-        none,  // info 가 없음
-        sent,  // 내가 만남을 요청함
-        received,  // 상대가 만남을 요청함
-        success  // 쏨이 성사됨
-    }
-
     private int id;
     private String ownerId;
     private String participantId;
     private String lastMsg;
     private long lastTimestamp;
-    private InfoType infoType;
     private int unreadCount;
     private String requestId;
     private String status;
+    private String ownerImageUrl;
+    private String participantImageUrl;
 
     public int getId() {
         return id;
@@ -40,14 +34,6 @@ public class ChatRoomItem extends SsomItem {
 
     public void setParticipantId(String participantId) {
         this.participantId = participantId;
-    }
-
-    public InfoType getInfoType() {
-        return infoType;
-    }
-
-    public void setInfoType(InfoType infoType) {
-        this.infoType = infoType;
     }
 
     public String getLastMsg() {
@@ -88,5 +74,21 @@ public class ChatRoomItem extends SsomItem {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getOwnerImageUrl() {
+        return ownerImageUrl;
+    }
+
+    public void setOwnerImageUrl(String ownerImageUrl) {
+        this.ownerImageUrl = ownerImageUrl;
+    }
+
+    public String getParticipantImageUrl() {
+        return participantImageUrl;
+    }
+
+    public void setParticipantImageUrl(String participantImageUrl) {
+        this.participantImageUrl = participantImageUrl;
     }
 }

@@ -110,11 +110,11 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/chatting_room_heart"
-        style="@style/ssom_font_12_white_single"
-        android:layout_width="30dp"
-        android:layout_height="27dp"
-        android:layout_marginRight="10dp"
+        android:id="@+id/btn_chatting_room_meeting"
+        style="@style/ssom_font_12_white_bold"
+        android:layout_width="82dp"
+        android:layout_height="31dp"
+        android:layout_marginRight="12dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:gravity="center"

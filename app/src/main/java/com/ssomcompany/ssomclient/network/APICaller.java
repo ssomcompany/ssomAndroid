@@ -15,11 +15,13 @@ import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
 import com.ssomcompany.ssomclient.network.api.SsomExistMyPost;
 import com.ssomcompany.ssomclient.network.api.SsomImageUpload;
 import com.ssomcompany.ssomclient.network.api.SsomLogin;
+import com.ssomcompany.ssomclient.network.api.SsomMeetingRequest;
 import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
 import com.ssomcompany.ssomclient.network.api.SsomRegisterUser;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
+import com.ssomcompany.ssomclient.network.model.SsomRequest;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
 import java.util.Locale;
@@ -129,4 +131,29 @@ public class APICaller {
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SendChattingMessage.Response>>() {}.getType(), listener);
     }
+
+    public static <T extends BaseResponse> void sendChattingRequest(String token, int roomId, int methodType,
+                                                                    NetworkManager.NetworkListener<T> listener) {
+        SsomRequest request;
+
+        switch (methodType) {
+            case NetworkConstant.Method.PUT:
+                request = new SsomMeetingRequest.PutRequest().setChatroomId(roomId);
+                break;
+            case NetworkConstant.Method.DELETE:
+                request = new SsomMeetingRequest.DeleteRequest().setChatroomId(roomId);
+                break;
+            case NetworkConstant.Method.POST:
+            default:
+                request = new SsomMeetingRequest.PostRequest().setChatroomId(roomId);
+                break;
+        }
+
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<SendChattingMessage.Response>>() {}.getType(), listener);
+    }
+
+
 }

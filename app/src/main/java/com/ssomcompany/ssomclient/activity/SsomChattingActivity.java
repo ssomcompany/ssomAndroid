@@ -5,12 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -21,10 +20,11 @@ import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.fragment.ChatRoomListFragment;
 import com.ssomcompany.ssomclient.fragment.ChattingFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
+import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
-import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
 import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
+import com.ssomcompany.ssomclient.network.api.SsomMeetingRequest;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
@@ -45,6 +45,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
 
     // fragment instance 저장
     private ChatRoomListFragment roomListFragment;
+    private ChatRoomItem chatRoomItem;
 
     private FragmentManager fragmentManager;
     private SsomActionBarView ssomBar;
@@ -75,16 +76,21 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 @Override
                 public void onResponse(SsomResponse<CreateChattingRoom.Response> response) {
                     if(response.isSuccess()) {
-                        ChatRoomItem chatRoomItem = new ChatRoomItem();
+                        chatRoomItem = new ChatRoomItem();
                         chatRoomItem.setId(response.getData().getChatroomId());
-                        chatRoomItem.setInfoType(ChatRoomItem.InfoType.none);
-                        chatRoomItem.setUserId(ssomItem.getUserId());
-                        chatRoomItem.setImageUrl(ssomItem.getImageUrl());
+                        chatRoomItem.setOwnerId(getUserId());
+                        chatRoomItem.setParticipantId(ssomItem.getUserId());
+                        chatRoomItem.setParticipantImageUrl(ssomItem.getImageUrl());
                         chatRoomItem.setSsomType(ssomItem.getSsomType());
+                        chatRoomItem.setUserCount(ssomItem.getUserCount());
+                        chatRoomItem.setMinAge(ssomItem.getMinAge());
+                        chatRoomItem.setLongitude(ssomItem.getLongitude());
+                        chatRoomItem.setLatitude(ssomItem.getLatitude());
+                        chatRoomItem.setPostId(ssomItem.getPostId());
 
                         CURRENT_STATE = STATE_CHAT_ROOM;
-                        startChattingFragment(chatRoomItem);
-                        changeSsomBarViewForChattingRoom(ssomItem.getMinAge(), ssomItem.getUserCount());
+                        startChattingFragment();
+                        changeSsomBarViewForChattingRoom();
 //                        if(response.getStatusCode() == 304) {
 //                            Log.d(TAG, "chat already exist : " + response.getData().getChatroomId());
 //                            startChattingFragment(response.getData().getList().get(0));
@@ -148,7 +154,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
 
     private void changeSsomBarViewForChatRoomList() {
         ssomBar.setCurrentMode(SsomActionBarView.SSOM_CHAT_LIST);
-        ssomBar.setChattingRoomHeartVisibility(false);
+        ssomBar.setChattingRoomBtnMeetingVisibility(false);
         ssomBar.setChatLayoutVisibility(false);
         ssomBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomBar.setSsomBarTitleText(String.format(getResources().getString(R.string.chat_list_title), unreadCount));
@@ -156,44 +162,112 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         ssomBar.setSsomBarSubTitleVisibility(false);
     }
 
-    private void changeSsomBarViewForChattingRoom(int minAge, int userCount) {
+    private void changeSsomBarViewForChattingRoom() {
         ssomBar.setCurrentMode(SsomActionBarView.SSOM_CHATTING);
-        ssomBar.setChatLayoutVisibility(false);
-        ssomBar.setChattingRoomHeartVisibility(true);
-        // TODO heart count 셋팅 정의
-        ssomBar.setChattingRoomHeartOnOff(true);
-        ssomBar.setChattingRoomHeartText(String.valueOf(5));
-        ssomBar.setOnChattingRoomHeartBtnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                // TODO 하트가 없는 경우 체크
-                UiUtils.makeCommonDialog(SsomChattingActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
-                        R.string.dialog_meet_request, R.style.ssom_font_20_grayish_brown_bold,
-                        R.string.dialog_meet_request_message, 0, R.string.dialog_meet, R.string.dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO call accept api (만남 요청)
-                        String userId = ((ChattingFragment) getSupportFragmentManager().findFragmentById(R.id.chat_container)).getChatRoomUserId();
-                        Toast.makeText(getApplicationContext(), userId + "에게 쏨을 요청함.", Toast.LENGTH_SHORT).show();
-                        // TODO userId 로 상대방에게 쏨 요청
-                    }
-                }, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO call reject api (만남 거절, 요청 안 취소)
-                    }
-                });
-            }
-        });
-        // TODO MessageManager 해제
         ssomBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomBar.setSsomBarTitleText(getResources().getString(R.string.chat_room_title));
         ssomBar.setSsomBarTitleStyle(R.style.ssom_font_16_custom_4d4d4d_single);
         ssomBar.setSsomBarSubTitleVisibility(true);
-        ssomBar.setSsomBarSubTitleText(String.format(getResources().getString(R.string.filter_age_n_count),
-                Util.convertAgeRange(minAge), Util.convertPeopleRange(userCount)));
+        ssomBar.setSsomBarSubTitleText((chatRoomItem.getMinAge() | chatRoomItem.getUserCount()) == 0 ? getString(R.string.chat_room_no_info) :
+                String.format(getResources().getString(R.string.filter_age_n_count), Util.convertAgeRange(chatRoomItem.getMinAge()), Util.convertPeopleRange(chatRoomItem.getUserCount())));
         ssomBar.setSsomBarSubTitleStyle(R.style.ssom_font_12_pinkish_gray_two_single);
+        ssomBar.setChatLayoutVisibility(false);
+
+        // 채팅룸 우측 상단의 버튼을 기능에 맞게 적용
+        setMeetingButton();
+    }
+
+    private void setMeetingButton() {
+        if((chatRoomItem.getMinAge() | chatRoomItem.getUserCount()) == 0) {
+            ssomBar.setChattingRoomBtnMeetingVisibility(false);
+        } else {
+            ssomBar.setChattingRoomBtnMeetingVisibility(true);
+            final int dialogMsg;
+            final int dialogOkBtn;
+            final int dialogNoBtn;
+            final int methodType;
+
+            if (TextUtils.isEmpty(chatRoomItem.getStatus())) {
+                // 요청 정보가 없으니 상대방에게 만남요청
+                ssomBar.setChattingRoomBtnMeetingOnOff(true);
+                ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_request));
+                ssomBar.setChattingRoomBtnMeetingDrawable(R.drawable.icon_heart_white_in_button);
+                methodType = NetworkConstant.Method.POST;
+                dialogMsg = R.string.dialog_meet_request_message;
+                dialogOkBtn = R.string.dialog_meet;
+                dialogNoBtn = R.string.dialog_cancel;
+            } else {
+                if (CommonConst.MEETING_REQUEST.equals(chatRoomItem.getStatus())) {
+                    boolean isMyRequest = getUserId().equals(chatRoomItem.getRequestId());
+                    // 내가 요청한거면 요청취소, 내가 요청한게 아니면 만남수락
+                    ssomBar.setChattingRoomBtnMeetingOnOff(!isMyRequest);
+                    ssomBar.setChattingRoomBtnMeetingTitle(isMyRequest ?
+                            getString(R.string.chat_room_info_btn_sent) : getString(R.string.dialog_meet_apply));
+                    ssomBar.setChattingRoomBtnMeetingDrawable(0);
+                    methodType = isMyRequest ? NetworkConstant.Method.DELETE : NetworkConstant.Method.PUT;
+                    dialogMsg = isMyRequest ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message;
+                    dialogOkBtn = isMyRequest ? R.string.chat_room_info_btn_sent : R.string.dialog_meet_apply;
+                    dialogNoBtn = isMyRequest ? R.string.dialog_close : R.string.dialog_not_now;
+                } else if(CommonConst.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
+                    // 만남 중이니 서로 만남취소 가능
+                    ssomBar.setChattingRoomBtnMeetingOnOff(false);
+                    ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_cancel));
+                    ssomBar.setChattingRoomBtnMeetingDrawable(0);
+                    methodType = NetworkConstant.Method.DELETE;
+                    dialogMsg = R.string.dialog_meet_cancel_message;
+                    dialogOkBtn = R.string.dialog_meet_cancel;
+                    dialogNoBtn = R.string.dialog_close;
+                } else {
+                    // 실제로 접근 불가능함
+                    methodType = NetworkConstant.Method.POST;
+                    dialogMsg = R.string.dialog_meet_request_message;
+                    dialogOkBtn = R.string.dialog_meet;
+                    dialogNoBtn = R.string.dialog_cancel;
+                }
+            }
+
+            ssomBar.setOnChattingRoomMeetingBtnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    // TODO 하트가 없는 경우 체크
+                    UiUtils.makeCommonDialog(SsomChattingActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
+                            R.string.dialog_notice, R.style.ssom_font_20_red_pink_bold, dialogMsg, 0, dialogOkBtn, dialogNoBtn,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    APICaller.sendChattingRequest(getToken(), chatRoomItem.getId(), methodType,
+                                            new NetworkManager.NetworkListener<SsomResponse<SsomMeetingRequest.Response>>() {
+                                                @Override
+                                                public void onResponse(SsomResponse<SsomMeetingRequest.Response> response) {
+                                                    if(response.isSuccess()) {
+                                                        switch (methodType) {
+                                                            case NetworkConstant.Method.PUT:
+                                                                chatRoomItem.setRequestId(getUserId());
+                                                                chatRoomItem.setStatus(CommonConst.MEETING_APPROVE);
+                                                                break;
+                                                            case NetworkConstant.Method.DELETE:
+                                                                chatRoomItem.setRequestId(null);
+                                                                chatRoomItem.setStatus(null);
+                                                                break;
+                                                            case NetworkConstant.Method.POST:
+                                                            default:
+                                                                chatRoomItem.setRequestId(getUserId());
+                                                                chatRoomItem.setStatus(CommonConst.MEETING_REQUEST);
+                                                                break;
+                                                        }
+                                                        setMeetingButton();
+                                                    }
+                                                }
+                                            });
+                                }
+                            }, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            });
+                }
+            });
+        }
     }
 
     private void startChatRoomListFragment() {
@@ -202,7 +276,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
 //        fragmentManager.executePendingTransactions();
     }
 
-    private void startChattingFragment(ChatRoomItem chatRoomItem) {
+    private void startChattingFragment() {
         ChattingFragment fragment = ChattingFragment.newInstance(chatPref.getBoolean(SsomPreferences.PREF_CHATTING_GUIDE_IS_READ, false));
         fragment.setChatRoomItem(chatRoomItem);
         fragmentManager.beginTransaction().replace(R.id.chat_container, fragment, CommonConst.CHATTING_FRAG).commit();
@@ -211,10 +285,9 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     @Override
     public void onChatItemClick(final int position) {
         CURRENT_STATE = STATE_CHAT_ROOM;
-        ChatRoomItem chatRoom = roomListFragment.getChatRoomList().get(position);
-        startChattingFragment(chatRoom);
-        changeSsomBarViewForChattingRoom(chatRoom.getMinAge(),
-                chatRoom.getUserCount());
+        chatRoomItem = roomListFragment.getChatRoomList().get(position);
+        startChattingFragment();
+        changeSsomBarViewForChattingRoom();
     }
 
     @Override

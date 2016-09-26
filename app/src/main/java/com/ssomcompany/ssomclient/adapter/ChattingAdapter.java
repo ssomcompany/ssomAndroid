@@ -2,7 +2,6 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +43,10 @@ public class ChattingAdapter extends BaseAdapter {
         this.roomItem = roomItem;
     }
 
+    public ArrayList<ChattingItem> getItemList() {
+        return itemList;
+    }
+
     public void setItemList(ArrayList<ChattingItem> itemList) {
         this.itemList = itemList;
     }
@@ -75,13 +78,16 @@ public class ChattingAdapter extends BaseAdapter {
             holder = new ChatMessageViewHolder();
             // received message layout
             holder.receiveMessageLayout = (RelativeLayout) convertView.findViewById(R.id.receive_message_layout);
-            holder.chatProfileLayout = (FrameLayout) convertView.findViewById(R.id.chat_profile_layout);
-            holder.chatProfileImage = (CircularNetworkImageView) convertView.findViewById(R.id.chat_profile_image);
-            holder.chatProfileCircle = (ImageView) convertView.findViewById(R.id.chat_profile_circle);
+            holder.leftChatProfileLayout = (FrameLayout) convertView.findViewById(R.id.left_chat_profile_layout);
+            holder.leftChatProfileImage = (CircularNetworkImageView) convertView.findViewById(R.id.left_chat_profile_image);
+            holder.leftChatProfileCircle = (ImageView) convertView.findViewById(R.id.left_chat_profile_circle);
             holder.receiveMessage = (TextView) convertView.findViewById(R.id.receive_message);
             holder.receiveTime = (TextView) convertView.findViewById(R.id.receive_time);
             // send message layout
-            holder.sendMessageLayout = (LinearLayout) convertView.findViewById(R.id.send_message_layout);
+            holder.sendMessageLayout = (RelativeLayout) convertView.findViewById(R.id.send_message_layout);
+            holder.rightChatProfileLayout = (FrameLayout) convertView.findViewById(R.id.right_chat_profile_layout);
+            holder.rightChatProfileImage = (CircularNetworkImageView) convertView.findViewById(R.id.right_chat_profile_image);
+            holder.rightChatProfileCircle = (ImageView) convertView.findViewById(R.id.right_chat_profile_circle);
             holder.sendMessage = (TextView) convertView.findViewById(R.id.send_message);
             holder.sendTime = (TextView) convertView.findViewById(R.id.send_time);
             // initial message
@@ -126,15 +132,16 @@ public class ChattingAdapter extends BaseAdapter {
 
                 if(getItem(position - 1) == null || !item.getFromUserId().equals(getItem(position - 1).getFromUserId())
                         || !Util.isSameTimeBetweenTwoTimes(item.getTimestamp(), getItem(position - 1).getTimestamp())) {
-                    holder.chatProfileLayout.setVisibility(View.VISIBLE);
+                    holder.leftChatProfileLayout.setVisibility(View.VISIBLE);
                     // profile image
-                    holder.chatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
-                    holder.chatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
-                    holder.chatProfileImage.setImageUrl(roomItem.getImageUrl(), mImageLoader);
+                    holder.leftChatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
+                    holder.leftChatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
+                    holder.leftChatProfileImage.setImageUrl(((BaseActivity) context).getUserId().equals(roomItem.getOwnerId()) ?
+                            roomItem.getParticipantImageUrl() : roomItem.getOwnerImageUrl(), mImageLoader);
                     // profile circle type
-                    holder.chatProfileCircle.setImageResource(CommonConst.SSOM.equals(roomItem.getSsomType()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red);
+                    holder.leftChatProfileCircle.setImageResource(CommonConst.SSOM.equals(roomItem.getSsomType()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red);
                 } else {
-                    holder.chatProfileLayout.setVisibility(View.INVISIBLE);
+                    holder.leftChatProfileLayout.setVisibility(View.INVISIBLE);
                 }
 
                 holder.receiveMessage.setBackgroundResource(CommonConst.SSOM.equals(roomItem.getSsomType()) ? R.drawable.bg_receive_message_green : R.drawable.bg_receive_message_red);
@@ -152,6 +159,19 @@ public class ChattingAdapter extends BaseAdapter {
                  */
                 holder.receiveMessageLayout.setVisibility(View.GONE);
                 holder.sendMessageLayout.setVisibility(View.VISIBLE);
+
+                if(getItem(position - 1) == null || !item.getFromUserId().equals(getItem(position - 1).getFromUserId())
+                        || !Util.isSameTimeBetweenTwoTimes(item.getTimestamp(), getItem(position - 1).getTimestamp())) {
+                    holder.rightChatProfileLayout.setVisibility(View.VISIBLE);
+                    // profile image
+                    holder.rightChatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
+                    holder.rightChatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
+                    holder.rightChatProfileImage.setImageUrl(((BaseActivity) context).getUserId().equals(roomItem.getOwnerId()) ?
+                            roomItem.getOwnerImageUrl() : roomItem.getParticipantImageUrl(), mImageLoader);
+                } else {
+                    holder.rightChatProfileLayout.setVisibility(View.INVISIBLE);
+                }
+
                 holder.sendMessage.setText(item.getMsg());
                 if(getItem(position + 1) != null && item.getFromUserId().equals(getItem(position + 1).getFromUserId())
                         && Util.isSameTimeBetweenTwoTimes(item.getTimestamp(), getItem(position + 1).getTimestamp())) {
@@ -189,16 +209,19 @@ public class ChattingAdapter extends BaseAdapter {
          * Received message layout
          */
         private RelativeLayout receiveMessageLayout;
-        private FrameLayout chatProfileLayout;
-        private CircularNetworkImageView chatProfileImage;
-        private ImageView chatProfileCircle;
+        private FrameLayout leftChatProfileLayout;
+        private CircularNetworkImageView leftChatProfileImage;
+        private ImageView leftChatProfileCircle;
         private TextView receiveMessage;
         private TextView receiveTime;
 
         /**
          * Send message layout
          */
-        private LinearLayout sendMessageLayout;
+        private RelativeLayout sendMessageLayout;
+        private FrameLayout rightChatProfileLayout;
+        private CircularNetworkImageView rightChatProfileImage;
+        private ImageView rightChatProfileCircle;
         private TextView sendMessage;
         private TextView sendTime;
 

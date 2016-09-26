@@ -13,7 +13,7 @@
 
         <!-- left profile image layout Start -->
         <FrameLayout
-            android:id="@+id/chat_profile_layout"
+            android:id="@+id/left_chat_profile_layout"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginLeft="5dp"
@@ -21,14 +21,13 @@
             android:layout_alignParentLeft="true">
 
             <com.ssomcompany.ssomclient.widget.CircularNetworkImageView
-                android:id="@+id/chat_profile_image"
+                android:id="@+id/left_chat_profile_image"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:padding="1dp"
                 android:layout_gravity="center"/>
 
             <ImageView
-                android:id="@+id/chat_profile_circle"
+                android:id="@+id/left_chat_profile_circle"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/chat_profile_border_red" />
@@ -41,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_marginLeft="7dp"
-            android:layout_toRightOf="@id/chat_profile_layout"
+            android:layout_toRightOf="@id/left_chat_profile_layout"
             android:orientation="vertical" >
 
             <TextView
@@ -65,36 +64,66 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/send_message_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:layout_marginRight="7dp"
-        android:layout_alignParentRight="true"
-        android:orientation="vertical"
-        android:visibility="gone" >
+        android:background="@color/white"
+        android:visibility="gone">
 
-        <TextView
-            android:id="@+id/send_message"
-            style="@style/ssom_font_12_white"
+        <!-- left profile image layout Start -->
+        <FrameLayout
+            android:id="@+id/right_chat_profile_layout"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_alignParentRight="true">
+
+            <com.ssomcompany.ssomclient.widget.CircularNetworkImageView
+                android:id="@+id/right_chat_profile_image"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"/>
+
+            <ImageView
+                android:id="@+id/right_chat_profile_circle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/chat_profile_border_red" />
+        </FrameLayout>
+
+        <!-- left profile image layout End -->
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:maxWidth="290dp"
-            android:lineSpacingExtra="5sp"
-            android:padding="10dp"
-            android:background="@drawable/bg_send_message"/>
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="7dp"
+            android:layout_toLeftOf="@id/right_chat_profile_layout"
+            android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/send_time"
-            style="@style/ssom_font_9_pinkish_gray_single"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="3dp"/>
-    </LinearLayout>
+            <TextView
+                android:id="@+id/send_message"
+                style="@style/ssom_font_12_white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:maxWidth="290dp"
+                android:lineSpacingExtra="5sp"
+                android:padding="10dp"
+                android:background="@drawable/bg_send_message"/>
+
+            <TextView
+                android:id="@+id/send_time"
+                style="@style/ssom_font_9_pinkish_gray_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="3dp"/>
+        </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/initial_message"

@@ -22,6 +22,7 @@ public class NetworkConstant {
     public static class Method {
         public static final int GET = com.android.volley.Request.Method.GET;
         public static final int POST = com.android.volley.Request.Method.POST;
+        public static final int PUT = com.android.volley.Request.Method.PUT;
         public static final int DELETE = com.android.volley.Request.Method.DELETE;
     }
 
@@ -42,6 +43,7 @@ public class NetworkConstant {
         public static final String CHAT_TOTAL_UNREAD_COUNT = "/chatroom/unreadcount";
         public static final String CREATE_ROOM = "/chatroom";
         public static final String SSOM_POST_DELETE = "/posts/%s";
+        public static final String MEETING_REQUEST = "/request";
 
         // $1 : roomId, $2 : currentTimeStamp
         public static final String SEND_MESSAGE = "/chatroom/%d/chats?lastTimestamp=%d";

@@ -122,6 +122,13 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="ssom_font_12_white_bold">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="ssom_font_12_white_2_lines">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/white</item>
