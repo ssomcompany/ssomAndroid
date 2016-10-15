@@ -96,7 +96,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
                                         if(response.isSuccess()) {
                                             if(response.getData() != null) {
                                                 setSessionInfo(response.getData().getToken(),
-                                                        String.valueOf(etLoginEmail.getText()), response.getData().getUserId());
+                                                        String.valueOf(etLoginEmail.getText()), response.getData().getUserId(),
+                                                        response.getData().getProfileImgUrl());
                                                 mListener.onLoginFragmentInteraction(R.id.btn_login);
                                             } else {
                                                 Log.e(TAG, "unexpected error, data is null");

@@ -1,18 +1,75 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="288dp"
     android:layout_height="match_parent"
     android:clickable="true"
     android:background="#ffffff"
-    android:orientation="vertical"
     tools:context=".fragment.NavigationDrawerFragment" >
 
-    <ImageView
+    <RelativeLayout
+        android:id="@+id/layout_profile"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/img_drawer_main"/>
+        android:layout_height="173dp">
+
+        <FrameLayout
+            android:id="@+id/today_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/drawer_bg_today_photo">
+
+            <View
+                android:layout_width="53dp"
+                android:layout_height="37dp"
+                android:layout_gravity="center"
+                android:background="@drawable/img_today_empty"/>
+
+            <com.ssomcompany.ssomclient.widget.CircularNetworkImageView
+                android:id="@+id/img_today"
+                android:layout_gravity="center"
+                android:layout_width="90dp"
+                android:layout_height="90dp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:background="@drawable/drawer_icon_camera"/>
+        </FrameLayout>
+
+        <RelativeLayout
+            android:id="@+id/login_email_layout"
+            android:layout_below="@id/today_photo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="14dp"
+            android:paddingBottom="17dp"
+            android:paddingLeft="17dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:id="@+id/tv_email_or_description"
+                style="@style/ssom_font_14_gray_warm_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/tv_login_or_logout"
+                style="@style/ssom_font_13_main_black_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/tv_email_or_description"
+                android:layout_alignParentRight="true"
+                android:text="@string/logout"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/layout_main_menu"
+        android:layout_below="@id/layout_profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="15dp"
@@ -21,56 +78,16 @@
         android:paddingBottom="17dp"
         android:orientation="vertical" >
 
-        <LinearLayout
-            android:id="@+id/login_email_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="17dp"
-            android:paddingBottom="17dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/tv_login_email"
-                style="@style/ssom_font_14_custom_515151_single"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:drawablePadding="11.5dp"
-                android:drawableLeft="@drawable/icon_people"
-                android:ellipsize="end"/>
-
-            <TextView
-                android:id="@+id/tv_confirm_email"
-                style="@style/ssom_font_12_pinkish_gray_two_single"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@id/tv_login_email"
-                android:layout_alignParentRight="true"
-                android:text="@string/login_email_confirm"/>
-        </LinearLayout>
-
         <TextView
-            style="@style/ssom_font_13_pinkish_gray_two_single"
-            android:id="@+id/tv_login"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawablePadding="11.5dp"
-            android:drawableLeft="@drawable/icon_people"
-            android:paddingTop="17dp"
-            android:paddingBottom="17dp"
-            android:text="@string/login_needed"/>
-
-        <TextView
-            android:id="@+id/tv_noti_setting"
+            android:id="@+id/tv_ssom_homepage"
             style="@style/ssom_font_16_custom_555555"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="17dp"
             android:paddingBottom="17dp"
             android:drawablePadding="11.5dp"
-            android:drawableLeft="@drawable/icon_noti"
-            android:text="@string/noti_setting"/>
+            android:drawableLeft="@drawable/drawer_icon_star"
+            android:text="@string/ssom_homepage"/>
 
         <TextView
             android:id="@+id/tv_make_heart"
@@ -86,6 +103,7 @@
 
     <ListView
         android:id="@+id/lv_drawer_menu"
+        android:layout_below="@id/layout_main_menu"
         android:layout_width="match_parent"
         android:layout_height="151dp"
         android:divider="@color/custom_e5e5e5"
@@ -97,16 +115,11 @@
         android:requiresFadingEdge="none"
         tools:listitem="@layout/view_drawer_menu"/>
 
-    <TextView
-        android:id="@+id/tv_logout"
-        style="@style/ssom_font_12_pinkish_gray_two_single"
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:drawablePadding="5dp"
-        android:drawableLeft="@drawable/icon_logout"
-        android:padding="6dp"
-        android:text="@string/logout"/>
-
-</LinearLayout>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="29dp"
+        android:background="@drawable/drawer_logo"/>
+</RelativeLayout>

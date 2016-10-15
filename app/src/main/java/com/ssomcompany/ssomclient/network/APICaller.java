@@ -1,11 +1,23 @@
 package com.ssomcompany.ssomclient.network;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
+import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
 import com.ssomcompany.ssomclient.network.api.GetChattingList;
 import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
@@ -18,22 +30,29 @@ import com.ssomcompany.ssomclient.network.api.SsomLogin;
 import com.ssomcompany.ssomclient.network.api.SsomMeetingRequest;
 import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
+import com.ssomcompany.ssomclient.network.api.SsomProfileImageUpload;
 import com.ssomcompany.ssomclient.network.api.SsomRegisterUser;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomRequest;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class APICaller {
     private static final int TIME_OUT_LONG = 10000;
 
-    public static <T extends BaseResponse> void getSsomList(double latitude, double longitude, String userId,
-                                                            String ageFilter, String countFilter, NetworkManager.NetworkListener<T> listener) {
+    public static <T extends BaseResponse> void getSsomList(String userId, String ageFilter, String countFilter,
+                                                            NetworkManager.NetworkListener<T> listener) {
         GetSsomList.Request request;
-        if(TextUtils.isEmpty(ageFilter) || TextUtils.isEmpty(countFilter)) request = new GetSsomList.Request(latitude, longitude, userId);
-        else request = new GetSsomList.Request(latitude, longitude, userId, ageFilter, countFilter);
+        if(TextUtils.isEmpty(ageFilter) || TextUtils.isEmpty(countFilter)) request = new GetSsomList.Request(userId);
+        else request = new GetSsomList.Request(userId, ageFilter, countFilter);
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<GetSsomList.Response>>() {}.getType(), listener);
@@ -155,5 +174,86 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<SendChattingMessage.Response>>() {}.getType(), listener);
     }
 
+    public static <T extends BaseResponse> void ssomProfileImageUpload(String token, String profileImgUrl,
+                                                                       NetworkManager.NetworkListener<T> listener) {
+        SsomProfileImageUpload.Request request = new SsomProfileImageUpload.Request().setProfileImgUrl(profileImgUrl);
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<SsomProfileImageUpload.Response>>() {}.getType(), listener);
+    }
+
+    public static void ssomImageUpload(final BaseActivity activity, Response.Listener<NetworkResponse> listener,
+                                       final String picturePath) {
+        final String twoHyphens = "--";
+        final String lineEnd = "\r\n";
+        final String boundary = "apiclient-" + System.currentTimeMillis();
+        final String mimeType = "multipart/form-data;boundary=" + boundary;
+        final int maxBufferSize = 1024 * 1024;
+
+        Log.d("image upload", "token : " + activity.getToken());
+        BaseVolleyRequest baseVolleyRequest = new BaseVolleyRequest(activity.getToken(), Request.Method.POST,
+                NetworkConstant.API.IMAGE_FILE_UPLOAD, listener, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(activity.getClass().getSimpleName(), error.toString());
+            }
+        }) {
+            @Override
+            public String getBodyContentType() {
+                return mimeType;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put(NetworkConstant.HeaderParam.AUTHORIZATION, getToken());
+                return headers;
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                Bitmap imageBitmap = BitmapFactory.decodeFile(picturePath);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                imageBitmap.compress(Bitmap.CompressFormat.PNG, 1, byteArrayOutputStream);
+                byte[] bitmapData = byteArrayOutputStream.toByteArray();
+                int bytesRead, bytesAvailable, bufferSize;
+                byte[] buffer;
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                DataOutputStream dos = new DataOutputStream(bos);
+                try {
+                    dos.writeBytes(twoHyphens + boundary + lineEnd);
+                    dos.writeBytes("Content-Disposition: form-data; name=\"pict\";filename=\""
+                            + "ssom_upload_from_camera.png" + "\"" + lineEnd);
+                    dos.writeBytes(lineEnd);
+                    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(bitmapData);
+                    bytesAvailable = fileInputStream.available();
+
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    buffer = new byte[bufferSize];
+
+                    // read file and write it into form...
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                    while (bytesRead > 0) {
+                        dos.write(buffer, 0, bufferSize);
+                        bytesAvailable = fileInputStream.available();
+                        bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                    }
+
+                    // send multipart form data necesssary after file data...
+                    dos.writeBytes(lineEnd);
+                    dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                    return bos.toByteArray();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return bitmapData;
+            }
+        };
+        NetworkManager.getInstance().getRequestQueue().add(baseVolleyRequest);
+    }
 }

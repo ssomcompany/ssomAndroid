@@ -10,7 +10,7 @@ import android.util.Log;
 import com.android.volley.toolbox.NetworkImageView;
 import com.ssomcompany.ssomclient.common.Util;
 
-public class RoundedNetworkImageView extends NetworkImageView {
+public class RoundedNetworkImageView extends SsomNetworkImageView {
     private static final String TAG = RoundedNetworkImageView.class.getSimpleName();
 
     private Path clipPath = new Path();

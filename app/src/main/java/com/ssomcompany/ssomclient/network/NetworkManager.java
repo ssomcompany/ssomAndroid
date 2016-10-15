@@ -30,13 +30,10 @@ public class NetworkManager {
     private ImageLoader mImageLoader;
 
     private NetworkManager() {
-        if (mRequestQueue == null) {
-            mRequestQueue = Volley.newRequestQueue(BaseApplication.getInstance());
+        mRequestQueue = getRequestQueue();
 
-//            if (true != BaseApplication.getInstance().isProductBuild()) {
-//                HttpsTrustManager.allowAllSSL();
-//            }
-        }
+        ImageLoader.ImageCache imageCache = new BitmapLruCache();
+        mImageLoader = new ImageLoader(mRequestQueue, imageCache);
     }
 
     public static synchronized NetworkManager getInstance() {
@@ -48,25 +45,22 @@ public class NetworkManager {
     }
 
     public RequestQueue getRequestQueue() {
-
+        if(mRequestQueue == null) {
+            mRequestQueue = Volley.newRequestQueue(BaseApplication.getInstance());
+        }
         return mRequestQueue;
     }
 
     public ImageLoader getImageLoader() {
-        getRequestQueue();
-        if (mImageLoader == null) {
-            ImageLoader.ImageCache imageCache = new BitmapLruCache();
-            mImageLoader = new ImageLoader(mRequestQueue, imageCache);
-        }
         return this.mImageLoader;
     }
 
-    public <T> void addToRequestQueue(Request<T> req, String tag) {
+    private <T> void addToRequestQueue(Request<T> req, String tag) {
         req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
         getRequestQueue().add(req);
     }
 
-    public <T> void addToRequestQueue(Request<T> req) {
+    private <T> void addToRequestQueue(Request<T> req) {
         addToRequestQueue(req, null);
     }
 

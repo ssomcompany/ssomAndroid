@@ -26,6 +26,7 @@ public class SsomLogin {
     public static class Response extends ToStringHelperClass {
         String token;
         String userId;
+        String profileImgUrl;
 
         public String getUserId() {
             return userId;
@@ -41,6 +42,14 @@ public class SsomLogin {
 
         public void setToken(String token) {
             this.token = token;
+        }
+
+        public String getProfileImgUrl() {
+            return profileImgUrl;
+        }
+
+        public void setProfileImgUrl(String profileImgUrl) {
+            this.profileImgUrl = profileImgUrl;
         }
     }
 }

@@ -8,6 +8,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -31,12 +32,9 @@ public class BaseVolleyRequest extends Request<NetworkResponse> {
         this.mErrorListener = errorListener;
     }
 
-//    @Override
-//    public Map<String, String> getHeaders() throws AuthFailureError {
-//        Map<String, String> headers = super.getHeaders();
-//        headers.put(NetworkConstant.HeaderParam.AUTHORIZATION, token);
-//        return headers;
-//    }
+    public String getToken() {
+        return token;
+    }
 
     @Override
     protected Response<NetworkResponse> parseNetworkResponse(NetworkResponse response) {

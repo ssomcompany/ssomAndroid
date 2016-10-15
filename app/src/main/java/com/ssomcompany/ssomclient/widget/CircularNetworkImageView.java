@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 import com.android.volley.toolbox.NetworkImageView;
 import com.ssomcompany.ssomclient.common.Util;
 
-public class CircularNetworkImageView extends NetworkImageView {
+public class CircularNetworkImageView extends SsomNetworkImageView {
     Context mContext;
 
     public CircularNetworkImageView(Context context) {

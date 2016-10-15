@@ -191,7 +191,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 // 요청 정보가 없으니 상대방에게 만남요청
                 ssomBar.setChattingRoomBtnMeetingOnOff(true);
                 ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_request));
-                ssomBar.setChattingRoomBtnMeetingDrawable(R.drawable.icon_heart_white_in_button);
+                ssomBar.setChattingRoomMeetingHeartVisibility(true);
                 methodType = NetworkConstant.Method.POST;
                 dialogMsg = R.string.dialog_meet_request_message;
                 dialogOkBtn = R.string.dialog_meet;
@@ -203,7 +203,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                     ssomBar.setChattingRoomBtnMeetingOnOff(!isMyRequest);
                     ssomBar.setChattingRoomBtnMeetingTitle(isMyRequest ?
                             getString(R.string.chat_room_info_btn_sent) : getString(R.string.dialog_meet_apply));
-                    ssomBar.setChattingRoomBtnMeetingDrawable(0);
+                    ssomBar.setChattingRoomMeetingHeartVisibility(false);
                     methodType = isMyRequest ? NetworkConstant.Method.DELETE : NetworkConstant.Method.PUT;
                     dialogMsg = isMyRequest ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message;
                     dialogOkBtn = isMyRequest ? R.string.chat_room_info_btn_sent : R.string.dialog_meet_apply;
@@ -212,7 +212,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                     // 만남 중이니 서로 만남취소 가능
                     ssomBar.setChattingRoomBtnMeetingOnOff(false);
                     ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_cancel));
-                    ssomBar.setChattingRoomBtnMeetingDrawable(0);
+                    ssomBar.setChattingRoomMeetingHeartVisibility(false);
                     methodType = NetworkConstant.Method.DELETE;
                     dialogMsg = R.string.dialog_meet_cancel_message;
                     dialogOkBtn = R.string.dialog_meet_cancel;

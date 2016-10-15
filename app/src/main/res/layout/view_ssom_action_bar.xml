@@ -109,14 +109,29 @@
             android:layout_gravity="center_horizontal"/>
     </LinearLayout>
 
-    <TextView
+    <LinearLayout
         android:id="@+id/btn_chatting_room_meeting"
-        style="@style/ssom_font_12_white_bold"
         android:layout_width="82dp"
         android:layout_height="31dp"
         android:layout_marginRight="12dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:gravity="center"
-        android:visibility="gone" />
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <View
+            android:id="@+id/img_meeting_heart"
+            android:layout_width="16.5dp"
+            android:layout_height="15dp"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/icon_heart_white_in_button"/>
+
+        <TextView
+            android:id="@+id/tv_chatting_room_meeting"
+            style="@style/ssom_font_12_white_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
+    </LinearLayout>
 </RelativeLayout>

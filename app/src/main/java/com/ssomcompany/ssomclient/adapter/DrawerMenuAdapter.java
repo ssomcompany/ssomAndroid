@@ -11,20 +11,12 @@ import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
 
-/**
- * Created by AaronMac on 2016. 8. 21..
- */
 public class DrawerMenuAdapter extends BaseAdapter {
-
-    // TAG id
-    private static final String TAG = DrawerMenuAdapter.class.getSimpleName();
-
-    private int[] menuList = {R.string.private_information, R.string.use_policy, R.string.question};
+    private int[] menuList = {R.string.private_information, R.string.use_policy};
 
     // context instance
     private LayoutInflater mInflater;
     private Context mContext;
-    private MenuHolder holder;
 
     public DrawerMenuAdapter(Context context) {
         mContext = context;
@@ -48,6 +40,8 @@ public class DrawerMenuAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        MenuHolder holder;
+
         if(convertView == null) {
             convertView = mInflater.inflate(R.layout.view_drawer_menu, null);
 
@@ -68,16 +62,16 @@ public class DrawerMenuAdapter extends BaseAdapter {
                 holder.imgDrawerMenu.setBackgroundResource(R.drawable.icon_book);
                 holder.tvDrawerMenu.setText(mContext.getString(R.string.use_policy));
                 break;
-            case 2:
-                holder.imgDrawerMenu.setBackgroundResource(R.drawable.icon_mail);
-                holder.tvDrawerMenu.setText(mContext.getString(R.string.question));
-                break;
+//            case 2:
+//                holder.imgDrawerMenu.setBackgroundResource(R.drawable.icon_mail);
+//                holder.tvDrawerMenu.setText(mContext.getString(R.string.question));
+//                break;
         }
 
         return convertView;
     }
 
-    class MenuHolder {
+    private class MenuHolder {
         // view setting
         TextView tvDrawerMenu;
         ImageView imgDrawerMenu;

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -15,13 +17,14 @@ import android.location.LocationListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -35,9 +38,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -47,6 +55,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
@@ -61,9 +70,14 @@ import com.ssomcompany.ssomclient.fragment.FilterFragment;
 import com.ssomcompany.ssomclient.fragment.NavigationDrawerFragment;
 import com.ssomcompany.ssomclient.fragment.SsomListFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
+import com.ssomcompany.ssomclient.network.BaseVolleyRequest;
+import com.ssomcompany.ssomclient.network.BitmapLruCache;
+import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.NetworkUtil;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
+import com.ssomcompany.ssomclient.network.api.SsomProfileImageUpload;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
@@ -71,6 +85,10 @@ import com.ssomcompany.ssomclient.push.MessageManager;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,6 +104,7 @@ public class MainActivity extends BaseActivity
     private static final int REQUEST_SSOM_LOGIN = 2;
     private static final int REQUEST_CHECK_LOCATION_PERMISSION = 3;
     private static final int REQUEST_CHECK_DETAIL_LOCATION_PERMISSION = 4;
+    private static final int REQUEST_SELECT_PICTURE = 5;
 
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
@@ -95,6 +114,7 @@ public class MainActivity extends BaseActivity
     private ViewListener.OnTabChangedListener mTabListener;
     private ArrayList<SsomItem> ITEM_LIST = new ArrayList<>();
     private HashMap<Marker, String> mIdMap = new HashMap<>();
+    private BitmapLruCache bitmapCache = new BitmapLruCache();
 
     private SsomActionBarView ssomActionBar;
     private DrawerLayout drawer;
@@ -170,6 +190,12 @@ public class MainActivity extends BaseActivity
         checkLocationServiceEnabled();
     }
 
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mNavigationDrawerFragment.syncState();
+    }
+
     private ViewListener.OnPermissionListener mPermissionListener = new ViewListener.OnPermissionListener() {
         @Override
         public void onPermissionGranted() {
@@ -195,7 +221,7 @@ public class MainActivity extends BaseActivity
 
     private void makeDialogForRequestLocationPermission() {
         UiUtils.makeCommonDialog(this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
-                R.string.dialog_explain_permission_message, R.style.ssom_font_16_custom_666666,
+                R.string.dialog_explain_location_permission_message, R.style.ssom_font_16_custom_666666,
                 R.string.dialog_move, R.string.dialog_close,
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -274,9 +300,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void requestSsomList(String ageFilter, String countFilter, final boolean needFilterToast) {
-        showProgressDialog(false);
-        APICaller.getSsomList(locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude(),
-                getUserId(), ageFilter, countFilter, new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
+        APICaller.getSsomList(getUserId(), ageFilter, countFilter, new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
 
             @Override
             public void onResponse(SsomResponse<GetSsomList.Response> response) {
@@ -297,7 +321,6 @@ public class MainActivity extends BaseActivity
                     Log.e(TAG, "Response error with code " + response.getResultCode() + ", message : " + response.getMessage(),
                             response.getError());
                     showErrorMessage();
-                    dismissProgressDialog();
                 }
             }
         });
@@ -397,9 +420,11 @@ public class MainActivity extends BaseActivity
                         Log.d(TAG, "data : " + response.getData());
                         if(response.getData() != null && !TextUtils.isEmpty(response.getData().getPostId())) {
                             myPost = response.getData();
-                            myPostId = response.getData().getPostId();
-                            myPostSsomType = response.getData().getSsomType();
+                            myPostId = myPost.getPostId();
+                            myPostSsomType = myPost.getSsomType();
                             btnWrite.setImageResource(R.drawable.my_btn);
+                            getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, myPost.getImageUrl());
+                            mNavigationDrawerFragment.setTodayImage();
                         } else {
                             myPostId = "";
                             btnWrite.setImageResource(R.drawable.btn_write);
@@ -558,36 +583,49 @@ public class MainActivity extends BaseActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         switch (position) {
-            case R.id.tv_login:
-                startLoginActivity();
+            case R.id.today_photo:
+                // gallery 실행
+                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(i, REQUEST_SELECT_PICTURE);
                 break;
-            case R.id.tv_confirm_email:
+            case R.id.tv_login_or_logout:
+                if(getSession() != null && !TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))
+                        && !TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_EMAIL, ""))) {
+                    UiUtils.makeCommonDialog(MainActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
+                            R.string.dialog_logout_message, 0, R.string.dialog_okay, R.string.dialog_cancel,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    setSessionInfo("", "", "", "");
+                                    mNavigationDrawerFragment.setLoginEmailLayout();
+                                    mNavigationDrawerFragment.setTodayImage();
+                                    setSsomWriteButtonImage();
+                                }
+                            }, null);
+                } else {
+                    startLoginActivity();
+                }
                 break;
-            case R.id.tv_noti_setting:
+            case R.id.tv_ssom_homepage:
+                Intent homepageIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.myssom.com"));
+                startActivity(homepageIntent);
                 break;
             case R.id.tv_make_heart:
                 break;
-            case R.id.tv_logout:
-                UiUtils.makeCommonDialog(MainActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
-                        R.string.dialog_logout_message, 0, R.string.dialog_okay, R.string.dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                setSessionInfo("", "", "");
-                                mNavigationDrawerFragment.setLoginEmailLayout();
-                                setSsomWriteButtonImage();
-                            }
-                        }, null);
-                break;
             /**
              *  list menu item click event
-             *  0 : 개인정보 , 1 : 이용약관 , 2 : 문의하기
+             *  1 : 개인정보 , 2 : 이용약관 , 3 : 문의하기
              */
-            case 0:
-                break;
             case 1:
+                Intent privacyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ssomcompany.wixsite.com/ssominfo"));
+                startActivity(privacyIntent);
                 break;
             case 2:
+                Intent policyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ssomcompany.wixsite.com/termsandconditions"));
+                startActivity(policyIntent);
+                break;
+            case 3:
+                // TODO action to internal web view
                 break;
         }
     }
@@ -775,7 +813,16 @@ public class MainActivity extends BaseActivity
     }
 
     private void initMarker() {
-        if(mMap != null) mMap.clear();
+        if(mMap != null) {
+            mMap.clear();
+            NetworkManager.getInstance().getRequestQueue().cancelAll(new RequestQueue.RequestFilter() {
+                @Override
+                public boolean apply(Request<?> request) {
+                    Log.d(TAG, "all requests canceled");
+                    return true;
+                }
+            });
+        }
         mIdMap.clear();
         ArrayList<SsomItem> items = getCurrentPostItems();
         if(items != null && items.size() > 0){
@@ -784,40 +831,58 @@ public class MainActivity extends BaseActivity
                 isLastItem = (i == items.size() - 1);
                 addMarker(items.get(i), isLastItem);
             }
-        } else {
-            dismissProgressDialog();
         }
     }
 
     private void addMarker(final SsomItem item, final boolean isLastItem) {
-        ImageRequest imageRequest = new ImageRequest(item.getImageUrl(), new Response.Listener<Bitmap>() {
-            Marker marker;
+        Bitmap icon = bitmapCache.getBitmap(item.getImageUrl());
+        if(icon != null) {
+            mIdMap.put(mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(item.getLatitude(), item.getLongitude()))
+                    .title(item.getContent()).draggable(false)
+                    .icon(BitmapDescriptorFactory.fromBitmap(icon))), item.getPostId());
 
-            @Override
-            public void onResponse(Bitmap bitmap) {
-                marker = mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                        .title(item.getContent()).draggable(false).icon(getMarkerImage(item.getSsomType(), bitmap)));
+//            if (isLastItem) {
+//                Log.d(TAG, "last item created!");
+//                dismissProgressDialog();
+//            }
+        } else {
+            ImageRequest imageRequest = new ImageRequest(item.getImageUrl(), new Response.Listener<Bitmap>() {
+                Marker marker;
 
-                mIdMap.put(marker, item.getPostId());
-                if(isLastItem) dismissProgressDialog();
+                @Override
+                public void onResponse(Bitmap bitmap) {
+                    Bitmap icon = getMarkerImage(item.getSsomType(), bitmap);
+                    bitmapCache.putBitmap(item.getImageUrl(), icon);
+
+                    marker = mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(item.getLatitude(), item.getLongitude()))
+                            .title(item.getContent()).draggable(false)
+                            .icon(BitmapDescriptorFactory.fromBitmap(icon)));
+
+                    mIdMap.put(marker, item.getPostId());
+//                    if (isLastItem) {
+//                        Log.d(TAG, "last item created!");
+//                        dismissProgressDialog();
+//                    }
+                }
             }
+                    , 144  // max width
+                    , 256  // max height
+                    , ImageView.ScaleType.CENTER  // scale type
+                    , Bitmap.Config.ARGB_8888  // decode config
+                    , new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+
+                }
+            });
+            NetworkManager.getInstance().getRequestQueue().add(imageRequest);
         }
-        , 144  // max width
-        , 256  // max height
-        , ImageView.ScaleType.CENTER  // scale type
-        , Bitmap.Config.ARGB_8888  // decode config
-        , new Response.ErrorListener(){
-
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-            }
-        });
-        NetworkManager.getInstance().getRequestQueue().add(imageRequest);
     }
 
-    private BitmapDescriptor getMarkerImage(String ssom , Bitmap imageBitmap){
+    private Bitmap getMarkerImage(String ssom , Bitmap imageBitmap){
         Bitmap mergedBitmap = null;
         try {
             mergedBitmap = Bitmap.createBitmap(Util.convertDpToPixel(49),
@@ -844,7 +909,7 @@ public class MainActivity extends BaseActivity
             Log.i(TAG, "Get Marker image finished by exception..!");
         }
 
-        return BitmapDescriptorFactory.fromBitmap(mergedBitmap);
+        return mergedBitmap;
     }
 
     private void startLoginActivity() {
@@ -947,15 +1012,59 @@ public class MainActivity extends BaseActivity
         Log.d(TAG, "onActivityResult called : " + requestCode + ", reusltCode : " + resultCode);
 
         switch (requestCode) {
+            case REQUEST_SELECT_PICTURE :
+                if(resultCode == RESULT_OK) {
+                    Log.d(TAG, "data : " + data);
+                    if(data != null) {
+                        Uri selectedImage = data.getData();
+                        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                        Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+                        Log.d(TAG, "cursor : " + cursor);
+                        if(cursor != null) {
+                            cursor.moveToFirst();
+                            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                            String picturePath = cursor.getString(columnIndex);
+                            cursor.close();
+                            Log.d(TAG, "path : " + picturePath);
+                            APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
+                                @Override
+                                public void onResponse(NetworkResponse response) {
+                                    String jsonData = new String(response.data);
+                                    Gson gson = new Gson();
+                                    Map data = gson.fromJson(jsonData, Map.class);
+                                    String fileId = data.get("fileId").toString();
+                                    final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
+                                    APICaller.ssomProfileImageUpload(getToken(), imageUrl,
+                                            new NetworkManager.NetworkListener<SsomResponse<SsomProfileImageUpload.Response>>() {
+                                                @Override
+                                                public void onResponse(SsomResponse<SsomProfileImageUpload.Response> response) {
+                                                    if(response.isSuccess()) {
+                                                        Log.d(TAG, "upload success : " + response);
+                                                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
+                                                        mNavigationDrawerFragment.setTodayImage();
+                                                    } else {
+                                                        showErrorMessage();
+                                                    }
+                                                }
+                                            });
+                                }
+                            }, picturePath);
+                        }
+                    }
+                }
+                break;
             case REQUEST_SSOM_WRITE :
                 if(resultCode == RESULT_OK) {
                     requestSsomList(null, null, false);
+                    mNavigationDrawerFragment.setTodayImage();
                     setSsomWriteButtonImage();
+                    dismissProgressDialog();
                 }
                 break;
             case REQUEST_SSOM_LOGIN :
                 if(resultCode == RESULT_OK) {
                     mNavigationDrawerFragment.setLoginEmailLayout();
+                    mNavigationDrawerFragment.setTodayImage();
                     setSsomWriteButtonImage();
                 }
                 break;
@@ -1015,5 +1124,11 @@ public class MainActivity extends BaseActivity
         if(isBackStack) ft.addToBackStack(null);
         ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
         ft.commit();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mNavigationDrawerFragment.onConfigurationChanged(newConfig);
     }
 }

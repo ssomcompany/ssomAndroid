@@ -1,7 +1,9 @@
 package com.ssomcompany.ssomclient.activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +12,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -24,36 +29,34 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
+import com.android.volley.toolbox.NetworkImageView;
 import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.FilterType;
+import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.UniqueIdGenUtil;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.control.SsomPermission;
+import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.APICaller;
-import com.ssomcompany.ssomclient.network.BaseVolleyRequest;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.NetworkUtil;
 import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.widget.SsomNetworkImageView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -63,13 +66,14 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     private static final int REQUEST_IMAGE_CAPTURE = 10001;
     private static final int REQUEST_IMAGE_CROP = 10002;
     private static final int REQUEST_SELECT_PICTURE = 10003;
+    private static final int REQUEST_CHECK_READ_EXTERNAL_STORAGE = 4;
 
     ////// view 영역 //////
     private FrameLayout btnBack;
 
     private ImageView imgEmpty;
     private ImageView imgShadow;
-    private ImageView imgProfile;
+    private SsomNetworkImageView imgProfile;
 
     private ImageView imgCamera;
 
@@ -99,7 +103,6 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     private Location myLocation;
     // camera 변수
     private String mCurrentPhotoPath;
-    private Bitmap imageBitmap;
     private Uri mContentUri;
     private String picturePath;
 
@@ -122,7 +125,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         imgEmpty = (ImageView) findViewById(R.id.img_empty);
 
         // delete view when picture loaded
-        imgProfile = (ImageView) findViewById(R.id.img_profile);
+        imgProfile = (SsomNetworkImageView) findViewById(R.id.img_profile);
         imgShadow = (ImageView) findViewById(R.id.img_shadow);
 
         // camera
@@ -154,6 +157,13 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         // button
         btnCancel = (TextView) findViewById(R.id.btn_cancel);
         btnApply = (LinearLayout) findViewById(R.id.btn_apply);
+
+        // 올사가 있는 경우 로딩함. 없는경우 empty 이미지 보여짐
+        if(!TextUtils.isEmpty(getTodayImageUrl())) {
+            imgProfile.setImageUrl(getTodayImageUrl(), NetworkManager.getInstance().getImageLoader());
+            imgEmpty.setVisibility(View.INVISIBLE);
+            imgShadow.setVisibility(View.INVISIBLE);
+        }
 
         // text 입력
         tvOurAge.setText(getSpannableText(R.string.write_select_our_age, age.getTitle()));
@@ -219,11 +229,6 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     private void moveToGallery() {
         Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(i, REQUEST_SELECT_PICTURE);
-//        Intent intent = new Intent();
-//        intent.setType("image/*");
-//        intent.setAction(Intent.ACTION_GET_CONTENT);
-//
-//        startActivityForResult(Intent.createChooser(intent,"Select Picture"), REQUEST_SELECT_PICTURE);
     }
 
     // camera app 실행
@@ -323,7 +328,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                         Log.d(TAG, "path : " + picturePath);
                         imgEmpty.setVisibility(View.INVISIBLE);
                         imgShadow.setVisibility(View.INVISIBLE);
-                        imgProfile.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+                        imgProfile.setLocalImageBitmap(BitmapFactory.decodeFile(picturePath));
                     }
                     break;
                 default:
@@ -427,7 +432,32 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
             }
         } else if(v == imgCamera) {
 //            moveToCamera();
-            moveToGallery();
+            SsomPermission.getInstance()
+                    .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    .setOnPermissionListener(new ViewListener.OnPermissionListener() {
+                        @Override
+                        public void onPermissionGranted() {
+                            moveToGallery();
+                        }
+
+                        @Override
+                        public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                            Log.d(TAG, "denied permission size : " + deniedPermissions.size());
+
+                            // 이 권한을 필요한 이유를 설명해야하는가?
+                            if (ActivityCompat.shouldShowRequestPermissionRationale(SsomWriteActivity.this,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+                                // 다이어로그같은것을 띄워서 사용자에게 해당 권한이 필요한 이유에 대해 설명합니다
+                                // 해당 설명이 끝난뒤 requestPermissions()함수를 호출하여 권한허가를 요청해야 합니다
+                                makeDialogForRequestStoragePermission();
+                            } else {
+                                ActivityCompat.requestPermissions(SsomWriteActivity.this,
+                                        deniedPermissions.toArray(new String[]{deniedPermissions.get(0)}),
+                                        REQUEST_CHECK_READ_EXTERNAL_STORAGE);
+                            }
+                        }
+                    }).checkPermission();
         } else if(v == tvSsomBalloon) {
             tvSsomBalloon.setSelected(true);
             tvSsoaBalloon.setSelected(false);
@@ -465,7 +495,64 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                 return;
             }
 
-            uploadImage();
+            if(!TextUtils.isEmpty(picturePath)) {
+                APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
+                    @Override
+                    public void onResponse(NetworkResponse response) {
+                        String jsonData = new String(response.data);
+                        Gson gson = new Gson();
+                        Map data = gson.fromJson(jsonData, Map.class);
+                        String fileId = data.get("fileId").toString();
+                        createPost(fileId);
+                    }
+                }, picturePath);
+            } else {
+                createPost(null);
+            }
+        }
+    }
+
+    private void makeDialogForRequestStoragePermission() {
+        UiUtils.makeCommonDialog(this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
+                R.string.dialog_explain_storage_permission_message, R.style.ssom_font_16_custom_666666,
+                R.string.dialog_move, R.string.dialog_close,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i = new Intent();
+                        i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        i.addCategory(Intent.CATEGORY_DEFAULT);
+                        i.setData(Uri.parse("package:" + getPackageName()));
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                        startActivityForResult(i, REQUEST_CHECK_READ_EXTERNAL_STORAGE);
+                    }
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        UiUtils.makeToastMessage(getApplicationContext(), "저장소에 접근할 권한이 없어 글을 \n작성할 수 없어요 T.T");
+                        finish();
+                    }
+                });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == REQUEST_CHECK_READ_EXTERNAL_STORAGE) {
+            Map<String, Integer> permissionMap = new HashMap<>();
+
+            for (int i = 0 ; i < permissions.length ; i++) {
+                permissionMap.put(permissions[i], grantResults[i]);
+            }
+
+            // 거절을 클릭 한 경우에 해당함
+            if(grantResults.length > 0 &&
+                    permissionMap.get(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                makeDialogForRequestStoragePermission();
+            } else {
+                moveToGallery();
+            }
         }
     }
 
@@ -473,7 +560,6 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
 
-        if(imageBitmap != null) imageBitmap.recycle();
         if (!TextUtils.isEmpty(mCurrentPhotoPath)) {
             File f = new File(mCurrentPhotoPath);
             f.delete();
@@ -559,91 +645,14 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 //        return bitmapData;
 //    }
 
-    // TODO image upload 임시.. api 정의 시 변경 필요
-    private DataOutputStream dos = null;
-    private void uploadImage(){
-        final String twoHyphens = "--";
-        final String lineEnd = "\r\n";
-        final String boundary = "apiclient-" + System.currentTimeMillis();
-        final String mimeType = "multipart/form-data;boundary=" + boundary;
-        final int maxBufferSize = 1024 * 1024;
-
-        showProgressDialog();
-        BaseVolleyRequest baseVolleyRequest = new BaseVolleyRequest(getToken(), Request.Method.POST,
-                NetworkConstant.API.IMAGE_FILE_UPLOAD, new Response.Listener<NetworkResponse>() {
-            @Override
-            public void onResponse(NetworkResponse response) {
-                String jsonData = new String(response.data);
-                Gson gson = new Gson();
-                Map<String,String> data = gson.fromJson(jsonData, Map.class);
-                String fileId = data.get("fileId");
-                createPost(fileId);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, error.toString());
-            }
-        }) {
-            @Override
-            public String getBodyContentType() {
-                return mimeType;
-            }
-
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-//                imageBitmap = BitmapFactory.decodeFile(mContentUri.getPath());
-                imageBitmap = BitmapFactory.decodeFile(picturePath);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                imageBitmap.compress(Bitmap.CompressFormat.PNG, 1, byteArrayOutputStream);
-                byte[] bitmapData = byteArrayOutputStream.toByteArray();
-                int bytesRead, bytesAvailable, bufferSize;
-                byte[] buffer;
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                dos = new DataOutputStream(bos);
-                try {
-                    dos.writeBytes(twoHyphens + boundary + lineEnd);
-                    dos.writeBytes("Content-Disposition: form-data; name=\"pict\";filename=\""
-                            + "ssom_upload_from_camera.png" + "\"" + lineEnd);
-                    dos.writeBytes(lineEnd);
-                    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(bitmapData);
-                    bytesAvailable = fileInputStream.available();
-
-                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                    buffer = new byte[bufferSize];
-
-                    // read file and write it into form...
-                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-                    while (bytesRead > 0) {
-                        dos.write(buffer, 0, bufferSize);
-                        bytesAvailable = fileInputStream.available();
-                        bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-                    }
-
-                    // send multipart form data necesssary after file data...
-                    dos.writeBytes(lineEnd);
-                    dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-                    return bos.toByteArray();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return bitmapData;
-            }
-        };
-        RequestQueue queue = Volley.newRequestQueue(getApplication());
-        queue.add(baseVolleyRequest);
-    }
-
-    private void createPost(String fileId) {
+    private void createPost(final String fileId) {
         Log.d(TAG, "createPost()");
 
         showProgressDialog(false);
-        APICaller.ssomPostCreate(getToken(), "" + System.currentTimeMillis(), UniqueIdGenUtil.getId(getApplicationContext()), Util.getEncodedString(editWriteContent.getText().toString()),
-                NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId), age.getValue(), people.getValue(),
+        APICaller.ssomPostCreate(getToken(), "" + System.currentTimeMillis(), UniqueIdGenUtil.getId(getApplicationContext()),
+                Util.getEncodedString(editWriteContent.getText().toString()),
+                TextUtils.isEmpty(fileId) ? getTodayImageUrl() : NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId),
+                age.getValue(), people.getValue(),
                 tvSsomBalloon.isSelected() ? CommonConst.SSOM : CommonConst.SSOA, myLocation.getLatitude(), myLocation.getLongitude(),
                 new NetworkManager.NetworkListener<SsomResponse<SsomPostCreate.Response>>() {
                     @Override
@@ -651,6 +660,9 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                         if (response != null) {
                             if (response.isSuccess()) {
                                 Log.d(TAG, "success to create post!");
+                                getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL,
+                                        TextUtils.isEmpty(fileId) ? getTodayImageUrl() :
+                                                NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId));
                                 setResult(RESULT_OK);
                                 finish();
                             } else {

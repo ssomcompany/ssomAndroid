@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,17 +23,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.adapter.DrawerMenuAdapter;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.control.ViewListener;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -76,11 +77,9 @@ public class NavigationDrawerFragment extends Fragment {
     /**
      * Left menu list 구성
      */
-    private ListView mDrawerListView;
-    private TextView tvLogin;
-    private TextView tvLogout;
-    private LinearLayout loginEmailLayout;
-    private TextView tvLoginEmail;
+    private CircularNetworkImageView imgToday;
+    private TextView tvLoginOrLogout;
+    private TextView tvEmailOrDescription;
 
     public NavigationDrawerFragment() {
     }
@@ -117,36 +116,43 @@ public class NavigationDrawerFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
-        tvLogin = (TextView) view.findViewById(R.id.tv_login);
-        tvLogout = (TextView) view.findViewById(R.id.tv_logout);
-        loginEmailLayout = (LinearLayout) view.findViewById(R.id.login_email_layout);
-        tvLoginEmail = (TextView) view.findViewById(R.id.tv_login_email);
-        TextView tvConfirmEmail = (TextView) view.findViewById(R.id.tv_confirm_email);
-        TextView tvNotiSetting = (TextView) view.findViewById(R.id.tv_noti_setting);
+        FrameLayout todayPhoto = (FrameLayout) view.findViewById(R.id.today_photo);
+        imgToday = (CircularNetworkImageView) view.findViewById(R.id.img_today);
+        tvLoginOrLogout = (TextView) view.findViewById(R.id.tv_login_or_logout);
+        tvEmailOrDescription = (TextView) view.findViewById(R.id.tv_email_or_description);
+        TextView tvSsomHomepage = (TextView) view.findViewById(R.id.tv_ssom_homepage);
         TextView tvMakeHeart = (TextView) view.findViewById(R.id.tv_make_heart);
 
-        tvLogin.setOnClickListener(menuItemClickListener);
-        tvLogout.setOnClickListener(menuItemClickListener);
-        tvConfirmEmail.setOnClickListener(menuItemClickListener);
-        tvNotiSetting.setOnClickListener(menuItemClickListener);
+        todayPhoto.setOnClickListener(menuItemClickListener);
+        tvLoginOrLogout.setOnClickListener(menuItemClickListener);
+        tvSsomHomepage.setOnClickListener(menuItemClickListener);
         tvMakeHeart.setOnClickListener(menuItemClickListener);
 
         // email 영역 셋팅
         setLoginEmailLayout();
 
-        mDrawerListView = (ListView) view.findViewById(R.id.lv_drawer_menu);
+        ListView mDrawerListView = (ListView) view.findViewById(R.id.lv_drawer_menu);
         // dummy view for header divider
         mDrawerListView.addHeaderView(new View(getActivity()));
         mDrawerListView.setAdapter(new DrawerMenuAdapter(getActivity()));
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "position : " + position);
                 selectItem(position);
             }
         });
 //        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // today photo 셋팅
+        setTodayImage();
     }
 
     /**
@@ -156,14 +162,21 @@ public class NavigationDrawerFragment extends Fragment {
         // user logged in
         if(session != null && !TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_TOKEN, ""))
                 && !TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_EMAIL, ""))) {
-            tvLogin.setVisibility(View.GONE);
-            loginEmailLayout.setVisibility(View.VISIBLE);
-            tvLoginEmail.setText(session.getString(SsomPreferences.PREF_SESSION_EMAIL, ""));
-            tvLogout.setVisibility(View.VISIBLE);
+            tvLoginOrLogout.setText(R.string.logout);
+            tvEmailOrDescription.setText(session.getString(SsomPreferences.PREF_SESSION_EMAIL, ""));
         } else { // otherwise
-            tvLogin.setVisibility(View.VISIBLE);
-            loginEmailLayout.setVisibility(View.GONE);
-            tvLogout.setVisibility(View.GONE);
+            tvLoginOrLogout.setText(R.string.login_needed);
+            tvEmailOrDescription.setText(R.string.login_required);
+        }
+    }
+
+    public void setTodayImage() {
+        Log.d(TAG, "today image : " + session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""));
+        if(session != null && !TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""))) {
+            imgToday.setImageUrl(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""),
+                    NetworkManager.getInstance().getImageLoader());
+        } else {
+            imgToday.setImageResource(0);
         }
     }
 
@@ -238,12 +251,16 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
+    public void syncState() {
+        mDrawerToggle.syncState();
+    }
+
     private void selectItem(int position) {
 //        mCurrentSelectedPosition = position;
 //        if (mDrawerListView != null) {
 //            mDrawerListView.setItemChecked(position, true);
 //        }
-        if (mDrawerLayout != null) {
+        if (position != R.id.today_photo && mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {

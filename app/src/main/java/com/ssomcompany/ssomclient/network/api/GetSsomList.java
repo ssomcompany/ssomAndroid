@@ -13,13 +13,13 @@ import java.util.Locale;
 public class GetSsomList {
 
     public static class Request extends SsomGetRequest {
-        public Request(double lat, double lng, String userId) {
-            super(String.format(Locale.getDefault(), API.SSOM_LIST, lat, lng) + (TextUtils.isEmpty(userId) ? "" : ("&userId=" + userId)));
+        public Request(String userId) {
+            super(API.SSOM_LIST + (TextUtils.isEmpty(userId) ? "" : ("userId=" + userId)));
         }
 
-        public Request(double lat, double lng, String userId, String age, String count) {
-            super(String.format(Locale.getDefault(), API.SSOM_LIST, lat, lng) +
-                    ((TextUtils.isEmpty(userId) ? "" : ("&userId=" + userId)) + "&ageFilter=" + age + "&countFilter=" + count));
+        public Request(String userId, String age, String count) {
+            super(API.SSOM_LIST +
+                    ((TextUtils.isEmpty(userId) ? "" : ("userId=" + userId)) + "&ageFilter=" + age + "&countFilter=" + count));
         }
     }
 

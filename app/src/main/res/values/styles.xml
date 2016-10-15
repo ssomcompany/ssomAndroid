@@ -164,6 +164,13 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="ssom_font_13_main_black_single">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/main_black</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
     <style name="ssom_font_13_pinkish_gray_two_single">
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">@color/pinkish_gray_two</item>
@@ -197,6 +204,13 @@
     <style name="ssom_font_14_custom_515151_single">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/custom_515151</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="ssom_font_14_gray_warm_single">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/gray_warm</item>
         <item name="android:typeface">normal</item>
         <item name="android:singleLine">true</item>
     </style>

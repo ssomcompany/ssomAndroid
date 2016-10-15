@@ -35,7 +35,9 @@ public class SsomActionBarView extends RelativeLayout {
     private TextView ssomBarSubTitle;
     private TextView chatLayout;
     private LinearLayout heartLayout;
-    private TextView btnChattingRoomMeeting;
+    private LinearLayout btnChattingRoomMeeting;
+    private View imgMeetingHeart;
+    private TextView tvChattingRoomMeeting;
     private ImageView imgHeart;
     private TextView heartCount;
     private TextView heartRefillTime;
@@ -89,7 +91,9 @@ public class SsomActionBarView extends RelativeLayout {
         imgHeart = (ImageView) findViewById(R.id.img_heart);
         heartCount = (TextView) findViewById(R.id.heart_count);
         heartRefillTime = (TextView) findViewById(R.id.heart_refill_time);
-        btnChattingRoomMeeting = (TextView) findViewById(R.id.btn_chatting_room_meeting);
+        btnChattingRoomMeeting = (LinearLayout) findViewById(R.id.btn_chatting_room_meeting);
+        tvChattingRoomMeeting = (TextView) findViewById(R.id.tv_chatting_room_meeting);
+        imgMeetingHeart = findViewById(R.id.img_meeting_heart);
     }
 
     private void initLayout() {
@@ -232,11 +236,11 @@ public class SsomActionBarView extends RelativeLayout {
     }
 
     public void setChattingRoomBtnMeetingTitle(String title) {
-        btnChattingRoomMeeting.setText(title);
+        tvChattingRoomMeeting.setText(title);
     }
 
-    public void setChattingRoomBtnMeetingDrawable(int drawableRes) {
-        btnChattingRoomMeeting.setCompoundDrawablesWithIntrinsicBounds(drawableRes, 0, 0, 0);
+    public void setChattingRoomMeetingHeartVisibility(boolean visibility) {
+        imgMeetingHeart.setVisibility(visibility ? View.VISIBLE : View.GONE);
     }
 
     public int getCurrentMode() {

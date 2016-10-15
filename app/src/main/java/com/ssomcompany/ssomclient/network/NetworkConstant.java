@@ -32,7 +32,7 @@ public class NetworkConstant {
 
     // API start
     public static class API {
-        public static final String SSOM_LIST = "/posts?lat=%f&lng=%f";
+        public static final String SSOM_LIST = "/posts?";
         public static final String SSOM_POST = "/posts";
         public static final String SSOM_MY_POST = "/posts/mine";
         public static final String IMAGE_PATH = "/file/images/";
@@ -44,6 +44,7 @@ public class NetworkConstant {
         public static final String CREATE_ROOM = "/chatroom";
         public static final String SSOM_POST_DELETE = "/posts/%s";
         public static final String MEETING_REQUEST = "/request";
+        public static final String PROFILE_IMAGE = "/users/profileImgUrl";
 
         // $1 : roomId, $2 : currentTimeStamp
         public static final String SEND_MESSAGE = "/chatroom/%d/chats?lastTimestamp=%d";
