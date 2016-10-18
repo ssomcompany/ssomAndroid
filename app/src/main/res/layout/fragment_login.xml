@@ -83,22 +83,18 @@
             android:gravity="center"
             android:text="@string/login"/>
 
-        <TextView
-            android:id="@+id/btn_login_find_password"
-            style="@style/ssom_font_13_white_bold"
-            android:layout_below="@id/btn_login"
-            android:layout_width="150dp"
-            android:layout_height="35dp"
-            android:layout_marginTop="5dp"
+        <com.facebook.login.widget.LoginButton
+            android:layout_below="@+id/btn_login"
+            android:id="@+id/btn_facebook_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/btn_write_cancel"
-            android:gravity="center"
-            android:text="@string/login_find_password"/>
+            android:layout_marginTop="5dp" />
 
         <TextView
             android:id="@+id/btn_login_register"
             style="@style/ssom_font_13_white_bold"
-            android:layout_below="@id/btn_login_find_password"
+            android:layout_below="@id/btn_facebook_login"
             android:layout_width="150dp"
             android:layout_height="35dp"
             android:layout_marginTop="5dp"

@@ -2,11 +2,7 @@ package com.ssomcompany.ssomclient.network.api;
 
 import com.ssomcompany.ssomclient.common.ToStringHelperClass;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
-import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
-import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.network.model.SsomPostRequest;
-
-import java.util.ArrayList;
 
 public class CreateChattingRoom {
 
