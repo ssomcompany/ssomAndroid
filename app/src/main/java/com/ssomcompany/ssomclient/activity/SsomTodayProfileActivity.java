@@ -37,6 +37,7 @@ import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.NetworkUtil;
+import com.ssomcompany.ssomclient.network.api.UploadFiles;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
@@ -172,7 +173,6 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                         options.inSampleSize = 4;
                         Bitmap saveBitmap = BitmapFactory.decodeFile(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath, options);
 
-
                         int orientation = Util.getOrientationFromUri(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
                         if(orientation != 0) {
                             Matrix matrix = new Matrix();
@@ -186,6 +186,16 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                         finish();
                     }
                 }, currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
+
+//                UploadFiles uploadTask = new UploadFiles() {
+//                    @Override
+//                    protected void onPostExecute(String result) {
+//                        super.onPostExecute(result);
+//                        Log.e(TAG, "Response from server: " + result);
+//                    }
+//                };
+//
+//                uploadTask.execute(getToken(), currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
                 break;
         }
     }
@@ -280,7 +290,7 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                         Bitmap bitmap = BitmapFactory.decodeFile(picturePath, options);
 
                         // orientation 을 통한 이미지 회전
-                        int orientation = Util.getOrientationFromUri(selectedImage.getPath());
+                        int orientation = Util.getOrientationFromUri(picturePath);
                         Log.d(TAG, "orientation : " + orientation);
                         if(orientation != 0) {
                             Matrix matrix = new Matrix();

@@ -26,6 +26,10 @@ android {
     buildToolsVersion '23.0.3'
     useLibrary('org.apache.http.legacy')
 
+    repositories {
+        mavenCentral()
+    }
+
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'

@@ -341,7 +341,6 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                             Matrix matrix = new Matrix();
                             matrix.postRotate(orientation);
                             imgProfile.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//                            imgProfile.setImageMatrix(matrix);
                             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                         }
                         imgProfile.setLocalImageBitmap(bitmap);
@@ -512,47 +511,47 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
             }
 
             if(!TextUtils.isEmpty(picturePath)) {
-//                APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
-//                    @Override
-//                    public void onResponse(NetworkResponse response) {
-//                        dismissProgressDialog();
-//                        String jsonData = new String(response.data);
-//                        Gson gson = new Gson();
-//                        Map data = gson.fromJson(jsonData, Map.class);
-//                        String fileId = data.get("fileId").toString();
-//
-//                        final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
-//                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
-//
-//                        BitmapFactory.Options options = new BitmapFactory.Options();
-//                        options.inSampleSize = 4;
-//                        Bitmap saveBitmap = BitmapFactory.decodeFile(picturePath, options);
-//
-//                        int orientation = Util.getOrientationFromUri(picturePath);
-//                        if(orientation != 0) {
-//                            Matrix matrix = new Matrix();
-//                            matrix.postRotate(orientation);
-//                            saveBitmap = Bitmap.createBitmap(saveBitmap, 0, 0, saveBitmap.getWidth(), saveBitmap.getHeight(), matrix, true);
-//                        }
-//
-//                        NetworkManager.getInstance().addBitmapToCache(imageUrl, saveBitmap);
-//
-//                        createPost(fileId);
-//                    }
-//                }, picturePath);
-                UploadFiles uploadTask = new UploadFiles() {
+                APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
                     @Override
-                    protected void onPostExecute(String result) {
-                        super.onPostExecute(result);
-                        Log.e(TAG, "Response from server: " + result);
+                    public void onResponse(NetworkResponse response) {
+                        dismissProgressDialog();
+                        String jsonData = new String(response.data);
                         Gson gson = new Gson();
-                        Map data = gson.fromJson(result, Map.class);
+                        Map data = gson.fromJson(jsonData, Map.class);
                         String fileId = data.get("fileId").toString();
+
+                        final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
+                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inSampleSize = 4;
+                        Bitmap saveBitmap = BitmapFactory.decodeFile(picturePath, options);
+
+                        int orientation = Util.getOrientationFromUri(picturePath);
+                        if(orientation != 0) {
+                            Matrix matrix = new Matrix();
+                            matrix.postRotate(orientation);
+                            saveBitmap = Bitmap.createBitmap(saveBitmap, 0, 0, saveBitmap.getWidth(), saveBitmap.getHeight(), matrix, true);
+                        }
+
+                        NetworkManager.getInstance().addBitmapToCache(imageUrl, saveBitmap);
+
                         createPost(fileId);
                     }
-                };
+                }, picturePath);
 
-                uploadTask.execute(getToken(), picturePath);
+//                UploadFiles uploadTask = new UploadFiles() {
+//                    @Override
+//                    protected void onPostExecute(String result) {
+//                        super.onPostExecute(result);
+//                        Log.e(TAG, "Response from server: " + result);
+//                        Gson gson = new Gson();
+//                        Map data = gson.fromJson(result, Map.class);
+//                        String fileId = data.get("fileId").toString();
+//                        createPost(fileId);
+//                    }
+//                };
+//
+//                uploadTask.execute(getToken(), picturePath);
             } else {
                 createPost(null);
             }

@@ -71,7 +71,7 @@
         android:background="@color/white"
         android:visibility="gone">
 
-        <!-- left profile image layout Start -->
+        <!-- right profile image layout Start -->
         <FrameLayout
             android:id="@+id/right_chat_profile_layout"
             android:layout_width="40dp"
@@ -90,7 +90,7 @@
                 android:id="@+id/right_chat_profile_circle"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/chat_profile_border_red" />
+                android:src="@drawable/bg_chat_my_profile" />
         </FrameLayout>
 
         <!-- left profile image layout End -->

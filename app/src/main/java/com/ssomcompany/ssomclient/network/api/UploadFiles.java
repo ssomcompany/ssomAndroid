@@ -1,7 +1,6 @@
 package com.ssomcompany.ssomclient.network.api;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -13,6 +12,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
@@ -27,17 +27,17 @@ public class UploadFiles extends AsyncTask<String, Integer, String> {
     @Override
     protected void onPreExecute() {
         // setting progress bar to zero
-        progressBar.setProgress(0);
+//        progressBar.setProgress(0);
         super.onPreExecute();
     }
 
     @Override
     protected void onProgressUpdate(Integer... progress) {
         // Making progress bar visible
-        progressBar.setVisibility(View.VISIBLE);
+//        progressBar.setVisibility(View.VISIBLE);
 
         // updating progress bar value
-        progressBar.setProgress(progress[0]);
+//        progressBar.setProgress(progress[0]);
 
         // updating percentage value
 //        txtPercentage.setText(String.valueOf(progress[0]) + "%");
@@ -53,7 +53,7 @@ public class UploadFiles extends AsyncTask<String, Integer, String> {
         String responseString;
 
         HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost(NetworkConstant.API.IMAGE_FILE_UPLOAD);
+        HttpPost httppost = new HttpPost(NetworkConstant.HTTP_SCHME + NetworkConstant.HOST + NetworkConstant.API.IMAGE_FILE_UPLOAD);
 
         try {
             SsomMultiPartEntity entity = new SsomMultiPartEntity(

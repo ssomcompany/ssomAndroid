@@ -8,8 +8,9 @@ import java.nio.charset.Charset;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 
-public class SsomMultiPartEntity extends MultipartEntity {
 
+@SuppressWarnings("deprecation")
+public class SsomMultiPartEntity extends MultipartEntity {
     private final ProgressListener listener;
 
     public SsomMultiPartEntity(final ProgressListener listener) {

@@ -174,6 +174,11 @@ public class NavigationDrawerFragment extends Fragment {
     public void setTodayImage() {
         Log.d(TAG, "today image : " + session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""));
 
+        if(TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""))) {
+            imgToday.setImageResource(0);
+            return;
+        }
+
         if(NetworkManager.getInstance().getBitmapFromCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "")) == null) {
             ImageRequest imageRequest = new ImageRequest(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""), new Response.Listener<Bitmap>() {
 

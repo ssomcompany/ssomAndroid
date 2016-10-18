@@ -1,23 +1,17 @@
 package com.ssomcompany.ssomclient.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 
-import com.ssomcompany.ssomclient.BaseApplication;
+import com.facebook.FacebookSdk;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.fragment.LoginFragment;
 import com.ssomcompany.ssomclient.fragment.LoginRegistFragment;
-import com.ssomcompany.ssomclient.network.APICaller;
 
-/**
- * Created by AaronMac on 2016. 7. 25..
- */
 public class SsomLoginBaseActivity extends BaseActivity implements View.OnClickListener, ViewListener.OnLoginFragmentInteractionListener {
 
     FragmentManager fragmentManager;
@@ -43,9 +37,6 @@ public class SsomLoginBaseActivity extends BaseActivity implements View.OnClickL
             case R.id.btn_login :
                 setResult(RESULT_OK);
                 finish();
-                break;
-            case R.id.btn_login_find_password :
-                // 비밀번호 찾기 화면으로 이동
                 break;
             case R.id.btn_login_register :
                 // 회원 가입 화면으로 이동

@@ -4,30 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="74dp">
 
-    <!--<FrameLayout-->
-        <!--android:id="@+id/delete_layout"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_width="70dp"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:background="@drawable/bg_chat_delete"-->
-        <!--android:visibility="gone">-->
-
-        <!--<ImageView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:layout_marginTop="22dp"-->
-            <!--android:src="@drawable/icon_trash"/>-->
-        <!-- -->
-        <!--<TextView-->
-            <!--style="@style/ssom_font_12_white_single"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_horizontal|bottom"-->
-            <!--android:layout_marginBottom="17.5dp"-->
-            <!--android:text="대화 삭제"/>-->
-    <!--</FrameLayout>-->
-
     <RelativeLayout
         android:id="@+id/item_layout"
         android:layout_width="match_parent"

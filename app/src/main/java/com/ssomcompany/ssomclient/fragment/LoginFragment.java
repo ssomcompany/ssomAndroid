@@ -14,8 +14,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.onesignal.OneSignal;
-import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.control.ViewListener;

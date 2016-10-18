@@ -7,7 +7,7 @@
 
     <FrameLayout
         android:layout_width="315dp"
-        android:layout_height="185dp"
+        android:layout_height="240dp"
         android:background="@drawable/login_top">
 
         <TextView
@@ -21,10 +21,10 @@
 
     <RelativeLayout
         android:layout_width="315dp"
-        android:layout_height="313dp"
-        android:paddingLeft="37.5dp"
-        android:paddingRight="37.5dp"
-        android:paddingTop="33dp"
+        android:layout_height="226dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="20dp"
         android:background="@color/white">
 
         <TextView
@@ -32,19 +32,20 @@
             style="@style/ssom_font_9_pinkish_gray_two_single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="15dp"
             android:text="@string/login_email"/>
 
         <EditText
             android:id="@+id/et_login_email"
             style="@style/ssom_edit_13_main_black_single"
-            android:layout_width="240dp"
+            android:layout_width="match_parent"
             android:layout_height="24dp"
-            android:layout_marginTop="12dp"
             android:background="@drawable/bg_edit_underline_selector"
             android:padding="0dp"
             android:inputType="textEmailAddress"
             android:gravity="top"
-            android:layout_below="@id/tv_login_email"
+            android:layout_toRightOf="@id/tv_login_email"
             android:textColorHint="@color/pinkish_gray_two"
             android:hint="@string/login_reg_email_hint"/>
 
@@ -53,21 +54,23 @@
             style="@style/ssom_font_9_pinkish_gray_two_single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:layout_below="@id/et_login_email"
+            android:layout_marginRight="7dp"
+            android:layout_marginTop="25dp"
+            android:layout_below="@id/tv_login_email"
             android:text="@string/login_password"/>
 
         <EditText
             android:id="@+id/et_login_password"
             style="@style/ssom_edit_13_main_black_single"
-            android:layout_width="240dp"
+            android:layout_width="match_parent"
             android:layout_height="24dp"
-            android:layout_marginTop="12dp"
             android:background="@drawable/bg_edit_underline_selector"
             android:padding="0dp"
             android:inputType="textPassword"
             android:gravity="top"
-            android:layout_below="@id/tv_login_password"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@id/tv_login_password"
+            android:layout_below="@id/et_login_email"
             android:textColorHint="@color/pinkish_gray_two"
             android:hint="@string/login_reg_password_hint"/>
 

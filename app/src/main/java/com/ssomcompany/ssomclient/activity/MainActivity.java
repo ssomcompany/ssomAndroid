@@ -565,7 +565,11 @@ public class MainActivity extends BaseActivity
         // update the main content by replacing fragments
         switch (position) {
             case R.id.today_photo:
-                // gallery 실행
+                if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
+                    requestLogin();
+                    return;
+                }
+
                 Intent i = new Intent(MainActivity.this, SsomTodayProfileActivity.class);
                 startActivityForResult(i, REQUEST_PROFILE_ACTIVITY);
                 break;

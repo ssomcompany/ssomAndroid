@@ -150,7 +150,7 @@
     <string name="login_email_confirm"><u>이메일 인증</u></string>
     <string name="login_password">비밀번호</string>
     <string name="login_find_password">비밀번호 찾기</string>
-    <string name="login_top_logo">쏨 등록을 위해서는 로그인이 필요합니다 =)</string>
+    <string name="login_top_logo">서비스 이용을 위해서는 로그인이 필요합니다.</string>
     <string name="login">로그인</string>
     <string name="login_required"><u>로그인 후 이용할 수 있습니다.</u></string>
     <string name="login_needed"><u>로그인</u></string>
