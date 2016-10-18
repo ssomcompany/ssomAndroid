@@ -29,10 +29,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Response;
-import com.android.volley.toolbox.NetworkImageView;
-import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.FilterType;
@@ -47,6 +43,7 @@ import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.NetworkUtil;
 import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
+import com.ssomcompany.ssomclient.network.api.UploadFiles;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.widget.SsomNetworkImageView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
@@ -496,16 +493,29 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
             }
 
             if(!TextUtils.isEmpty(picturePath)) {
-                APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
+//                APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
+//                    @Override
+//                    public void onResponse(NetworkResponse response) {
+//                        String jsonData = new String(response.data);
+//                        Gson gson = new Gson();
+//                        Map data = gson.fromJson(jsonData, Map.class);
+//                        String fileId = data.get("fileId").toString();
+//                        createPost(fileId);
+//                    }
+//                }, picturePath);
+                UploadFiles uploadTask = new UploadFiles() {
                     @Override
-                    public void onResponse(NetworkResponse response) {
-                        String jsonData = new String(response.data);
+                    protected void onPostExecute(String result) {
+                        super.onPostExecute(result);
+                        Log.e(TAG, "Response from server: " + result);
                         Gson gson = new Gson();
-                        Map data = gson.fromJson(jsonData, Map.class);
+                        Map data = gson.fromJson(result, Map.class);
                         String fileId = data.get("fileId").toString();
                         createPost(fileId);
                     }
-                }, picturePath);
+                };
+
+                uploadTask.execute(getToken(), picturePath);
             } else {
                 createPost(null);
             }
@@ -567,84 +577,6 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         }
     }
 
-    // TODO upload image and create post
-//    private void uploadImage() {
-//        if (mContentUri != null) {
-//            showProgressDialog();
-//            Log.v(TAG, "uri path = " + mContentUri);
-//
-//            imageBitmap = BitmapFactory.decodeFile(mContentUri.getPath());
-//
-//            APICaller.ssomImageUpload(makeFileByteArray(), new NetworkManager.NetworkListener<SsomResponse<SsomImageUpload.Response>>() {
-//                @Override
-//                public void onResponse(SsomResponse<SsomImageUpload.Response> response) {
-//                    if (response.isSuccess()) {
-//                        SsomImageUpload.Response data = response.getData();
-//                        Log.i(TAG, "data : " + data);
-//                        if (data != null && data.getFileId() != null && !"".equals(data.getFileId())) {
-//                            createPost(data.getFileId());
-//                        } else {
-//                            // TODO reloading to use app
-//                            Log.i(TAG, "data is null !!");
-//                        }
-//                    } else {
-//                        Log.e(TAG, "Response error with code " + response.getResultCode() + ", message : " + response.getMessage(),
-//                                response.getError());
-//                    }
-//                }
-//            });
-//        } else {
-//            Log.e(TAG, "uploadImage() failed!!");
-//        }
-//    }
-
-//    private byte[] makeFileByteArray() {
-//        final String twoHyphens = "--";
-//        final String lineEnd = "\r\n";
-//        final String boundary = "apiclient-" + System.currentTimeMillis();
-//        final int maxBufferSize = 1024 * 1024;
-//
-//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//        imageBitmap.compress(Bitmap.CompressFormat.PNG, 1, byteArrayOutputStream);
-//
-//        byte[] bitmapData = byteArrayOutputStream.toByteArray();
-//        int bytesRead, bytesAvailable, bufferSize;
-//        byte[] buffer;
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        DataOutputStream dos = new DataOutputStream(bos);
-//        try {
-//            dos.writeBytes(twoHyphens + boundary + lineEnd);
-//            dos.writeBytes("Content-Disposition: form-data; name=\"pict\";filename=\""
-//                    + "ssom_upload_from_camera.png" + "\"" + lineEnd);
-//            dos.writeBytes(lineEnd);
-//            ByteArrayInputStream fileInputStream = new ByteArrayInputStream(bitmapData);
-//            bytesAvailable = fileInputStream.available();
-//
-//            bufferSize = Math.min(bytesAvailable, maxBufferSize);
-//            buffer = new byte[bufferSize];
-//
-//            // read file and write it into form...
-//            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-//
-//            while (bytesRead > 0) {
-//                dos.write(buffer, 0, bufferSize);
-//                bytesAvailable = fileInputStream.available();
-//                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-//                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-//            }
-//
-//            // send multipart form data necesssary after file data...
-//            dos.writeBytes(lineEnd);
-//            dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-//
-//            return bos.toByteArray();
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return bitmapData;
-//    }
-
     private void createPost(final String fileId) {
         Log.d(TAG, "createPost()");
 
@@ -672,5 +604,22 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle stateBundle) {
+        super.onSaveInstanceState(stateBundle);
+
+        // save file url in bundle as it will be null on screen orientation
+        // changes
+        stateBundle.putString("file_url", picturePath);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // get the file url
+        picturePath = savedInstanceState.getString("file_url");
     }
 }
