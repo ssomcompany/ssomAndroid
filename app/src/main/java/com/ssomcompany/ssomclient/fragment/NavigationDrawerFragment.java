@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -24,9 +24,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.adapter.DrawerMenuAdapter;
@@ -147,14 +156,6 @@ public class NavigationDrawerFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // today photo 셋팅
-        setTodayImage();
-    }
-
     /**
      * login 여부 체크 후 email 영역 셋팅
      */
@@ -172,11 +173,28 @@ public class NavigationDrawerFragment extends Fragment {
 
     public void setTodayImage() {
         Log.d(TAG, "today image : " + session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""));
-        if(session != null && !TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""))) {
-            imgToday.setImageUrl(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""),
-                    NetworkManager.getInstance().getImageLoader());
+
+        if(NetworkManager.getInstance().getBitmapFromCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "")) == null) {
+            ImageRequest imageRequest = new ImageRequest(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""), new Response.Listener<Bitmap>() {
+
+                @Override
+                public void onResponse(Bitmap bitmap) {
+                    NetworkManager.getInstance().addBitmapToCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""), bitmap);
+                    imgToday.setLocalImageBitmap(bitmap);
+                }
+            }, 480  // max width
+                    , 320  // max height
+                    , ImageView.ScaleType.CENTER  // scale type
+                    , Bitmap.Config.RGB_565  // decode config
+                    , new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                }
+            });
+            Volley.newRequestQueue(getActivity()).add(imageRequest);
         } else {
-            imgToday.setImageResource(0);
+            imgToday.setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "")));
         }
     }
 
@@ -212,6 +230,7 @@ public class NavigationDrawerFragment extends Fragment {
                     return;
                 }
 
+                mDrawerToggle.syncState();
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
 
@@ -231,6 +250,7 @@ public class NavigationDrawerFragment extends Fragment {
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
                 }
 
+                mDrawerToggle.syncState();
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
         };
@@ -245,7 +265,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.post(new Runnable() {
             @Override
             public void run() {
-                mDrawerToggle.syncState();
+                setTodayImage();
             }
         });
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -333,7 +353,6 @@ public class NavigationDrawerFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
-
 
     private ActionBar getActionBar() {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();

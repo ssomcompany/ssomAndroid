@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.onesignal.OneSignal;
-import com.onesignal.OneSignalDbHelper;
-import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.push.SsomNotiOpenedHandler;
 import com.ssomcompany.ssomclient.push.SsomNotiReceiveHandler;
 
@@ -45,7 +43,7 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
                 .setNotificationOpenedHandler(new SsomNotiOpenedHandler())
                 .setNotificationReceivedHandler(new SsomNotiReceiveHandler())
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None)
-                .autoPromptLocation(true)
+//                .autoPromptLocation(true)
                 .init();
 
         mInstance = this;

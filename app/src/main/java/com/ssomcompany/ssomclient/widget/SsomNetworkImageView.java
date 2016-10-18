@@ -3,9 +3,11 @@ package com.ssomcompany.ssomclient.widget;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.ssomcompany.ssomclient.network.NetworkManager;
 
 public class SsomNetworkImageView extends NetworkImageView {
     private Bitmap mLocalBitmap;
@@ -22,8 +24,13 @@ public class SsomNetworkImageView extends NetworkImageView {
 
     @Override
     public void setImageUrl(String url, ImageLoader imageLoader) {
-        mShowLocal = false;
-        super.setImageUrl(url, imageLoader);
+        if(NetworkManager.getInstance().getBitmapFromCache(url) != null) {
+            Log.d("NetworkImage", "Image loading from cache...");
+            setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromCache(url));
+        } else {
+            mShowLocal = false;
+            super.setImageUrl(url, imageLoader);
+        }
     }
 
     public SsomNetworkImageView(Context context) {

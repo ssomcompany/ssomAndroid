@@ -13,7 +13,7 @@ import java.util.Locale;
 public class GetChattingList {
 
     public static class Request extends SsomGetRequest {
-        public Request(int roomId) {
+        public Request(long roomId) {
             super(String.format(Locale.getDefault(), API.CHAT_LIST, roomId));
         }
     }

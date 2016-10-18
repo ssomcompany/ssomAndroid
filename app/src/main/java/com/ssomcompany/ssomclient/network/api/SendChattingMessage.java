@@ -14,7 +14,7 @@ public class SendChattingMessage {
         String toUserId;
         String msg;
 
-        public Request(int roomId, long lastMessageTime) {
+        public Request(long roomId, long lastMessageTime) {
             super(String.format(Locale.getDefault(), NetworkConstant.API.SEND_MESSAGE, roomId, lastMessageTime));
         }
 

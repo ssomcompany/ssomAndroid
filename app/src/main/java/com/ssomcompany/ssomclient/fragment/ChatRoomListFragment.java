@@ -20,6 +20,7 @@ import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.DeleteChattingRoom;
 import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
@@ -110,9 +111,16 @@ public class ChatRoomListFragment extends BaseFragment {
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    // TODO delete chatting api call
-                                    chatRoomList.remove(position);
-                                    mAdapter.notifyDataSetChanged();
+                                    APICaller.deleteChattingRoom(getToken(), chatRoomList.get(position).getId(),
+                                            new NetworkManager.NetworkListener<SsomResponse<DeleteChattingRoom.Response>>() {
+                                                @Override
+                                                public void onResponse(SsomResponse<DeleteChattingRoom.Response> response) {
+                                                    if(response.isSuccess()) {
+                                                        chatRoomList.remove(position);
+                                                        mAdapter.notifyDataSetChanged();
+                                                    }
+                                                }
+                                            });
                                 }
                             }, null);
                 }

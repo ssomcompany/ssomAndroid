@@ -39,14 +39,20 @@ public class UiUtils {
         dialog.setPositiveButton(context.getString(positiveBtnTitle), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(positiveBtnListener != null) positiveBtnListener.onClick(dialog, which);
+                if(positiveBtnListener != null) {
+                    positiveBtnListener.onClick(dialog, which);
+                    dialog.dismiss();
+                }
             }
         });
         dialog.setNegativeButton(context.getString(negativeBtnTitle),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(negativeBtnListener != null) negativeBtnListener.onClick(dialog, which);
+                        if(negativeBtnListener != null) {
+                            negativeBtnListener.onClick(dialog, which);
+                            dialog.dismiss();
+                        }
                     }
                 });
         dialog.setAutoDismissEnable(true);

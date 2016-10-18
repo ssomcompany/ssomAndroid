@@ -1,5 +1,6 @@
 package com.ssomcompany.ssomclient.network;
 
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -28,20 +29,37 @@ public class NetworkManager {
 
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
+    private BitmapLruCache bitmapCache;
 
     private NetworkManager() {
         mRequestQueue = getRequestQueue();
 
-        ImageLoader.ImageCache imageCache = new BitmapLruCache();
-        mImageLoader = new ImageLoader(mRequestQueue, imageCache);
+        bitmapCache = new BitmapLruCache();
+        mImageLoader = new ImageLoader(mRequestQueue, bitmapCache);
     }
 
-    public static synchronized NetworkManager getInstance() {
+    public static NetworkManager getInstance() {
         if (mInstance == null) {
             mInstance = new NetworkManager();
         }
 
         return mInstance;
+    }
+
+    public Bitmap getBitmapFromCache(String key) {
+        if(key == null) return null;
+        return bitmapCache.getBitmap(key);
+    }
+
+    public void addBitmapToCache(String key, Bitmap cacheBitmap) {
+        if(getBitmapFromCache(key) == null) {
+            this.bitmapCache.putBitmap(key, cacheBitmap);
+        }
+    }
+
+    public void removeBitmapFromCache(String key) {
+        if(key == null) return;
+        this.bitmapCache.remove(key);
     }
 
     public RequestQueue getRequestQueue() {
@@ -52,7 +70,7 @@ public class NetworkManager {
     }
 
     public ImageLoader getImageLoader() {
-        return this.mImageLoader;
+        return mImageLoader;
     }
 
     private <T> void addToRequestQueue(Request<T> req, String tag) {

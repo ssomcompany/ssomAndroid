@@ -22,7 +22,7 @@ public abstract class SsomRequest extends BaseRequest {
         Map<String, String> header = super.getHeaders();
 
         if (null == header) {
-            header = new HashMap<String, String>();
+            header = new HashMap<>();
         }
         header.put(NetworkConstant.HeaderParam.ACCEPT, "application/json");
         header.put(NetworkConstant.HeaderParam.CONTENT_TYPE, "application/json; charset=UTF-8");

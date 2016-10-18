@@ -10,6 +10,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.widget.SsomNetworkImageView;
 
 /**
  * Created by AaronMac on 2016. 9. 17..
@@ -28,7 +29,9 @@ public class SsomImageDetailActivity extends Activity {
             return;
         }
 
-        NetworkImageView imageView = (NetworkImageView) findViewById(R.id.detail_image);
+        SsomNetworkImageView imageView = (SsomNetworkImageView) findViewById(R.id.detail_image);
+        imageView.setDefaultImageResId(R.drawable.img_today_empty);
+        imageView.setErrorImageResId(R.drawable.img_today_empty);
         imageView.setImageUrl(getIntent().getStringExtra(CommonConst.Intent.IMAGE_URL), NetworkManager.getInstance().getImageLoader());
         findViewById(R.id.btn_close).setOnClickListener(new View.OnClickListener() {
             @Override

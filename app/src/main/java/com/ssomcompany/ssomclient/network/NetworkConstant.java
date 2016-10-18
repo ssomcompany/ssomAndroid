@@ -50,5 +50,8 @@ public class NetworkConstant {
         public static final String SEND_MESSAGE = "/chatroom/%d/chats?lastTimestamp=%d";
         // $1 : roomId
         public static final String CHAT_LIST = "/chatroom/%d/chats";
+
+        // get app version
+        public static final String APP_VERSION = "/version/android";
     }
 }

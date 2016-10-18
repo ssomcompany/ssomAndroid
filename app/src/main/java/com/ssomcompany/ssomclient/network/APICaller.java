@@ -1,11 +1,16 @@
 package com.ssomcompany.ssomclient.network;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -18,7 +23,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
+import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
+import com.ssomcompany.ssomclient.network.api.DeleteChattingRoom;
+import com.ssomcompany.ssomclient.network.api.DeleteTodayPhoto;
+import com.ssomcompany.ssomclient.network.api.GetApplicationVersion;
 import com.ssomcompany.ssomclient.network.api.GetChattingList;
 import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
@@ -118,7 +127,7 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<GetChattingRoomList.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void getChattingList(String token, int roomId, NetworkManager.NetworkListener<T> listener) {
+    public static <T extends BaseResponse> void getChattingList(String token, long roomId, NetworkManager.NetworkListener<T> listener) {
         GetChattingList.Request request = new GetChattingList.Request(roomId);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
@@ -134,6 +143,14 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<CreateChattingRoom.Response>>() {}.getType(), listener);
     }
 
+    public static <T extends BaseResponse> void deleteChattingRoom(String token, long chatroomId, NetworkManager.NetworkListener<T> listener) {
+        DeleteChattingRoom.Request request = new DeleteChattingRoom.Request(chatroomId);
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<DeleteChattingRoom.Response>>() {}.getType(), listener);
+    }
+
     public static <T extends BaseResponse> void totalChatUnreadCount(String token, NetworkManager.NetworkListener<T> listener) {
         SsomChatUnreadCount.Request request = new SsomChatUnreadCount.Request();
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
@@ -142,7 +159,7 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomChatUnreadCount.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void sendChattingMessage(String token, int roomId, long lastMessageTime,
+    public static <T extends BaseResponse> void sendChattingMessage(String token, long roomId, long lastMessageTime,
                                            String msg, NetworkManager.NetworkListener<T> listener) {
         SendChattingMessage.Request request = new SendChattingMessage.Request(roomId, lastMessageTime).setMsg(msg);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
@@ -151,7 +168,7 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<SendChattingMessage.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void sendChattingRequest(String token, int roomId, int methodType,
+    public static <T extends BaseResponse> void sendChattingRequest(String token, long roomId, int methodType,
                                                                     NetworkManager.NetworkListener<T> listener) {
         SsomRequest request;
 
@@ -160,7 +177,7 @@ public class APICaller {
                 request = new SsomMeetingRequest.PutRequest().setChatroomId(roomId);
                 break;
             case NetworkConstant.Method.DELETE:
-                request = new SsomMeetingRequest.DeleteRequest().setChatroomId(roomId);
+                request = new SsomMeetingRequest.DeleteRequest(roomId);
                 break;
             case NetworkConstant.Method.POST:
             default:
@@ -171,7 +188,7 @@ public class APICaller {
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
         request.setTimeoutMillis(TIME_OUT_LONG);
-        NetworkManager.request(request, new TypeToken<SsomResponse<SendChattingMessage.Response>>() {}.getType(), listener);
+        NetworkManager.request(request, new TypeToken<SsomResponse<SsomMeetingRequest.Response>>() {}.getType(), listener);
     }
 
     public static <T extends BaseResponse> void ssomProfileImageUpload(String token, String profileImgUrl,
@@ -183,6 +200,21 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomProfileImageUpload.Response>>() {}.getType(), listener);
     }
 
+    public static <T extends BaseResponse> void getApplicationVersion(NetworkManager.NetworkListener<T> listener) {
+        GetApplicationVersion.Request request = new GetApplicationVersion.Request();
+
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<GetApplicationVersion.Response>>() {}.getType(), listener);
+    }
+
+    public static <T extends BaseResponse> void deleteTodayPhoto(String token, NetworkManager.NetworkListener<T> listener) {
+        DeleteTodayPhoto.Request request = new DeleteTodayPhoto.Request();
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<DeleteTodayPhoto.Response>>() {}.getType(), listener);
+    }
+
     public static void ssomImageUpload(final BaseActivity activity, Response.Listener<NetworkResponse> listener,
                                        final String picturePath) {
         final String twoHyphens = "--";
@@ -191,7 +223,21 @@ public class APICaller {
         final String mimeType = "multipart/form-data;boundary=" + boundary;
         final int maxBufferSize = 1024 * 1024;
 
+        final RequestQueue queue = Volley.newRequestQueue(activity);
+
         Log.d("image upload", "token : " + activity.getToken());
+        activity.showProgressDialog(true, new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                queue.cancelAll(new RequestQueue.RequestFilter() {
+                    @Override
+                    public boolean apply(Request<?> request) {
+                        Log.d("image upload", "all requests canceled");
+                        return true;
+                    }
+                });
+            }
+        });
         BaseVolleyRequest baseVolleyRequest = new BaseVolleyRequest(activity.getToken(), Request.Method.POST,
                 NetworkConstant.API.IMAGE_FILE_UPLOAD, listener, new Response.ErrorListener() {
             @Override
@@ -214,6 +260,18 @@ public class APICaller {
             @Override
             public byte[] getBody() throws AuthFailureError {
                 Bitmap imageBitmap = BitmapFactory.decodeFile(picturePath);
+
+                // orientation 을 통한 이미지 회전
+                Log.d("image upload", "bitmap 성생중..");
+
+                int orientation = Util.getOrientationFromUri(picturePath);
+                if(orientation != 0) {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(orientation);
+                    imageBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
+                }
+
+                Log.d("image upload", "data stream 연결 중...");
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 imageBitmap.compress(Bitmap.CompressFormat.PNG, 1, byteArrayOutputStream);
                 byte[] bitmapData = byteArrayOutputStream.toByteArray();
@@ -222,6 +280,7 @@ public class APICaller {
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 DataOutputStream dos = new DataOutputStream(bos);
                 try {
+                    Log.d("image upload", "data stream 쓰는 중...");
                     dos.writeBytes(twoHyphens + boundary + lineEnd);
                     dos.writeBytes("Content-Disposition: form-data; name=\"pict\";filename=\""
                             + "ssom_upload_from_camera.png" + "\"" + lineEnd);
@@ -232,7 +291,7 @@ public class APICaller {
                     bufferSize = Math.min(bytesAvailable, maxBufferSize);
                     buffer = new byte[bufferSize];
 
-                    // read file and write it into form...
+                    Log.d("image upload", "read file and write it into form...");
                     bytesRead = fileInputStream.read(buffer, 0, bufferSize);
 
                     while (bytesRead > 0) {
@@ -242,7 +301,7 @@ public class APICaller {
                         bytesRead = fileInputStream.read(buffer, 0, bufferSize);
                     }
 
-                    // send multipart form data necesssary after file data...
+                    Log.d("image upload", "send multipart form data necesssary after file data...");
                     dos.writeBytes(lineEnd);
                     dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
 
@@ -254,6 +313,6 @@ public class APICaller {
                 return bitmapData;
             }
         };
-        NetworkManager.getInstance().getRequestQueue().add(baseVolleyRequest);
+        queue.add(baseVolleyRequest);
     }
 }

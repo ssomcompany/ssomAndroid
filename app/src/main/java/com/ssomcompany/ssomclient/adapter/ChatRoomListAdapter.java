@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
@@ -94,7 +95,8 @@ public class ChatRoomListAdapter extends BaseAdapter {
         // profile image
         holder.getImage().setDefaultImageResId(R.drawable.profile_img_basic);
         holder.getImage().setErrorImageResId(R.drawable.profile_img_basic);
-        holder.getImage().setImageUrl(item.getImageUrl(), mImageLoader);
+        holder.getImage().setImageUrl(((BaseActivity) context).getUserId().equals(item.getOwnerId()) ?
+                item.getParticipantImageUrl() : item.getOwnerImageUrl(), mImageLoader);
 
         //icon
         if(CommonConst.SSOM.equals(item.getSsomType())){

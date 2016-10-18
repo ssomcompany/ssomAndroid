@@ -10,6 +10,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.media.ExifInterface;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -22,7 +23,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -59,15 +59,44 @@ public class Util {
         float height = bitmap.getHeight();
         // Calculate image's size by maintain the image's aspect ratio
 
-        float percente = width / 100;
-        float scale = size / percente;
+        float percent = width / 100;
+        float scale = size / percent;
         width *= (scale / 100);
         height *= (scale / 100);
 
         // Resizing image
-        Bitmap bitmapimg = Bitmap.createScaledBitmap(bitmap, (int) width, (int) width, true);
+        bitmap = Bitmap.createScaledBitmap(bitmap, (int) width, (int) width, false);
+        return new RoundImage(bitmap);
+    }
 
-        return new RoundImage(bitmapimg);
+    public static int getOrientationFromUri(String path) {
+        int orientation = 0;
+        ExifInterface ei;
+        try {
+            ei = new ExifInterface(path);
+            orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_UNDEFINED);
+
+            switch(orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    orientation = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    orientation = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    orientation = 270;
+                    break;
+                case ExifInterface.ORIENTATION_NORMAL:
+                default:
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "orientation : " + orientation);
+        return orientation;
     }
 
     public static Bitmap getRoundedCornerBitmap(Bitmap input, float radius, boolean topLeft, boolean topRight, boolean bottomLeft, boolean bottomRight) {
@@ -378,19 +407,19 @@ public class Util {
 
     public static String getDecodedString(String content) {
         try {
-            return URLDecoder.decode(content, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+            return URLDecoder.decode(content, "utf-8");
+        } catch (Exception e) {
             e.printStackTrace();
-            return "";
+            return content;
         }
     }
 
     public static String getEncodedString(String content) {
         try {
-            return URLEncoder.encode(content, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+            return URLEncoder.encode(content, "utf-8");
+        } catch (Exception e) {
             e.printStackTrace();
-            return "";
+            return content;
         }
     }
 

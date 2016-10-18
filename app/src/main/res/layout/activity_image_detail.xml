@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
     
-    <com.android.volley.toolbox.NetworkImageView
+    <com.ssomcompany.ssomclient.widget.SsomNetworkImageView
         android:id="@+id/detail_image"
         android:layout_width="match_parent"
         android:layout_height="360dp"

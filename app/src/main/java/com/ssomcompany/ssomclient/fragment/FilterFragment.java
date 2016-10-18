@@ -17,6 +17,7 @@ import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.control.ViewListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -66,8 +67,14 @@ public class FilterFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
 
-        ageArr = filterPref.getStringArray(SsomPreferences.PREF_FILTER_AGE, new ArrayList<String>());
-        peopleArr = filterPref.getStringArray(SsomPreferences.PREF_FILTER_PEOPLE, new ArrayList<String>());
+        String[] baseAge = {FilterType.twentyEarly.getValue(), FilterType.twentyMiddle.getValue(),
+                FilterType.twentyLate.getValue(), FilterType.thirtyOver.getValue()};
+
+        String[] basePeople = {FilterType.onePerson.getValue(), FilterType.twoPeople.getValue(),
+                FilterType.threePeople.getValue(), FilterType.fourPeople.getValue()};
+
+        ageArr = filterPref.getStringArray(SsomPreferences.PREF_FILTER_AGE, new ArrayList<>(Arrays.asList(baseAge)));
+        peopleArr = filterPref.getStringArray(SsomPreferences.PREF_FILTER_PEOPLE, new ArrayList<>(Arrays.asList(basePeople)));
 
         // view for age settings
         tvTwentyEarly = (TextView) view.findViewById(R.id.tv_filter_age_20_early);

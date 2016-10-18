@@ -1,7 +1,7 @@
 package com.ssomcompany.ssomclient.network.api.model;
 
 public class ChatRoomItem extends SsomItem {
-    private int id;
+    private long id;
     private String ownerId;
     private String participantId;
     private String lastMsg;
@@ -12,11 +12,11 @@ public class ChatRoomItem extends SsomItem {
     private String ownerImageUrl;
     private String participantImageUrl;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

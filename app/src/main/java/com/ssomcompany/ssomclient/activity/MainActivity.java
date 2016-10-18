@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -17,7 +16,6 @@ import android.location.LocationListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,24 +36,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
@@ -70,14 +63,9 @@ import com.ssomcompany.ssomclient.fragment.FilterFragment;
 import com.ssomcompany.ssomclient.fragment.NavigationDrawerFragment;
 import com.ssomcompany.ssomclient.fragment.SsomListFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
-import com.ssomcompany.ssomclient.network.BaseVolleyRequest;
-import com.ssomcompany.ssomclient.network.BitmapLruCache;
-import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.NetworkUtil;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
-import com.ssomcompany.ssomclient.network.api.SsomProfileImageUpload;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
@@ -85,10 +73,6 @@ import com.ssomcompany.ssomclient.push.MessageManager;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -104,7 +88,7 @@ public class MainActivity extends BaseActivity
     private static final int REQUEST_SSOM_LOGIN = 2;
     private static final int REQUEST_CHECK_LOCATION_PERMISSION = 3;
     private static final int REQUEST_CHECK_DETAIL_LOCATION_PERMISSION = 4;
-    private static final int REQUEST_SELECT_PICTURE = 5;
+    private static final int REQUEST_PROFILE_ACTIVITY = 5;
 
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
@@ -114,7 +98,6 @@ public class MainActivity extends BaseActivity
     private ViewListener.OnTabChangedListener mTabListener;
     private ArrayList<SsomItem> ITEM_LIST = new ArrayList<>();
     private HashMap<Marker, String> mIdMap = new HashMap<>();
-    private BitmapLruCache bitmapCache = new BitmapLruCache();
 
     private SsomActionBarView ssomActionBar;
     private DrawerLayout drawer;
@@ -180,8 +163,7 @@ public class MainActivity extends BaseActivity
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+                R.id.navigation_drawer, drawer);
 
         //set up the toolbar
         initToolbar();
@@ -423,8 +405,7 @@ public class MainActivity extends BaseActivity
                             myPostId = myPost.getPostId();
                             myPostSsomType = myPost.getSsomType();
                             btnWrite.setImageResource(R.drawable.my_btn);
-                            getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, myPost.getImageUrl());
-                            mNavigationDrawerFragment.setTodayImage();
+                            if(TextUtils.isEmpty(getTodayImageUrl())) getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, myPost.getImageUrl());
                         } else {
                             myPostId = "";
                             btnWrite.setImageResource(R.drawable.btn_write);
@@ -585,8 +566,8 @@ public class MainActivity extends BaseActivity
         switch (position) {
             case R.id.today_photo:
                 // gallery 실행
-                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i, REQUEST_SELECT_PICTURE);
+                Intent i = new Intent(MainActivity.this, SsomTodayProfileActivity.class);
+                startActivityForResult(i, REQUEST_PROFILE_ACTIVITY);
                 break;
             case R.id.tv_login_or_logout:
                 if(getSession() != null && !TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))
@@ -835,12 +816,11 @@ public class MainActivity extends BaseActivity
     }
 
     private void addMarker(final SsomItem item, final boolean isLastItem) {
-        Bitmap icon = bitmapCache.getBitmap(item.getImageUrl());
-        if(icon != null) {
+        if(NetworkManager.getInstance().getBitmapFromCache(item.getImageUrl()) != null) {
             mIdMap.put(mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                    .title(item.getContent()).draggable(false)
-                    .icon(BitmapDescriptorFactory.fromBitmap(icon))), item.getPostId());
+                    .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
+                    .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getSsomType(),
+                            NetworkManager.getInstance().getBitmapFromCache(item.getImageUrl()))))), item.getPostId());
 
 //            if (isLastItem) {
 //                Log.d(TAG, "last item created!");
@@ -852,13 +832,10 @@ public class MainActivity extends BaseActivity
 
                 @Override
                 public void onResponse(Bitmap bitmap) {
-                    Bitmap icon = getMarkerImage(item.getSsomType(), bitmap);
-                    bitmapCache.putBitmap(item.getImageUrl(), icon);
-
+                    NetworkManager.getInstance().addBitmapToCache(item.getImageUrl(), bitmap);
                     marker = mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                            .title(item.getContent()).draggable(false)
-                            .icon(BitmapDescriptorFactory.fromBitmap(icon)));
+                            .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
+                            .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getSsomType(), bitmap))));
 
                     mIdMap.put(marker, item.getPostId());
 //                    if (isLastItem) {
@@ -866,11 +843,10 @@ public class MainActivity extends BaseActivity
 //                        dismissProgressDialog();
 //                    }
                 }
-            }
-                    , 144  // max width
-                    , 256  // max height
+            }, 480  // max width
+                    , 320  // max height
                     , ImageView.ScaleType.CENTER  // scale type
-                    , Bitmap.Config.ARGB_8888  // decode config
+                    , Bitmap.Config.RGB_565  // decode config
                     , new Response.ErrorListener() {
 
                 @Override
@@ -886,7 +862,7 @@ public class MainActivity extends BaseActivity
         Bitmap mergedBitmap = null;
         try {
             mergedBitmap = Bitmap.createBitmap(Util.convertDpToPixel(49),
-                    Util.convertDpToPixel(57), Bitmap.Config.ARGB_8888);
+                    Util.convertDpToPixel(57), Bitmap.Config.ARGB_4444);
             Canvas c = new Canvas(mergedBitmap);
             Bitmap iconBitmap;
             if(CommonConst.SSOM.equals(ssom)){
@@ -895,7 +871,7 @@ public class MainActivity extends BaseActivity
                 iconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_map_st_r);
             }
 
-            Drawable iconDrawable = new BitmapDrawable(getApplicationContext().getResources(), iconBitmap);
+            Drawable iconDrawable = new BitmapDrawable(getResources(), iconBitmap);
             Drawable imageDrawable = new RoundImage(Bitmap.createScaledBitmap(imageBitmap, Util.convertDpToPixel(47),
                     Util.convertDpToPixel(47), false));
 
@@ -1012,46 +988,8 @@ public class MainActivity extends BaseActivity
         Log.d(TAG, "onActivityResult called : " + requestCode + ", reusltCode : " + resultCode);
 
         switch (requestCode) {
-            case REQUEST_SELECT_PICTURE :
-                if(resultCode == RESULT_OK) {
-                    Log.d(TAG, "data : " + data);
-                    if(data != null) {
-                        Uri selectedImage = data.getData();
-                        String[] filePathColumn = { MediaStore.Images.Media.DATA };
-                        Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
-                        Log.d(TAG, "cursor : " + cursor);
-                        if(cursor != null) {
-                            cursor.moveToFirst();
-                            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                            String picturePath = cursor.getString(columnIndex);
-                            cursor.close();
-                            Log.d(TAG, "path : " + picturePath);
-                            APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
-                                @Override
-                                public void onResponse(NetworkResponse response) {
-                                    String jsonData = new String(response.data);
-                                    Gson gson = new Gson();
-                                    Map data = gson.fromJson(jsonData, Map.class);
-                                    String fileId = data.get("fileId").toString();
-                                    final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
-                                    APICaller.ssomProfileImageUpload(getToken(), imageUrl,
-                                            new NetworkManager.NetworkListener<SsomResponse<SsomProfileImageUpload.Response>>() {
-                                                @Override
-                                                public void onResponse(SsomResponse<SsomProfileImageUpload.Response> response) {
-                                                    if(response.isSuccess()) {
-                                                        Log.d(TAG, "upload success : " + response);
-                                                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
-                                                        mNavigationDrawerFragment.setTodayImage();
-                                                    } else {
-                                                        showErrorMessage();
-                                                    }
-                                                }
-                                            });
-                                }
-                            }, picturePath);
-                        }
-                    }
-                }
+            case REQUEST_PROFILE_ACTIVITY :
+                mNavigationDrawerFragment.setTodayImage();
                 break;
             case REQUEST_SSOM_WRITE :
                 if(resultCode == RESULT_OK) {
@@ -1130,5 +1068,14 @@ public class MainActivity extends BaseActivity
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mNavigationDrawerFragment.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+
+        if(mapFragment != null) {
+            mapFragment.onLowMemory();
+        }
     }
 }

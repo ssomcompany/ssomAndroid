@@ -11,6 +11,11 @@
         android:layout_width="match_parent"
         android:layout_height="173dp">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@color/red_pink"/>
+
         <FrameLayout
             android:id="@+id/today_photo"
             android:layout_width="wrap_content"

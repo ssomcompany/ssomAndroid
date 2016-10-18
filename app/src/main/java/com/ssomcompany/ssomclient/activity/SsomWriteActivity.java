@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,7 +32,6 @@ import android.widget.TextView;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.android.volley.toolbox.NetworkImageView;
 import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -66,7 +66,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     private static final int REQUEST_IMAGE_CAPTURE = 10001;
     private static final int REQUEST_IMAGE_CROP = 10002;
     private static final int REQUEST_SELECT_PICTURE = 10003;
-    private static final int REQUEST_CHECK_READ_EXTERNAL_STORAGE = 4;
+    private static final int REQUEST_CHECK_WRITE_EXTERNAL_STORAGE = 4;
 
     ////// view 영역 //////
     private FrameLayout btnBack;
@@ -328,7 +328,22 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                         Log.d(TAG, "path : " + picturePath);
                         imgEmpty.setVisibility(View.INVISIBLE);
                         imgShadow.setVisibility(View.INVISIBLE);
-                        imgProfile.setLocalImageBitmap(BitmapFactory.decodeFile(picturePath));
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inSampleSize = 2;
+
+                        Bitmap bitmap = BitmapFactory.decodeFile(picturePath, options);
+
+                        // orientation 을 통한 이미지 회전
+                        int orientation = Util.getOrientationFromUri(selectedImage.getPath());
+                        Log.d(TAG, "orientation : " + orientation);
+                        if(orientation != 0) {
+                            Matrix matrix = new Matrix();
+                            matrix.postRotate(orientation);
+                            imgProfile.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//                            imgProfile.setImageMatrix(matrix);
+                            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                        }
+                        imgProfile.setLocalImageBitmap(bitmap);
                     }
                     break;
                 default:
@@ -433,7 +448,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         } else if(v == imgCamera) {
 //            moveToCamera();
             SsomPermission.getInstance()
-                    .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     .setOnPermissionListener(new ViewListener.OnPermissionListener() {
                         @Override
                         public void onPermissionGranted() {
@@ -446,7 +461,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
                             // 이 권한을 필요한 이유를 설명해야하는가?
                             if (ActivityCompat.shouldShowRequestPermissionRationale(SsomWriteActivity.this,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
                                 // 다이어로그같은것을 띄워서 사용자에게 해당 권한이 필요한 이유에 대해 설명합니다
                                 // 해당 설명이 끝난뒤 requestPermissions()함수를 호출하여 권한허가를 요청해야 합니다
@@ -454,7 +469,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                             } else {
                                 ActivityCompat.requestPermissions(SsomWriteActivity.this,
                                         deniedPermissions.toArray(new String[]{deniedPermissions.get(0)}),
-                                        REQUEST_CHECK_READ_EXTERNAL_STORAGE);
+                                        REQUEST_CHECK_WRITE_EXTERNAL_STORAGE);
                             }
                         }
                     }).checkPermission();
@@ -499,10 +514,28 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                 APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
+                        dismissProgressDialog();
                         String jsonData = new String(response.data);
                         Gson gson = new Gson();
                         Map data = gson.fromJson(jsonData, Map.class);
                         String fileId = data.get("fileId").toString();
+
+                        final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
+                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
+
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inSampleSize = 4;
+                        Bitmap saveBitmap = BitmapFactory.decodeFile(picturePath, options);
+
+                        int orientation = Util.getOrientationFromUri(picturePath);
+                        if(orientation != 0) {
+                            Matrix matrix = new Matrix();
+                            matrix.postRotate(orientation);
+                            saveBitmap = Bitmap.createBitmap(saveBitmap, 0, 0, saveBitmap.getWidth(), saveBitmap.getHeight(), matrix, true);
+                        }
+
+                        NetworkManager.getInstance().addBitmapToCache(imageUrl, saveBitmap);
+
                         createPost(fileId);
                     }
                 }, picturePath);
@@ -526,20 +559,19 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                         i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                        startActivityForResult(i, REQUEST_CHECK_READ_EXTERNAL_STORAGE);
+                        startActivityForResult(i, REQUEST_CHECK_WRITE_EXTERNAL_STORAGE);
                     }
                 }, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         UiUtils.makeToastMessage(getApplicationContext(), "저장소에 접근할 권한이 없어 글을 \n작성할 수 없어요 T.T");
-                        finish();
                     }
                 });
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == REQUEST_CHECK_READ_EXTERNAL_STORAGE) {
+        if(requestCode == REQUEST_CHECK_WRITE_EXTERNAL_STORAGE) {
             Map<String, Integer> permissionMap = new HashMap<>();
 
             for (int i = 0 ; i < permissions.length ; i++) {
@@ -548,7 +580,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
             // 거절을 클릭 한 경우에 해당함
             if(grantResults.length > 0 &&
-                    permissionMap.get(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    permissionMap.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 makeDialogForRequestStoragePermission();
             } else {
                 moveToGallery();
@@ -562,8 +594,11 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
         if (!TextUtils.isEmpty(mCurrentPhotoPath)) {
             File f = new File(mCurrentPhotoPath);
-            f.delete();
-            mCurrentPhotoPath = "";
+            if(f.delete()) {
+                mCurrentPhotoPath = "";
+            } else {
+                onDestroy();
+            }
         }
     }
 
@@ -660,9 +695,6 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                         if (response != null) {
                             if (response.isSuccess()) {
                                 Log.d(TAG, "success to create post!");
-                                getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL,
-                                        TextUtils.isEmpty(fileId) ? getTodayImageUrl() :
-                                                NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId));
                                 setResult(RESULT_OK);
                                 finish();
                             } else {
