@@ -27,7 +27,9 @@ import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.FacebookLogin;
 import com.ssomcompany.ssomclient.network.api.SsomLogin;
+import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
 import org.json.JSONObject;
@@ -70,8 +72,10 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
         btnLogin.setOnClickListener(this);
         btnFacebookLogin.setReadPermissions(Arrays.asList("public_profile", "email"));
         btnFacebookLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            private String email;
+
             @Override
-            public void onSuccess(LoginResult loginResult) {
+            public void onSuccess(final LoginResult loginResult) {
                 GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
@@ -79,13 +83,42 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
                         Log.v(TAG, "login result : " + response.toString());
 
                         try {
-                            String email = object.getString("email");
+                            email = object.getString("email");
                             String name = object.getString("name");
                             String gender = object.getString("gender");
 
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+
+                        APICaller.facebookLogin(loginResult.getAccessToken().getToken(),
+                                new NetworkManager.NetworkListener<SsomResponse<FacebookLogin.Response>>() {
+                                    @Override
+                                    public void onResponse(SsomResponse<FacebookLogin.Response> response) {
+                                        if(response.isSuccess()) {
+                                            if(response.getData() != null) {
+                                                setSessionInfo(response.getData().getToken(),
+                                                        TextUtils.isEmpty(email) ? "facebookUser" : email,
+                                                        response.getData().getUserId(),
+                                                        response.getData().getProfileImgUrl());
+                                                mListener.onLoginFragmentInteraction(R.id.btn_login);
+                                            } else {
+                                                Log.e(TAG, "unexpected error, data is null");
+                                            }
+                                        } else {
+                                            Log.e(TAG, "Response error with code " + response.getStatusCode() +
+                                                    ", message : " + response.getMessage(), response.getError());
+
+                                            if(response.getStatusCode() == 401) {
+                                                UiUtils.makeToastMessage(getActivity(),
+                                                        getString(R.string.login_failed));
+                                            } else {
+                                                showErrorMessage();
+                                            }
+                                        }
+                                        dismissProgressDialog();
+                                    }
+                                });
                     }
                 });
 
