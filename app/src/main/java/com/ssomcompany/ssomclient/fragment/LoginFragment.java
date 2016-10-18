@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.onesignal.OneSignal;
+import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.control.ViewListener;
@@ -21,6 +23,10 @@ import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.SsomLogin;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
+
+import org.json.JSONObject;
+
+import java.util.Arrays;
 
 public class LoginFragment extends BaseFragment implements View.OnClickListener {
     private static final String TAG = LoginFragment.class.getSimpleName();
@@ -31,8 +37,10 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
     EditText etLoginPass;
 
     TextView btnLogin;
-    TextView btnFindPass;
+    LoginButton btnFacebookLogin;
     TextView btnRegister;
+
+    private CallbackManager callbackManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,11 +56,49 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
         etLoginEmail = (EditText) loginView.findViewById(R.id.et_login_email);
         etLoginPass = (EditText) loginView.findViewById(R.id.et_login_password);
         btnLogin = (TextView) loginView.findViewById(R.id.btn_login);
-        btnFindPass = (TextView) loginView.findViewById(R.id.btn_login_find_password);
+        btnFacebookLogin = (LoginButton) loginView.findViewById(R.id.btn_facebook_login);
         btnRegister = (TextView) loginView.findViewById(R.id.btn_login_register);
 
+        callbackManager = CallbackManager.Factory.create();
+
         btnLogin.setOnClickListener(this);
-        btnFindPass.setOnClickListener(this);
+        btnFacebookLogin.setReadPermissions(Arrays.asList("public_profile", "email"));
+        btnFacebookLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        Log.v(TAG, "result : " + object.toString());
+                        Log.v(TAG, "login result : " + response.toString());
+
+                        try {
+                            String email = object.getString("email");
+                            String name = object.getString("name");
+                            String gender = object.getString("gender");
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,email,gender,birthday");
+                graphRequest.setParameters(parameters);
+                graphRequest.executeAsync();
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.e("LoginErr",error.toString());
+            }
+        });
         btnRegister.setOnClickListener(this);
 
         return loginView;
@@ -119,7 +165,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
                     }
                 });
                 break;
-            case R.id.btn_login_find_password :
             case R.id.btn_login_register :
                 mListener.onLoginFragmentInteraction(v.getId());
                 break;
@@ -155,5 +200,11 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
             throw new ClassCastException(context.toString()
                     + " must implement OnLoginFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -41,6 +41,8 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/map_debug_key" />
 
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
         <activity android:name=".activity.IntroActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
@@ -84,6 +86,12 @@
             android:windowSoftInputMode="adjustPan"
             android:configChanges="keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Translucent"/>
+
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:label="@string/app_name" />
 
     </application>
 

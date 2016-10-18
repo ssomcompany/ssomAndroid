@@ -11,6 +11,8 @@ dependencies {
 
     // for one signal
     compile 'com.onesignal:OneSignal:3.0.0'
+    // for facebook login
+    compile 'com.facebook.android:facebook-android-sdk:4.+'
     // Required for OneSignal, even if you have added FCM.
     compile 'com.google.android.gms:play-services-gcm:9.4.0'
     // Required for geotagging
@@ -65,7 +67,6 @@ android {
 
     dexOptions {
         jumboMode = true
-        incremental = true
         preDexLibraries = false
     }
 }
