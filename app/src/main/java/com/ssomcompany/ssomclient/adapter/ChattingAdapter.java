@@ -92,6 +92,10 @@ public class ChattingAdapter extends BaseAdapter {
             holder.sendTime = (TextView) convertView.findViewById(R.id.send_time);
             // initial message
             holder.initialMessage = (LinearLayout) convertView.findViewById(R.id.initial_message);
+            // request message
+            holder.requestMessage = (TextView) convertView.findViewById(R.id.request_received_message);
+            // approve message
+            holder.approveMessage = (TextView) convertView.findViewById(R.id.approve_message);
             // finish message
             holder.finishMessage = (TextView) convertView.findViewById(R.id.finish_message);
 
@@ -106,22 +110,48 @@ public class ChattingAdapter extends BaseAdapter {
         /**
          * initial message layout setting
          */
-        if(item.getType() == ChattingItem.MessageType.initial) {
+        if(item.getStatus() == ChattingItem.MessageType.initial) {
             holder.initialMessage.setVisibility(View.VISIBLE);
+            holder.requestMessage.setVisibility(View.GONE);
+            holder.approveMessage.setVisibility(View.GONE);
             holder.finishMessage.setVisibility(View.GONE);
             holder.sendMessageLayout.setVisibility(View.GONE);
             holder.receiveMessageLayout.setVisibility(View.GONE);
-        } else if(item.getType() == ChattingItem.MessageType.finish) {
+        } else if(item.getStatus() == ChattingItem.MessageType.finish) {
             /**
              * finish message layout setting
              */
             holder.initialMessage.setVisibility(View.GONE);
+            holder.requestMessage.setVisibility(View.GONE);
+            holder.approveMessage.setVisibility(View.GONE);
             holder.finishMessage.setVisibility(View.VISIBLE);
+            holder.sendMessageLayout.setVisibility(View.GONE);
+            holder.receiveMessageLayout.setVisibility(View.GONE);
+        } else if(item.getStatus() == ChattingItem.MessageType.request) {
+            /**
+             * request message setting
+             */
+            holder.initialMessage.setVisibility(View.GONE);
+            holder.requestMessage.setVisibility(View.VISIBLE);
+            holder.approveMessage.setVisibility(View.GONE);
+            holder.finishMessage.setVisibility(View.GONE);
+            holder.sendMessageLayout.setVisibility(View.GONE);
+            holder.receiveMessageLayout.setVisibility(View.GONE);
+        } else if(item.getStatus() == ChattingItem.MessageType.approve) {
+            /**
+             * approve message setting
+             */
+            holder.initialMessage.setVisibility(View.GONE);
+            holder.requestMessage.setVisibility(View.GONE);
+            holder.approveMessage.setVisibility(View.VISIBLE);
+            holder.finishMessage.setVisibility(View.GONE);
             holder.sendMessageLayout.setVisibility(View.GONE);
             holder.receiveMessageLayout.setVisibility(View.GONE);
         } else {
             holder.initialMessage.setVisibility(View.GONE);
             holder.finishMessage.setVisibility(View.GONE);
+            holder.requestMessage.setVisibility(View.GONE);
+            holder.approveMessage.setVisibility(View.GONE);
 
             /**
              * receive layout setting
@@ -229,6 +259,16 @@ public class ChattingAdapter extends BaseAdapter {
          * Initial ssom message
          */
         private LinearLayout initialMessage;
+
+        /**
+         * Request ssom message
+         */
+        private TextView requestMessage;
+
+        /**
+         * Approve ssom message
+         */
+        private TextView approveMessage;
 
         /**
          * Finish ssom message

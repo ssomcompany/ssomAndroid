@@ -2,7 +2,10 @@ package com.ssomcompany.ssomclient.network.api.model;
 
 public class ChattingItem {
     public enum MessageType {
+        message,   // 일반 메시지
         initial,  // 최초 표기 메시지
+        request,  // 만남 요청
+        approve,  // 만남 수락
         finish   // 최종 표기 메시지
     }
 
@@ -12,7 +15,7 @@ public class ChattingItem {
     private String fromUserId;
     private long timestamp;
     private String msgType;
-    private MessageType type;
+    private MessageType status;
 
     public String getMsg() {
         return msg;
@@ -22,12 +25,12 @@ public class ChattingItem {
         this.msg = msg;
     }
 
-    public MessageType getType() {
-        return type;
+    public MessageType getStatus() {
+        return status;
     }
 
-    public ChattingItem setType(MessageType type) {
-        this.type = type;
+    public ChattingItem setStatus(MessageType status) {
+        this.status = status;
         return this;
     }
 

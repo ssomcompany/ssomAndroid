@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <item name="red" type="color">#e60000</item>
-    <item name="green_blue" type="color">#00b48f</item>
-    <item name="red_pink" type="color">#ed344b</item>
-    <item name="gray_warm" type="color">#9b9b9b</item>
-    <item name="main_black" type="color">#323232</item>
-    <item name="main_black_80" type="color">#CC323232</item>
-    <item name="shadow_black_20" type="color">#33000000</item>
-    <item name="shadow_black_89" type="color">#E3000000</item>
-    <item name="white" type="color">#ffffff</item>
-    <item name="shadow_white_0" type="color">#00ffffff</item>
-    <item name="grayish_brown" type="color">#4a4a4a</item>
-    <item name="pinkish_gray" type="color">#bbbbbb</item>
-    <item name="pinkish_gray_two" type="color">#c8c8c8</item>
-    <item name="custom_515151" type="color">#515151</item>
-    <item name="custom_555555" type="color">#555555</item>
-    <item name="custom_666666" type="color">#666666</item>
-    <item name="custom_e5e5e5" type="color">#e5e5e5</item>
-    <item name="custom_999999" type="color">#999999</item>
-    <item name="custom_4d4d4d" type="color">#4d4d4d</item>
-    <item name="custom_979797" type="color">#979797</item>
+    <color name="red">#e60000</color>
+    <color name="green_blue">#00b48f</color>
+    <color name="red_pink">#ed344b</color>
+    <color name="gray_warm">#9b9b9b</color>
+    <color name="main_black">#323232</color>
+    <color name="main_black_80">#CC323232</color>
+    <color name="shadow_black_20">#33000000</color>
+    <color name="shadow_black_89">#E3000000</color>
+    <color name="white">#ffffff</color>
+    <color name="shadow_white_0">#00ffffff</color>
+    <color name="grayish_brown">#4a4a4a</color>
+    <color name="pinkish_gray">#bbbbbb</color>
+    <color name="pinkish_gray_two">#c8c8c8</color>
+    <color name="custom_515151">#515151</color>
+    <color name="custom_555555">#555555</color>
+    <color name="custom_666666">#666666</color>
+    <color name="custom_e5e5e5">#e5e5e5</color>
+    <color name="custom_999999">#999999</color>
+    <color name="custom_4d4d4d">#4d4d4d</color>
+    <color name="custom_979797">#979797</color>
 
 </resources> 

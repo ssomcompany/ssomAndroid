@@ -1,6 +1,5 @@
 package com.ssomcompany.ssomclient.fragment;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,16 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
 import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
-import com.ssomcompany.ssomclient.common.UiUtils;
-import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.GetChattingList;
@@ -28,7 +22,6 @@ import com.ssomcompany.ssomclient.network.api.SendChattingMessage;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
-import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 
@@ -173,7 +166,7 @@ public class ChattingFragment extends BaseFragment {
                             Log.d(TAG, "response : " + response);
                             if(response.getData() != null) {
                                 chatList = response.getData().getChattingList();
-                                chatList.add(0, new ChattingItem().setType(ChattingItem.MessageType.initial));
+                                chatList.add(0, new ChattingItem().setStatus(ChattingItem.MessageType.initial));
                                 mAdapter.setItemList(chatList);
                                 mAdapter.notifyDataSetChanged();
                             } else {

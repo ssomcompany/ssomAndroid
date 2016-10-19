@@ -67,6 +67,9 @@
     <string name="chat_room_info_btn_success">위치보기</string>
     <string name="chat_message_initial_first">두근두근,&#160;</string>
     <string name="chat_message_initial_second">대화가 시작 되었쏨 :)</string>
+    <string name="chat_message_request_received">만남 요청을 받았습니다!</string>
+    <string name="chat_message_request_sent">만남 요청을 보냈습니다!</string>
+    <string name="chat_message_approve">만남이 시작되었습니다.</string>
     <string name="chat_message_finish">상대방이 쏨을 종료했습니다. (T_T)</string>
     <string name="chat_message_hint">메시지를 입력하세요&#8230;</string>
     <string name="chat_room_no_info">정보가 없어요&#8230;</string>
