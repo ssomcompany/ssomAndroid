@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.view.View;
 
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
@@ -62,6 +63,10 @@ public class IntroActivity extends BaseActivity {
                                     Intent i = new Intent();
                                     i.setClass(getApplicationContext(), MainActivity.class);
                                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    if(getIntent() != null && getIntent().getExtras() != null) {
+                                        i.putExtra(CommonConst.Intent.IS_FROM_NOTI,
+                                                getIntent().getBooleanExtra(CommonConst.Intent.IS_FROM_NOTI, false));
+                                    }
                                     startActivity(i);
                                 }
                             }, 3000);

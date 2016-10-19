@@ -89,6 +89,7 @@ public class MainActivity extends BaseActivity
     private static final int REQUEST_CHECK_LOCATION_PERMISSION = 3;
     private static final int REQUEST_CHECK_DETAIL_LOCATION_PERMISSION = 4;
     private static final int REQUEST_PROFILE_ACTIVITY = 5;
+    private static final int REQUEST_SSOM_CHATTING = 6;
 
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
@@ -147,6 +148,8 @@ public class MainActivity extends BaseActivity
     private String myPostId;
     private String myPostSsomType;
 
+    private boolean isFromNoti;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,6 +157,10 @@ public class MainActivity extends BaseActivity
         selectedView = MAP_VIEW;
         selectedTab = CommonConst.SSOM;
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
+
+        if(getIntent() != null && getIntent().getExtras() != null) {
+            isFromNoti = getIntent().getBooleanExtra(CommonConst.Intent.IS_FROM_NOTI, false);
+        }
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         // 슬라이드 열기 막기
@@ -168,7 +175,6 @@ public class MainActivity extends BaseActivity
         //set up the toolbar
         initToolbar();
         initLayoutWrite();
-
         checkLocationServiceEnabled();
     }
 
@@ -181,6 +187,10 @@ public class MainActivity extends BaseActivity
     private ViewListener.OnPermissionListener mPermissionListener = new ViewListener.OnPermissionListener() {
         @Override
         public void onPermissionGranted() {
+            if(isFromNoti) {
+                startActivityForResult(new Intent(MainActivity.this, SsomChattingActivity.class), REQUEST_SSOM_CHATTING);
+                return;
+            }
             startMapFragment();
         }
 
@@ -276,6 +286,10 @@ public class MainActivity extends BaseActivity
                     permissionMap.get(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 makeDialogForRequestLocationPermission();
             } else {
+                if(isFromNoti) {
+                    startActivityForResult(new Intent(MainActivity.this, SsomChattingActivity.class), REQUEST_SSOM_CHATTING);
+                    return;
+                }
                 startMapFragment();
             }
         }
@@ -445,7 +459,7 @@ public class MainActivity extends BaseActivity
         fragmentManager = getSupportFragmentManager();
 
         ssomActionBar = (SsomActionBarView) tb.findViewById(R.id.ssom_action_bar);
-        ssomActionBar.setHeartCount(0);
+        ssomActionBar.setHeartCount(2);
         ssomActionBar.setHeartRefillTime("--:--");
         ssomActionBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
             @Override
@@ -896,9 +910,9 @@ public class MainActivity extends BaseActivity
         startActivityForResult(new Intent(this, SsomLoginBaseActivity.class), REQUEST_SSOM_LOGIN);
     }
 
-    private void startChattingActivity(SsomItem ssomItem, boolean ssomRequest) {
+    private void startChattingActivity(SsomItem ssomItem) {
         Intent chattingIntent = new Intent(this, SsomChattingActivity.class);
-        chattingIntent.putExtra(CommonConst.Intent.SSOM_ITEM, ssomItem);
+        if(ssomItem != null) chattingIntent.putExtra(CommonConst.Intent.SSOM_ITEM, ssomItem);
         startActivity(chattingIntent);
     }
 
@@ -980,7 +994,7 @@ public class MainActivity extends BaseActivity
                 return;
             }
 
-            startChattingActivity(ssomItem, true);
+            startChattingActivity(ssomItem);
         }
 
         fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
@@ -1011,10 +1025,12 @@ public class MainActivity extends BaseActivity
                 }
                 break;
             case REQUEST_CHECK_LOCATION_PERMISSION:
-//                checkLocationServiceEnabled();
-//                break;
             case REQUEST_CHECK_DETAIL_LOCATION_PERMISSION:
                 continueProcess();
+                break;
+            case REQUEST_SSOM_CHATTING:
+                startMapFragment();
+                isFromNoti = false;
                 break;
             default:
                 break;

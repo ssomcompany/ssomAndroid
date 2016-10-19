@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -33,13 +34,14 @@ public class SsomActionBarView extends RelativeLayout {
     private LinearLayout ssomBarTitleLayout;
     private TextView ssomBarTitle;
     private TextView ssomBarSubTitle;
-    private TextView chatLayout;
+    private FrameLayout chatLayout;
+    private TextView chatCount;
     private LinearLayout heartLayout;
     private LinearLayout btnChattingRoomMeeting;
     private View imgMeetingHeart;
     private TextView tvChattingRoomMeeting;
-    private ImageView imgHeart;
-    private TextView heartCount;
+    private TextView imgHeart;
+    private View imgPlus;
     private TextView heartRefillTime;
 
     public SsomActionBarView(Context context) {
@@ -86,10 +88,11 @@ public class SsomActionBarView extends RelativeLayout {
         ssomBarTitleLayout = (LinearLayout) findViewById(R.id.ssom_bar_title_layout);
         ssomBarTitle = (TextView) findViewById(R.id.ssom_bar_title);
         ssomBarSubTitle = (TextView) findViewById(R.id.ssom_bar_sub_title);
-        chatLayout = (TextView) findViewById(R.id.chat_layout);
+        chatLayout = (FrameLayout) findViewById(R.id.chat_layout);
+        chatCount = (TextView) findViewById(R.id.chat_count);
         heartLayout = (LinearLayout) findViewById(R.id.heart_layout);
-        imgHeart = (ImageView) findViewById(R.id.img_heart);
-        heartCount = (TextView) findViewById(R.id.heart_count);
+        imgHeart = (TextView) findViewById(R.id.img_heart);
+        imgPlus = findViewById(R.id.img_plus);
         heartRefillTime = (TextView) findViewById(R.id.heart_refill_time);
         btnChattingRoomMeeting = (LinearLayout) findViewById(R.id.btn_chatting_room_meeting);
         tvChattingRoomMeeting = (TextView) findViewById(R.id.tv_chatting_room_meeting);
@@ -192,11 +195,13 @@ public class SsomActionBarView extends RelativeLayout {
      * @param iconOnOff set true if want this is on false otherwise
      */
     public void setHeartIconOnOff(boolean iconOnOff) {
-        imgHeart.setImageResource(iconOnOff ? R.drawable.icon_heart_red : R.drawable.icon_heart);
+        imgHeart.setBackgroundResource(iconOnOff ? R.drawable.top_heart : R.drawable.top_heart_gray);
+        imgPlus.setBackgroundResource(iconOnOff ? R.drawable.top_plus : R.drawable.top_plus_gray);
     }
 
     public void setHeartCount(int count) {
-        heartCount.setText(String.valueOf(count));
+        imgHeart.setText(String.valueOf(count));
+        setHeartIconOnOff(count != 0);
     }
 
     public void setHeartRefillTime(String time) {
@@ -215,16 +220,16 @@ public class SsomActionBarView extends RelativeLayout {
      * Call this method if want to set ChatLayout's icon. (Default off)
      * @param iconOnOff set true if want this is on false otherwise
      */
-    public void setChatIconOnOff(final boolean iconOnOff) {
-        chatLayout.setCompoundDrawablesWithIntrinsicBounds(0, iconOnOff ? R.drawable.icon_chat_red : R.drawable.icon_chat, 0, 0);
+    public void setChatIconOnOff(boolean iconOnOff) {
+        chatLayout.setBackgroundResource(iconOnOff ? R.drawable.top_message : R.drawable.top_message_gray);
     }
 
     public void setChatCount(String count) {
-        chatLayout.setText(count);
+        chatCount.setText(count);
     }
 
     public int getChatCount() {
-        return Integer.parseInt(String.valueOf(chatLayout.getText()));
+        return Integer.parseInt(String.valueOf(chatCount.getText()));
     }
 
     public void setChattingRoomBtnMeetingVisibility(boolean visibility) {

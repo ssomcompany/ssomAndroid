@@ -55,6 +55,7 @@
     <string name="detail_distance">나와의 거리 %1$s</string>
 
     <!-- chatting -->
+    <string name="chat_list_title_empty">Chat list</string>
     <string name="chat_list_title">Chat list (%1$d)</string>
     <string name="chat_room_title">Chat&#160;</string>
     <string name="chat_list_delete">쏨 끝내기</string>
@@ -101,6 +102,7 @@
     <string name="dialog_meet_request">만남요청</string>
     <string name="dialog_meet_apply">만남수락</string>
     <string name="dialog_meet_cancel">만남취소</string>
+    <string name="dialog_meet_finish">만남종료</string>
     <string name="dialog_meet">만나요</string>
     <string name="dialog_sorry">미안해요</string>
     <string name="dialog_not_now">아직은 좀&#8230;</string>
@@ -113,9 +115,11 @@
     <string name="dialog_require_login">로그인이 필요한 서비스입니다.\n로그인 하시겠어요?</string>
     <string name="dialog_write_delete_message">쏨 등록이 완료되지 않았어요.\n작성했던 내용을 삭제 하시겠어요?</string>
     <string name="dialog_meet_request_message">현재 대화상대에게\n만남을 요청 하시겠어요?</string>
-    <string name="dialog_meet_request_cancel_message">요청 취소 시에도 하트는 복구되지\n않습니다. 요청을 취소 하시겠어요?</string>
+    <string name="dialog_meet_request_cancel_message">요청 취소 시 상대방에게 알림이 갑니다.\n 요청을 취소 하시겠어요?</string>
     <string name="dialog_meet_received_message">상대방이 만남을 요청했습니다!\n수락 하시겠어요?</string>
     <string name="dialog_meet_cancel_message">만남을 정말 취소 하시겠어요?\n취소 시 채팅방으로 돌아갑니다.</string>
+    <string name="dialog_meet_finish_message">만남을 종료 하시겠어요?</string>
+    <string name="dialog_meet_finish_by_exit_message">채팅방을 나가면 만남이 종료됩니다.\n종료 하시겠어요?</string>
     <string name="dialog_chat_list_delete_message">끝낸 쏨은 되돌릴 수 없어요...\n쏨을 정말로 끝내시겠어요?</string>
     <string name="dialog_logout_message">로그아웃 하시겠어요?</string>
     <string name="dialog_explain_location_permission_message">위치에 접근할 권한이 없습니다. \n위치권한이 없는경우 정확한 위치서비스를 제공할 수 없습니다.\n\n[앱]->[권한]에서 위치 권한을 허용해주세요.</string>

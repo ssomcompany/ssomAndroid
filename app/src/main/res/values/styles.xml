@@ -48,6 +48,13 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="ssom_font_9_grayish_brown_single">
+        <item name="android:textSize">9sp</item>
+        <item name="android:textColor">@color/grayish_brown</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
     <style name="ssom_font_12_pinkish_gray_single">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/pinkish_gray</item>
