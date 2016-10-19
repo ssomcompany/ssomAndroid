@@ -187,8 +187,8 @@ public class NavigationDrawerFragment extends Fragment {
                     NetworkManager.getInstance().addBitmapToCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""), bitmap);
                     imgToday.setLocalImageBitmap(bitmap);
                 }
-            }, 480  // max width
-                    , 320  // max height
+            }, 800  // max width
+                    , 600  // max height
                     , ImageView.ScaleType.CENTER  // scale type
                     , Bitmap.Config.RGB_565  // decode config
                     , new Response.ErrorListener() {

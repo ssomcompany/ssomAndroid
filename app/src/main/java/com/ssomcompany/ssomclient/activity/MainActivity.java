@@ -861,8 +861,8 @@ public class MainActivity extends BaseActivity
 //                        dismissProgressDialog();
 //                    }
                 }
-            }, 480  // max width
-                    , 320  // max height
+            }, 800  // max width
+                    , 600  // max height
                     , ImageView.ScaleType.CENTER  // scale type
                     , Bitmap.Config.RGB_565  // decode config
                     , new Response.ErrorListener() {
