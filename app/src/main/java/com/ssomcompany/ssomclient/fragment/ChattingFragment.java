@@ -15,6 +15,8 @@ import android.widget.ListView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
 import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
+import com.ssomcompany.ssomclient.common.UiUtils;
+import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.GetChattingList;
@@ -148,6 +150,9 @@ public class ChattingFragment extends BaseFragment {
         });
 
         chatListView.setAdapter(mAdapter);
+        View dummy = new View(getActivity());
+        dummy.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Util.convertDpToPixel(7f)));
+        chatListView.addFooterView(dummy);
         editMessage.setSelected(true);
 
         return view;
