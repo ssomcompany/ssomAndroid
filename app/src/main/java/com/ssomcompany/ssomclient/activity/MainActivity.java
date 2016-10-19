@@ -464,6 +464,7 @@ public class MainActivity extends BaseActivity
         ssomActionBar = (SsomActionBarView) tb.findViewById(R.id.ssom_action_bar);
         ssomActionBar.setHeartCount(2);
         ssomActionBar.setHeartRefillTime("--:--");
+        ssomActionBar.setChatCount("0");
         ssomActionBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
