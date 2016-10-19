@@ -8,7 +8,6 @@ public class ChatRoomItem extends SsomItem {
     private long lastTimestamp;
     private int unreadCount;
     private String requestId;
-    private String status;
     private String ownerImageUrl;
     private String participantImageUrl;
 
@@ -66,14 +65,6 @@ public class ChatRoomItem extends SsomItem {
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public String getOwnerImageUrl() {
