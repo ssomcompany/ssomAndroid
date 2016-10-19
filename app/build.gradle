@@ -10,7 +10,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
 
     // for one signal
-    compile 'com.onesignal:OneSignal:3.0.0'
+    compile 'com.onesignal:OneSignal:3.+@aar'
     // for facebook login
     compile 'com.facebook.android:facebook-android-sdk:4.+'
     // Required for OneSignal, even if you have added FCM.
@@ -54,17 +54,20 @@ android {
 //            storeFile file('C:/Users/SDS/.android/debug.keystore')
             storeFile file('/Users/AaronMac/.android/debug.keystore')
         }
-//        release {
-//            storeFile file('C:/Users/SDS/.android/ssom.keystore')
-//            keyAlias "ssom"
-//            storePassword "123qwe"
-//            keyPassword "123qwe"
-//        }
+        release {
+            storeFile file('/Users/AaronMac/ssomcompany.keystore')
+            keyAlias "ssomcompany"
+            storePassword "!234rewq"
+            keyPassword "!234rewq"
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
+            zipAlignEnabled true
+            debuggable false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -72,5 +75,9 @@ android {
     dexOptions {
         jumboMode = true
         preDexLibraries = false
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
