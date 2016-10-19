@@ -19,7 +19,7 @@ public class SsomNotiOpenedHandler implements OneSignal.NotificationOpenedHandle
     // This fires when a notification is opened by tapping on it.
     @Override
     public void notificationOpened(OSNotificationOpenResult result) {
-        OSNotificationAction.ActionType actionType = result.action.actionType;
+        OSNotificationAction.ActionType actionType = result.action.type;
         JSONObject data = result.notification.payload.additionalData;
 //        SsomItem ssomItem;
 //
