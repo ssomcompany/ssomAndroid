@@ -81,6 +81,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     private TextView tvSsomBalloon;
     private TextView tvSsoaBalloon;
 
+    private TextView tvOneLetter;
+
     private TextView tvOurAge;
     private TextView tvOurPeople;
 
@@ -96,7 +98,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
     private EditText editWriteContent;
     private TextView btnCancel;
-    private LinearLayout btnApply;
+    private TextView btnApply;
 
     // local variables
     private FilterType age = FilterType.twentyEarly;
@@ -136,6 +138,9 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         tvSsomBalloon = (TextView) findViewById(R.id.tv_ssom_balloon);
         tvSsoaBalloon = (TextView) findViewById(R.id.tv_ssoa_balloon);
 
+        // one letter
+        tvOneLetter = (TextView) findViewById(R.id.tv_one_letter);
+
         // text view change their value dynamically
         tvOurAge = (TextView) findViewById(R.id.tv_our_age);
         tvOurPeople = (TextView) findViewById(R.id.tv_our_people);
@@ -157,7 +162,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
         // button
         btnCancel = (TextView) findViewById(R.id.btn_cancel);
-        btnApply = (LinearLayout) findViewById(R.id.btn_apply);
+        btnApply = (TextView) findViewById(R.id.btn_apply);
 
         // 올사가 있는 경우 로딩함. 없는경우 empty 이미지 보여짐
         if(!TextUtils.isEmpty(getTodayImageUrl())) {
@@ -483,6 +488,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
             tvSsomBalloon.setPadding(0, 0, Util.convertDpToPixel(12), 0);
             tvSsoaBalloon.setPadding(0, 0, Util.convertDpToPixel(9), 0);
 
+            tvOneLetter.setText(R.string.detail_category_ssom);
+            editWriteContent.setHint(R.string.write_content_hint_ssom);
             btnApply.setBackgroundResource(R.drawable.btn_write_apply_ssom);
         } else if(v == tvSsoaBalloon) {
             tvSsomBalloon.setSelected(false);
@@ -494,6 +501,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
             tvSsomBalloon.setPadding(0, 0, Util.convertDpToPixel(9), 0);
             tvSsoaBalloon.setPadding(0, 0, Util.convertDpToPixel(12), 0);
 
+            tvOneLetter.setText(R.string.detail_category_ssoa);
+            editWriteContent.setHint(R.string.write_content_hint_ssoa);
             btnApply.setBackgroundResource(R.drawable.btn_write_apply_ssoa);
         } else if(v == btnApply) {
             if(imgEmpty.getVisibility() == View.VISIBLE) {

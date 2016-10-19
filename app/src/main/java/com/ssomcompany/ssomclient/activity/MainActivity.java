@@ -311,8 +311,11 @@ public class MainActivity extends BaseActivity
                     }
                     ssomDataChangedListener();
 
-                    if(needFilterToast) Toast.makeText(getApplicationContext(),
-                            getString(R.string.filter_apply_complete), Toast.LENGTH_SHORT).show();
+                    if(needFilterToast) {
+                        Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.filter_apply_complete), Toast.LENGTH_SHORT);
+                        toast.setGravity(Gravity.TOP, 0, Util.convertDpToPixel(120f));
+                        toast.show();
+                    }
                 } else {
                     Log.e(TAG, "Response error with code " + response.getResultCode() + ", message : " + response.getMessage(),
                             response.getError());
@@ -964,7 +967,7 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    public void onDetailFragmentInteraction(boolean isApply, SsomItem ssomItem) {
+    public void onDetailFragmentInteraction(boolean isApply, final SsomItem ssomItem) {
         Log.i(TAG, "detail interaction : " + isApply);
 
         if(isApply) {
@@ -975,22 +978,35 @@ public class MainActivity extends BaseActivity
             }
 
             if(ssomItem != null && !TextUtils.isEmpty(getUserId()) && getUserId().equals(ssomItem.getUserId())) {
-                APICaller.ssomPostDelete(getToken(), ssomItem.getPostId(),
-                        new NetworkManager.NetworkListener<SsomResponse<SsomPostDelete.Response>>() {
-                    @Override
-                    public void onResponse(SsomResponse<SsomPostDelete.Response> response) {
-                        if(response.isSuccess()) {
-                            Log.d(TAG, "delete success : " + response);
-                            fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
-                            fragmentManager.popBackStack();
-                            requestSsomList(null, null, false);
-                            myPostId = "";
-                            btnWrite.setImageResource(R.drawable.btn_write);
-                        } else {
-                            showErrorMessage();
-                        }
-                    }
-                });
+                UiUtils.makeCommonDialog(this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
+                        R.string.detail_my_post_delete, R.style.ssom_font_16_custom_666666,
+                        R.string.dialog_delete, R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // 삭제 진행
+                                APICaller.ssomPostDelete(getToken(), ssomItem.getPostId(),
+                                        new NetworkManager.NetworkListener<SsomResponse<SsomPostDelete.Response>>() {
+                                            @Override
+                                            public void onResponse(SsomResponse<SsomPostDelete.Response> response) {
+                                                if(response.isSuccess()) {
+                                                    Log.d(TAG, "delete success : " + response);
+                                                    fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
+                                                    fragmentManager.popBackStack();
+                                                    requestSsomList(null, null, false);
+                                                    myPostId = "";
+                                                    btnWrite.setImageResource(R.drawable.btn_write);
+                                                } else {
+                                                    showErrorMessage();
+                                                }
+                                            }
+                                        });
+                            }
+                        }, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
                 return;
             }
 

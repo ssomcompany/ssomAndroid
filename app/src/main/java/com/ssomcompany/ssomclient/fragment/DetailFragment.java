@@ -240,7 +240,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             profileImg.setImageUrl(item.getImageUrl(), mImageLoader);
             profileImg.setOnClickListener(this);
             centerLine.setBackgroundResource(CommonConst.SSOM.equals(item.getSsomType()) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
-            tvCategory.setText(CommonConst.SSOM.equals(item.getSsomType()) ? R.string.title_tab_give : R.string.title_tab_take);
+            tvCategory.setText(CommonConst.SSOM.equals(item.getSsomType()) ? R.string.detail_category_ssom : R.string.detail_category_ssoa);
             tvDistance.setText( String.format(getResources().getString(R.string.detail_distance),
                     LocationTracker.getInstance().getDistanceString(item.getLatitude(), item.getLongitude())) );
             tvAgePeople.setText( String.format( getResources().getString(R.string.detail_age_people), Util.convertAgeRange(item.getMinAge()), item.getUserCount()) );

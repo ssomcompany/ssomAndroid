@@ -37,9 +37,7 @@ public class SsomActionBarView extends RelativeLayout {
     private FrameLayout chatLayout;
     private TextView chatCount;
     private LinearLayout heartLayout;
-    private LinearLayout btnChattingRoomMeeting;
-    private View imgMeetingHeart;
-    private TextView tvChattingRoomMeeting;
+    private TextView btnChattingRoomMeeting;
     private TextView imgHeart;
     private View imgPlus;
     private TextView heartRefillTime;
@@ -94,9 +92,7 @@ public class SsomActionBarView extends RelativeLayout {
         imgHeart = (TextView) findViewById(R.id.img_heart);
         imgPlus = findViewById(R.id.img_plus);
         heartRefillTime = (TextView) findViewById(R.id.heart_refill_time);
-        btnChattingRoomMeeting = (LinearLayout) findViewById(R.id.btn_chatting_room_meeting);
-        tvChattingRoomMeeting = (TextView) findViewById(R.id.tv_chatting_room_meeting);
-        imgMeetingHeart = findViewById(R.id.img_meeting_heart);
+        btnChattingRoomMeeting = (TextView) findViewById(R.id.btn_chatting_room_meeting);
     }
 
     private void initLayout() {
@@ -241,11 +237,7 @@ public class SsomActionBarView extends RelativeLayout {
     }
 
     public void setChattingRoomBtnMeetingTitle(String title) {
-        tvChattingRoomMeeting.setText(title);
-    }
-
-    public void setChattingRoomMeetingHeartVisibility(boolean visibility) {
-        imgMeetingHeart.setVisibility(visibility ? View.VISIBLE : View.GONE);
+        btnChattingRoomMeeting.setText(title);
     }
 
     public int getCurrentMode() {

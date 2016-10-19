@@ -248,7 +248,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="29dp"
-            android:text="@string/write_one_letter"/>
+            android:text="@string/detail_category_ssom"/>
 
         <EditText
             android:layout_below="@id/tv_one_letter"
@@ -259,16 +259,24 @@
             android:layout_marginTop="7.5dp"
             android:lines="4"
             android:maxLines="4"
-            android:hint="@string/write_content_hint"
+            android:hint="@string/write_content_hint_ssom"
             android:textColorHint="@color/pinkish_gray_two"
             android:background="@null"/>
 
-        <ImageView
+        <View
             android:layout_below="@id/edit_write_content"
             android:background="@color/pinkish_gray_two"
             android:layout_marginTop="5dp"
             android:layout_width="240dp"
             android:layout_height="1.3dp" />
+
+        <TextView
+            style="@style/ssom_font_9_pinkish_gray_two_single"
+            android:layout_below="@id/edit_write_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/write_information"/>
     </RelativeLayout>
 
     <LinearLayout
@@ -288,28 +296,15 @@
             android:gravity="center"
             android:text="@string/detail_cancel"/>
 
-        <LinearLayout
+        <TextView
             android:id="@+id/btn_apply"
+            style="@style/ssom_font_16_white_bold"
             android:layout_width="136dp"
             android:layout_height="46dp"
             android:layout_marginLeft="7dp"
             android:gravity="center"
-            android:background="@drawable/btn_write_apply_ssom">
-
-            <ImageView
-                android:layout_width="23dp"
-                android:layout_height="21dp"
-                android:layout_marginTop="2dp"
-                android:src="@drawable/icon_heart_white"/>
-
-            <TextView
-                style="@style/ssom_font_16_white_bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:text="@string/write_apply"/>
-        </LinearLayout>
-
+            android:background="@drawable/btn_write_apply_ssom"
+            android:text="@string/write_apply" />
     </LinearLayout>
 
 </RelativeLayout>

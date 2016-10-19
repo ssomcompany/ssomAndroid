@@ -366,13 +366,13 @@ public class Util {
         String ageRange = "";
         switch (age) {
             case 20:
-                ageRange = "20대 초";
+                ageRange = "20대 초반";
                 break;
             case 25:
-                ageRange = "20대 중";
+                ageRange = "20대 중반";
                 break;
             case 29:
-                ageRange = "20대 후";
+                ageRange = "20대 후반";
                 break;
             case 30:
                 ageRange = "30대";
