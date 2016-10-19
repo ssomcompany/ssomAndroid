@@ -142,7 +142,7 @@
     <string name="today_load_image">앨범 불러오기</string>
     <string name="today_take_picture">바로 촬영하기</string>
     <string name="today_delete_image">사진 삭제하기</string>
-    <string name="today_photo_will_be_delete_in_the_morning">\'오늘의 사진\'은 여러분의 프라이버시 보호를 위해\n매일 아침 9시에 <![CDATA[<b><font color=#ed344b>자동 삭제</b>]]> 됩니다.</string>
+    <string name="today_photo_will_be_delete_in_the_morning">\'오늘의 사진\'은 여러분의 프라이버시 보호를 위해<![CDATA[<br>]]>매일 아침 9시에 <![CDATA[<b><font color=#ed344b>자동 삭제</b>]]> 됩니다.</string>
 
     <!-- login , logout -->
     <string name="login_reg_top_logo">쏨을 가입하고 새로운 만남을 시작해보세요 =)</string>

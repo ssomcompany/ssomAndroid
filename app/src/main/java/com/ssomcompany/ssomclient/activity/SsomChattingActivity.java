@@ -287,7 +287,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             return;
         }
 
-        if(CommonConst.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
+        if(chatRoomItem != null && CommonConst.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
             UiUtils.makeCommonDialog(SsomChattingActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
                     R.string.dialog_notice, R.style.ssom_font_20_red_pink_bold, R.string.dialog_meet_finish_by_exit_message,
                     0, R.string.dialog_meet_finish, R.string.dialog_close,

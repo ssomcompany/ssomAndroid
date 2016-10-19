@@ -43,7 +43,6 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
                 .setNotificationOpenedHandler(new SsomNotiOpenedHandler())
                 .setNotificationReceivedHandler(new SsomNotiReceiveHandler())
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None)
-//                .autoPromptLocation(true)
                 .init();
 
         mInstance = this;
