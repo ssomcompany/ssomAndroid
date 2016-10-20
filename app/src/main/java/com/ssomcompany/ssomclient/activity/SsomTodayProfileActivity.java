@@ -169,9 +169,7 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                         final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
                         getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
 
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inSampleSize = 4;
-                        Bitmap saveBitmap = BitmapFactory.decodeFile(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath, options);
+                        Bitmap saveBitmap = BitmapFactory.decodeFile(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
 
                         int orientation = Util.getOrientationFromUri(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
                         if(orientation != 0) {
@@ -284,10 +282,8 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                             cursor.close();
                         }
                         Log.d(TAG, "path : " + picturePath);
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inSampleSize = 4;
 
-                        Bitmap bitmap = BitmapFactory.decodeFile(picturePath, options);
+                        Bitmap bitmap = BitmapFactory.decodeFile(picturePath);
 
                         // orientation 을 통한 이미지 회전
                         int orientation = Util.getOrientationFromUri(picturePath);
@@ -302,10 +298,7 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                     }
                     break;
                 case REQUEST_IMAGE_CAPTURE:
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 4;
-
-                    Bitmap bitmap = BitmapFactory.decodeFile(mContentUri.getPath(), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(mContentUri.getPath());
                     int orientation = Util.getOrientationFromUri(mContentUri.getPath());
 
                     if(orientation != 0) {

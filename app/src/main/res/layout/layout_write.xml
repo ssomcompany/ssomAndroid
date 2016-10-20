@@ -19,17 +19,17 @@
         android:layout_marginBottom="16dp"
         android:src="@drawable/filter_icon_selector" />
 
-    <TextView
-        android:id="@+id/tv_online_user"
-        style="@style/ssom_font_12_white_single"
-        android:layout_width="wrap_content"
-        android:layout_height="33dp"
-        android:layout_marginBottom="11dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:background="@drawable/bg_mini_toast"
-        android:text="홍대 : 현재 5,021명 접속 중"/>
+    <!--<TextView-->
+        <!--android:id="@+id/tv_online_user"-->
+        <!--style="@style/ssom_font_12_white_single"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="33dp"-->
+        <!--android:layout_marginBottom="11dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:gravity="center"-->
+        <!--android:background="@drawable/bg_mini_toast"-->
+        <!--android:text="홍대 : 현재 5,021명 접속 중"/>-->
 
     <ImageView
         android:id="@+id/btn_write"

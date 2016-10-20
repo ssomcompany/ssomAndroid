@@ -334,10 +334,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                         Log.d(TAG, "path : " + picturePath);
                         imgEmpty.setVisibility(View.INVISIBLE);
                         imgShadow.setVisibility(View.INVISIBLE);
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inSampleSize = 2;
 
-                        Bitmap bitmap = BitmapFactory.decodeFile(picturePath, options);
+                        Bitmap bitmap = BitmapFactory.decodeFile(picturePath);
 
                         // orientation 을 통한 이미지 회전
                         int orientation = Util.getOrientationFromUri(selectedImage.getPath());
@@ -531,10 +529,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
                         final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
                         getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inSampleSize = 4;
-                        Bitmap saveBitmap = BitmapFactory.decodeFile(picturePath, options);
-
+                        Bitmap saveBitmap = BitmapFactory.decodeFile(picturePath);
                         int orientation = Util.getOrientationFromUri(picturePath);
                         if(orientation != 0) {
                             Matrix matrix = new Matrix();

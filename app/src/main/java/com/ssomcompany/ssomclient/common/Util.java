@@ -89,6 +89,7 @@ public class Util {
                     break;
                 case ExifInterface.ORIENTATION_NORMAL:
                 default:
+                    orientation = 0;
                     break;
             }
         } catch (IOException e) {
