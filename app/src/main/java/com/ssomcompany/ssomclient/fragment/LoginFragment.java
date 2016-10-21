@@ -104,6 +104,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
                                                 mListener.onLoginFragmentInteraction(R.id.btn_login);
                                             } else {
                                                 Log.e(TAG, "unexpected error, data is null");
+                                                showErrorMessage();
                                             }
                                         } else {
                                             Log.e(TAG, "Response error with code " + response.getStatusCode() +
@@ -186,6 +187,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
                                                 mListener.onLoginFragmentInteraction(R.id.btn_login);
                                             } else {
                                                 Log.e(TAG, "unexpected error, data is null");
+                                                showErrorMessage();
                                             }
                                         } else {
                                             Log.e(TAG, "Response error with code " + response.getStatusCode() +

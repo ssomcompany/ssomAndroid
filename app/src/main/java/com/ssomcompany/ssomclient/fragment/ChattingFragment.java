@@ -15,7 +15,6 @@ import android.widget.ListView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
 import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
-import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
@@ -137,6 +136,7 @@ public class ChattingFragment extends BaseFragment {
                                         mAdapter.notifyDataSetChanged();
                                     } else {
                                         Log.e(TAG, "unexpected error, data is null");
+                                        showErrorMessage();
                                     }
                                 } else {
                                     Log.e(TAG, "Response error with code " + response.getResultCode() +
@@ -176,6 +176,7 @@ public class ChattingFragment extends BaseFragment {
                                 mAdapter.notifyDataSetChanged();
                             } else {
                                 Log.e(TAG, "unexpected error, data is null");
+                                showErrorMessage();
                             }
                         } else {
                             Log.e(TAG, "Response error with code " + response.getResultCode() +

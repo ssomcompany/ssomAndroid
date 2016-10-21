@@ -522,11 +522,21 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                     @Override
                     public void onResponse(NetworkResponse response) {
                         dismissProgressDialog();
+                        if(response.statusCode != 200 || response.data == null) {
+                            showErrorMessage();
+                            return;
+                        }
+
                         String jsonData = new String(response.data);
                         Gson gson = new Gson();
                         Map data = gson.fromJson(jsonData, Map.class);
-                        String fileId = data.get("fileId").toString();
 
+                        if(data.get("fileId") == null) {
+                            showErrorMessage();
+                            return;
+                        }
+
+                        String fileId = data.get("fileId").toString();
                         final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
                         getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
                         Bitmap saveBitmap = BitmapFactory.decodeFile(picturePath);

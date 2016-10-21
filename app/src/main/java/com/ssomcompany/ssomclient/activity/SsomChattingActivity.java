@@ -76,7 +76,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                     new NetworkManager.NetworkListener<SsomResponse<CreateChattingRoom.Response>>() {
                 @Override
                 public void onResponse(SsomResponse<CreateChattingRoom.Response> response) {
-                    if(response.isSuccess()) {
+                    if(response.isSuccess() && response.getData() != null) {
                         chatRoomItem = new ChatRoomItem();
                         chatRoomItem.setId(response.getData().getChatroomId());
                         chatRoomItem.setOwnerId(getUserId());
@@ -244,6 +244,8 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                                                                 break;
                                                         }
                                                         setMeetingButton();
+                                                    } else {
+                                                        showErrorMessage();
                                                     }
                                                 }
                                             });
@@ -300,6 +302,8 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                                                 if(response.isSuccess()) {
                                                     chatRoomItem.setStatus(null);
                                                     onBackPressed();
+                                                } else {
+                                                    showErrorMessage();
                                                 }
                                             }
                                         });

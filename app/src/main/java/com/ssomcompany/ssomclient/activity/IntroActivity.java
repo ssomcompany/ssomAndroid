@@ -32,7 +32,7 @@ public class IntroActivity extends BaseActivity {
         APICaller.getApplicationVersion(new NetworkManager.NetworkListener<SsomResponse<GetApplicationVersion.Response>>() {
             @Override
             public void onResponse(SsomResponse<GetApplicationVersion.Response> response) {
-                if(response.isSuccess()) {
+                if(response.isSuccess() && response.getData() != null) {
                     String appVersion = response.getData().getVersion();
                     appVersion = appVersion.replace(".", "");
                     try {
@@ -74,6 +74,8 @@ public class IntroActivity extends BaseActivity {
                     } catch(PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                     }
+                } else {
+                    showErrorMessage();
                 }
             }
         });
