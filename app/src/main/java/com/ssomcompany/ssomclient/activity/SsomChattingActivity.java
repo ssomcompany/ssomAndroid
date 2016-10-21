@@ -284,34 +284,37 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             return;
         }
 
-        if(chatRoomItem != null && CommonConst.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
-            UiUtils.makeCommonDialog(SsomChattingActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
-                    R.string.dialog_notice, R.style.ssom_font_20_red_pink_bold, R.string.dialog_meet_finish_by_exit_message,
-                    0, R.string.dialog_meet_finish, R.string.dialog_close,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            APICaller.sendChattingRequest(getToken(), chatRoomItem.getId(), NetworkConstant.Method.DELETE,
-                                    new NetworkManager.NetworkListener<SsomResponse<SsomMeetingRequest.Response>>() {
-                                        @Override
-                                        public void onResponse(SsomResponse<SsomMeetingRequest.Response> response) {
-                                            if(response.isSuccess()) {
-                                                finish();
-                                            }
-                                        }
-                                    });
-                        }
-                    }, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-            return;
-        }
-
         if(CURRENT_STATE == STATE_CHAT_ROOM) {
+            if(chatRoomItem != null && CommonConst.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
+                hideSoftKeyboard();
+                UiUtils.makeCommonDialog(SsomChattingActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
+                        R.string.dialog_notice, R.style.ssom_font_20_red_pink_bold, R.string.dialog_meet_finish_by_exit_message,
+                        0, R.string.dialog_meet_finish, R.string.dialog_close,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                APICaller.sendChattingRequest(getToken(), chatRoomItem.getId(), NetworkConstant.Method.DELETE,
+                                        new NetworkManager.NetworkListener<SsomResponse<SsomMeetingRequest.Response>>() {
+                                            @Override
+                                            public void onResponse(SsomResponse<SsomMeetingRequest.Response> response) {
+                                                if(response.isSuccess()) {
+                                                    chatRoomItem.setStatus(null);
+                                                    onBackPressed();
+                                                }
+                                            }
+                                        });
+                            }
+                        }, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                return;
+            }
+
             CURRENT_STATE = STATE_CHAT_LIST;
-            if(chatRoomItem.getUnreadCount() != 0) unreadCount -= chatRoomItem.getUnreadCount();
+            hideSoftKeyboard();
+            if(chatRoomItem != null && chatRoomItem.getUnreadCount() != 0) unreadCount -= chatRoomItem.getUnreadCount();
             changeSsomBarViewForChatRoomList();
             startChatRoomListFragment();
         } else {
