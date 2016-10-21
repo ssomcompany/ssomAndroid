@@ -68,7 +68,7 @@ public class UploadFiles extends AsyncTask<String, Integer, String> {
 
             File sourceFile = new File(params[1]);
             // Adding file data to http body
-            entity.addPart("image", new FileBody(sourceFile));
+            entity.addPart("pict", new FileBody(sourceFile));
             // Extra parameters if you want to pass to server
 //            entity.addPart("website",
 //                    new StringBody("www.androidhive.info"));
