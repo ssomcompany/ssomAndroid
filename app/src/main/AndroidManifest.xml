@@ -11,16 +11,21 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
+    <!--for in app purchase-->
+    <uses-permission android:name="com.android.vending.BILLING" />
+    <!--for google map-->
     <uses-permission android:name="com.ssomcompany.ssomclient.locationapi.maps.permission.MAPS_RECEIVE" />
+    <!--to access storage-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--to access location-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <!--for push-->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.google.android.c2dm.permission.REGISTER" />
-
     <uses-permission android:name="com.ssomcompany.ssomclient.permission.C2D_MESSAGE" />
+    <!--to access camera-->
     <uses-feature android:name="android.hardware.camera"
         android:required="true" />
     <uses-feature

@@ -118,6 +118,8 @@ public class ChatRoomListFragment extends BaseFragment {
                                                     if(response.isSuccess()) {
                                                         chatRoomList.remove(position);
                                                         mAdapter.notifyDataSetChanged();
+                                                    } else {
+                                                        showErrorMessage();
                                                     }
                                                 }
                                             });
@@ -159,6 +161,7 @@ public class ChatRoomListFragment extends BaseFragment {
                         mAdapter.notifyDataSetChanged();
                     } else {
                         Log.e(TAG, "unexpected error, data is null");
+                        showErrorMessage();
                     }
                 } else {
                     showErrorMessage();

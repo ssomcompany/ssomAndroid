@@ -301,7 +301,7 @@ public class MainActivity extends BaseActivity
             @Override
             public void onResponse(SsomResponse<GetSsomList.Response> response) {
                 Log.i(TAG, "response : " + response.isSuccess());
-                if (response.isSuccess()) {
+                if (response.isSuccess() && response.getData() != null) {
                     GetSsomList.Response data = response.getData();
                     ITEM_LIST.clear();
                     if (data != null && data.getSsomList() != null && data.getSsomList().size() > 0) {
@@ -431,6 +431,7 @@ public class MainActivity extends BaseActivity
                         Log.d(TAG, "get my post is failed");
                         myPostId = "";
                         btnWrite.setImageResource(R.drawable.btn_write);
+                        showErrorMessage();
                     }
                 }
             });

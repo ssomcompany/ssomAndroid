@@ -12,10 +12,10 @@ import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.reflect.TypeToken;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.MainActivity;
+import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
@@ -162,6 +162,7 @@ public class MessageManager {
                     Log.i(TAG,
                             "getUnreadCount error with code " + response.getResultCode() + ", message : " + response.getMessage(),
                             response.getError());
+                    UiUtils.makeToastMessage(BaseApplication.getInstance(), BaseApplication.getInstance().getResources().getString(R.string.error_occurred));
                 }
             }
         });

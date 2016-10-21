@@ -146,6 +146,8 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                             picturePath = "";
                             mCurrentPhotoPath = "";
                             UiUtils.makeToastMessage(SsomTodayProfileActivity.this, "오늘의 사진을 삭제했쏨!");
+                        } else {
+                            showErrorMessage();
                         }
                     }
                 });
@@ -161,11 +163,21 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                     public void onResponse(NetworkResponse response) {
                         Log.d(TAG, "upload success : " + response);
                         dismissProgressDialog();
+                        if(response.statusCode != 200 || response.data == null) {
+                            showErrorMessage();
+                            return;
+                        }
+
                         String jsonData = new String(response.data);
                         Gson gson = new Gson();
                         Map data = gson.fromJson(jsonData, Map.class);
-                        String fileId = data.get("fileId").toString();
 
+                        if(data.get("fileId") == null) {
+                            showErrorMessage();
+                            return;
+                        }
+
+                        String fileId = data.get("fileId").toString();
                         final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
                         getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
 
