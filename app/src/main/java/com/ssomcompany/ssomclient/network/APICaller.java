@@ -113,10 +113,10 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomLogin.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void facebookLogin(String token, NetworkManager.NetworkListener<T> listener) {
-        FacebookLogin.Request request = new FacebookLogin.Request();
+    public static <T extends BaseResponse> void facebookLogin(String token, String playerId, NetworkManager.NetworkListener<T> listener) {
+        FacebookLogin.Request request = new FacebookLogin.Request().setPlayerId(playerId);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION,
-                "Basic " + Base64.encodeToString(("Bearer " + token).getBytes(), Base64.DEFAULT));
+                "Bearer " + token);
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<FacebookLogin.Response>>() {}.getType(), listener);

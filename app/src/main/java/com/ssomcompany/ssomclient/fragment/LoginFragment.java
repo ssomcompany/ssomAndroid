@@ -19,6 +19,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.onesignal.OneSignal;
@@ -70,63 +71,83 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
         callbackManager = CallbackManager.Factory.create();
 
         btnLogin.setOnClickListener(this);
+        btnFacebookLogin.setFragment(this);
         btnFacebookLogin.setReadPermissions(Arrays.asList("public_profile", "email"));
         btnFacebookLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             private String email;
 
             @Override
             public void onSuccess(final LoginResult loginResult) {
-                GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject object, GraphResponse response) {
-                        Log.v(TAG, "result : " + object.toString());
-                        Log.v(TAG, "login result : " + response.toString());
+                Log.v(TAG, "loginResult : " + loginResult.getAccessToken().getToken());
 
-                        try {
-                            email = object.getString("email");
-                            String name = object.getString("name");
-                            String gender = object.getString("gender");
+                showProgressDialog();
+                OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+                       @Override
+                       public void idsAvailable(final String userId, String registrationId) {
+                           Log.d(TAG, "User:" + userId);
+                           if (registrationId != null) Log.d(TAG, "registrationId:" + registrationId);
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                           if (TextUtils.isEmpty(userId)) {
+                               Log.d(TAG, "User id is invalid.. cannot log in");
+                               LoginManager.getInstance().logOut();
+                               dismissProgressDialog();
+                               return;
+                           }
 
-                        APICaller.facebookLogin(loginResult.getAccessToken().getToken(),
-                                new NetworkManager.NetworkListener<SsomResponse<FacebookLogin.Response>>() {
-                                    @Override
-                                    public void onResponse(SsomResponse<FacebookLogin.Response> response) {
-                                        if(response.isSuccess()) {
-                                            if(response.getData() != null) {
-                                                setSessionInfo(response.getData().getToken(),
-                                                        TextUtils.isEmpty(email) ? "facebookUser" : email,
-                                                        response.getData().getUserId(),
-                                                        response.getData().getProfileImgUrl());
-                                                mListener.onLoginFragmentInteraction(R.id.btn_login);
-                                            } else {
-                                                Log.e(TAG, "unexpected error, data is null");
-                                                showErrorMessage();
-                                            }
-                                        } else {
-                                            Log.e(TAG, "Response error with code " + response.getStatusCode() +
-                                                    ", message : " + response.getMessage(), response.getError());
+                           GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                               @Override
+                               public void onCompleted(JSONObject object, GraphResponse response) {
+                                   Log.v(TAG, "result : " + object.toString());
+                                   Log.v(TAG, "login result : " + response.toString());
 
-                                            if(response.getStatusCode() == 401) {
-                                                UiUtils.makeToastMessage(getActivity(),
-                                                        getString(R.string.login_failed));
-                                            } else {
-                                                showErrorMessage();
-                                            }
-                                        }
-                                        dismissProgressDialog();
-                                    }
-                                });
-                    }
-                });
+                                   try {
+                                       email = object.getString("email");
+                                       String name = object.getString("name");
+                                       String gender = object.getString("gender");
 
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,email,gender,birthday");
-                graphRequest.setParameters(parameters);
-                graphRequest.executeAsync();
+                                   } catch (Exception e) {
+                                       e.printStackTrace();
+                                   }
+
+                                   APICaller.facebookLogin(loginResult.getAccessToken().getToken(), userId,
+                                           new NetworkManager.NetworkListener<SsomResponse<FacebookLogin.Response>>() {
+                                               @Override
+                                               public void onResponse(SsomResponse<FacebookLogin.Response> response) {
+                                                   if(response.isSuccess()) {
+                                                       if(response.getData() != null) {
+                                                           setSessionInfo(response.getData().getToken(),
+                                                                   TextUtils.isEmpty(email) ? "facebookUser" : email,
+                                                                   response.getData().getUserId(),
+                                                                   response.getData().getProfileImgUrl());
+                                                           mListener.onLoginFragmentInteraction(R.id.btn_login);
+                                                       } else {
+                                                           Log.e(TAG, "unexpected error, data is null");
+                                                           showErrorMessage();
+                                                       }
+                                                   } else {
+                                                       Log.e(TAG, "Response error with code " + response.getStatusCode() +
+                                                               ", message : " + response.getMessage(), response.getError());
+
+                                                       if(response.getStatusCode() == 401) {
+                                                           UiUtils.makeToastMessage(getActivity(),
+                                                                   getString(R.string.login_failed));
+                                                       } else {
+                                                           showErrorMessage();
+                                                       }
+                                                       LoginManager.getInstance().logOut();
+                                                   }
+                                                   dismissProgressDialog();
+                                               }
+                                           });
+                               }
+                           });
+
+                           Bundle parameters = new Bundle();
+                           parameters.putString("fields", "id,name,email,gender,birthday");
+                           graphRequest.setParameters(parameters);
+                           graphRequest.executeAsync();
+                       }
+                   });
             }
 
             @Override

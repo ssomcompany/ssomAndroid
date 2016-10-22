@@ -6,7 +6,12 @@ public class NetworkConstant {
 
     public static final String HTTP_SCHME = "http://";
     public static final String HTTPS_SCHME = "https://";
-    public static final String HOST = "52.78.137.209:3000";
+    public static final String HOST = "api.myssom.com";
+
+    public static final String WEB_PAGE = "http://www.myssom.com";
+    public static final String WEB_PRIVACY = "http://ssomcompany.wixsite.com/ssominfo";
+    public static final String WEB_POLICY = "http://ssomcompany.wixsite.com/termsandconditions";
+
 
     public static class HeaderParam {
         public static final String CACHE_CONTROL = "Cache-Control";
