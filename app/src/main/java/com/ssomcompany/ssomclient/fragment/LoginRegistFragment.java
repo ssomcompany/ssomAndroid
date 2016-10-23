@@ -79,7 +79,9 @@ public class LoginRegistFragment extends BaseFragment implements View.OnClickLis
     }
 
     private boolean checkPasswordMatched(){
-        return etLoginRegPass.getText().toString().equals(etLoginRegPassConfirm.getText().toString());
+        boolean isSamePassword = etLoginRegPass.getText().toString().equalsIgnoreCase(etLoginRegPassConfirm.getText().toString());
+        tvPasswordNotMatch.setVisibility(isSamePassword ? View.GONE : View.VISIBLE);
+        return isSamePassword;
     }
 
     private boolean checkPossiblePassword() {
@@ -89,12 +91,14 @@ public class LoginRegistFragment extends BaseFragment implements View.OnClickLis
         if(password.length() < MIN_PASSWORD_LENGTH) {
             UiUtils.makeToastMessage(getActivity(),
                     String.format(getString(R.string.password_should_be_over_n_letters), MIN_PASSWORD_LENGTH));
+            tvPasswordNotMatch.setVisibility(View.GONE);
             return false;
         }
 
         // password 형식 체크
         if(!Util.validatePassword(password)) {
             UiUtils.makeToastMessage(getActivity(), getString(R.string.invalid_password_format));
+            tvPasswordNotMatch.setVisibility(View.GONE);
             return false;
         }
 
