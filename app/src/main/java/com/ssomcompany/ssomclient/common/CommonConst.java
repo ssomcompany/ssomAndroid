@@ -23,12 +23,18 @@ public class CommonConst {
     public static final String SSOM = "ssom";
     public static final String SSOA = "ssoseyo";
 
-    // request string
-    public static final String MEETING_REQUEST = "request";
-    public static final String MEETING_APPROVE = "approve";
-
     // image file size
     public static final int LIMIT_IMAGE_SIZE = 1024 * 1024 * 10;
+
+    public class Chatting {
+        public static final String NORMAL = "NORMAL";
+        public static final String SYSTEM = "SYSTEM";
+        // request string
+        public static final String MEETING_REQUEST = "request";
+        public static final String MEETING_APPROVE = "approve";
+        public static final String MEETING_CANCEL = "cancel";
+        public static final String MEETING_COMPLETE = "complete";
+    }
 
     public class Intent {
         public static final String POST_ID = "post_id";
@@ -36,6 +42,7 @@ public class CommonConst {
         public static final String IMAGE_URL = "image_url";
         public static final String SSOM_TYPE = "ssom_type";
         public static final String SSOM_ITEM = "ssom_item";
+        public static final String FILE_ID = "fileId";
 
         // for push message
         public static final String FROM_USER_ID = "fromUserId";

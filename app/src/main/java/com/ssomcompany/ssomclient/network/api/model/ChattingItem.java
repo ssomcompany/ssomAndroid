@@ -4,8 +4,9 @@ public class ChattingItem {
     public enum MessageType {
         message,   // 일반 메시지
         initial,  // 최초 표기 메시지
-        request,  // 만남 요청
-        approve,  // 만남 수락
+        request,  // 만남 요청 한 상태
+        approve,  // 만남 수락 한 상태
+        cancel,   // 만남 요청이 취소된 상태
         finish   // 최종 표기 메시지
     }
 
@@ -70,7 +71,8 @@ public class ChattingItem {
         return msgType;
     }
 
-    public void setMsgType(String msgType) {
+    public ChattingItem setMsgType(String msgType) {
         this.msgType = msgType;
+        return this;
     }
 }
