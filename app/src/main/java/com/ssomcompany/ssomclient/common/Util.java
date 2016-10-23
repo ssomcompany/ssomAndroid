@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.ExifInterface;
+import android.media.ThumbnailUtils;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -54,19 +56,48 @@ public class Util {
         return matcher.matches();
     }
 
-    public static RoundImage getCircleBitmap(Bitmap bitmap, int size) {
-        float width = bitmap.getWidth();
-        float height = bitmap.getHeight();
-        // Calculate image's size by maintain the image's aspect ratio
+//    public static RoundImage getCircleBitmap(Bitmap bitmap) {
+//        float width = bitmap.getWidth();
+//        float height = bitmap.getHeight();
+//        // Calculate image's size by maintain the image's aspect ratio
+//
+//        float percent = width / 100;
+//        float scale = Math.min(width, height) / percent;
+//        width *= (scale / 100);
+//        height *= (scale / 100);
+//
+//        // Resizing image
+//        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, (int) width, (int) height, true);
+//        return new RoundImage(cropCenter(resizedBitmap));
+//    }
 
-        float percent = width / 100;
-        float scale = size / percent;
-        width *= (scale / 100);
-        height *= (scale / 100);
+    // network imageView crop 을 위한 함수
+    public static Bitmap cropCenter(Bitmap bmp) {
+        int dimension = Math.min(bmp.getWidth(), bmp.getHeight());
+        return ThumbnailUtils.extractThumbnail(bmp, dimension, dimension);
+    }
 
-        // Resizing image
-        bitmap = Bitmap.createScaledBitmap(bitmap, (int) width, (int) width, false);
-        return new RoundImage(bitmap);
+    // main 화면의 marker crop 을 위한 함수
+    public static Bitmap cropCenterBitmap(Bitmap bitmap) {
+        final int IMAGE_SIZE = convertDpToPixel(47);
+        boolean landscape = bitmap.getWidth() > bitmap.getHeight();
+
+        float scale_factor;
+        if (landscape) scale_factor = (float)IMAGE_SIZE / bitmap.getHeight();
+        else scale_factor = (float)IMAGE_SIZE / bitmap.getWidth();
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale_factor, scale_factor);
+
+        Bitmap croppedBitmap;
+        if (landscape){
+            int start = (bitmap.getWidth() - bitmap.getHeight()) / 2;
+            croppedBitmap = Bitmap.createBitmap(bitmap, start, 0, bitmap.getHeight(), bitmap.getHeight(), matrix, true);
+        } else {
+            int start = (bitmap.getHeight() - bitmap.getWidth()) / 2;
+            croppedBitmap = Bitmap.createBitmap(bitmap, 0, start, bitmap.getWidth(), bitmap.getWidth(), matrix, true);
+        }
+
+        return croppedBitmap;
     }
 
     public static int getOrientationFromUri(String path) {

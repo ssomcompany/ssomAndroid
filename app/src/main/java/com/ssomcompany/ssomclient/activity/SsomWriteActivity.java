@@ -518,54 +518,66 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
             }
 
             if(!TextUtils.isEmpty(picturePath)) {
-                APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
-                    @Override
-                    public void onResponse(NetworkResponse response) {
-                        dismissProgressDialog();
-                        if(response.statusCode != 200 || response.data == null) {
-                            showErrorMessage();
-                            return;
-                        }
-
-                        String jsonData = new String(response.data);
-                        Gson gson = new Gson();
-                        Map data = gson.fromJson(jsonData, Map.class);
-
-                        if(data.get("fileId") == null) {
-                            showErrorMessage();
-                            return;
-                        }
-
-                        String fileId = data.get("fileId").toString();
-                        final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
-                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
-                        Bitmap saveBitmap = BitmapFactory.decodeFile(picturePath);
-                        int orientation = Util.getOrientationFromUri(picturePath);
-                        if(orientation != 0) {
-                            Matrix matrix = new Matrix();
-                            matrix.postRotate(orientation);
-                            saveBitmap = Bitmap.createBitmap(saveBitmap, 0, 0, saveBitmap.getWidth(), saveBitmap.getHeight(), matrix, true);
-                        }
-
-                        NetworkManager.getInstance().addBitmapToCache(imageUrl, saveBitmap);
-
-                        createPost(fileId);
-                    }
-                }, picturePath);
-
-//                UploadFiles uploadTask = new UploadFiles() {
+//                APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
 //                    @Override
-//                    protected void onPostExecute(String result) {
-//                        super.onPostExecute(result);
-//                        Log.e(TAG, "Response from server: " + result);
+//                    public void onResponse(NetworkResponse response) {
+//                        dismissProgressDialog();
+//                        if(response.statusCode != 200 || response.data == null) {
+//                            showErrorMessage();
+//                            return;
+//                        }
+//
+//                        String jsonData = new String(response.data);
 //                        Gson gson = new Gson();
-//                        Map data = gson.fromJson(result, Map.class);
-//                        String fileId = data.get("fileId").toString();
+//                        Map data = gson.fromJson(jsonData, Map.class);
+//
+//                        if(data.get(CommonConst.Intent.FILE_ID) == null) {
+//                            showErrorMessage();
+//                            return;
+//                        }
+//
+//                        String fileId = data.get(CommonConst.Intent.FILE_ID).toString();
+//                        final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
+//                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
+//                        Bitmap saveBitmap = BitmapFactory.decodeFile(picturePath);
+//                        int orientation = Util.getOrientationFromUri(picturePath);
+//                        if(orientation != 0) {
+//                            Matrix matrix = new Matrix();
+//                            matrix.postRotate(orientation);
+//                            saveBitmap = Bitmap.createBitmap(saveBitmap, 0, 0, saveBitmap.getWidth(), saveBitmap.getHeight(), matrix, true);
+//                        }
+//
+//                        NetworkManager.getInstance().addBitmapToCache(imageUrl, saveBitmap);
+//
 //                        createPost(fileId);
 //                    }
-//                };
-//
-//                uploadTask.execute(getToken(), picturePath);
+//                }, picturePath);
+
+                final UploadFiles uploadTask = new UploadFiles() {
+                    @Override
+                    protected void onPostExecute(String result) {
+                        super.onPostExecute(result);
+                        Log.d(TAG, "Response from server: " + result);
+                        Gson gson = new Gson();
+                        Map data = gson.fromJson(result, Map.class);
+                        if(data.get(CommonConst.Intent.FILE_ID) != null) {
+                            String fileId = data.get(CommonConst.Intent.FILE_ID).toString();
+                            final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
+                            getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
+                            createPost(fileId);
+                        } else {
+                            showErrorMessage();
+                        }
+                    }
+                };
+
+                uploadTask.execute(getToken(), picturePath);
+                showProgressDialog(true, new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        uploadTask.cancel(true);
+                    }
+                });
             } else {
                 createPost(null);
             }
@@ -650,6 +662,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                                 Log.d(TAG, "failed to create post!");
                                 showErrorMessage();
                             }
+                            dismissProgressDialog();
                         }
                     }
                 });

@@ -7,6 +7,10 @@ import android.util.Log;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.ssomcompany.ssomclient.common.BitmapWorkerTask;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 
 public class SsomNetworkImageView extends NetworkImageView {
@@ -23,10 +27,27 @@ public class SsomNetworkImageView extends NetworkImageView {
     }
 
     @Override
-    public void setImageUrl(String url, ImageLoader imageLoader) {
-        if(NetworkManager.getInstance().hasBitmapInCache(url)) {
+    public void setImageUrl(final String url, ImageLoader imageLoader) {
+        if(NetworkManager.getInstance().hasBitmapFromMemoryCache(url)) {
+//        if(NetworkManager.getInstance().hasBitmapInCache(url)) {
             Log.d("NetworkImage", "Image loading from cache...");
-            setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromCache(url));
+//            if(NetworkManager.getInstance().hasBitmapFromMemoryCache(url)) {
+                setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromMemoryCache(url));
+//            } else {
+//                BitmapWorkerTask uploadTask = new BitmapWorkerTask() {
+//                    @Override
+//                    protected void onPostExecute(Bitmap result) {
+//                        super.onPostExecute(result);
+//                        if (result != null) {
+//                            // Add final bitmap to caches
+//                            NetworkManager.getInstance().addBitmapToCache(url, result);
+//                            setLocalImageBitmap(result);
+//                        }
+//                    }
+//                };
+//
+//                uploadTask.execute(url);
+//            }
         } else {
             mShowLocal = false;
             super.setImageUrl(url, imageLoader);
