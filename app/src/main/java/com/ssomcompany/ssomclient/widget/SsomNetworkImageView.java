@@ -24,7 +24,7 @@ public class SsomNetworkImageView extends NetworkImageView {
 
     @Override
     public void setImageUrl(String url, ImageLoader imageLoader) {
-        if(NetworkManager.getInstance().getBitmapFromCache(url) != null) {
+        if(NetworkManager.getInstance().hasBitmapInCache(url)) {
             Log.d("NetworkImage", "Image loading from cache...");
             setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromCache(url));
         } else {

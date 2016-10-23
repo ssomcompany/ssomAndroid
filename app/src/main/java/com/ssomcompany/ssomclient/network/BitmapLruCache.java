@@ -9,10 +9,11 @@ public class BitmapLruCache extends LruCache<String, Bitmap> implements ImageLoa
 
     // Look over this, if needs to change cache size
     private static int getDefaultLruCacheSize() {
-        int maxMemory = (int)(Runtime.getRuntime().maxMemory()/1024);
-        if((int)Runtime.getRuntime().freeMemory()/1024 < 64) {
-            return maxMemory / 16 /* cacheSize */;
-        }
+        int maxMemory = (int) Runtime.getRuntime().maxMemory() / 1024;
+//        int freeMemory = (int) Runtime.getRuntime().freeMemory() / 1024;
+//        if(freeMemory < 64) {
+//            return freeMemory / 2 /* cacheSize */;
+//        }
         return maxMemory / 8 /* cacheSize */;
     }
 
