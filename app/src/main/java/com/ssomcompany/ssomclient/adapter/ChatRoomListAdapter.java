@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
@@ -114,8 +115,27 @@ public class ChatRoomListAdapter extends BaseAdapter {
         }
 
         // content
-        holder.getTvChatContent().setText(TextUtils.isEmpty(item.getLastMsg()) ? getEmptyLastMsg() : item.getLastMsg(),
-                TextUtils.isEmpty(item.getLastMsg()) ? TextView.BufferType.SPANNABLE : TextView.BufferType.NORMAL);
+        if(CommonConst.Chatting.MEETING_REQUEST.equals(item.getStatus()) &&
+                CommonConst.Chatting.MEETING_REQUEST.equals(item.getLastMsg())) {
+            String sysStr = context.getString(((BaseActivity) context).getUserId().equals(item.getRequestId()) ?
+                    R.string.chat_message_request_sent : R.string.chat_message_request_received);
+            holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
+        } else if(CommonConst.Chatting.MEETING_APPROVE.equals(item.getStatus()) &&
+                CommonConst.Chatting.MEETING_APPROVE.equals(item.getLastMsg())) {
+            String sysStr = context.getString(R.string.chat_message_approve);
+            holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
+        } else if(CommonConst.Chatting.MEETING_CANCEL.equals(item.getStatus()) &&
+                CommonConst.Chatting.MEETING_CANCEL.equals(item.getLastMsg())) {
+            String sysStr = context.getString(R.string.chat_message_finish);
+            holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
+        } else if(CommonConst.Chatting.MEETING_COMPLETE.equals(item.getStatus()) &&
+                CommonConst.Chatting.MEETING_COMPLETE.equals(item.getLastMsg())) {
+            String sysStr = context.getString(R.string.chat_message_finish);
+            holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
+        } else {
+            holder.getTvChatContent().setText(TextUtils.isEmpty(item.getLastMsg()) ? getEmptyLastMsg() : item.getLastMsg(),
+                    TextUtils.isEmpty(item.getLastMsg()) ? TextView.BufferType.SPANNABLE : TextView.BufferType.NORMAL);
+        }
 
         if(item.getUnreadCount() > 0) {
             holder.getUnreadLayout().setVisibility(View.VISIBLE);
@@ -135,6 +155,14 @@ public class ChatRoomListAdapter extends BaseAdapter {
         holder.getTvTime().setText(Util.getTimeTextForChatRoom(item.getLastTimestamp()));
 
         return convertView;
+    }
+
+    private SpannableStringBuilder getSystemMsg(String sysStr) {
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        SpannableString redSpannable= new SpannableString(sysStr);
+        redSpannable.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.red_pink)), 0, sysStr.length(), 0);
+        builder.append(redSpannable);
+        return builder;
     }
 
     private SpannableStringBuilder getEmptyLastMsg() {

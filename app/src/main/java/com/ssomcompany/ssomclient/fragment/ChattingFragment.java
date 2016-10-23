@@ -15,6 +15,7 @@ import android.widget.ListView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
 import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
+import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
@@ -171,7 +172,8 @@ public class ChattingFragment extends BaseFragment {
                             Log.d(TAG, "response : " + response);
                             if(response.getData() != null) {
                                 chatList = response.getData().getChattingList();
-                                chatList.add(0, new ChattingItem().setStatus(ChattingItem.MessageType.initial));
+                                chatList.add(0, new ChattingItem().setStatus(ChattingItem.MessageType.initial)
+                                        .setMsgType(CommonConst.Chatting.SYSTEM));
                                 mAdapter.setItemList(chatList);
                                 mAdapter.notifyDataSetChanged();
                             } else {
