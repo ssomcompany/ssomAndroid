@@ -80,6 +80,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                         chatRoomItem = new ChatRoomItem();
                         chatRoomItem.setId(response.getData().getChatroomId());
                         chatRoomItem.setOwnerId(getUserId());
+                        chatRoomItem.setOwnerImageUrl(getTodayImageUrl());
                         chatRoomItem.setParticipantId(ssomItem.getUserId());
                         chatRoomItem.setParticipantImageUrl(ssomItem.getImageUrl());
                         chatRoomItem.setSsomType(ssomItem.getSsomType());

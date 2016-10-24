@@ -10,14 +10,18 @@
         android:layout_height="50dp"
         android:background="@color/red_pink">
 
-        <View
+        <FrameLayout
             android:id="@+id/btn_close"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:padding="10dp"
-            android:background="@drawable/icon_close_white"/>
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="15dp"
+            android:layout_centerVertical="true">
+
+            <View android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:background="@drawable/icon_close_white"/>
+        </FrameLayout>
 
         <TextView
             style="@style/ssom_font_16_white_bold"

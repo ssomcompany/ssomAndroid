@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -41,6 +42,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -50,6 +53,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.common.BitmapWorkerTask;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.RoundImage;
@@ -63,6 +67,7 @@ import com.ssomcompany.ssomclient.fragment.FilterFragment;
 import com.ssomcompany.ssomclient.fragment.NavigationDrawerFragment;
 import com.ssomcompany.ssomclient.fragment.SsomListFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
+import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
@@ -76,6 +81,7 @@ import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class MainActivity extends BaseActivity
@@ -90,6 +96,7 @@ public class MainActivity extends BaseActivity
     private static final int REQUEST_CHECK_DETAIL_LOCATION_PERMISSION = 4;
     private static final int REQUEST_PROFILE_ACTIVITY = 5;
     private static final int REQUEST_SSOM_CHATTING = 6;
+    private static final int REQUEST_HEART_STORE = 7;
 
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
@@ -102,6 +109,8 @@ public class MainActivity extends BaseActivity
 
     private SsomActionBarView ssomActionBar;
     private DrawerLayout drawer;
+
+    private CopyOnWriteArrayList<BitmapWorkerTask> TASK_LIST = new CopyOnWriteArrayList<>();
 
     /**
      * The fragment's Tabs
@@ -154,6 +163,8 @@ public class MainActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // 페북 인스턴스 생성
+        FacebookSdk.sdkInitialize(getApplicationContext());
         selectedView = MAP_VIEW;
         selectedTab = CommonConst.SSOM;
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
@@ -330,8 +341,10 @@ public class MainActivity extends BaseActivity
         super.onResume();
 
         // message count 얻어오기
-        if(getSession() != null && !TextUtils.isEmpty(getUserId()))
+        if(getSession() != null && !TextUtils.isEmpty(getUserId())) {
             MessageManager.getInstance().getMessageCount(getToken());
+            MessageManager.getInstance().getHeartCount(getToken());
+        }
 
 //        if(locationTracker != null && locationTracker.chkCanGetLocation()) {
 //            locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
@@ -352,6 +365,16 @@ public class MainActivity extends BaseActivity
             public void onClick(View v) {
                 if (CommonConst.SSOM.equals(selectedTab)) return;
 
+                synchronized (TASK_LIST) {
+                    if(MAP_VIEW.equals(selectedView) && TASK_LIST.size() > 0) {
+                        for(BitmapWorkerTask task : TASK_LIST) {
+                            if(task.getStatus() == AsyncTask.Status.RUNNING) {
+                                task.cancel(true);
+                                TASK_LIST.remove(task);
+                            }
+                        }
+                    }
+                }
                 selectedTab = CommonConst.SSOM;
                 giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_green_blue);
                 giveBtmBar.setVisibility(View.VISIBLE);
@@ -369,6 +392,16 @@ public class MainActivity extends BaseActivity
             public void onClick(View v) {
                 if (CommonConst.SSOA.equals(selectedTab)) return;
 
+                synchronized (TASK_LIST) {
+                    if(MAP_VIEW.equals(selectedView) && TASK_LIST.size() > 0) {
+                        for(BitmapWorkerTask task : TASK_LIST) {
+                            if(task.getStatus() == AsyncTask.Status.RUNNING) {
+                                task.cancel(true);
+                                TASK_LIST.remove(task);
+                            }
+                        }
+                    }
+                }
                 selectedTab = CommonConst.SSOA;
                 takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_red_pink);
                 takeBtmBar.setVisibility(View.VISIBLE);
@@ -410,7 +443,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void setSsomWriteButtonImage() {
-        if(!TextUtils.isEmpty(getToken())) {
+        if(!TextUtils.isEmpty(getUserId())) {
             APICaller.ssomExistMyPost(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomItem>>() {
 
                 @Override
@@ -463,7 +496,9 @@ public class MainActivity extends BaseActivity
         fragmentManager = getSupportFragmentManager();
 
         ssomActionBar = (SsomActionBarView) tb.findViewById(R.id.ssom_action_bar);
-        ssomActionBar.setHeartCount(2);
+        ssomActionBar.setHeartCount(0);
+        // TODO heart api call
+
         ssomActionBar.setHeartRefillTime("--:--");
         ssomActionBar.setChatCount("0");
         ssomActionBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
@@ -475,7 +510,13 @@ public class MainActivity extends BaseActivity
         ssomActionBar.setOnHeartBtnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                // TODO heart button action
+                if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
+                    requestLogin();
+                    return;
+                }
+
+                startActivityForResult(new Intent(MainActivity.this, HeartStoreActivity.class), REQUEST_HEART_STORE);
+//                UiUtils.makeToastMessage(getApplicationContext(), "준비 중 입니다..");
             }
         });
         ssomActionBar.setOnChattingBtnClickListener(new View.OnClickListener() {
@@ -520,11 +561,19 @@ public class MainActivity extends BaseActivity
             return;
         }
 
-        if(ssomActionBar.getChatCount() == 0) {
-            ssomActionBar.setChatIconOnOff(true);
-        }
+        if(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equalsIgnoreCase(intent.getAction())) {
+            if (ssomActionBar.getChatCount() == 0) {
+                ssomActionBar.setChatIconOnOff(true);
+            }
 
-        ssomActionBar.setChatCount(String.valueOf(ssomActionBar.getChatCount() + 1));
+            ssomActionBar.setChatCount(String.valueOf(ssomActionBar.getChatCount() + 1));
+        } else if(MessageManager.BROADCAST_HEART_COUNT_CHANGE.equalsIgnoreCase(intent.getAction())) {
+            if (ssomActionBar.getHeartCount() == 0) {
+                ssomActionBar.setHeartIconOnOff(true);
+            }
+
+            ssomActionBar.setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
+        }
     }
 
     @Override
@@ -600,10 +649,14 @@ public class MainActivity extends BaseActivity
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
+                                    NetworkManager.getInstance().removeBitmapFromMemoryCache(getTodayImageUrl());
+                                    NetworkManager.getInstance().getRequestQueue().getCache().remove(getTodayImageUrl());
                                     setSessionInfo("", "", "", "");
+                                    if(LoginManager.getInstance() != null) LoginManager.getInstance().logOut();
                                     mNavigationDrawerFragment.setLoginEmailLayout();
                                     mNavigationDrawerFragment.setTodayImage();
                                     setSsomWriteButtonImage();
+                                    UiUtils.makeToastMessage(getApplicationContext(), "로그아웃 되었습니다.");
                                 }
                             }, null);
                 } else {
@@ -611,25 +664,29 @@ public class MainActivity extends BaseActivity
                 }
                 break;
             case R.id.tv_ssom_homepage:
-                Intent homepageIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.myssom.com"));
+                Intent homepageIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkConstant.WEB_PAGE));
                 startActivity(homepageIntent);
                 break;
             case R.id.tv_make_heart:
+                if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
+                    requestLogin();
+                    return;
+                }
+
+                startActivityForResult(new Intent(MainActivity.this, HeartStoreActivity.class), REQUEST_HEART_STORE);
+//                UiUtils.makeToastMessage(getApplicationContext(), "준비 중 입니다..");
                 break;
             /**
              *  list menu item click event
              *  1 : 개인정보 , 2 : 이용약관 , 3 : 문의하기
              */
             case 1:
-                Intent privacyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ssomcompany.wixsite.com/ssominfo"));
+                Intent privacyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkConstant.WEB_PRIVACY));
                 startActivity(privacyIntent);
                 break;
             case 2:
-                Intent policyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ssomcompany.wixsite.com/termsandconditions"));
+                Intent policyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkConstant.WEB_POLICY));
                 startActivity(policyIntent);
-                break;
-            case 3:
-                // TODO action to internal web view
                 break;
         }
     }
@@ -709,7 +766,6 @@ public class MainActivity extends BaseActivity
             }
         });
 
-        // TODO - 마커가 겹쳤을 경우 처리
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
             public View getInfoWindow(Marker marker) {
@@ -839,12 +895,35 @@ public class MainActivity extends BaseActivity
     }
 
     private void addMarker(final SsomItem item, final boolean isLastItem) {
-        if(NetworkManager.getInstance().getBitmapFromCache(item.getImageUrl()) != null) {
-            mIdMap.put(mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
-                    .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getSsomType(),
-                            NetworkManager.getInstance().getBitmapFromCache(item.getImageUrl()))))), item.getPostId());
+        if(NetworkManager.getInstance().hasBitmapInCache(item.getImageUrl())) {
 
+            if(NetworkManager.getInstance().hasBitmapFromMemoryCache(item.getImageUrl())) {
+                // get bitmap from memory cache
+                mIdMap.put(mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
+                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getSsomType(),
+                                NetworkManager.getInstance().getBitmapFromMemoryCache(item.getImageUrl()))))), item.getPostId());
+            } else {
+                // get bitmap from disk cache
+                BitmapWorkerTask uploadTask = new BitmapWorkerTask() {
+                    @Override
+                    protected void onPostExecute(Bitmap result) {
+                        super.onPostExecute(result);
+                        if (result != null) {
+                            // Add final bitmap to caches
+                            NetworkManager.getInstance().addBitmapToCache(item.getImageUrl(), result);
+
+                            mIdMap.put(mMap.addMarker(new MarkerOptions()
+                                    .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
+                                    .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getSsomType(), result)))), item.getPostId());
+                            TASK_LIST.remove(this);
+                        }
+                    }
+                };
+
+                uploadTask.execute(item.getImageUrl());
+                TASK_LIST.add(uploadTask);
+            }
 //            if (isLastItem) {
 //                Log.d(TAG, "last item created!");
 //                dismissProgressDialog();
@@ -866,8 +945,8 @@ public class MainActivity extends BaseActivity
 //                        dismissProgressDialog();
 //                    }
                 }
-            }, 800  // max width
-                    , 600  // max height
+            }, 0  // max width
+                    , 0  // max height
                     , ImageView.ScaleType.CENTER  // scale type
                     , Bitmap.Config.RGB_565  // decode config
                     , new Response.ErrorListener() {
@@ -895,8 +974,7 @@ public class MainActivity extends BaseActivity
             }
 
             Drawable iconDrawable = new BitmapDrawable(getResources(), iconBitmap);
-            Drawable imageDrawable = new RoundImage(Bitmap.createScaledBitmap(imageBitmap, Util.convertDpToPixel(47),
-                    Util.convertDpToPixel(47), false));
+            Drawable imageDrawable = new RoundImage(Util.cropCenterBitmap(imageBitmap));
 
             iconDrawable.setBounds(0, 0,
                     Util.convertDpToPixel(49), Util.convertDpToPixel(57));
@@ -1003,6 +1081,24 @@ public class MainActivity extends BaseActivity
                                                 }
                                             }
                                         });
+                            }
+                        }, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                return;
+            }
+
+            if(ssomActionBar.getHeartCount() == 0) {
+                UiUtils.makeCommonDialog(this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
+                        R.string.heart_not_enough_go_to_store, R.style.ssom_font_16_custom_666666,
+                        R.string.dialog_move, R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivityForResult(new Intent(MainActivity.this, HeartStoreActivity.class), REQUEST_HEART_STORE);
+//                                UiUtils.makeToastMessage(getApplicationContext(), "준비 중 입니다..");
                             }
                         }, new DialogInterface.OnClickListener() {
                             @Override

@@ -76,7 +76,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
     private ImageView imgShadow;
     private SsomNetworkImageView imgProfile;
 
-    private ImageView imgCamera;
+    private FrameLayout imgCamera;
 
     private TextView tvSsomBalloon;
     private TextView tvSsoaBalloon;
@@ -132,7 +132,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         imgShadow = (ImageView) findViewById(R.id.img_shadow);
 
         // camera
-        imgCamera = (ImageView) findViewById(R.id.img_camera);
+        imgCamera = (FrameLayout) findViewById(R.id.image_layout);
 
         // category ssom or ssoa
         tvSsomBalloon = (TextView) findViewById(R.id.tv_ssom_balloon);

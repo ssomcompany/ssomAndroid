@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -128,6 +129,9 @@ public class NavigationDrawerFragment extends Fragment {
         TextView tvSsomHomepage = (TextView) view.findViewById(R.id.tv_ssom_homepage);
         TextView tvMakeHeart = (TextView) view.findViewById(R.id.tv_make_heart);
 
+        imgToday.setDefaultImageResId(0);
+        imgToday.setErrorImageResId(0);
+
         todayPhoto.setOnClickListener(menuItemClickListener);
         tvLoginOrLogout.setOnClickListener(menuItemClickListener);
         tvSsomHomepage.setOnClickListener(menuItemClickListener);
@@ -171,7 +175,7 @@ public class NavigationDrawerFragment extends Fragment {
         Log.d(TAG, "today image : " + session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""));
 
         if(TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""))) {
-            imgToday.setLocalImageBitmap(null);
+            imgToday.setLocalImageBitmap(BitmapFactory.decodeResource(null, 0));
             return;
         }
 

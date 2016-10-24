@@ -203,8 +203,7 @@ public class ChattingAdapter extends BaseAdapter {
                     // profile image
                     holder.rightChatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
                     holder.rightChatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
-                    holder.rightChatProfileImage.setImageUrl(((BaseActivity) context).getUserId().equals(roomItem.getOwnerId()) ?
-                            roomItem.getOwnerImageUrl() : roomItem.getParticipantImageUrl(), mImageLoader);
+                    holder.rightChatProfileImage.setImageUrl(((BaseActivity) context).getTodayImageUrl(), mImageLoader);
                 } else {
                     holder.rightChatProfileLayout.setVisibility(View.INVISIBLE);
                 }

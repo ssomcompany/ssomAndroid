@@ -96,7 +96,7 @@ public class NetworkManager {
     }
 
     public boolean hasBitmapFromMemoryCache(String key) {
-        return bitmapCache.getBitmap(key) != null;
+        return !TextUtils.isEmpty(key) && bitmapCache.getBitmap(key) != null;
     }
 
     public RequestQueue getRequestQueue() {
