@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -12,6 +14,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -20,6 +23,7 @@ import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -67,6 +71,82 @@ public class Util {
         // Resizing image
         bitmap = Bitmap.createScaledBitmap(bitmap, (int) width, (int) width, false);
         return new RoundImage(bitmap);
+    }
+
+    /**
+     * 파일 회전 임시
+     */
+    public static String rotatePhoto(Context context, String path) {
+        if (!TextUtils.isEmpty(path)) {
+            int exifDegree = getOrientationFromUri(path);
+            if (exifDegree != 0) {
+                Bitmap bitmap = getBitmap(path);
+                Bitmap rotatePhoto = rotate(bitmap, exifDegree);
+                return saveBitmapToJpeg(context, rotatePhoto);
+            }
+        }
+        return path;
+    }
+
+    public static Bitmap rotate(Bitmap image, int degrees) {
+        if (degrees != 0 && image != null) {
+            Matrix m = new Matrix();
+            m.setRotate(degrees, image.getWidth(), image.getHeight());
+
+            try {
+                Bitmap b = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), m, true);
+
+                if (!image.equals(b)) {
+                    image.recycle();
+                    image = b;
+                }
+
+                image = b;
+            } catch (OutOfMemoryError ex) {
+                ex.printStackTrace();
+            }
+        }
+        return image;
+    }
+
+    private static Bitmap getBitmap(String path) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inInputShareable = true;
+        options.inDither = false;
+        options.inTempStorage = new byte[32 * 1024];
+        options.inPurgeable = true;
+        options.inJustDecodeBounds = false;
+
+        File f = new File(path);
+
+        FileInputStream fs = null;
+        try {
+            fs = new FileInputStream(f);
+        } catch (FileNotFoundException e) {
+            // TODO do something intelligent
+            e.printStackTrace();
+        }
+
+        Bitmap bm = null;
+
+        try {
+            if (fs != null) {
+                bm = BitmapFactory.decodeFileDescriptor(fs.getFD(), null, options);
+            }
+        } catch (IOException e) {
+            // TODO do something intelligent
+            e.printStackTrace();
+        } finally {
+            if (fs != null) {
+                try {
+                    fs.close();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        return bm;
     }
 
     public static int getOrientationFromUri(String path) {
