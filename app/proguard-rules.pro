@@ -22,10 +22,11 @@
 # public 으로 설정되지 않은 class
 -dontskipnonpubliclibraryclasses
 # 독자적 수행
--dontoptimize
 -dontpreverify
 
--keepattributes EnclosingMethod
+-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
+
 -dontwarn android.support.**
 
 -verbose
@@ -72,3 +73,67 @@
 
 -keepnames class com.google.android.maps.** {*;}
 -keep public class com.google.android.maps.** {*;}
+
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.android.gms.**
+
+-keep class android.support.** { *; }
+-dontwarn android.support.**
+
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends android.content.ContentProvider
+
+-keep public class * extends android.view.View {
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+    public void set*(...);
+}
+
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+-keepclassmembers class * implements android.os.Parcelable {
+    static android.os.Parcelable$Creator CREATOR;
+}
+
+-keepclassmembers class **.R$* {
+    public static <fields>;
+}
+
+-keepclasseswithmembers enum * {*;}
+
+-keep class com.ssomcompany.ssomclient.network.api.model.** { *; }
+
+#-keep class com.android.volley.** { *; }
+#-dontwarn com.android.volley.**
+
+#-keep class org-apache-commons.** { *; }
+#-dontwarn org-apache-commons.**
+
+#-keep class com.loopj.android.http.** { *; }
+#-dontwarn com.loopj.android.http.**
+
+#-keep class com.nineoldandroid.** { *; }
+#-dontwarn com.nineoldandroid.**
+
+#-keep class com.imagezoom.** { *; }
+#-dontwarn com.imagezoom.**
+
+-keep class udk.android.** { *; }
+-dontwarn udk.android.**
+
+-assumenosideeffects class com.android.volley.VolleyLog {
+    public static *** e(...);
+    public static *** wtf(...);
+    public static *** d(...);
+    public static *** v(...);
+}
