@@ -562,16 +562,8 @@ public class MainActivity extends BaseActivity
         }
 
         if(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equalsIgnoreCase(intent.getAction())) {
-            if (ssomActionBar.getChatCount() == 0) {
-                ssomActionBar.setChatIconOnOff(true);
-            }
-
             ssomActionBar.setChatCount(String.valueOf(ssomActionBar.getChatCount() + 1));
         } else if(MessageManager.BROADCAST_HEART_COUNT_CHANGE.equalsIgnoreCase(intent.getAction())) {
-            if (ssomActionBar.getHeartCount() == 0) {
-                ssomActionBar.setHeartIconOnOff(true);
-            }
-
             ssomActionBar.setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
         }
     }
@@ -586,10 +578,8 @@ public class MainActivity extends BaseActivity
         }
 
         if(msgCount != null && !msgCount.isEmpty()) {
-            ssomActionBar.setChatIconOnOff(true);
             ssomActionBar.setChatCount(msgCount);
         } else {
-            ssomActionBar.setChatIconOnOff(false);
             ssomActionBar.setChatCount("0");
         }
     }
@@ -655,6 +645,10 @@ public class MainActivity extends BaseActivity
                                     if(LoginManager.getInstance() != null) LoginManager.getInstance().logOut();
                                     mNavigationDrawerFragment.setLoginEmailLayout();
                                     mNavigationDrawerFragment.setTodayImage();
+                                    ssomActionBar.setHeartCount(0);
+                                    ssomActionBar.setHeartRefillTime("--:--");
+                                    // TODO heart timer 동작 멈춤
+                                    ssomActionBar.setChatCount("0");
                                     setSsomWriteButtonImage();
                                     UiUtils.makeToastMessage(getApplicationContext(), "로그아웃 되었습니다.");
                                 }
@@ -901,7 +895,7 @@ public class MainActivity extends BaseActivity
                 // get bitmap from memory cache
                 mIdMap.put(mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
-                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getSsomType(),
+                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item,
                                 NetworkManager.getInstance().getBitmapFromMemoryCache(item.getImageUrl()))))), item.getPostId());
             } else {
                 // get bitmap from disk cache
@@ -915,7 +909,7 @@ public class MainActivity extends BaseActivity
 
                             mIdMap.put(mMap.addMarker(new MarkerOptions()
                                     .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
-                                    .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getSsomType(), result)))), item.getPostId());
+                                    .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item, result)))), item.getPostId());
                             TASK_LIST.remove(this);
                         }
                     }
@@ -937,7 +931,7 @@ public class MainActivity extends BaseActivity
                     NetworkManager.getInstance().addBitmapToCache(item.getImageUrl() + "?thumbnail=200", bitmap);
                     marker = mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
-                            .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getSsomType(), bitmap))));
+                            .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item, bitmap))));
 
                     mIdMap.put(marker, item.getPostId());
 //                    if (isLastItem) {
@@ -960,28 +954,39 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private Bitmap getMarkerImage(String ssom , Bitmap imageBitmap){
+    private Bitmap getMarkerImage(SsomItem ssom , Bitmap imageBitmap){
         Bitmap mergedBitmap = null;
         try {
             mergedBitmap = Bitmap.createBitmap(Util.convertDpToPixel(49),
                     Util.convertDpToPixel(57), Bitmap.Config.ARGB_4444);
             Canvas c = new Canvas(mergedBitmap);
-            Bitmap iconBitmap;
-            if(CommonConst.SSOM.equals(ssom)){
-                iconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_map_st_g);
-            }else{
-                iconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_map_st_r);
+            Bitmap iconBitmap = BitmapFactory.decodeResource(getResources(), CommonConst.SSOM.equals(ssom.getSsomType()) ?
+                    R.drawable.icon_map_st_g : R.drawable.icon_map_st_r);
+
+            Bitmap iconIng = null;
+            // ing image
+            if(CommonConst.Chatting.MEETING_APPROVE.equals(ssom.getStatus())) {
+                iconIng = BitmapFactory.decodeResource(getResources(), CommonConst.SSOM.equals(ssom.getSsomType()) ?
+                        R.drawable.ssom_ing_green_big : R.drawable.ssom_ing_red_big);
             }
 
             Drawable iconDrawable = new BitmapDrawable(getResources(), iconBitmap);
             Drawable imageDrawable = new RoundImage(Util.cropCenterBitmap(imageBitmap));
+            Drawable ingDrawable = null;
+            if(iconIng != null) ingDrawable = new BitmapDrawable(getResources(), iconIng);
 
             iconDrawable.setBounds(0, 0,
                     Util.convertDpToPixel(49), Util.convertDpToPixel(57));
             imageDrawable.setBounds(Util.convertDpToPixel(2), Util.convertDpToPixel(2),
                     Util.convertDpToPixel(47), Util.convertDpToPixel(47));
-            imageDrawable.draw(c);
             iconDrawable.draw(c);
+            imageDrawable.draw(c);
+            if(ingDrawable != null) {
+                ingDrawable.setBounds(Util.convertDpToPixel(2), Util.convertDpToPixel(2),
+                        Util.convertDpToPixel(47), Util.convertDpToPixel(47));
+                ingDrawable.draw(c);
+            }
+
         } catch (Exception e) {
             Log.i(TAG, "Get Marker image finished by exception..!");
         }

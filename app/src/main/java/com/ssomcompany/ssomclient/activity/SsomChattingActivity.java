@@ -365,7 +365,8 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             if(chattingFragment.getChatRoomId().equalsIgnoreCase(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID))) {
                 ChattingItem chat = new ChattingItem();
                 chat.setMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
-                chat.setFromUserId(intent.getStringExtra(CommonConst.Intent.USER_ID));
+                chat.setFromUserId(intent.getStringExtra(CommonConst.Intent.FROM_USER_ID));
+                chat.setToUserId(intent.getStringExtra(CommonConst.Intent.TO_USER_ID));
                 chat.setTimestamp(intent.getLongExtra(CommonConst.Intent.TIMESTAMP, 0));
                 if(!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS))) {
                     String status = intent.getStringExtra(CommonConst.Intent.STATUS);
@@ -381,6 +382,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                             messageType = ChattingItem.MessageType.cancel;
                             break;
                         case CommonConst.Chatting.MEETING_COMPLETE:
+                        case CommonConst.Chatting.MEETING_OUT:
                             messageType = ChattingItem.MessageType.finish;
                             break;
                         default:

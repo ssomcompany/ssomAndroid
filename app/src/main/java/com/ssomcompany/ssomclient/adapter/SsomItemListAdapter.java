@@ -75,6 +75,7 @@ public class SsomItemListAdapter extends BaseAdapter {
             holder.contentTv = (TextView) convertView.findViewById(R.id.content);
             holder.image = (CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image);
             holder.iconView = (ImageView) convertView.findViewById(R.id.icon_list_r);
+            holder.iconIng = (ImageView) convertView.findViewById(R.id.icon_ing);
 
             convertView.setTag(holder);
         } else {
@@ -94,6 +95,15 @@ public class SsomItemListAdapter extends BaseAdapter {
             holder.iconView.setImageResource(R.drawable.icon_list_st_g);
         }else{
             holder.iconView.setImageResource(R.drawable.icon_list_st_r);
+        }
+
+        // ing image
+        if(CommonConst.Chatting.MEETING_APPROVE.equals(item.getStatus())) {
+            holder.iconIng.setVisibility(View.VISIBLE);
+            holder.iconIng.setImageResource(CommonConst.SSOM.equals(item.getSsomType()) ?
+                    R.drawable.ssom_ing_green_big : R.drawable.ssom_ing_red_big);
+        } else {
+            holder.iconIng.setVisibility(View.GONE);
         }
 
         // title
@@ -117,6 +127,7 @@ public class SsomItemListAdapter extends BaseAdapter {
          * holder for list items
          */
         public ImageView iconView;
+        public ImageView iconIng;
         public CircularNetworkImageView image;
         public TextView titleTv;
         public TextView timeTv;

@@ -40,6 +40,7 @@ public class CommonConst {
         public static final String MEETING_APPROVE = "approve";
         public static final String MEETING_CANCEL = "cancel";
         public static final String MEETING_COMPLETE = "complete";
+        public static final String MEETING_OUT = "out";
     }
 
     public class Intent {

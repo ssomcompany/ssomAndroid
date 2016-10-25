@@ -119,7 +119,8 @@ public class ChattingAdapter extends BaseAdapter {
                 holder.sendMessageLayout.setVisibility(View.GONE);
                 holder.receiveMessageLayout.setVisibility(View.GONE);
             } else if (item.getStatus() == ChattingItem.MessageType.finish ||
-                    CommonConst.Chatting.MEETING_COMPLETE.equals(item.getMsg())) {
+                    CommonConst.Chatting.MEETING_COMPLETE.equals(item.getMsg()) ||
+                    CommonConst.Chatting.MEETING_OUT.equals(item.getMsg())) {
                 /**
                  * finish message layout setting
                  */

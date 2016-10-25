@@ -231,6 +231,7 @@ public class SsomActionBarView extends RelativeLayout {
 
     public void setChatCount(String count) {
         chatCount.setText(count);
+        setChatIconOnOff(!"0".equalsIgnoreCase(count));
     }
 
     public int getChatCount() {

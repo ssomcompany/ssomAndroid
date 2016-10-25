@@ -32,7 +32,8 @@ public class SsomNotiReceiveHandler implements OneSignal.NotificationReceivedHan
             Log.d("receive", "local broad cast sent");
 
             Intent localIntent = new Intent(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH);
-            localIntent.putExtra(CommonConst.Intent.USER_ID, data.optString(CommonConst.Intent.USER_ID, null));
+            localIntent.putExtra(CommonConst.Intent.FROM_USER_ID, data.optString(CommonConst.Intent.FROM_USER_ID, null));
+            localIntent.putExtra(CommonConst.Intent.TO_USER_ID, data.optString(CommonConst.Intent.TO_USER_ID, null));
             localIntent.putExtra(CommonConst.Intent.TIMESTAMP, data.optLong(CommonConst.Intent.TIMESTAMP, 0));
             localIntent.putExtra(CommonConst.Intent.CHAT_ROOM_ID, data.optString(CommonConst.Intent.CHAT_ROOM_ID, null));
             localIntent.putExtra(CommonConst.Intent.STATUS, data.optString(CommonConst.Intent.STATUS, null));

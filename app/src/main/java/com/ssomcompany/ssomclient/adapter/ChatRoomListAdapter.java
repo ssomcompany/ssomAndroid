@@ -77,6 +77,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
             holder = new ChatItemViewHolder();
             holder.setImage((CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image));
             holder.setIconCircle((ImageView) convertView.findViewById(R.id.icon_circle));
+            holder.setIconIng((ImageView) convertView.findViewById(R.id.icon_ing));
             holder.setTvChatInfo((TextView) convertView.findViewById(R.id.chat_information));
             holder.setTvChatContent((TextView) convertView.findViewById(R.id.chat_content));
             holder.setUnreadLayout((FrameLayout) convertView.findViewById(R.id.unread_layout));
@@ -106,6 +107,15 @@ public class ChatRoomListAdapter extends BaseAdapter {
             holder.getIconCircle().setImageResource(R.drawable.chat_profile_border_red);
         }
 
+        // ing image
+        if(CommonConst.Chatting.MEETING_APPROVE.equals(item.getStatus())) {
+            holder.getIconIng().setVisibility(View.VISIBLE);
+            holder.getIconIng().setImageResource(CommonConst.SSOM.equals(item.getSsomType()) ?
+                    R.drawable.chat_ssom_ing_green : R.drawable.chat_ssom_ing_red);
+        } else {
+            holder.getIconIng().setVisibility(View.GONE);
+        }
+
         // chat info
         if(item.getMinAge() == 0 || item.getUserCount() == 0) {
             holder.getTvChatInfo().setText(context.getString(R.string.chat_room_no_info));
@@ -115,22 +125,27 @@ public class ChatRoomListAdapter extends BaseAdapter {
         }
 
         // content
+        String sysStr;
         if(CommonConst.Chatting.MEETING_REQUEST.equals(item.getStatus()) &&
                 CommonConst.Chatting.MEETING_REQUEST.equals(item.getLastMsg())) {
-            String sysStr = context.getString(((BaseActivity) context).getUserId().equals(item.getRequestId()) ?
+            sysStr = context.getString(((BaseActivity) context).getUserId().equals(item.getRequestId()) ?
                     R.string.chat_message_request_sent : R.string.chat_message_request_received);
             holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
         } else if(CommonConst.Chatting.MEETING_APPROVE.equals(item.getStatus()) &&
                 CommonConst.Chatting.MEETING_APPROVE.equals(item.getLastMsg())) {
-            String sysStr = context.getString(R.string.chat_message_approve);
+            sysStr = context.getString(R.string.chat_message_approve);
             holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
         } else if(CommonConst.Chatting.MEETING_CANCEL.equals(item.getStatus()) &&
                 CommonConst.Chatting.MEETING_CANCEL.equals(item.getLastMsg())) {
-            String sysStr = context.getString(R.string.chat_message_finish);
+            sysStr = context.getString(R.string.chat_message_finish);
             holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
         } else if(CommonConst.Chatting.MEETING_COMPLETE.equals(item.getStatus()) &&
                 CommonConst.Chatting.MEETING_COMPLETE.equals(item.getLastMsg())) {
-            String sysStr = context.getString(R.string.chat_message_finish);
+            sysStr = context.getString(R.string.chat_message_finish);
+            holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
+        } else if(CommonConst.Chatting.MEETING_OUT.equals(item.getStatus()) &&
+                CommonConst.Chatting.MEETING_OUT.equals(item.getLastMsg())) {
+            sysStr = context.getString(R.string.chat_message_finish);
             holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
         } else {
             holder.getTvChatContent().setText(TextUtils.isEmpty(item.getLastMsg()) ? getEmptyLastMsg() : item.getLastMsg(),
@@ -185,6 +200,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
          */
         private CircularNetworkImageView image;
         private ImageView iconCircle;
+        private ImageView iconIng;
         private TextView tvChatInfo;
         private TextView tvChatContent;
         private FrameLayout unreadLayout;
@@ -207,6 +223,14 @@ public class ChatRoomListAdapter extends BaseAdapter {
 
         public void setIconCircle(ImageView iconCircle) {
             this.iconCircle = iconCircle;
+        }
+
+        public ImageView getIconIng() {
+            return iconIng;
+        }
+
+        public void setIconIng(ImageView iconIng) {
+            this.iconIng = iconIng;
         }
 
         public TextView getTvChatInfo() {
