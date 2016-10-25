@@ -72,7 +72,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
         ChatItemViewHolder holder;
 
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.ssom_chat_list_item, null);
+            convertView = mInflater.inflate(R.layout.ssom_chat_list_item, parent, false);
 
             holder = new ChatItemViewHolder();
             holder.setImage((CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image));
@@ -97,7 +97,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
         holder.getImage().setDefaultImageResId(R.drawable.profile_img_basic);
         holder.getImage().setErrorImageResId(R.drawable.profile_img_basic);
         holder.getImage().setImageUrl(((BaseActivity) context).getUserId().equals(item.getOwnerId()) ?
-                item.getParticipantImageUrl() : item.getOwnerImageUrl(), mImageLoader);
+                item.getParticipantImageUrl() + "?thumbnail=200" : item.getOwnerImageUrl() + "?thumbnail=200", mImageLoader);
 
         //icon
         if(CommonConst.SSOM.equals(item.getSsomType())){

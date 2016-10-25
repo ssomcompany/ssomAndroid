@@ -73,7 +73,7 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
 
         profileImage = (CircularNetworkImageView) findViewById(R.id.profile_img);
         ((TextView) findViewById(R.id.explanation_profile)).setText(
-                Html.fromHtml(String.format(getString(R.string.today_photo_will_be_delete_in_the_morning))));
+                Html.fromHtml(getString(R.string.today_photo_will_be_delete_in_the_morning)));
 
         findViewById(R.id.btn_close).setOnClickListener(this);
         findViewById(R.id.btn_load_image).setOnClickListener(this);
@@ -82,7 +82,7 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
         findViewById(R.id.btn_cancel).setOnClickListener(this);
         findViewById(R.id.btn_save).setOnClickListener(this);
 
-        profileImage.setImageUrl(getTodayImageUrl(), NetworkManager.getInstance().getImageLoader());
+        profileImage.setImageUrl(getTodayImageUrl() + "?thumbnail=200", NetworkManager.getInstance().getImageLoader());
     }
 
     @Override
@@ -154,45 +154,6 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                     showToastMessageShort(R.string.cannot_write_with_empty_picture);
                     return;
                 }
-
-//                APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
-//                    @Override
-//                    public void onResponse(NetworkResponse response) {
-//                        Log.d(TAG, "upload success : " + response);
-//                        dismissProgressDialog();
-//                        if(response.statusCode != 200 || response.data == null) {
-//                            showErrorMessage();
-//                            return;
-//                        }
-//
-//                        String jsonData = new String(response.data);
-//                        Gson gson = new Gson();
-//                        Map data = gson.fromJson(jsonData, Map.class);
-//
-//                        if(data.get(CommonConst.Intent.FILE_ID) == null) {
-//                            showErrorMessage();
-//                            return;
-//                        }
-//
-//                        String fileId = data.get(CommonConst.Intent.FILE_ID).toString();
-//                        final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
-//                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
-//
-//                        Bitmap saveBitmap = BitmapFactory.decodeFile(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
-//
-//                        int orientation = Util.getOrientationFromUri(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
-//                        if(orientation != 0) {
-//                            Matrix matrix = new Matrix();
-//                            matrix.postRotate(orientation);
-//                            saveBitmap = Bitmap.createBitmap(saveBitmap, 0, 0, saveBitmap.getWidth(), saveBitmap.getHeight(), matrix, true);
-//                        }
-//
-//                        NetworkManager.getInstance().addBitmapToCache(imageUrl, saveBitmap);
-//
-//                        setResult(RESULT_OK);
-//                        finish();
-//                    }
-//                }, currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
 
                 final UploadFiles uploadTask = new UploadFiles() {
                     @Override
@@ -310,30 +271,15 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                         }
                         Log.d(TAG, "path : " + picturePath);
 
-                        Bitmap bitmap = BitmapFactory.decodeFile(picturePath);
-
-                        // orientation 을 통한 이미지 회전
-                        int orientation = Util.getOrientationFromUri(picturePath);
-                        Log.d(TAG, "orientation : " + orientation);
-                        if(orientation != 0) {
-                            Matrix matrix = new Matrix();
-                            matrix.postRotate(orientation);
-                            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                        }
-
-                        profileImage.setLocalImageBitmap(bitmap);
+                        picturePath = Util.rotatePhoto(this, picturePath);
+                        profileImage.setLocalImageBitmap(BitmapFactory.decodeFile(picturePath));
                     }
                     break;
                 case REQUEST_IMAGE_CAPTURE:
-                    Bitmap bitmap = BitmapFactory.decodeFile(mContentUri.getPath());
-                    int orientation = Util.getOrientationFromUri(mContentUri.getPath());
-
-                    if(orientation != 0) {
-                        Matrix matrix = new Matrix();
-                        matrix.postRotate(orientation);
-                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                    }
-                    profileImage.setLocalImageBitmap(bitmap);
+                    mContentUri = Uri.fromFile(new File(Util.rotatePhoto(this, mCurrentPhotoPath)));
+                    File file = new File(mCurrentPhotoPath);
+                    if(file.delete()) mCurrentPhotoPath = mContentUri.getPath();
+                    profileImage.setLocalImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
                     break;
             }
         }

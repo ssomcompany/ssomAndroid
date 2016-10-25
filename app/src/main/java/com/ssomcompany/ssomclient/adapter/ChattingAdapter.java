@@ -73,7 +73,7 @@ public class ChattingAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.ssom_chat_message_item, null);
+            convertView = mInflater.inflate(R.layout.ssom_chat_message_item, parent, false);
 
             holder = new ChatMessageViewHolder();
             // received message layout
@@ -174,7 +174,7 @@ public class ChattingAdapter extends BaseAdapter {
                     holder.leftChatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
                     holder.leftChatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
                     holder.leftChatProfileImage.setImageUrl(((BaseActivity) context).getUserId().equals(roomItem.getOwnerId()) ?
-                            roomItem.getParticipantImageUrl() : roomItem.getOwnerImageUrl(), mImageLoader);
+                            roomItem.getParticipantImageUrl() + "?thumbnail=200" : roomItem.getOwnerImageUrl() + "?thumbnail=200", mImageLoader);
                     // profile circle type
                     holder.leftChatProfileCircle.setImageResource(CommonConst.SSOM.equals(roomItem.getSsomType()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red);
                 } else {
@@ -203,7 +203,7 @@ public class ChattingAdapter extends BaseAdapter {
                     // profile image
                     holder.rightChatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
                     holder.rightChatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
-                    holder.rightChatProfileImage.setImageUrl(((BaseActivity) context).getTodayImageUrl(), mImageLoader);
+                    holder.rightChatProfileImage.setImageUrl(((BaseActivity) context).getTodayImageUrl() + "?thumbnail=200", mImageLoader);
                 } else {
                     holder.rightChatProfileLayout.setVisibility(View.INVISIBLE);
                 }

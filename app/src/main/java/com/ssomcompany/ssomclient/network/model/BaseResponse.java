@@ -4,6 +4,7 @@ package com.ssomcompany.ssomclient.network.model;
 import android.util.Log;
 
 import java.lang.reflect.Type;
+import java.util.Locale;
 
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.network.NetworkManager;
@@ -98,9 +99,9 @@ public abstract class BaseResponse {
         String result;
 
         if (isSuccess()) {
-            result = String.format("[statusCode : %d]", getStatusCode());
+            result = String.format(Locale.getDefault(), "[statusCode : %d]", getStatusCode());
         } else {
-            result = String.format("[statusCode : %d, message : %s]", getStatusCode(),
+            result = String.format(Locale.getDefault(), "[statusCode : %d, message : %s]", getStatusCode(),
                     "[" + getError().getClass().getSimpleName() + "] " + getError().getMessage());
         }
 

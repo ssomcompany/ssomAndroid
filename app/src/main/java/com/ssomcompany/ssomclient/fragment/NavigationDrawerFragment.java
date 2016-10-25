@@ -180,11 +180,11 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         if(NetworkManager.getInstance().getBitmapFromMemoryCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "")) == null) {
-            ImageRequest imageRequest = new ImageRequest(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""), new Response.Listener<Bitmap>() {
+            ImageRequest imageRequest = new ImageRequest(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "") + "?thumbnail=200", new Response.Listener<Bitmap>() {
 
                 @Override
                 public void onResponse(Bitmap bitmap) {
-                    NetworkManager.getInstance().addBitmapToCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""), bitmap);
+                    NetworkManager.getInstance().addBitmapToCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "") + "?thumbnail=200", bitmap);
                     imgToday.setLocalImageBitmap(bitmap);
                 }
             }, 0  // max width

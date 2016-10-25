@@ -95,8 +95,9 @@
                 style="@style/ssom_font_12_white_single"
                 android:layout_width="27dp"
                 android:layout_height="24dp"
-                android:gravity="center"
-                android:background="@drawable/top_heart_gray"/>
+                android:paddingTop="3dp"
+                android:gravity="center_horizontal|top"
+                android:background="@drawable/top_heart_gray" />
 
             <View
                 android:id="@+id/img_plus"

@@ -335,18 +335,8 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                         imgEmpty.setVisibility(View.INVISIBLE);
                         imgShadow.setVisibility(View.INVISIBLE);
 
-                        Bitmap bitmap = BitmapFactory.decodeFile(picturePath);
-
-                        // orientation 을 통한 이미지 회전
-                        int orientation = Util.getOrientationFromUri(selectedImage.getPath());
-                        Log.d(TAG, "orientation : " + orientation);
-                        if(orientation != 0) {
-                            Matrix matrix = new Matrix();
-                            matrix.postRotate(orientation);
-                            imgProfile.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                        }
-                        imgProfile.setLocalImageBitmap(bitmap);
+                        picturePath = Util.rotatePhoto(this, picturePath);
+                        imgProfile.setLocalImageBitmap(BitmapFactory.decodeFile(picturePath));
                     }
                     break;
                 default:

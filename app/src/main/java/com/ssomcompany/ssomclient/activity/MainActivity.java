@@ -929,12 +929,12 @@ public class MainActivity extends BaseActivity
 //                dismissProgressDialog();
 //            }
         } else {
-            ImageRequest imageRequest = new ImageRequest(item.getImageUrl(), new Response.Listener<Bitmap>() {
+            ImageRequest imageRequest = new ImageRequest(item.getImageUrl() + "?thumbnail=200", new Response.Listener<Bitmap>() {
                 Marker marker;
 
                 @Override
                 public void onResponse(Bitmap bitmap) {
-                    NetworkManager.getInstance().addBitmapToCache(item.getImageUrl(), bitmap);
+                    NetworkManager.getInstance().addBitmapToCache(item.getImageUrl() + "?thumbnail=200", bitmap);
                     marker = mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
                             .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getSsomType(), bitmap))));

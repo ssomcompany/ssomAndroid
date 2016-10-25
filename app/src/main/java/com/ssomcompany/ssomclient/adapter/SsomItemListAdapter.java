@@ -87,7 +87,7 @@ public class SsomItemListAdapter extends BaseAdapter {
         // profile
         holder.image.setDefaultImageResId(R.drawable.profile_img_basic);
         holder.image.setErrorImageResId(R.drawable.profile_img_basic);
-        holder.image.setImageUrl(item.getImageUrl(), mImageLoader);
+        holder.image.setImageUrl(item.getImageUrl() + "?thumbnail=200", mImageLoader);
 
         //icon
         if(CommonConst.SSOM.equals(item.getSsomType())){

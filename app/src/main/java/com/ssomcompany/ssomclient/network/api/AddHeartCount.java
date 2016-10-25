@@ -2,7 +2,7 @@ package com.ssomcompany.ssomclient.network.api;
 
 import com.ssomcompany.ssomclient.common.ToStringHelperClass;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
-import com.ssomcompany.ssomclient.network.model.SsomGetRequest;
+import com.ssomcompany.ssomclient.network.model.SsomPostRequest;
 
 /**
  * Created by AaronMac on 2016. 10. 16..
@@ -10,7 +10,7 @@ import com.ssomcompany.ssomclient.network.model.SsomGetRequest;
 
 public class AddHeartCount {
 
-    public static class Request extends SsomGetRequest {
+    public static class Request extends SsomPostRequest {
         String count;
         String device;
         String token;

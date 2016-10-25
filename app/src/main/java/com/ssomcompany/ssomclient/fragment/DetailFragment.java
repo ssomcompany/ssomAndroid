@@ -224,7 +224,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            View mView = inflater.inflate(R.layout.detail_pager_adapter, null);
+            View mView = inflater.inflate(R.layout.detail_pager_adapter, container, false);
 
             RoundedNetworkImageView profileImg = (RoundedNetworkImageView) mView.findViewById(R.id.profile_img);
             LinearLayout centerLine = (LinearLayout) mView.findViewById(R.id.center_line_layout);

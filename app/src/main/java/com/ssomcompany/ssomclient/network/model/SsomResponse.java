@@ -4,6 +4,7 @@ package com.ssomcompany.ssomclient.network.model;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.Locale;
 
 public class SsomResponse<T> extends BaseResponse {
     private String message;
@@ -62,7 +63,7 @@ public class SsomResponse<T> extends BaseResponse {
 
         String result = null;
 
-        result = String.format("[statusCode : %d, resultCode : %d, message : %s, data : %s]",
+        result = String.format(Locale.getDefault(), "[statusCode : %d, resultCode : %d, message : %s, data : %s]",
                 getStatusCode(), getResultCode(), getMessage(), (null != getData() ? getData().toString() : "none"));
 
         return result;

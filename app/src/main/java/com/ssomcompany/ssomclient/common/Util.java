@@ -110,9 +110,9 @@ public class Util {
         if (!TextUtils.isEmpty(path)) {
             int exifDegree = getOrientationFromUri(path);
             if (exifDegree != 0) {
-                Bitmap bitmap = getBitmap(path);
-                Bitmap rotatePhoto = rotate(bitmap, exifDegree);
-                return saveBitmapToJpeg(context, rotatePhoto);
+//                Bitmap bitmap = getBitmap(path);
+//                Bitmap rotatePhoto = rotate(BitmapFactory.decodeFile(path), exifDegree);
+                return saveBitmapToJpeg(context, rotate(getBitmap(path), exifDegree));
             }
         }
         return path;
@@ -146,6 +146,7 @@ public class Util {
         options.inTempStorage = new byte[32 * 1024];
         options.inPurgeable = true;
         options.inJustDecodeBounds = false;
+        options.inSampleSize = 8;
 
         File f = new File(path);
 
@@ -184,8 +185,7 @@ public class Util {
         ExifInterface ei;
         try {
             ei = new ExifInterface(path);
-            orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_UNDEFINED);
+            orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
 
             switch(orientation) {
                 case ExifInterface.ORIENTATION_ROTATE_90:
