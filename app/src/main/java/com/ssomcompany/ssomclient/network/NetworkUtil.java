@@ -7,6 +7,8 @@ import android.content.DialogInterface.OnDismissListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
+import android.os.Build;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -14,6 +16,8 @@ import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
+
+import java.io.File;
 
 public class NetworkUtil {
 
@@ -179,7 +183,7 @@ public class NetworkUtil {
 
         Runnable retryRunnable = positiveRun;
 
-        if (null == retryRunnable) {
+        if (null == retryRunnable && response != null) {
             retryRunnable = new Runnable() {
 
                 @Override
@@ -193,4 +197,21 @@ public class NetworkUtil {
 //                negativeRun);
     }
 
+    static boolean isExternalStorageRemovable() {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD || Environment.isExternalStorageRemovable();
+    }
+
+    static File getExternalCacheDir(Context context) {
+        if (hasExternalCacheDir()) {
+            return context.getExternalCacheDir();
+        }
+
+        // Before Froyo we need to construct the external cache dir ourselves
+        final String cacheDir = "/Android/data/" + context.getPackageName() + "/cache/";
+        return new File(Environment.getExternalStorageDirectory().getPath() + cacheDir);
+    }
+
+    private static boolean hasExternalCacheDir() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
+    }
 }

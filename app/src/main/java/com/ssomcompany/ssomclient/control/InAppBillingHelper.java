@@ -1,13 +1,20 @@
 package com.ssomcompany.ssomclient.control;
 
-import android.app.Activity;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.android.vending.billing.util.IabHelper;
 import com.android.vending.billing.util.IabResult;
 import com.android.vending.billing.util.Inventory;
 import com.android.vending.billing.util.Purchase;
-
-import org.xml.sax.ErrorHandler;
+import com.ssomcompany.ssomclient.activity.BaseActivity;
+import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.network.APICaller;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.AddHeartCount;
+import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.push.MessageManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +38,7 @@ public class InAppBillingHelper {
     // 가져온 util클래스의 실제 헬퍼클래스
     private IabHelper mHelper;
 
-    private Activity mActivity;
+    private BaseActivity mActivity;
 
     // 테스트 여부인지.
     private boolean mIsTest;
@@ -43,16 +50,16 @@ public class InAppBillingHelper {
         void onSuccess(Inventory inventory);
         void onFail();
     }
-    private void init(Activity activity) {
+    private void init(BaseActivity activity) {
         mActivity = activity;
         mIsTest = false;
     }
     // 공개키가 없는 생성자.
-    public InAppBillingHelper(Activity activity) {
+    public InAppBillingHelper(BaseActivity activity) {
         init(activity);
     }
     // 공개키가 있는 생성자.
-    public InAppBillingHelper(Activity activity, String publicKey) {
+    public InAppBillingHelper(BaseActivity activity, String publicKey) {
         mPublicKey = publicKey;
         init(activity);
     }
@@ -80,6 +87,7 @@ public class InAppBillingHelper {
             @Override
             public void onIabSetupFinished(IabResult result) {
                 if (!result.isSuccess()) {
+                    consumeItem(TEST_SKU, null);
                     listener.onFail();
                 } else {
                     // 성공적으로 연결이 되었다면 이제 실질적인 아이템을 로드해야한다.
@@ -133,6 +141,7 @@ public class InAppBillingHelper {
         if (!mOwnedItems.contains(refinedSKU)) {
             // 실제 구매 & 결제요청
             // 해당 메소드를 호출하면 내부적으로 팝업창형태의 결제창이 나온다.
+            mHelper.flagEndAsync();
             mHelper.launchPurchaseFlow(mActivity, refinedSKU, REQUEST_CODE, new IabHelper.OnIabPurchaseFinishedListener() {
                 @Override
                 public void onIabPurchaseFinished(IabResult result, final Purchase info) {
@@ -148,8 +157,9 @@ public class InAppBillingHelper {
                             // 소진을 위해 서버에 요청.
                             consumeAllItemsForServer();
                         }
-                        CommonHelper.showMessage(mActivity, result.getResponse() + "");
-                        ErrorHandler.handleLocalError(mActivity, LocalErrorCode.ITEM_PURCHASE_ERROR);
+                        // TODO
+//                        CommonHelper.showMessage(mActivity, result.getResponse() + "");
+//                        ErrorHandler.handleLocalError(mActivity, LocalErrorCode.ITEM_PURCHASE_ERROR);
                     }
                 }
             });
@@ -164,33 +174,33 @@ public class InAppBillingHelper {
         final String refinedSKU = mIsTest ? TEST_SKU : purchase.getSku();
         // mItemService는 내부적으로 rest방식의 통신을 어플리케이션 서버와 해주는 통신인스턴스이다.
         // 각자 서버와 통신에 맞게 구현.
-        mItemService.purchaseItem(refinedSKU, purchase.getToken(), new ItemPurchaseListener() {
-            @Override
-            public void onBefore() {
-                FullScreenProgressBar.show(mActivity);
-            }
-            @Override
-            public void onSuccess() {
-                if (mActivity != null) {
-                    FullScreenProgressBar.hide();
-                }
-                CommonHelper.showMessage(mActivity, "Success!~");
-                // 통신이 성공하면 실제 소진을 시킨다.
-                // 여기서 두번째 인자로 purchase 인스턴스를 준다.
-                // 이때에는 mInventory가 갱신이 되어 있지 않는 경우가 종종있다.
-                // 따라서 mInventory에서 purchase를 가져오는 것이다니고
-                // 해당 구매 콜백으로 부터 가져온다.
-                consumeItem(refinedSKU, purchase);
-            }
-            @Override
-            public void onFail(com.slogup.frameworks.models.Error error) {
-                if (mActivity != null) {
-                    if (error != null) {
-                        ErrorHandler.handleNetworkError(mActivity, error);
+        // 통신이 성공하면 실제 소진을 시킨다.
+        // 여기서 두번째 인자로 purchase 인스턴스를 준다.
+        // 이때에는 mInventory가 갱신이 되어 있지 않는 경우가 종종있다.
+        // 따라서 mInventory에서 purchase를 가져오는 것이다니고
+        // 해당 구매 콜백으로 부터 가져온다.
+        Log.d(TAG, "success... : " + purchase.toString());
+
+//        if(purchase.getPurchaseState() == 0) {
+            APICaller.addHeartCount(mActivity.getToken(), getHeartCount(refinedSKU), purchase.getToken(),
+                    new NetworkManager.NetworkListener<SsomResponse<AddHeartCount.Response>>() {
+                @Override
+                public void onResponse(SsomResponse<AddHeartCount.Response> response) {
+                    if(response.isSuccess()) {
+                        Log.d(TAG, "success... : " + response.getData().toString());
+                        // 서버에서 하트를 채웠으므로 소진한다
+                        consumeItem(refinedSKU, purchase);
+
+                        Intent intent = new Intent();
+                        intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
+                        intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.getData().getHeartsCount());
+                        LocalBroadcastManager.getInstance(mActivity).sendBroadcast(intent);
+                    } else {
+                        mActivity.showErrorMessage();
                     }
                 }
-            }
-        });
+            });
+//        }
     }
 
     // 실제 소진 처리.
@@ -209,43 +219,45 @@ public class InAppBillingHelper {
                         // 소진에 성공하면 캐시된 값을 지운다.
                         mOwnedItems.remove(purchase.getSku());
                     } else {
-                        ErrorHandler.handleLocalError(mActivity, LocalErrorCode.ITEM_FATAL_ERROR);
+                        // TODO
+//                        ErrorHandler.handleLocalError(mActivity, LocalErrorCode.ITEM_FATAL_ERROR);
                     }
                 }
             });
-        }
-        else {
-            ErrorHandler.handleLocalError(mActivity, LocalErrorCode.ITEM_FATAL_ERROR);
+        } else {
+            // TODO
+//            ErrorHandler.handleLocalError(mActivity, LocalErrorCode.ITEM_FATAL_ERROR);
         }
     }
 
-    private static int sPurchaaseCount = 0;
+    private static int sPurchaseCount = 0;
     public void consumeAllItemsForServer() {
-        if (mOwnedItems.size() > sPurchaaseCount && mOwnedItems.get(sPurchaaseCount) != null) {
-            final String sku = mOwnedItems.get(sPurchaaseCount);
-            Purchase purchase = mInventory.getPurchase(sku);
+        if (mOwnedItems.size() > sPurchaseCount && mOwnedItems.get(sPurchaseCount) != null) {
+            final String sku = mOwnedItems.get(sPurchaseCount);
+            final Purchase purchase = mInventory.getPurchase(sku);
             if (purchase != null) {
-                String token = purchase.getToken();
-                mItemService.purchaseItem(sku, token, new ItemPurchaseListener() {
-                    @Override
-                    public void onBefore() {
-                        FullScreenProgressBar.show(mActivity);
-                    }
-                    @Override
-                    public void onSuccess() {
-                        sPurchaaseCount++;
-                        consumeItem(sku, null);
-                        consumeAllItemsForServer();
-                    }
-                    @Override
-                    public void onFail(com.slogup.frameworks.models.Error error) {
-                        if (mActivity != null) {
-                            if (error != null) {
-                                ErrorHandler.handleNetworkError(mActivity, error);
+                APICaller.addHeartCount(mActivity.getToken(), getHeartCount(sku), purchase.getToken(),
+                        new NetworkManager.NetworkListener<SsomResponse<AddHeartCount.Response>>() {
+                            @Override
+                            public void onResponse(SsomResponse<AddHeartCount.Response> response) {
+                                if(response.isSuccess()) {
+                                    Log.d(TAG, "success... : " + response.getData().toString());
+                                    // 서버에서 하트를 채웠으므로 소진한다
+                                    sPurchaseCount++;
+                                    consumeItem(sku, null);
+
+                                    // heart 갯수 갱신
+                                    Intent intent = new Intent();
+                                    intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
+                                    intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.getData().getHeartsCount());
+                                    LocalBroadcastManager.getInstance(mActivity).sendBroadcast(intent);
+
+                                    consumeAllItemsForServer();
+                                } else {
+                                    mActivity.showErrorMessage();
+                                }
                             }
-                        }
-                    }
-                });
+                        });
             }
             else {
                 handleError();
@@ -256,10 +268,41 @@ public class InAppBillingHelper {
         }
     }
     private void handleError() {
-        sPurchaaseCount = 0;
+        sPurchaseCount = 0;
         mOwnedItems.clear();
         if (mActivity != null) {
-            FullScreenProgressBar.hide();
+            mActivity.dismissProgressDialog();
         }
+    }
+
+    public void disposeHelper() {
+        if (mHelper != null) mHelper.dispose();
+        mHelper = null;
+    }
+
+    private String getHeartCount(String refinedSKU) {
+        String count;
+        switch (refinedSKU) {
+            case CommonConst.HEART_2:
+                count = "2";
+                break;
+            case CommonConst.HEART_8:
+                count = "8";
+                break;
+            case CommonConst.HEART_17:
+                count = "17";
+                break;
+            case CommonConst.HEART_28:
+                count = "28";
+                break;
+            default:
+                count = "0";
+                break;
+        }
+        return count;
+    }
+
+    public void flagEndAsync() {
+        if(mHelper != null) mHelper.flagEndAsync();
     }
 }

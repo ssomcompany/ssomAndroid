@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".activity.HeartStoreActivity" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/red_pink">
+
+        <FrameLayout
+            android:id="@+id/btn_close_top"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="15dp"
+            android:layout_centerVertical="true">
+
+            <View android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:background="@drawable/icon_close_white"/>
+        </FrameLayout>
+
+        <TextView
+            style="@style/ssom_font_16_white_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/store_title"/>
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_gravity="center_horizontal">
+
+        <View
+            android:layout_width="27dp"
+            android:layout_height="24dp"
+            android:background="@drawable/top_heart_shop"/>
+
+        <View
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginLeft="18dp"
+            android:background="@drawable/top_plus_shop" />
+
+        <TextView
+            style="@style/ssom_font_16_red_pink_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/store_title"/>
+    </FrameLayout>
+
+    <!-- item 영역 start -->
+    <RelativeLayout
+        android:id="@+id/layout_heart_first"
+        android:layout_width="315dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="22dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/shop_frame_gray">
+
+        <ImageView
+            android:id="@+id/heart_first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/heart_shadow_x_2"/>
+
+        <TextView
+            android:id="@+id/multiple_first"
+            style="@style/ssom_font_36_555555"
+            android:layout_toRightOf="@id/heart_first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"
+            android:text="x"/>
+
+        <TextView
+            android:id="@+id/number_first"
+            style="@style/ssom_font_36_red_pink_bold"
+            android:layout_toRightOf="@id/multiple_first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="2"/>
+
+        <View
+            android:layout_toRightOf="@id/number_first"
+            android:layout_width="40dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/dot_line"/>
+
+        <TextView
+            style="@style/ssom_font_18_555555"
+            android:id="@+id/heart_price_first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="55dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp">
+
+        <RelativeLayout
+            android:id="@+id/layout_heart_second"
+            android:layout_width="315dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/shop_frame_green">
+
+            <ImageView
+                android:id="@+id/heart_second"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/heart_shadow_x_8"/>
+
+            <TextView
+                android:id="@+id/multiple_second"
+                style="@style/ssom_font_36_555555"
+                android:layout_toRightOf="@id/heart_second"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_centerVertical="true"
+                android:text="x"/>
+
+            <TextView
+                android:id="@+id/number_second"
+                style="@style/ssom_font_36_red_pink_bold"
+                android:layout_toRightOf="@id/multiple_second"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="8"/>
+
+            <View
+                android:layout_toRightOf="@id/number_second"
+                android:layout_width="40dp"
+                android:layout_height="1dp"
+                android:layout_marginLeft="10dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/dot_line"/>
+
+            <TextView
+                style="@style/ssom_font_18_555555"
+                android:id="@+id/heart_price_second"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="55dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true" />
+
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/ssom_font_6_red_pink_single"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="SALE!"/>
+
+                <TextView
+                    style="@style/ssom_font_9_white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/sale_gray"
+                    android:paddingTop="2dp"
+                    android:gravity="center|top"
+                    android:text="17%"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <TextView
+            style="@style/ssom_font_12_white_single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="35dp"
+            android:background="@drawable/green_rib_small"
+            android:text="   실속"/>
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_heart_third"
+        android:layout_width="315dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="22dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/shop_frame_gray">
+
+        <ImageView
+            android:id="@+id/heart_third"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/heart_x_17"/>
+
+        <TextView
+            android:id="@+id/multiple_third"
+            style="@style/ssom_font_36_555555"
+            android:layout_toRightOf="@id/heart_third"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"
+            android:text="x"/>
+
+        <TextView
+            android:id="@+id/number_third"
+            style="@style/ssom_font_36_red_pink_bold"
+            android:layout_toRightOf="@id/multiple_third"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="17"/>
+
+        <View
+            android:layout_toRightOf="@id/number_third"
+            android:layout_width="20dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/dot_line"/>
+
+        <TextView
+            style="@style/ssom_font_18_555555"
+            android:id="@+id/heart_price_third"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="55dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true" />
+
+        <LinearLayout
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/ssom_font_6_red_pink_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="SALE!"/>
+
+            <TextView
+                style="@style/ssom_font_9_white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/sale_gray"
+                android:paddingTop="2dp"
+                android:gravity="center|top"
+                android:text="29%"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp">
+
+        <RelativeLayout
+            android:id="@+id/layout_heart_fourth"
+            android:layout_width="315dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/shop_frame_pink">
+
+            <ImageView
+                android:id="@+id/heart_fourth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/heart_x_28"/>
+
+            <TextView
+                android:id="@+id/multiple_fourth"
+                style="@style/ssom_font_36_555555"
+                android:layout_toRightOf="@id/heart_fourth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_centerVertical="true"
+                android:text="x"/>
+
+            <TextView
+                android:id="@+id/number_fourth"
+                style="@style/ssom_font_36_red_pink_bold"
+                android:layout_toRightOf="@id/multiple_fourth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="28"/>
+
+            <View
+                android:layout_toRightOf="@id/number_fourth"
+                android:layout_width="20dp"
+                android:layout_height="1dp"
+                android:layout_marginLeft="10dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/dot_line"/>
+
+            <TextView
+                style="@style/ssom_font_18_555555"
+                android:id="@+id/heart_price_fourth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="55dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true" />
+
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/ssom_font_6_red_pink_single"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="SALE!"/>
+
+                <TextView
+                    style="@style/ssom_font_9_white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/sale_pink"
+                    android:paddingTop="2dp"
+                    android:gravity="center|top"
+                    android:text="44%"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <TextView
+            style="@style/ssom_font_12_white_single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="35dp"
+            android:background="@drawable/pink_rib_small"
+            android:text="   인기"/>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/btn_close"
+        style="@style/ssom_font_16_white_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="55dp"
+        android:gravity="center"
+        android:background="@drawable/btn_write_cancel"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/dialog_close"/>
+
+</LinearLayout>

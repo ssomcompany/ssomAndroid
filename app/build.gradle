@@ -9,6 +9,8 @@ dependencies {
     compile 'org.apache.httpcomponents:httpmime:4.3.1'
     compile 'com.google.code.gson:gson:2.4'
 
+    // for disk cache
+    compile 'com.jakewharton:disklrucache:2.0.2'
     // for one signal
     compile 'com.onesignal:OneSignal:3.+@aar'
     // for facebook login
@@ -40,8 +42,8 @@ android {
         applicationId "com.ssomcompany.ssomclient"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 100
-        versionName "1.0.0"
+        versionCode 104
+        versionName "1.0.4"
 
         // for one signal
         manifestPlaceholders = [manifestApplicationId: "${applicationId}",

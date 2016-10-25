@@ -1,5 +1,6 @@
 <resources>
     <!--<string name="map_debug_key">AIzaSyBYMCAFKH4mLDTrkuGNslY0ccEHPLjgRAc</string>-->
     <string name="map_debug_key">AIzaSyDxR79-ULr-XbTxy4Ms8b2xU0gPTafAut0</string>
-    <string name="facebook_app_id">14</string>
+    <string name="facebook_app_id">1763683483869831</string>
+    <string name="in_app_purchase_id">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjL+gu/QeE7uDyf6wQdnXkrW6hTbjPvl9/JVYNpvpNkf4mEbornDbViJbB6aP1lzS9sPmq376Z3rBrcVGYUgV6IH9xHQthMexLjIAhK+Ul2J+0BVrVh2TROJ25IUSb1R2Stik90mIrLcEM1pR9epQfI5U02vyF1Y8jT3QxwFY6FV/mySx1bvsEl2dDS0aQolO7uKdnFfIXxd3Qg2HMv+vil1HQylXsIeLm4LAbPwTND73T9StKgntjU1elHnIyTOrc6lxb16+U77DEbBGc9A5cw2CUFWi0dnHbc5DazHdJjBU8qYmRytOc1L6UeWmhYLX/l3AAX3rAiDt5TZtvcKm7wIDAQAB</string>
 </resources>

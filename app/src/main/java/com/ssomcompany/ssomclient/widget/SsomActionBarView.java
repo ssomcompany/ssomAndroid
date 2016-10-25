@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -197,7 +198,15 @@ public class SsomActionBarView extends RelativeLayout {
 
     public void setHeartCount(int count) {
         imgHeart.setText(String.valueOf(count));
+        if(count > 2) {
+            setHeartRefillTime("--:--");
+        }
         setHeartIconOnOff(count != 0);
+    }
+
+    public int getHeartCount() {
+        if(!TextUtils.isEmpty(imgHeart.getText())) return Integer.parseInt(imgHeart.getText().toString());
+        return 0;
     }
 
     public void setHeartRefillTime(String time) {

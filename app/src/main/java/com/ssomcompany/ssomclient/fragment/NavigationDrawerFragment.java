@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -32,10 +33,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.adapter.DrawerMenuAdapter;
@@ -132,6 +129,9 @@ public class NavigationDrawerFragment extends Fragment {
         TextView tvSsomHomepage = (TextView) view.findViewById(R.id.tv_ssom_homepage);
         TextView tvMakeHeart = (TextView) view.findViewById(R.id.tv_make_heart);
 
+        imgToday.setDefaultImageResId(0);
+        imgToday.setErrorImageResId(0);
+
         todayPhoto.setOnClickListener(menuItemClickListener);
         tvLoginOrLogout.setOnClickListener(menuItemClickListener);
         tvSsomHomepage.setOnClickListener(menuItemClickListener);
@@ -175,11 +175,11 @@ public class NavigationDrawerFragment extends Fragment {
         Log.d(TAG, "today image : " + session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""));
 
         if(TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""))) {
-            imgToday.setImageResource(0);
+            imgToday.setLocalImageBitmap(BitmapFactory.decodeResource(null, 0));
             return;
         }
 
-        if(NetworkManager.getInstance().getBitmapFromCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "")) == null) {
+        if(NetworkManager.getInstance().getBitmapFromMemoryCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "")) == null) {
             ImageRequest imageRequest = new ImageRequest(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""), new Response.Listener<Bitmap>() {
 
                 @Override
@@ -187,8 +187,8 @@ public class NavigationDrawerFragment extends Fragment {
                     NetworkManager.getInstance().addBitmapToCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""), bitmap);
                     imgToday.setLocalImageBitmap(bitmap);
                 }
-            }, 800  // max width
-                    , 600  // max height
+            }, 0  // max width
+                    , 0  // max height
                     , ImageView.ScaleType.CENTER  // scale type
                     , Bitmap.Config.RGB_565  // decode config
                     , new Response.ErrorListener() {
@@ -199,7 +199,7 @@ public class NavigationDrawerFragment extends Fragment {
             });
             Volley.newRequestQueue(getActivity()).add(imageRequest);
         } else {
-            imgToday.setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "")));
+            imgToday.setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromMemoryCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "")));
         }
     }
 

@@ -80,6 +80,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                         chatRoomItem = new ChatRoomItem();
                         chatRoomItem.setId(response.getData().getChatroomId());
                         chatRoomItem.setOwnerId(getUserId());
+                        chatRoomItem.setOwnerImageUrl(getTodayImageUrl());
                         chatRoomItem.setParticipantId(ssomItem.getUserId());
                         chatRoomItem.setParticipantImageUrl(ssomItem.getImageUrl());
                         chatRoomItem.setSsomType(ssomItem.getSsomType());
@@ -188,7 +189,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 dialogOkBtn = R.string.dialog_meet;
                 dialogNoBtn = R.string.dialog_cancel;
             } else {
-                if (CommonConst.MEETING_REQUEST.equals(chatRoomItem.getStatus())) {
+                if (CommonConst.Chatting.MEETING_REQUEST.equals(chatRoomItem.getStatus())) {
                     boolean isMyRequest = getUserId().equals(chatRoomItem.getRequestId());
                     // 내가 요청한거면 요청취소, 내가 요청한게 아니면 만남수락
                     ssomBar.setChattingRoomBtnMeetingOnOff(!isMyRequest);
@@ -198,7 +199,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                     dialogMsg = isMyRequest ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message;
                     dialogOkBtn = isMyRequest ? R.string.chat_room_info_btn_sent : R.string.dialog_meet_apply;
                     dialogNoBtn = isMyRequest ? R.string.dialog_close : R.string.dialog_not_now;
-                } else if(CommonConst.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
+                } else if(CommonConst.Chatting.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
                     // 만남 중이니 서로 만남취소 가능
                     ssomBar.setChattingRoomBtnMeetingOnOff(false);
                     ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_finish));
@@ -207,7 +208,6 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                     dialogOkBtn = R.string.dialog_meet_finish;
                     dialogNoBtn = R.string.dialog_close;
                 } else {
-                    // 실제로 접근 불가능함
                     methodType = NetworkConstant.Method.POST;
                     dialogMsg = R.string.dialog_meet_request_message;
                     dialogOkBtn = R.string.dialog_meet;
@@ -231,7 +231,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                                                         switch (methodType) {
                                                             case NetworkConstant.Method.PUT:
                                                                 chatRoomItem.setRequestId(getUserId());
-                                                                chatRoomItem.setStatus(CommonConst.MEETING_APPROVE);
+                                                                chatRoomItem.setStatus(CommonConst.Chatting.MEETING_APPROVE);
                                                                 break;
                                                             case NetworkConstant.Method.DELETE:
                                                                 chatRoomItem.setRequestId(null);
@@ -240,7 +240,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                                                             case NetworkConstant.Method.POST:
                                                             default:
                                                                 chatRoomItem.setRequestId(getUserId());
-                                                                chatRoomItem.setStatus(CommonConst.MEETING_REQUEST);
+                                                                chatRoomItem.setStatus(CommonConst.Chatting.MEETING_REQUEST);
                                                                 break;
                                                         }
                                                         setMeetingButton();
@@ -287,7 +287,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         }
 
         if(CURRENT_STATE == STATE_CHAT_ROOM) {
-            if(chatRoomItem != null && CommonConst.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
+            if(chatRoomItem != null && CommonConst.Chatting.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
                 hideSoftKeyboard();
                 UiUtils.makeCommonDialog(SsomChattingActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
                         R.string.dialog_notice, R.style.ssom_font_20_red_pink_bold, R.string.dialog_meet_finish_by_exit_message,
@@ -369,13 +369,30 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 chat.setTimestamp(intent.getLongExtra(CommonConst.Intent.TIMESTAMP, 0));
                 if(!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS))) {
                     String status = intent.getStringExtra(CommonConst.Intent.STATUS);
-                    chat.setStatus(status.equals(CommonConst.MEETING_REQUEST) ?
-                            ChattingItem.MessageType.request : ChattingItem.MessageType.approve);
-                    chat.setMsgType("SYSTEM");
-                    chatRoomItem.setStatus(status.equals(CommonConst.MEETING_REQUEST) ?
-                            CommonConst.MEETING_REQUEST : CommonConst.MEETING_APPROVE);
+                    ChattingItem.MessageType messageType;
+                    switch (status) {
+                        case CommonConst.Chatting.MEETING_REQUEST:
+                            messageType = ChattingItem.MessageType.request;
+                            break;
+                        case CommonConst.Chatting.MEETING_APPROVE:
+                            messageType = ChattingItem.MessageType.approve;
+                            break;
+                        case CommonConst.Chatting.MEETING_CANCEL:
+                            messageType = ChattingItem.MessageType.cancel;
+                            break;
+                        case CommonConst.Chatting.MEETING_COMPLETE:
+                            messageType = ChattingItem.MessageType.finish;
+                            break;
+                        default:
+                            messageType = null;
+                            break;
+                    }
+
+                    chat.setStatus(messageType);
+                    chat.setMsgType(CommonConst.Chatting.SYSTEM);
+                    chatRoomItem.setStatus(status);
                 } else {
-                    chat.setMsgType("NORMAL");
+                    chat.setMsgType(CommonConst.Chatting.NORMAL);
                 }
                 chattingFragment.addChatting(chat);
             } else {

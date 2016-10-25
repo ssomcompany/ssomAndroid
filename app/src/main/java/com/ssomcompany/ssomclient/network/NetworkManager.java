@@ -15,7 +15,6 @@ import com.google.gson.reflect.TypeToken;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.network.model.BaseRequest;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
-import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -30,11 +29,14 @@ public class NetworkManager {
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
     private BitmapLruCache bitmapCache;
+    private DiskImageLruCache diskCache;
+
 
     private NetworkManager() {
         mRequestQueue = getRequestQueue();
 
         bitmapCache = new BitmapLruCache();
+        diskCache = new DiskImageLruCache(BaseApplication.getInstance());
         mImageLoader = new ImageLoader(mRequestQueue, bitmapCache);
     }
 
@@ -47,19 +49,54 @@ public class NetworkManager {
     }
 
     public Bitmap getBitmapFromCache(String key) {
-        if(key == null) return null;
-        return bitmapCache.getBitmap(key);
-    }
-
-    public void addBitmapToCache(String key, Bitmap cacheBitmap) {
-        if(getBitmapFromCache(key) == null) {
-            this.bitmapCache.putBitmap(key, cacheBitmap);
+        if(hasBitmapFromMemoryCache(key)) {
+            return getBitmapFromMemoryCache(key);
+        } else {
+            return getBitmapFromDiskCache(key);
         }
     }
 
-    public void removeBitmapFromCache(String key) {
+    public Bitmap getBitmapFromMemoryCache(String key) {
+        if(key == null) return null;
+        Log.d(TAG, "get bitmap from memory cache");
+        return bitmapCache.getBitmap(key);
+    }
+
+    public Bitmap getBitmapFromDiskCache(String key) {
+        Log.d(TAG, "get bitmap from disk cache");
+        return diskCache.getBitmap(key);
+    }
+
+    public void addBitmapToCache(String key, Bitmap cacheBitmap) {
+        Log.d(TAG, "addBitmapToCache called");
+
+        if(!hasBitmapFromMemoryCache(key)) {
+            Log.d(TAG, "stored in memory cache");
+            this.bitmapCache.putBitmap(key, cacheBitmap);
+        }
+
+        // Also add to disk cache
+        if(!hasBitmapFromDiskCache(key)) {
+            Log.d(TAG, "stored in disk cache");
+            diskCache.put(key, cacheBitmap);
+        }
+    }
+
+    public void removeBitmapFromMemoryCache(String key) {
         if(key == null) return;
         this.bitmapCache.remove(key);
+    }
+
+    public boolean hasBitmapInCache(String key) {
+        return hasBitmapFromMemoryCache(key) || hasBitmapFromDiskCache(key);
+    }
+
+    public boolean hasBitmapFromDiskCache(String key) {
+        return diskCache.containsKey(key);
+    }
+
+    public boolean hasBitmapFromMemoryCache(String key) {
+        return !TextUtils.isEmpty(key) && bitmapCache.getBitmap(key) != null;
     }
 
     public RequestQueue getRequestQueue() {

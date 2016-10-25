@@ -24,6 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.network.api.AddHeartCount;
 import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
 import com.ssomcompany.ssomclient.network.api.DeleteChattingRoom;
 import com.ssomcompany.ssomclient.network.api.DeleteTodayPhoto;
@@ -31,6 +32,7 @@ import com.ssomcompany.ssomclient.network.api.FacebookLogin;
 import com.ssomcompany.ssomclient.network.api.GetApplicationVersion;
 import com.ssomcompany.ssomclient.network.api.GetChattingList;
 import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
+import com.ssomcompany.ssomclient.network.api.GetHeartCount;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
 import com.ssomcompany.ssomclient.network.api.SendChattingMessage;
 import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
@@ -113,10 +115,10 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomLogin.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void facebookLogin(String token, NetworkManager.NetworkListener<T> listener) {
-        FacebookLogin.Request request = new FacebookLogin.Request();
+    public static <T extends BaseResponse> void facebookLogin(String token, String playerId, NetworkManager.NetworkListener<T> listener) {
+        FacebookLogin.Request request = new FacebookLogin.Request().setPlayerId(playerId);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION,
-                "Basic " + Base64.encodeToString(("Bearer " + token).getBytes(), Base64.DEFAULT));
+                "Bearer " + token);
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<FacebookLogin.Response>>() {}.getType(), listener);
@@ -223,6 +225,23 @@ public class APICaller {
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<DeleteTodayPhoto.Response>>() {}.getType(), listener);
+    }
+
+    public static <T extends BaseResponse> void getHeartCount(String token, NetworkManager.NetworkListener<T> listener) {
+        GetHeartCount.Request request = new GetHeartCount.Request();
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<GetHeartCount.Response>>() {}.getType(), listener);
+    }
+
+    public static <T extends BaseResponse> void addHeartCount(String token, String count, String purchaseToken,
+                                                              NetworkManager.NetworkListener<T> listener) {
+        AddHeartCount.Request request = new AddHeartCount.Request().setCount(count).setDevice("android").setToken(purchaseToken);
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<AddHeartCount.Response>>() {}.getType(), listener);
     }
 
     public static void ssomImageUpload(final BaseActivity activity, Response.Listener<NetworkResponse> listener,

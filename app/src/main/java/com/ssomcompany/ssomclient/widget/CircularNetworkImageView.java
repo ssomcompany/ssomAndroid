@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.util.AttributeSet;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.ssomcompany.ssomclient.common.RoundImage;
 import com.ssomcompany.ssomclient.common.Util;
 
 public class CircularNetworkImageView extends SsomNetworkImageView {
@@ -29,6 +30,7 @@ public class CircularNetworkImageView extends SsomNetworkImageView {
     @Override
     public void setImageBitmap(Bitmap bm) {
         if(bm==null) return;
-        setImageDrawable(Util.getCircleBitmap(bm, bm.getWidth()));
+//        setImageDrawable(Util.getCircleBitmap(bm, bm.getWidth()));
+        setImageDrawable(new RoundImage(Util.cropCenter(bm)));
     }
 }

@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,13 +20,11 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Response;
 import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
@@ -140,9 +137,9 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                     @Override
                     public void onResponse(BaseResponse response) {
                         if(response.isSuccess()) {
-                            profileImage.setImageResource(0);
+                            profileImage.setLocalImageBitmap(null);
                             getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "");
-                            NetworkManager.getInstance().removeBitmapFromCache(getTodayImageUrl());
+                            NetworkManager.getInstance().removeBitmapFromMemoryCache(getTodayImageUrl());
                             picturePath = "";
                             mCurrentPhotoPath = "";
                             UiUtils.makeToastMessage(SsomTodayProfileActivity.this, "오늘의 사진을 삭제했쏨!");
@@ -158,54 +155,72 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                     return;
                 }
 
-                APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
-                    @Override
-                    public void onResponse(NetworkResponse response) {
-                        Log.d(TAG, "upload success : " + response);
-                        dismissProgressDialog();
-                        if(response.statusCode != 200 || response.data == null) {
-                            showErrorMessage();
-                            return;
-                        }
-
-                        String jsonData = new String(response.data);
-                        Gson gson = new Gson();
-                        Map data = gson.fromJson(jsonData, Map.class);
-
-                        if(data.get("fileId") == null) {
-                            showErrorMessage();
-                            return;
-                        }
-
-                        String fileId = data.get("fileId").toString();
-                        final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
-                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
-
-                        Bitmap saveBitmap = BitmapFactory.decodeFile(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
-
-                        int orientation = Util.getOrientationFromUri(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
-                        if(orientation != 0) {
-                            Matrix matrix = new Matrix();
-                            matrix.postRotate(orientation);
-                            saveBitmap = Bitmap.createBitmap(saveBitmap, 0, 0, saveBitmap.getWidth(), saveBitmap.getHeight(), matrix, true);
-                        }
-
-                        NetworkManager.getInstance().addBitmapToCache(imageUrl, saveBitmap);
-
-                        setResult(RESULT_OK);
-                        finish();
-                    }
-                }, currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
-
-//                UploadFiles uploadTask = new UploadFiles() {
+//                APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
 //                    @Override
-//                    protected void onPostExecute(String result) {
-//                        super.onPostExecute(result);
-//                        Log.e(TAG, "Response from server: " + result);
-//                    }
-//                };
+//                    public void onResponse(NetworkResponse response) {
+//                        Log.d(TAG, "upload success : " + response);
+//                        dismissProgressDialog();
+//                        if(response.statusCode != 200 || response.data == null) {
+//                            showErrorMessage();
+//                            return;
+//                        }
 //
-//                uploadTask.execute(getToken(), currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
+//                        String jsonData = new String(response.data);
+//                        Gson gson = new Gson();
+//                        Map data = gson.fromJson(jsonData, Map.class);
+//
+//                        if(data.get(CommonConst.Intent.FILE_ID) == null) {
+//                            showErrorMessage();
+//                            return;
+//                        }
+//
+//                        String fileId = data.get(CommonConst.Intent.FILE_ID).toString();
+//                        final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
+//                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
+//
+//                        Bitmap saveBitmap = BitmapFactory.decodeFile(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
+//
+//                        int orientation = Util.getOrientationFromUri(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
+//                        if(orientation != 0) {
+//                            Matrix matrix = new Matrix();
+//                            matrix.postRotate(orientation);
+//                            saveBitmap = Bitmap.createBitmap(saveBitmap, 0, 0, saveBitmap.getWidth(), saveBitmap.getHeight(), matrix, true);
+//                        }
+//
+//                        NetworkManager.getInstance().addBitmapToCache(imageUrl, saveBitmap);
+//
+//                        setResult(RESULT_OK);
+//                        finish();
+//                    }
+//                }, currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
+
+                final UploadFiles uploadTask = new UploadFiles() {
+                    @Override
+                    protected void onPostExecute(String result) {
+                        super.onPostExecute(result);
+                        Log.d(TAG, "Response from server: " + result);
+                        Gson gson = new Gson();
+                        Map data = gson.fromJson(result, Map.class);
+                        if(data.get(CommonConst.Intent.FILE_ID) != null) {
+                            String fileId = data.get(CommonConst.Intent.FILE_ID).toString();
+                            final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
+                            getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
+                            setResult(RESULT_OK);
+                            finish();
+                        } else {
+                            showErrorMessage();
+                        }
+                        dismissProgressDialog();
+                    }
+                };
+
+                uploadTask.execute(getToken(), currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
+                showProgressDialog(true, new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        uploadTask.cancel(true);
+                    }
+                });
                 break;
         }
     }

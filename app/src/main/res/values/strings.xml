@@ -142,6 +142,14 @@
     <string name="use_policy">이용 약관</string>
     <string name="question">문의 하기</string>
 
+    <!--heart store-->
+    <string name="store_title">하트 만들기</string>
+    <string name="store_heart_item_first_price">￦ 4,900</string>
+    <string name="store_heart_item_second_price">￦ 15,900</string>
+    <string name="store_heart_item_third_price">￦ 28,900</string>
+    <string name="store_heart_item_fourth_price">￦ 39,900</string>
+    <string name="heart_not_enough_go_to_store">하트가 부족해 쏨타기를 진행할 수 없어요.. \n상점으로 이동하시겠어요?</string>
+
     <!-- today profile -->
     <string name="today_photo">오늘의 사진</string>
     <string name="today_load_image">앨범 불러오기</string>

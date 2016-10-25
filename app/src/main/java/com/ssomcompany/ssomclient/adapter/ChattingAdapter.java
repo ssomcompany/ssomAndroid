@@ -93,7 +93,7 @@ public class ChattingAdapter extends BaseAdapter {
             // initial message
             holder.initialMessage = (LinearLayout) convertView.findViewById(R.id.initial_message);
             // request message
-            holder.requestMessage = (TextView) convertView.findViewById(R.id.request_received_message);
+            holder.requestMessage = (TextView) convertView.findViewById(R.id.request_message);
             // approve message
             holder.approveMessage = (TextView) convertView.findViewById(R.id.approve_message);
             // finish message
@@ -107,46 +107,53 @@ public class ChattingAdapter extends BaseAdapter {
         // list view item setting
         ChattingItem item = itemList.get(position);
 
-        /**
-         * initial message layout setting
-         */
-        if(item.getStatus() == ChattingItem.MessageType.initial) {
-            holder.initialMessage.setVisibility(View.VISIBLE);
-            holder.requestMessage.setVisibility(View.GONE);
-            holder.approveMessage.setVisibility(View.GONE);
-            holder.finishMessage.setVisibility(View.GONE);
-            holder.sendMessageLayout.setVisibility(View.GONE);
-            holder.receiveMessageLayout.setVisibility(View.GONE);
-        } else if(item.getStatus() == ChattingItem.MessageType.finish) {
+        if(CommonConst.Chatting.SYSTEM.equals(item.getMsgType())) {
             /**
-             * finish message layout setting
+             * initial message layout setting
              */
-            holder.initialMessage.setVisibility(View.GONE);
-            holder.requestMessage.setVisibility(View.GONE);
-            holder.approveMessage.setVisibility(View.GONE);
-            holder.finishMessage.setVisibility(View.VISIBLE);
-            holder.sendMessageLayout.setVisibility(View.GONE);
-            holder.receiveMessageLayout.setVisibility(View.GONE);
-        } else if(item.getStatus() == ChattingItem.MessageType.request) {
-            /**
-             * request message setting
-             */
-            holder.initialMessage.setVisibility(View.GONE);
-            holder.requestMessage.setVisibility(View.VISIBLE);
-            holder.approveMessage.setVisibility(View.GONE);
-            holder.finishMessage.setVisibility(View.GONE);
-            holder.sendMessageLayout.setVisibility(View.GONE);
-            holder.receiveMessageLayout.setVisibility(View.GONE);
-        } else if(item.getStatus() == ChattingItem.MessageType.approve) {
-            /**
-             * approve message setting
-             */
-            holder.initialMessage.setVisibility(View.GONE);
-            holder.requestMessage.setVisibility(View.GONE);
-            holder.approveMessage.setVisibility(View.VISIBLE);
-            holder.finishMessage.setVisibility(View.GONE);
-            holder.sendMessageLayout.setVisibility(View.GONE);
-            holder.receiveMessageLayout.setVisibility(View.GONE);
+            if (item.getStatus() == ChattingItem.MessageType.initial) {
+                holder.initialMessage.setVisibility(View.VISIBLE);
+                holder.requestMessage.setVisibility(View.GONE);
+                holder.approveMessage.setVisibility(View.GONE);
+                holder.finishMessage.setVisibility(View.GONE);
+                holder.sendMessageLayout.setVisibility(View.GONE);
+                holder.receiveMessageLayout.setVisibility(View.GONE);
+            } else if (item.getStatus() == ChattingItem.MessageType.finish ||
+                    CommonConst.Chatting.MEETING_COMPLETE.equals(item.getMsg())) {
+                /**
+                 * finish message layout setting
+                 */
+                holder.initialMessage.setVisibility(View.GONE);
+                holder.requestMessage.setVisibility(View.GONE);
+                holder.approveMessage.setVisibility(View.GONE);
+                holder.finishMessage.setVisibility(View.VISIBLE);
+                holder.sendMessageLayout.setVisibility(View.GONE);
+                holder.receiveMessageLayout.setVisibility(View.GONE);
+            } else if (item.getStatus() == ChattingItem.MessageType.request ||
+                    CommonConst.Chatting.MEETING_REQUEST.equals(item.getMsg())) {
+                /**
+                 * request message setting
+                 */
+                holder.initialMessage.setVisibility(View.GONE);
+                holder.requestMessage.setVisibility(View.VISIBLE);
+                holder.requestMessage.setText(((BaseActivity) context).getUserId().equals(item.getFromUserId()) ?
+                        R.string.chat_message_request_sent : R.string.chat_message_request_received);
+                holder.approveMessage.setVisibility(View.GONE);
+                holder.finishMessage.setVisibility(View.GONE);
+                holder.sendMessageLayout.setVisibility(View.GONE);
+                holder.receiveMessageLayout.setVisibility(View.GONE);
+            } else if (item.getStatus() == ChattingItem.MessageType.approve ||
+                    CommonConst.Chatting.MEETING_APPROVE.equals(item.getMsg())) {
+                /**
+                 * approve message setting
+                 */
+                holder.initialMessage.setVisibility(View.GONE);
+                holder.requestMessage.setVisibility(View.GONE);
+                holder.approveMessage.setVisibility(View.VISIBLE);
+                holder.finishMessage.setVisibility(View.GONE);
+                holder.sendMessageLayout.setVisibility(View.GONE);
+                holder.receiveMessageLayout.setVisibility(View.GONE);
+            }
         } else {
             holder.initialMessage.setVisibility(View.GONE);
             holder.finishMessage.setVisibility(View.GONE);
@@ -160,7 +167,7 @@ public class ChattingAdapter extends BaseAdapter {
                 holder.sendMessageLayout.setVisibility(View.GONE);
                 holder.receiveMessageLayout.setVisibility(View.VISIBLE);
 
-                if(getItem(position - 1) == null || !item.getFromUserId().equals(getItem(position - 1).getFromUserId())
+                if(position == 0 || getItem(position - 1) == null || !item.getFromUserId().equals(getItem(position - 1).getFromUserId())
                         || !Util.isSameTimeBetweenTwoTimes(item.getTimestamp(), getItem(position - 1).getTimestamp())) {
                     holder.leftChatProfileLayout.setVisibility(View.VISIBLE);
                     // profile image
@@ -190,14 +197,13 @@ public class ChattingAdapter extends BaseAdapter {
                 holder.receiveMessageLayout.setVisibility(View.GONE);
                 holder.sendMessageLayout.setVisibility(View.VISIBLE);
 
-                if(getItem(position - 1) == null || !item.getFromUserId().equals(getItem(position - 1).getFromUserId())
+                if(position == 0 || getItem(position - 1) == null || !item.getFromUserId().equals(getItem(position - 1).getFromUserId())
                         || !Util.isSameTimeBetweenTwoTimes(item.getTimestamp(), getItem(position - 1).getTimestamp())) {
                     holder.rightChatProfileLayout.setVisibility(View.VISIBLE);
                     // profile image
                     holder.rightChatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
                     holder.rightChatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
-                    holder.rightChatProfileImage.setImageUrl(((BaseActivity) context).getUserId().equals(roomItem.getOwnerId()) ?
-                            roomItem.getOwnerImageUrl() : roomItem.getParticipantImageUrl(), mImageLoader);
+                    holder.rightChatProfileImage.setImageUrl(((BaseActivity) context).getTodayImageUrl(), mImageLoader);
                 } else {
                     holder.rightChatProfileLayout.setVisibility(View.INVISIBLE);
                 }
@@ -217,6 +223,22 @@ public class ChattingAdapter extends BaseAdapter {
     }
 
     public void add(ChattingItem item) {
+        if(CommonConst.Chatting.SYSTEM.equals(item.getMsgType())) {
+            switch (item.getMsg()) {
+                case CommonConst.Chatting.MEETING_REQUEST :
+                    item.setStatus(ChattingItem.MessageType.request);
+                    break;
+                case CommonConst.Chatting.MEETING_APPROVE :
+                    item.setStatus(ChattingItem.MessageType.approve);
+                    break;
+                case CommonConst.Chatting.MEETING_CANCEL :
+                    item.setStatus(ChattingItem.MessageType.cancel);
+                    break;
+                case CommonConst.Chatting.MEETING_COMPLETE :
+                    item.setStatus(ChattingItem.MessageType.finish);
+                    break;
+            }
+        }
         itemList.add(item);
     }
 
@@ -225,6 +247,7 @@ public class ChattingAdapter extends BaseAdapter {
         item.setMsg(message);
         item.setFromUserId(((BaseActivity) context).getUserId());
         item.setTimestamp(System.currentTimeMillis());
+        item.setMsgType(CommonConst.Chatting.NORMAL);
         itemList.add(item);
         notifyDataSetChanged();
     }

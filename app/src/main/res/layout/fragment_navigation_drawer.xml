@@ -18,8 +18,8 @@
 
         <FrameLayout
             android:id="@+id/today_photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_marginTop="22dp"
             android:layout_marginLeft="15dp"
             android:background="@drawable/drawer_bg_today_photo">

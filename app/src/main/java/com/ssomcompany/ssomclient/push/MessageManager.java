@@ -18,6 +18,7 @@ import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.GetHeartCount;
 import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 
@@ -29,11 +30,14 @@ public class MessageManager {
     private static MessageManager mInstance;
 
     private static final int NOTIFICATION_ID = 6;
+    public static final String BROADCAST_HEART_COUNT_CHANGE = "com.ssomcompany.ssomclient.BROADCAST_HEART_COUNT_CHANGE";
     public static final String BROADCAST_MESSAGE_COUNT_CHANGE = "com.ssomcompany.ssomclient.BROADCAST_MESSAGE_COUNT_CHANGE";
     public static final String BROADCAST_MESSAGE_RECEIVED_PUSH = "com.ssomcompany.ssomclient.BROADCAST_MESSAGE_RECEIVED_PUSH";
     public static final String EXTRA_KEY_MESSAGE_COUNT = "messageCount";
+    public static final String EXTRA_KEY_HEART_COUNT = "heartCount";
 
     private Integer alarmCount = null;
+    private Integer heartCount = null;
     private int pushCount = 0;
 
     private final LocalBroadcastManager localBroadcastManager;
@@ -53,6 +57,11 @@ public class MessageManager {
     public void getMessageCount(String token) {
         Log.d(TAG, "getMessageCount call");
         getUnreadCount(token);
+    }
+
+    public void getHeartCount(String token) {
+        Log.d(TAG, "getHeartCount call");
+        getTotalHeartCount(token);
     }
 
     // TODO push message setting 화면
@@ -146,6 +155,28 @@ public class MessageManager {
         notificationManager.cancel(NOTIFICATION_ID);
     }
 
+    private void getTotalHeartCount(String token) {
+        Log.i(TAG, "::getHeartCount:");
+
+        APICaller.getHeartCount(token, new NetworkManager.NetworkListener<SsomResponse<GetHeartCount.Response>>() {
+            @Override
+            public void onResponse(SsomResponse<GetHeartCount.Response> response) {
+                if(response.isSuccess() && response.getData() != null) {
+                    Integer data = response.getData().getHeartsCount();
+
+                    changeHeartCount(data);
+
+                    Log.d(TAG, "heartCount : " + data);
+                } else {
+                    Log.i(TAG,
+                            "getHeartCount error with code " + response.getResultCode() + ", message : " + response.getMessage(),
+                            response.getError());
+                    UiUtils.makeToastMessage(BaseApplication.getInstance(), BaseApplication.getInstance().getResources().getString(R.string.error_occurred));
+                }
+            }
+        });
+    }
+
     private void getUnreadCount(String token) {
         Log.i(TAG, "::getUnreadCount:");
 
@@ -166,6 +197,21 @@ public class MessageManager {
                 }
             }
         });
+    }
+
+    private void changeHeartCount(Integer count) {
+        if (count == null) {
+            heartCount = 0;
+        } else {
+            heartCount = count;
+        }
+
+        Log.d(TAG, "sendBroadcast: action=BROADCAST_HEART_COUNT_CHANGE");
+
+        Intent countChangeIntent = new Intent(BROADCAST_HEART_COUNT_CHANGE);
+        countChangeIntent.putExtra(EXTRA_KEY_HEART_COUNT, heartCount);
+
+        localBroadcastManager.sendBroadcast(countChangeIntent);
     }
 
     private void changeCount(Integer count) {
