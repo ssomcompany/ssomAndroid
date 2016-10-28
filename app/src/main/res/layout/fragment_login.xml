@@ -43,7 +43,7 @@
             android:layout_height="24dp"
             android:background="@drawable/bg_edit_underline_selector"
             android:padding="0dp"
-            android:inputType="textEmailAddress"
+            android:inputType="textEmailAddress|textNoSuggestions"
             android:gravity="top"
             android:layout_toRightOf="@id/tv_login_email"
             android:textColorHint="@color/pinkish_gray_two"

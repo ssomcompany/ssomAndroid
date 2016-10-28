@@ -75,7 +75,8 @@ public class IntroActivity extends BaseActivity {
                         e.printStackTrace();
                     }
                 } else {
-                    showErrorMessage();
+                    UiUtils.makeToastMessage(IntroActivity.this, "네트워크에 연결할 수 없습니다. 다시 확인하시고 시도해주세요.");
+                    finish();
                 }
             }
         });

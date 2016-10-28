@@ -8,8 +8,10 @@ import com.android.vending.billing.util.IabHelper;
 import com.android.vending.billing.util.IabResult;
 import com.android.vending.billing.util.Inventory;
 import com.android.vending.billing.util.Purchase;
+import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.AddHeartCount;
@@ -181,26 +183,8 @@ public class InAppBillingHelper {
         // 해당 구매 콜백으로 부터 가져온다.
         Log.d(TAG, "success... : " + purchase.toString());
 
-//        if(purchase.getPurchaseState() == 0) {
-            APICaller.addHeartCount(mActivity.getToken(), getHeartCount(refinedSKU), purchase.getToken(),
-                    new NetworkManager.NetworkListener<SsomResponse<AddHeartCount.Response>>() {
-                @Override
-                public void onResponse(SsomResponse<AddHeartCount.Response> response) {
-                    if(response.isSuccess()) {
-                        Log.d(TAG, "success... : " + response.getData().toString());
-                        // 서버에서 하트를 채웠으므로 소진한다
-                        consumeItem(refinedSKU, purchase);
-
-                        Intent intent = new Intent();
-                        intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
-                        intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.getData().getHeartsCount());
-                        LocalBroadcastManager.getInstance(mActivity).sendBroadcast(intent);
-                    } else {
-                        mActivity.showErrorMessage();
-                    }
-                }
-            });
-//        }
+        // 소진에 성공하면 하트를 채워줌
+        consumeItem(refinedSKU, purchase);
     }
 
     // 실제 소진 처리.
@@ -218,6 +202,26 @@ public class InAppBillingHelper {
                     if (result.isSuccess()) {
                         // 소진에 성공하면 캐시된 값을 지운다.
                         mOwnedItems.remove(purchase.getSku());
+
+                        APICaller.addHeartCount(mActivity.getToken(), getHeartCount(refinedSKU), purchase.getToken(),
+                                new NetworkManager.NetworkListener<SsomResponse<AddHeartCount.Response>>() {
+                                    @Override
+                                    public void onResponse(SsomResponse<AddHeartCount.Response> response) {
+                                        if(response.isSuccess()) {
+                                            Log.d(TAG, "success... : " + response.getData().toString());
+
+                                            Intent intent = new Intent();
+                                            intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
+                                            intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.getData().getHeartsCount());
+                                            LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(intent);
+
+                                            UiUtils.makeToastMessage(mActivity, "구매해주셔서 감사합니다. 하트를 채워드릴게욤 =)");
+                                        } else {
+                                            mActivity.showErrorMessage();
+                                        }
+                                        mActivity.dismissProgressDialog();
+                                    }
+                                });
                     } else {
                         // TODO
 //                        ErrorHandler.handleLocalError(mActivity, LocalErrorCode.ITEM_FATAL_ERROR);
@@ -236,28 +240,10 @@ public class InAppBillingHelper {
             final String sku = mOwnedItems.get(sPurchaseCount);
             final Purchase purchase = mInventory.getPurchase(sku);
             if (purchase != null) {
-                APICaller.addHeartCount(mActivity.getToken(), getHeartCount(sku), purchase.getToken(),
-                        new NetworkManager.NetworkListener<SsomResponse<AddHeartCount.Response>>() {
-                            @Override
-                            public void onResponse(SsomResponse<AddHeartCount.Response> response) {
-                                if(response.isSuccess()) {
-                                    Log.d(TAG, "success... : " + response.getData().toString());
-                                    // 서버에서 하트를 채웠으므로 소진한다
-                                    sPurchaseCount++;
-                                    consumeItem(sku, null);
-
-                                    // heart 갯수 갱신
-                                    Intent intent = new Intent();
-                                    intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
-                                    intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.getData().getHeartsCount());
-                                    LocalBroadcastManager.getInstance(mActivity).sendBroadcast(intent);
-
-                                    consumeAllItemsForServer();
-                                } else {
-                                    mActivity.showErrorMessage();
-                                }
-                            }
-                        });
+                // 소진한다
+                sPurchaseCount++;
+                consumeItem(sku, null);
+                consumeAllItemsForServer();
             }
             else {
                 handleError();
@@ -304,5 +290,19 @@ public class InAppBillingHelper {
 
     public void flagEndAsync() {
         if(mHelper != null) mHelper.flagEndAsync();
+    }
+
+    // 외부 액티비티나 프래그먼트의 onActivityResult함수에서 호출해야 한다.
+    // 해당 메소드가 호출되지 않으면 정상적으로 프로세스가 끝나지 않는다.
+    // mHelper.handleActivityResult 내부에서 onIabPurchaseFinished메소드가 호출된다.
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
+            onActivityResultError(requestCode, resultCode, data);
+        }
+    }
+
+    // 해당 메소드를 상속받아 오버라이딩하여 에러를 처리할 수 있다.
+    public void onActivityResultError(int requestCode, int resultCode, Intent data) {
+        mActivity.dismissProgressDialog();
     }
 }

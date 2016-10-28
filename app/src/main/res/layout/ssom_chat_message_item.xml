@@ -169,6 +169,30 @@
         android:text="@string/chat_message_approve"
         android:visibility="gone"/>
 
+    <LinearLayout
+        android:id="@+id/cancel_message"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#fcfcfc"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/ssom_font_12_red_pink_single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/chat_message_cancel_first" />
+
+        <TextView
+            style="@style/ssom_font_12_pinkish_gray_two_single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/chat_message_cancel_second" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/finish_message"
         style="@style/ssom_font_12_red_pink_single"

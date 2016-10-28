@@ -89,7 +89,7 @@ public class ChatRoomListFragment extends BaseFragment {
         mListView.setMenuCreator(new SwipeMenuCreator() {
             @Override
             public void create(SwipeMenu menu) {
-                SwipeMenuItem deleteItem = new SwipeMenuItem(getActivity());
+                SwipeMenuItem deleteItem = new SwipeMenuItem(getActivity().getApplicationContext());
                 deleteItem.setBackground(R.drawable.bg_chat_delete);
                 deleteItem.setWidth(Util.convertDpToPixel(70));
                 deleteItem.setIcon(R.drawable.icon_trash);

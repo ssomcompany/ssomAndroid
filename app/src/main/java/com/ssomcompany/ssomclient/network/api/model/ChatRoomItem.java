@@ -5,6 +5,7 @@ public class ChatRoomItem extends SsomItem {
     private String ownerId;
     private String participantId;
     private String lastMsg;
+    private String lastMsgType;
     private long lastTimestamp;
     private int unreadCount;
     private String requestId;
@@ -41,6 +42,14 @@ public class ChatRoomItem extends SsomItem {
 
     public void setLastMsg(String lastMsg) {
         this.lastMsg = lastMsg;
+    }
+
+    public String getLastMsgType() {
+        return lastMsgType;
+    }
+
+    public void setLastMsgType(String lastMsgType) {
+        this.lastMsgType = lastMsgType;
     }
 
     public long getLastTimestamp() {

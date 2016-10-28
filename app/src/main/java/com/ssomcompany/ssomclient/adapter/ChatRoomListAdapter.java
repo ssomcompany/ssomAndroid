@@ -135,16 +135,10 @@ public class ChatRoomListAdapter extends BaseAdapter {
                 CommonConst.Chatting.MEETING_APPROVE.equals(item.getLastMsg())) {
             sysStr = context.getString(R.string.chat_message_approve);
             holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
-        } else if(CommonConst.Chatting.MEETING_CANCEL.equals(item.getStatus()) &&
-                CommonConst.Chatting.MEETING_CANCEL.equals(item.getLastMsg())) {
-            sysStr = context.getString(R.string.chat_message_finish);
+        } else if(CommonConst.Chatting.MEETING_CANCEL_COMPLETE.equals(item.getLastMsg())) {
+            sysStr = context.getString(R.string.chat_message_cancel_first);
             holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
-        } else if(CommonConst.Chatting.MEETING_COMPLETE.equals(item.getStatus()) &&
-                CommonConst.Chatting.MEETING_COMPLETE.equals(item.getLastMsg())) {
-            sysStr = context.getString(R.string.chat_message_finish);
-            holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
-        } else if(CommonConst.Chatting.MEETING_OUT.equals(item.getStatus()) &&
-                CommonConst.Chatting.MEETING_OUT.equals(item.getLastMsg())) {
+        } else if(CommonConst.Chatting.MEETING_OUT.equals(item.getLastMsg())) {
             sysStr = context.getString(R.string.chat_message_finish);
             holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
         } else {

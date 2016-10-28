@@ -795,9 +795,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void moveToMyLocation(boolean init) {
-        if(myLocation == null) {
-            myLocation = locationTracker.getLocation();
-        }
+        myLocation = locationTracker.getLocation();
         LatLng myPosition = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
         if(init) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPosition, 15));
@@ -1159,7 +1157,6 @@ public class MainActivity extends BaseActivity
     @Override
     public void onPause() {
         super.onPause();
-        if(locationTracker != null) locationTracker.stopLocationUpdates();
     }
 
     @Override
@@ -1216,5 +1213,12 @@ public class MainActivity extends BaseActivity
         if(mapFragment != null) {
             mapFragment.onLowMemory();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(locationTracker != null) locationTracker.stopLocationUpdates();
     }
 }

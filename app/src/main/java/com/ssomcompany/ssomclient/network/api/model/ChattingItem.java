@@ -55,16 +55,18 @@ public class ChattingItem {
         return fromUserId;
     }
 
-    public void setFromUserId(String fromUserId) {
+    public ChattingItem setFromUserId(String fromUserId) {
         this.fromUserId = fromUserId;
+        return this;
     }
 
     public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public ChattingItem setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+        return this;
     }
 
     public String getMsgType() {

@@ -2,13 +2,13 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -87,17 +87,18 @@ public class ChattingAdapter extends BaseAdapter {
             holder.sendMessageLayout = (RelativeLayout) convertView.findViewById(R.id.send_message_layout);
             holder.rightChatProfileLayout = (FrameLayout) convertView.findViewById(R.id.right_chat_profile_layout);
             holder.rightChatProfileImage = (CircularNetworkImageView) convertView.findViewById(R.id.right_chat_profile_image);
-            holder.rightChatProfileCircle = (ImageView) convertView.findViewById(R.id.right_chat_profile_circle);
             holder.sendMessage = (TextView) convertView.findViewById(R.id.send_message);
             holder.sendTime = (TextView) convertView.findViewById(R.id.send_time);
             // initial message
-            holder.initialMessage = (LinearLayout) convertView.findViewById(R.id.initial_message);
+            holder.initialMessage = convertView.findViewById(R.id.initial_message);
             // request message
             holder.requestMessage = (TextView) convertView.findViewById(R.id.request_message);
             // approve message
-            holder.approveMessage = (TextView) convertView.findViewById(R.id.approve_message);
+            holder.approveMessage = convertView.findViewById(R.id.approve_message);
+            // cancel message
+            holder.cancelMessage = convertView.findViewById(R.id.cancel_message);
             // finish message
-            holder.finishMessage = (TextView) convertView.findViewById(R.id.finish_message);
+            holder.finishMessage = convertView.findViewById(R.id.finish_message);
 
             convertView.setTag(holder);
         } else {
@@ -115,11 +116,23 @@ public class ChattingAdapter extends BaseAdapter {
                 holder.initialMessage.setVisibility(View.VISIBLE);
                 holder.requestMessage.setVisibility(View.GONE);
                 holder.approveMessage.setVisibility(View.GONE);
+                holder.cancelMessage.setVisibility(View.GONE);
+                holder.finishMessage.setVisibility(View.GONE);
+                holder.sendMessageLayout.setVisibility(View.GONE);
+                holder.receiveMessageLayout.setVisibility(View.GONE);
+            } else if (item.getStatus() == ChattingItem.MessageType.cancel ||
+                    CommonConst.Chatting.MEETING_CANCEL_COMPLETE.equals(item.getMsg())) {
+                /**
+                 * cancel message layout setting
+                 */
+                holder.initialMessage.setVisibility(View.GONE);
+                holder.requestMessage.setVisibility(View.GONE);
+                holder.approveMessage.setVisibility(View.GONE);
+                holder.cancelMessage.setVisibility(View.VISIBLE);
                 holder.finishMessage.setVisibility(View.GONE);
                 holder.sendMessageLayout.setVisibility(View.GONE);
                 holder.receiveMessageLayout.setVisibility(View.GONE);
             } else if (item.getStatus() == ChattingItem.MessageType.finish ||
-                    CommonConst.Chatting.MEETING_COMPLETE.equals(item.getMsg()) ||
                     CommonConst.Chatting.MEETING_OUT.equals(item.getMsg())) {
                 /**
                  * finish message layout setting
@@ -127,6 +140,7 @@ public class ChattingAdapter extends BaseAdapter {
                 holder.initialMessage.setVisibility(View.GONE);
                 holder.requestMessage.setVisibility(View.GONE);
                 holder.approveMessage.setVisibility(View.GONE);
+                holder.cancelMessage.setVisibility(View.GONE);
                 holder.finishMessage.setVisibility(View.VISIBLE);
                 holder.sendMessageLayout.setVisibility(View.GONE);
                 holder.receiveMessageLayout.setVisibility(View.GONE);
@@ -140,6 +154,7 @@ public class ChattingAdapter extends BaseAdapter {
                 holder.requestMessage.setText(((BaseActivity) context).getUserId().equals(item.getFromUserId()) ?
                         R.string.chat_message_request_sent : R.string.chat_message_request_received);
                 holder.approveMessage.setVisibility(View.GONE);
+                holder.cancelMessage.setVisibility(View.GONE);
                 holder.finishMessage.setVisibility(View.GONE);
                 holder.sendMessageLayout.setVisibility(View.GONE);
                 holder.receiveMessageLayout.setVisibility(View.GONE);
@@ -151,6 +166,7 @@ public class ChattingAdapter extends BaseAdapter {
                 holder.initialMessage.setVisibility(View.GONE);
                 holder.requestMessage.setVisibility(View.GONE);
                 holder.approveMessage.setVisibility(View.VISIBLE);
+                holder.cancelMessage.setVisibility(View.GONE);
                 holder.finishMessage.setVisibility(View.GONE);
                 holder.sendMessageLayout.setVisibility(View.GONE);
                 holder.receiveMessageLayout.setVisibility(View.GONE);
@@ -160,6 +176,7 @@ public class ChattingAdapter extends BaseAdapter {
             holder.finishMessage.setVisibility(View.GONE);
             holder.requestMessage.setVisibility(View.GONE);
             holder.approveMessage.setVisibility(View.GONE);
+            holder.cancelMessage.setVisibility(View.GONE);
 
             /**
              * receive layout setting
@@ -224,7 +241,7 @@ public class ChattingAdapter extends BaseAdapter {
     }
 
     public void add(ChattingItem item) {
-        if(CommonConst.Chatting.SYSTEM.equals(item.getMsgType())) {
+        if(CommonConst.Chatting.SYSTEM.equals(item.getMsgType()) && !TextUtils.isEmpty(item.getMsg())) {
             switch (item.getMsg()) {
                 case CommonConst.Chatting.MEETING_REQUEST :
                     item.setStatus(ChattingItem.MessageType.request);
@@ -232,10 +249,10 @@ public class ChattingAdapter extends BaseAdapter {
                 case CommonConst.Chatting.MEETING_APPROVE :
                     item.setStatus(ChattingItem.MessageType.approve);
                     break;
-                case CommonConst.Chatting.MEETING_CANCEL :
+                case CommonConst.Chatting.MEETING_CANCEL_COMPLETE :
                     item.setStatus(ChattingItem.MessageType.cancel);
                     break;
-                case CommonConst.Chatting.MEETING_COMPLETE :
+                case CommonConst.Chatting.MEETING_OUT :
                     item.setStatus(ChattingItem.MessageType.finish);
                     break;
             }
@@ -275,14 +292,13 @@ public class ChattingAdapter extends BaseAdapter {
         private RelativeLayout sendMessageLayout;
         private FrameLayout rightChatProfileLayout;
         private CircularNetworkImageView rightChatProfileImage;
-        private ImageView rightChatProfileCircle;
         private TextView sendMessage;
         private TextView sendTime;
 
         /**
          * Initial ssom message
          */
-        private LinearLayout initialMessage;
+        private View initialMessage;
 
         /**
          * Request ssom message
@@ -292,11 +308,16 @@ public class ChattingAdapter extends BaseAdapter {
         /**
          * Approve ssom message
          */
-        private TextView approveMessage;
+        private View approveMessage;
+
+        /**
+         * Cancel ssom message
+         */
+        private View cancelMessage;
 
         /**
          * Finish ssom message
          */
-        private TextView finishMessage;
+        private View finishMessage;
     }
 }

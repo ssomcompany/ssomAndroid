@@ -6,6 +6,24 @@
     android:background="@drawable/bg_detail_round"
     tools:context=".fragment.DetailFragment">
 
+    <FrameLayout
+        android:layout_width="306dp"
+        android:layout_height="248dp"
+        android:background="@drawable/bg_detail_round_top">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/photo_empty"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="74dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/img_write_shadow"/>
+    </FrameLayout>
+
     <com.ssomcompany.ssomclient.widget.RoundedNetworkImageView
         android:id="@+id/profile_img"
         android:layout_width="306dp"

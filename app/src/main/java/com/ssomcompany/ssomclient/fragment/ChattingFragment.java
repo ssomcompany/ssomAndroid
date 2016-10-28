@@ -16,6 +16,7 @@ import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
 import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
 import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
@@ -112,6 +113,11 @@ public class ChattingFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 if(isSending) {
+                    return;
+                }
+
+                if(CommonConst.Chatting.MEETING_OUT.equalsIgnoreCase(roomItem.getStatus())) {
+                    UiUtils.makeToastMessage(getActivity(), "상대방이 방에서 나갔습니다 T.T");
                     return;
                 }
 

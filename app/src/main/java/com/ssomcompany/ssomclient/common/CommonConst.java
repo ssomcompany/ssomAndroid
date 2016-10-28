@@ -38,8 +38,7 @@ public class CommonConst {
         // request string
         public static final String MEETING_REQUEST = "request";
         public static final String MEETING_APPROVE = "approve";
-        public static final String MEETING_CANCEL = "cancel";
-        public static final String MEETING_COMPLETE = "complete";
+        public static final String MEETING_CANCEL_COMPLETE = "cancel/complete";
         public static final String MEETING_OUT = "out";
     }
 

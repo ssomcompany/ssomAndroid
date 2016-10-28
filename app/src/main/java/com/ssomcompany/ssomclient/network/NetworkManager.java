@@ -291,6 +291,8 @@ public class NetworkManager {
                 Log.e(TAG, (null == error ? "Error" : error.getClass().getSimpleName()) + ": " + error);
                 if (null != error) {
                     Log.e(TAG, "status code : " + (null == error.networkResponse ? "N/A" : "" + error.networkResponse.statusCode));
+                    Log.e(TAG, "error message : " + error.getLocalizedMessage());
+                    error.printStackTrace();
                 }
                 if (null != listener) {
                     listener.onErrorResponse(error);

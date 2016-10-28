@@ -175,8 +175,11 @@ public class NavigationDrawerFragment extends Fragment {
         Log.d(TAG, "today image : " + session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""));
 
         if(TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, ""))) {
-            imgToday.setLocalImageBitmap(BitmapFactory.decodeResource(getResources(), android.R.color.transparent));
+//            imgToday.setLocalImageBitmap(BitmapFactory.decodeResource(getResources(), android.R.color.transparent));
+            imgToday.setVisibility(View.GONE);
             return;
+        } else {
+            imgToday.setVisibility(View.VISIBLE);
         }
 
         if(NetworkManager.getInstance().getBitmapFromMemoryCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "")) == null) {

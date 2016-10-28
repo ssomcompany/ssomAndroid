@@ -30,6 +30,7 @@ import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
+import com.ssomcompany.ssomclient.push.MessageManager;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
@@ -171,7 +172,12 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     }
 
     private void setMeetingButton() {
-        if((chatRoomItem.getMinAge() | chatRoomItem.getUserCount()) == 0) {
+        if((chatRoomItem.getMinAge() | chatRoomItem.getUserCount()) == 0 ||
+                CommonConst.Chatting.MEETING_OUT.equalsIgnoreCase(chatRoomItem.getStatus()) ||
+                (CommonConst.Chatting.SYSTEM.equals(chatRoomItem.getLastMsgType()) &&
+                        CommonConst.Chatting.MEETING_OUT.equalsIgnoreCase(chatRoomItem.getLastMsg()))) {
+            chatRoomItem.setStatus(CommonConst.Chatting.MEETING_OUT);
+            chattingFragment.setChatRoomItem(chatRoomItem);
             ssomBar.setChattingRoomBtnMeetingVisibility(false);
         } else {
             ssomBar.setChattingRoomBtnMeetingVisibility(true);
@@ -232,15 +238,30 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                                                             case NetworkConstant.Method.PUT:
                                                                 chatRoomItem.setRequestId(getUserId());
                                                                 chatRoomItem.setStatus(CommonConst.Chatting.MEETING_APPROVE);
+                                                                chattingFragment.addChatting(new ChattingItem()
+                                                                        .setStatus(ChattingItem.MessageType.approve)
+                                                                        .setMsgType(CommonConst.Chatting.SYSTEM)
+                                                                        .setFromUserId(getUserId())
+                                                                        .setTimestamp(System.currentTimeMillis()));
                                                                 break;
                                                             case NetworkConstant.Method.DELETE:
                                                                 chatRoomItem.setRequestId(null);
                                                                 chatRoomItem.setStatus(null);
+                                                                chattingFragment.addChatting(new ChattingItem()
+                                                                        .setStatus(ChattingItem.MessageType.cancel)
+                                                                        .setMsgType(CommonConst.Chatting.SYSTEM)
+                                                                        .setFromUserId(getUserId())
+                                                                        .setTimestamp(System.currentTimeMillis()));
                                                                 break;
                                                             case NetworkConstant.Method.POST:
                                                             default:
                                                                 chatRoomItem.setRequestId(getUserId());
                                                                 chatRoomItem.setStatus(CommonConst.Chatting.MEETING_REQUEST);
+                                                                chattingFragment.addChatting(new ChattingItem()
+                                                                        .setStatus(ChattingItem.MessageType.request)
+                                                                        .setMsgType(CommonConst.Chatting.SYSTEM)
+                                                                        .setFromUserId(getUserId())
+                                                                        .setTimestamp(System.currentTimeMillis()));
                                                                 break;
                                                         }
                                                         setMeetingButton();
@@ -318,7 +339,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
 
             CURRENT_STATE = STATE_CHAT_LIST;
             hideSoftKeyboard();
-            if(chatRoomItem != null && chatRoomItem.getUnreadCount() != 0) unreadCount -= chatRoomItem.getUnreadCount();
+            if(unreadCount > 0 && chatRoomItem != null && chatRoomItem.getUnreadCount() != 0) unreadCount -= chatRoomItem.getUnreadCount();
             changeSsomBarViewForChatRoomList();
             startChatRoomListFragment();
         } else {
@@ -341,64 +362,69 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             return;
         }
 
-        if(fragmentManager.findFragmentById(R.id.chat_container) instanceof ChatRoomListFragment) {
-            // chatting room 화면을 보고 있는 경우에 채팅룸 갱신
-            ArrayList<ChatRoomItem> roomList = roomListFragment.getChatRoomList();
-            int chatRoomId = Integer.parseInt(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID));
-            int roomIndex = 0;
+        if(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equalsIgnoreCase(intent.getAction())) {
 
-            for(int i = 0 ; i < roomList.size() ; i++) {
-                if(roomList.get(i).getId() == chatRoomId) {
-                    roomIndex = i;
-                    break;
-                }
-            }
-            ChatRoomItem tempItem = roomList.get(roomIndex);
-            tempItem.setLastMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
-            tempItem.setUnreadCount(tempItem.getUnreadCount() + 1);
-            roomList.remove(roomIndex);
-            roomList.add(0, tempItem);
-            roomListFragment.setChatRoomListAndNotify(roomList);
-            ssomBar.setSsomBarTitleText(String.format(getString(R.string.chat_list_title), ++unreadCount));
-        } else {
-            // 푸시를 받은 방에서 chatting 중이라면 메시지를 추가해서 보여줌
-            if(chattingFragment.getChatRoomId().equalsIgnoreCase(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID))) {
-                ChattingItem chat = new ChattingItem();
-                chat.setMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
-                chat.setFromUserId(intent.getStringExtra(CommonConst.Intent.FROM_USER_ID));
-                chat.setToUserId(intent.getStringExtra(CommonConst.Intent.TO_USER_ID));
-                chat.setTimestamp(intent.getLongExtra(CommonConst.Intent.TIMESTAMP, 0));
-                if(!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS))) {
-                    String status = intent.getStringExtra(CommonConst.Intent.STATUS);
-                    ChattingItem.MessageType messageType;
-                    switch (status) {
-                        case CommonConst.Chatting.MEETING_REQUEST:
-                            messageType = ChattingItem.MessageType.request;
-                            break;
-                        case CommonConst.Chatting.MEETING_APPROVE:
-                            messageType = ChattingItem.MessageType.approve;
-                            break;
-                        case CommonConst.Chatting.MEETING_CANCEL:
-                            messageType = ChattingItem.MessageType.cancel;
-                            break;
-                        case CommonConst.Chatting.MEETING_COMPLETE:
-                        case CommonConst.Chatting.MEETING_OUT:
-                            messageType = ChattingItem.MessageType.finish;
-                            break;
-                        default:
-                            messageType = null;
-                            break;
+            if (fragmentManager.findFragmentById(R.id.chat_container) instanceof ChatRoomListFragment) {
+                // chatting room 화면을 보고 있는 경우에 채팅룸 갱신
+                ArrayList<ChatRoomItem> roomList = roomListFragment.getChatRoomList();
+                int chatRoomId = Integer.parseInt(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID));
+                int roomIndex = 0;
+
+                for (int i = 0; i < roomList.size(); i++) {
+                    if (roomList.get(i).getId() == chatRoomId) {
+                        roomIndex = i;
+                        break;
                     }
-
-                    chat.setStatus(messageType);
-                    chat.setMsgType(CommonConst.Chatting.SYSTEM);
-                    chatRoomItem.setStatus(status);
-                } else {
-                    chat.setMsgType(CommonConst.Chatting.NORMAL);
                 }
-                chattingFragment.addChatting(chat);
+                ChatRoomItem tempItem = roomList.get(roomIndex);
+                tempItem.setLastMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
+                tempItem.setUnreadCount(tempItem.getUnreadCount() + 1);
+                roomList.remove(roomIndex);
+                roomList.add(0, tempItem);
+                roomListFragment.setChatRoomListAndNotify(roomList);
+                ssomBar.setSsomBarTitleText(String.format(getString(R.string.chat_list_title), ++unreadCount));
             } else {
-                unreadCount++;
+                // 푸시를 받은 방에서 chatting 중이라면 메시지를 추가해서 보여줌
+                if (chattingFragment.getChatRoomId().equalsIgnoreCase(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID))) {
+                    ChattingItem chat = new ChattingItem();
+                    chat.setMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
+                    chat.setFromUserId(intent.getStringExtra(CommonConst.Intent.FROM_USER_ID));
+                    chat.setToUserId(intent.getStringExtra(CommonConst.Intent.TO_USER_ID));
+                    chat.setTimestamp(intent.getLongExtra(CommonConst.Intent.TIMESTAMP, 0));
+                    if (!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS))) {
+                        String status = intent.getStringExtra(CommonConst.Intent.STATUS);
+                        ChattingItem.MessageType messageType;
+                        switch (status) {
+                            case CommonConst.Chatting.MEETING_REQUEST:
+                                messageType = ChattingItem.MessageType.request;
+                                break;
+                            case CommonConst.Chatting.MEETING_APPROVE:
+                                messageType = ChattingItem.MessageType.approve;
+                                break;
+                            case CommonConst.Chatting.MEETING_CANCEL_COMPLETE:
+                                messageType = ChattingItem.MessageType.cancel;
+                                break;
+                            case CommonConst.Chatting.MEETING_OUT:
+                                messageType = ChattingItem.MessageType.finish;
+                                break;
+                            default:
+                                messageType = null;
+                                break;
+                        }
+
+                        chat.setStatus(messageType);
+                        chat.setMsgType(CommonConst.Chatting.SYSTEM);
+                        chatRoomItem.setRequestId(chat.getFromUserId());
+                        chatRoomItem.setStatus(status);
+                        chattingFragment.setChatRoomItem(chatRoomItem);
+                        setMeetingButton();
+                    } else {
+                        chat.setMsgType(CommonConst.Chatting.NORMAL);
+                    }
+                    chattingFragment.addChatting(chat);
+                } else {
+                    unreadCount++;
+                }
             }
         }
     }

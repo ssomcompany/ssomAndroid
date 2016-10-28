@@ -1,43 +1,17 @@
 package com.ssomcompany.ssomclient.activity;
 
-import android.content.Context;
-import android.content.DialogInterface;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.vending.billing.util.Inventory;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
-import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
-import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.InAppBillingHelper;
-import com.ssomcompany.ssomclient.control.ViewListener;
-import com.ssomcompany.ssomclient.fragment.ChatRoomListFragment;
-import com.ssomcompany.ssomclient.fragment.ChattingFragment;
-import com.ssomcompany.ssomclient.network.APICaller;
-import com.ssomcompany.ssomclient.network.NetworkConstant;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.AddHeartCount;
-import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
-import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
-import com.ssomcompany.ssomclient.network.api.SsomMeetingRequest;
-import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
-import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
-import com.ssomcompany.ssomclient.network.model.SsomResponse;
-import com.ssomcompany.ssomclient.push.MessageCountCheck;
-import com.ssomcompany.ssomclient.push.MessageManager;
-import com.ssomcompany.ssomclient.widget.SsomActionBarView;
-import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,6 +73,7 @@ public class HeartStoreActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+        showProgressDialog();
         try {
             switch (v.getId()) {
                 case R.id.layout_heart_first:
@@ -119,8 +94,20 @@ public class HeartStoreActivity extends BaseActivity implements View.OnClickList
                     break;
             }
         } catch (IllegalStateException e) {
+            dismissProgressDialog();
             UiUtils.makeToastMessage(this, "결제가 진행 중 입니다.");
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == Activity.RESULT_OK && requestCode == InAppBillingHelper.REQUEST_CODE) {
+            billingHelper.onActivityResult(requestCode, resultCode, data);
+        } else {
+            dismissProgressDialog();
         }
     }
 
