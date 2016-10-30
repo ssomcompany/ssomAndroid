@@ -187,42 +187,32 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             final int dialogNoBtn;
             final int methodType;
 
-//            if (TextUtils.isEmpty(chatRoomItem.getStatus())) {
-//                // 요청 정보가 없으니 상대방에게 만남요청
-//                ssomBar.setChattingRoomBtnMeetingOnOff(true);
-//                ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_request));
-//                methodType = NetworkConstant.Method.POST;
-//                dialogMsg = R.string.dialog_meet_request_message;
-//                dialogOkBtn = R.string.dialog_meet;
-//                dialogNoBtn = R.string.dialog_cancel;
-//            } else {
-                if (CommonConst.Chatting.MEETING_REQUEST.equals(chatRoomItem.getStatus())) {
-                    boolean isMyRequest = getUserId().equals(chatRoomItem.getRequestId());
-                    // 내가 요청한거면 요청취소, 내가 요청한게 아니면 만남수락
-                    ssomBar.setChattingRoomBtnMeetingOnOff(!isMyRequest);
-                    ssomBar.setChattingRoomBtnMeetingTitle(isMyRequest ?
-                            getString(R.string.chat_room_info_btn_sent) : getString(R.string.dialog_meet_apply));
-                    methodType = isMyRequest ? NetworkConstant.Method.DELETE : NetworkConstant.Method.PUT;
-                    dialogMsg = isMyRequest ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message;
-                    dialogOkBtn = isMyRequest ? R.string.chat_room_info_btn_sent : R.string.dialog_meet_apply;
-                    dialogNoBtn = isMyRequest ? R.string.dialog_close : R.string.dialog_not_now;
-                } else if(CommonConst.Chatting.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
-                    // 만남 중이니 서로 만남취소 가능
-                    ssomBar.setChattingRoomBtnMeetingOnOff(false);
-                    ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_finish));
-                    methodType = NetworkConstant.Method.DELETE;
-                    dialogMsg = R.string.dialog_meet_finish_message;
-                    dialogOkBtn = R.string.dialog_meet_finish;
-                    dialogNoBtn = R.string.dialog_close;
-                } else {
-                    ssomBar.setChattingRoomBtnMeetingOnOff(true);
-                    ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_request));
-                    methodType = NetworkConstant.Method.POST;
-                    dialogMsg = R.string.dialog_meet_request_message;
-                    dialogOkBtn = R.string.dialog_meet;
-                    dialogNoBtn = R.string.dialog_cancel;
-                }
-//            }
+            if (CommonConst.Chatting.MEETING_REQUEST.equals(chatRoomItem.getStatus())) {
+                boolean isMyRequest = getUserId().equals(chatRoomItem.getRequestId());
+                // 내가 요청한거면 요청취소, 내가 요청한게 아니면 만남수락
+                ssomBar.setChattingRoomBtnMeetingOnOff(!isMyRequest);
+                ssomBar.setChattingRoomBtnMeetingTitle(isMyRequest ?
+                        getString(R.string.chat_room_info_btn_sent) : getString(R.string.dialog_meet_apply));
+                methodType = isMyRequest ? NetworkConstant.Method.DELETE : NetworkConstant.Method.PUT;
+                dialogMsg = isMyRequest ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message;
+                dialogOkBtn = isMyRequest ? R.string.chat_room_info_btn_sent : R.string.dialog_meet_apply;
+                dialogNoBtn = isMyRequest ? R.string.dialog_close : R.string.dialog_not_now;
+            } else if(CommonConst.Chatting.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
+                // 만남 중이니 서로 만남취소 가능
+                ssomBar.setChattingRoomBtnMeetingOnOff(false);
+                ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_finish));
+                methodType = NetworkConstant.Method.DELETE;
+                dialogMsg = R.string.dialog_meet_finish_message;
+                dialogOkBtn = R.string.dialog_meet_finish;
+                dialogNoBtn = R.string.dialog_close;
+            } else {
+                ssomBar.setChattingRoomBtnMeetingOnOff(true);
+                ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_request));
+                methodType = NetworkConstant.Method.POST;
+                dialogMsg = R.string.dialog_meet_request_message;
+                dialogOkBtn = R.string.dialog_meet;
+                dialogNoBtn = R.string.dialog_cancel;
+            }
 
             ssomBar.setOnChattingRoomMeetingBtnClickListener(new View.OnClickListener(){
                 @Override

@@ -4,11 +4,10 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
     
-    <com.ssomcompany.ssomclient.widget.SsomNetworkImageView
+    <com.ssomcompany.ssomclient.widget.NetworkImageView
         android:id="@+id/detail_image"
         android:layout_width="match_parent"
-        android:layout_height="360dp"
-        android:layout_centerInParent="true"/>
+        android:layout_height="match_parent" />
 
     <TextView
         style="@style/ssom_font_16_white_bold"
