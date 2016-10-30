@@ -14,6 +14,7 @@ public class SsomPreferences {
     public static final String LOGIN_PREF = "com.ssomcompany.ssomclient.login.pref";
 
     // session
+    public static final String PREF_SESSION_HEART_REFILL_TIME = "PREF_SESSION_HEART_REFILL_TIME";
     public static final String PREF_SESSION_TOKEN = "PREF_SESSION_TOKEN";
     public static final String PREF_SESSION_EMAIL = "PREF_SESSION_EMAIL";
     public static final String PREF_SESSION_USER_ID = "PREF_SESSION_USER_ID";
@@ -51,6 +52,11 @@ public class SsomPreferences {
         pref.edit().putInt(key, value).apply();
     }
 
+    public void put(String key, long value) {
+        pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
+        pref.edit().putLong(key, value).apply();
+    }
+
     public void put(String key, ArrayList<String> value) {
         pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
         StringBuilder str = new StringBuilder();
@@ -76,6 +82,16 @@ public class SsomPreferences {
 
         try {
             return pref.getInt(key, defValue);
+        } catch(Exception e) {
+            return defValue;
+        }
+    }
+
+    public long getLong(String key, long defValue) {
+        pref = mContext.getSharedPreferences(prefName, Activity.MODE_PRIVATE);
+
+        try {
+            return pref.getLong(key, defValue);
         } catch(Exception e) {
             return defValue;
         }

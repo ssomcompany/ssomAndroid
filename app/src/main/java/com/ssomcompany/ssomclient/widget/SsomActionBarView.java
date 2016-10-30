@@ -2,8 +2,10 @@ package com.ssomcompany.ssomclient.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -12,8 +14,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.BaseActivity;
+import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.Util;
+
+import java.util.Calendar;
+import java.util.TimerTask;
 
 public class SsomActionBarView extends RelativeLayout {
     public static final String TAG = SsomActionBarView.class.getSimpleName();
@@ -25,6 +33,9 @@ public class SsomActionBarView extends RelativeLayout {
     public static final int SSOM_CONTACT_PEOPLE = 0x05;
 
     private int currentMode = SSOM_MAIN_MENU;
+
+    private CountDownTimer timerTask;
+    private boolean timerIsRunning;
 
     private Context mContext;
 
@@ -197,10 +208,40 @@ public class SsomActionBarView extends RelativeLayout {
     }
 
     public void setHeartCount(int count) {
-        imgHeart.setText(String.valueOf(count));
-        if(count > 2) {
+        Log.d(TAG, "setHeartCount called");
+        if(!timerIsRunning && (count == 0 || count == 1)) {
+            Log.d(TAG, "setHeartCount timerTask start");
+            timerTask = new CountDownTimer(Util.getRefillTime(((BaseActivity) mContext)
+                    .getSession().getLong(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, 0)), 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    timerIsRunning = true;
+                    int hour = (int) millisUntilFinished / (60 * 60 * 1000);
+                    int min = (int) (millisUntilFinished % (60 * 60 * 1000)) / (60 * 1000);
+                    setHeartRefillTime(hour + ":" + min);
+                }
+
+                @Override
+                public void onFinish() {
+                    Log.d(TAG, "timerTask is finished");
+                    timerIsRunning = false;
+                    ((BaseActivity) mContext).getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
+                    setHeartCount(getHeartCount() + 1);
+                    setHeartRefillTime("00:00");
+                }
+            }.start();
+        } else {
+            Log.d(TAG, "setHeartCount refill time clear");
             setHeartRefillTime("--:--");
+            if(count < 0) {
+                count = 0;
+                if(timerIsRunning) {
+                    timerTask.cancel();
+                    timerIsRunning = false;
+                }
+            }
         }
+        imgHeart.setText(String.valueOf(count));
         setHeartIconOnOff(count != 0);
     }
 
@@ -261,5 +302,16 @@ public class SsomActionBarView extends RelativeLayout {
     public void setCurrentMode(int currentMode) {
         this.currentMode = currentMode;
         initLayout();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        Log.d(TAG, "onDetachedFromWindow called");
+
+        if(timerTask != null && timerIsRunning) {
+            timerTask.cancel();
+        }
     }
 }

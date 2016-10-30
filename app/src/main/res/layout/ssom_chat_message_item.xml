@@ -125,81 +125,12 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/initial_message"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="#fcfcfc"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <TextView
-            style="@style/ssom_font_12_red_pink_single"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/chat_message_initial_first" />
-
-        <TextView
-            style="@style/ssom_font_12_pinkish_gray_two_single"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/chat_message_initial_second" />
-    </LinearLayout>
-
     <TextView
-        android:id="@+id/request_message"
+        android:id="@+id/system_message"
         style="@style/ssom_font_12_red_pink_single"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:gravity="center"
         android:background="#fcfcfc"
-        android:text="@string/chat_message_request_received"
-        android:visibility="gone"/>
-
-    <TextView
-        android:id="@+id/approve_message"
-        style="@style/ssom_font_12_red_pink_single"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:gravity="center"
-        android:background="#fcfcfc"
-        android:text="@string/chat_message_approve"
-        android:visibility="gone"/>
-
-    <LinearLayout
-        android:id="@+id/cancel_message"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="#fcfcfc"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <TextView
-            style="@style/ssom_font_12_red_pink_single"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/chat_message_cancel_first" />
-
-        <TextView
-            style="@style/ssom_font_12_pinkish_gray_two_single"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/chat_message_cancel_second" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/finish_message"
-        style="@style/ssom_font_12_red_pink_single"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:gravity="center"
-        android:background="#fcfcfc"
-        android:text="@string/chat_message_finish"
         android:visibility="gone"/>
 </RelativeLayout>

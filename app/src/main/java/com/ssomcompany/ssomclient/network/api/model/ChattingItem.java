@@ -7,6 +7,7 @@ public class ChattingItem {
         request,  // 만남 요청 한 상태
         approve,  // 만남 수락 한 상태
         cancel,   // 만남 요청이 취소된 상태
+        complete, // 만남이 종료된 상태
         finish   // 최종 표기 메시지
     }
 

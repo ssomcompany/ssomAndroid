@@ -496,10 +496,7 @@ public class MainActivity extends BaseActivity
         fragmentManager = getSupportFragmentManager();
 
         ssomActionBar = (SsomActionBarView) tb.findViewById(R.id.ssom_action_bar);
-        ssomActionBar.setHeartCount(0);
-        // TODO heart api call
-
-        ssomActionBar.setHeartRefillTime("--:--");
+        ssomActionBar.setHeartCount(-1);
         ssomActionBar.setChatCount("0");
         ssomActionBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
             @Override
@@ -639,15 +636,11 @@ public class MainActivity extends BaseActivity
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    NetworkManager.getInstance().removeBitmapFromMemoryCache(getTodayImageUrl());
-                                    NetworkManager.getInstance().getRequestQueue().getCache().remove(getTodayImageUrl());
                                     setSessionInfo("", "", "", "");
                                     if(LoginManager.getInstance() != null) LoginManager.getInstance().logOut();
                                     mNavigationDrawerFragment.setLoginEmailLayout();
                                     mNavigationDrawerFragment.setTodayImage();
-                                    ssomActionBar.setHeartCount(0);
-                                    ssomActionBar.setHeartRefillTime("--:--");
-                                    // TODO heart timer 동작 멈춤
+                                    ssomActionBar.setHeartCount(-1);
                                     ssomActionBar.setChatCount("0");
                                     setSsomWriteButtonImage();
                                     UiUtils.makeToastMessage(getApplicationContext(), "로그아웃 되었습니다.");

@@ -75,9 +75,10 @@
     <string name="chat_message_initial_second">대화가 시작 되었쏨 :)</string>
     <string name="chat_message_request_received">만남 요청을 받았습니다!</string>
     <string name="chat_message_request_sent">만남 요청을 보냈습니다!</string>
-    <string name="chat_message_cancel_first">요청이 취소 되었어요.&#160;</string>
-    <string name="chat_message_cancel_second">다른 인연을 찾아보세요....</string>
+    <string name="chat_message_cancel_first">요청이 취소 되었습니다&#8230;</string>
+    <string name="chat_message_cancel_second">다른 인연을 찾아보세요&#8230;</string>
     <string name="chat_message_approve">만남이 시작되었습니다.</string>
+    <string name="chat_message_complete">만남이 종료되었습니다.</string>
     <string name="chat_message_finish">상대방이 쏨을 종료했습니다. (T_T)</string>
     <string name="chat_message_hint">메시지를 입력하세요&#8230;</string>
     <string name="chat_room_no_info">정보가 없어요&#8230;</string>

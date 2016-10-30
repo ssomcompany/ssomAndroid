@@ -15,7 +15,10 @@ import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.os.Environment;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -244,6 +247,14 @@ public class Util {
         canvas.drawBitmap(input, 0,0, paint);
 
         return output;
+    }
+
+    // refill 기준시간이 없으면 4시간으로 셋팅함
+    // 4시간 보다 전에 요청되었던 것이면 하트를 1개 채우기 위해 1초를 반환, 아니면 gap을 반환하여 타이머 시작
+    public static long getRefillTime(long timestamp) {
+        long currentTimestamp = System.currentTimeMillis();
+        return timestamp == 0 ? 4 * 60 * 60 * 1000 :
+                currentTimestamp - timestamp > 4 * 60 * 60 * 1000 ? 1000 : 4 * 60 * 60 * 1000 - (currentTimestamp - timestamp);
     }
 
     public static String getTimeText(long timestamp) {
@@ -557,5 +568,22 @@ public class Util {
         }
 
         return false;
+    }
+
+    /////////////////////////////////////////////// convert String spannable ////////////////////////////////////////////////////
+
+    /**
+     *
+     * @param context context for the view
+     * @param sysStrRes string resources being converted to
+     * @param colorRes string color
+     * @return spannableStringBuilder for spannable TextView
+     */
+    public static SpannableStringBuilder getSystemMsg(Context context, int sysStrRes, int colorRes) {
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        SpannableString redSpannable= new SpannableString(context.getString(sysStrRes));
+        redSpannable.setSpan(new ForegroundColorSpan(context.getResources().getColor(colorRes)), 0, context.getString(sysStrRes).length(), 0);
+        builder.append(redSpannable);
+        return builder;
     }
 }

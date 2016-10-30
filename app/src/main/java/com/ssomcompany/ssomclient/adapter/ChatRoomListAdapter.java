@@ -125,22 +125,25 @@ public class ChatRoomListAdapter extends BaseAdapter {
         }
 
         // content
-        String sysStr;
+        SpannableStringBuilder sysStr;
         if(CommonConst.Chatting.MEETING_REQUEST.equals(item.getStatus()) &&
                 CommonConst.Chatting.MEETING_REQUEST.equals(item.getLastMsg())) {
-            sysStr = context.getString(((BaseActivity) context).getUserId().equals(item.getRequestId()) ?
-                    R.string.chat_message_request_sent : R.string.chat_message_request_received);
-            holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
+            sysStr = Util.getSystemMsg(context, ((BaseActivity) context).getUserId().equals(item.getRequestId()) ?
+                    R.string.chat_message_request_sent : R.string.chat_message_request_received, R.color.red_pink);
+            holder.getTvChatContent().setText(sysStr, TextView.BufferType.SPANNABLE);
         } else if(CommonConst.Chatting.MEETING_APPROVE.equals(item.getStatus()) &&
                 CommonConst.Chatting.MEETING_APPROVE.equals(item.getLastMsg())) {
-            sysStr = context.getString(R.string.chat_message_approve);
-            holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
-        } else if(CommonConst.Chatting.MEETING_CANCEL_COMPLETE.equals(item.getLastMsg())) {
-            sysStr = context.getString(R.string.chat_message_cancel_first);
-            holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
+            sysStr = Util.getSystemMsg(context, R.string.chat_message_approve, R.color.red_pink);
+            holder.getTvChatContent().setText(sysStr, TextView.BufferType.SPANNABLE);
+        } else if(CommonConst.Chatting.MEETING_CANCEL.equals(item.getLastMsg())) {
+            sysStr = Util.getSystemMsg(context, R.string.chat_message_cancel_first, R.color.red_pink);
+            holder.getTvChatContent().setText(sysStr, TextView.BufferType.SPANNABLE);
+        } else if(CommonConst.Chatting.MEETING_COMPLETE.equals(item.getLastMsg())) {
+            sysStr = Util.getSystemMsg(context, R.string.chat_message_complete, R.color.red_pink);
+            holder.getTvChatContent().setText(sysStr, TextView.BufferType.SPANNABLE);
         } else if(CommonConst.Chatting.MEETING_OUT.equals(item.getLastMsg())) {
-            sysStr = context.getString(R.string.chat_message_finish);
-            holder.getTvChatContent().setText(getSystemMsg(sysStr), TextView.BufferType.SPANNABLE);
+            sysStr = Util.getSystemMsg(context, R.string.chat_message_finish, R.color.red_pink);
+            holder.getTvChatContent().setText(sysStr, TextView.BufferType.SPANNABLE);
         } else {
             holder.getTvChatContent().setText(TextUtils.isEmpty(item.getLastMsg()) ? getEmptyLastMsg() : item.getLastMsg(),
                     TextUtils.isEmpty(item.getLastMsg()) ? TextView.BufferType.SPANNABLE : TextView.BufferType.NORMAL);
@@ -166,26 +169,9 @@ public class ChatRoomListAdapter extends BaseAdapter {
         return convertView;
     }
 
-    private SpannableStringBuilder getSystemMsg(String sysStr) {
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        SpannableString redSpannable= new SpannableString(sysStr);
-        redSpannable.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.red_pink)), 0, sysStr.length(), 0);
-        builder.append(redSpannable);
-        return builder;
-    }
-
     private SpannableStringBuilder getEmptyLastMsg() {
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        String firstStr = context.getString(R.string.chat_message_initial_first);
-        SpannableString redSpannable= new SpannableString(firstStr);
-        redSpannable.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.red_pink)), 0, firstStr.length(), 0);
-        builder.append(redSpannable);
-        String secondStr = context.getString(R.string.chat_message_initial_second);
-        SpannableString whiteSpannable= new SpannableString(secondStr);
-        whiteSpannable.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.pinkish_gray_two)), 0, secondStr.length(), 0);
-        builder.append(whiteSpannable);
-
-        return builder;
+        return Util.getSystemMsg(context, R.string.chat_message_initial_first, R.color.red_pink)
+                .append(Util.getSystemMsg(context, R.string.chat_message_initial_second, R.color.pinkish_gray_two));
     }
 
     private class ChatItemViewHolder {

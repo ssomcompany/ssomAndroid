@@ -89,16 +89,8 @@ public class ChattingAdapter extends BaseAdapter {
             holder.rightChatProfileImage = (CircularNetworkImageView) convertView.findViewById(R.id.right_chat_profile_image);
             holder.sendMessage = (TextView) convertView.findViewById(R.id.send_message);
             holder.sendTime = (TextView) convertView.findViewById(R.id.send_time);
-            // initial message
-            holder.initialMessage = convertView.findViewById(R.id.initial_message);
-            // request message
-            holder.requestMessage = (TextView) convertView.findViewById(R.id.request_message);
-            // approve message
-            holder.approveMessage = convertView.findViewById(R.id.approve_message);
-            // cancel message
-            holder.cancelMessage = convertView.findViewById(R.id.cancel_message);
-            // finish message
-            holder.finishMessage = convertView.findViewById(R.id.finish_message);
+            // system message
+            holder.systemMessage = (TextView) convertView.findViewById(R.id.system_message);
 
             convertView.setTag(holder);
         } else {
@@ -109,74 +101,54 @@ public class ChattingAdapter extends BaseAdapter {
         ChattingItem item = itemList.get(position);
 
         if(CommonConst.Chatting.SYSTEM.equals(item.getMsgType())) {
+            holder.systemMessage.setVisibility(View.VISIBLE);
+            holder.sendMessageLayout.setVisibility(View.GONE);
+            holder.receiveMessageLayout.setVisibility(View.GONE);
+
             /**
              * initial message layout setting
              */
             if (item.getStatus() == ChattingItem.MessageType.initial) {
-                holder.initialMessage.setVisibility(View.VISIBLE);
-                holder.requestMessage.setVisibility(View.GONE);
-                holder.approveMessage.setVisibility(View.GONE);
-                holder.cancelMessage.setVisibility(View.GONE);
-                holder.finishMessage.setVisibility(View.GONE);
-                holder.sendMessageLayout.setVisibility(View.GONE);
-                holder.receiveMessageLayout.setVisibility(View.GONE);
+                holder.systemMessage.setText(Util.getSystemMsg(context, R.string.chat_message_initial_first, R.color.red_pink)
+                        .append(Util.getSystemMsg(context, R.string.chat_message_initial_second, R.color.pinkish_gray_two)), TextView.BufferType.SPANNABLE);
             } else if (item.getStatus() == ChattingItem.MessageType.cancel ||
-                    CommonConst.Chatting.MEETING_CANCEL_COMPLETE.equals(item.getMsg())) {
+                    CommonConst.Chatting.MEETING_CANCEL.equals(item.getMsg())) {
                 /**
                  * cancel message layout setting
                  */
-                holder.initialMessage.setVisibility(View.GONE);
-                holder.requestMessage.setVisibility(View.GONE);
-                holder.approveMessage.setVisibility(View.GONE);
-                holder.cancelMessage.setVisibility(View.VISIBLE);
-                holder.finishMessage.setVisibility(View.GONE);
-                holder.sendMessageLayout.setVisibility(View.GONE);
-                holder.receiveMessageLayout.setVisibility(View.GONE);
+                holder.systemMessage.setText(Util.getSystemMsg(context, R.string.chat_message_cancel_first, R.color.red_pink),
+                        TextView.BufferType.SPANNABLE);
+            } else if (item.getStatus() == ChattingItem.MessageType.complete ||
+                    CommonConst.Chatting.MEETING_COMPLETE.equals(item.getMsg())) {
+                /**
+                 * cancel message layout setting
+                 */
+                holder.systemMessage.setText(Util.getSystemMsg(context, R.string.chat_message_complete, R.color.red_pink),
+                        TextView.BufferType.SPANNABLE);
             } else if (item.getStatus() == ChattingItem.MessageType.finish ||
                     CommonConst.Chatting.MEETING_OUT.equals(item.getMsg())) {
                 /**
                  * finish message layout setting
                  */
-                holder.initialMessage.setVisibility(View.GONE);
-                holder.requestMessage.setVisibility(View.GONE);
-                holder.approveMessage.setVisibility(View.GONE);
-                holder.cancelMessage.setVisibility(View.GONE);
-                holder.finishMessage.setVisibility(View.VISIBLE);
-                holder.sendMessageLayout.setVisibility(View.GONE);
-                holder.receiveMessageLayout.setVisibility(View.GONE);
+                holder.systemMessage.setText(Util.getSystemMsg(context, R.string.chat_message_finish, R.color.red_pink),
+                        TextView.BufferType.SPANNABLE);
             } else if (item.getStatus() == ChattingItem.MessageType.request ||
                     CommonConst.Chatting.MEETING_REQUEST.equals(item.getMsg())) {
                 /**
                  * request message setting
                  */
-                holder.initialMessage.setVisibility(View.GONE);
-                holder.requestMessage.setVisibility(View.VISIBLE);
-                holder.requestMessage.setText(((BaseActivity) context).getUserId().equals(item.getFromUserId()) ?
-                        R.string.chat_message_request_sent : R.string.chat_message_request_received);
-                holder.approveMessage.setVisibility(View.GONE);
-                holder.cancelMessage.setVisibility(View.GONE);
-                holder.finishMessage.setVisibility(View.GONE);
-                holder.sendMessageLayout.setVisibility(View.GONE);
-                holder.receiveMessageLayout.setVisibility(View.GONE);
+                holder.systemMessage.setText(Util.getSystemMsg(context, ((BaseActivity) context).getUserId().equals(item.getFromUserId()) ?
+                                R.string.chat_message_request_sent : R.string.chat_message_request_received, R.color.red_pink), TextView.BufferType.SPANNABLE);
             } else if (item.getStatus() == ChattingItem.MessageType.approve ||
                     CommonConst.Chatting.MEETING_APPROVE.equals(item.getMsg())) {
                 /**
                  * approve message setting
                  */
-                holder.initialMessage.setVisibility(View.GONE);
-                holder.requestMessage.setVisibility(View.GONE);
-                holder.approveMessage.setVisibility(View.VISIBLE);
-                holder.cancelMessage.setVisibility(View.GONE);
-                holder.finishMessage.setVisibility(View.GONE);
-                holder.sendMessageLayout.setVisibility(View.GONE);
-                holder.receiveMessageLayout.setVisibility(View.GONE);
+                holder.systemMessage.setText(Util.getSystemMsg(context, R.string.chat_message_approve, R.color.red_pink),
+                        TextView.BufferType.SPANNABLE);
             }
         } else {
-            holder.initialMessage.setVisibility(View.GONE);
-            holder.finishMessage.setVisibility(View.GONE);
-            holder.requestMessage.setVisibility(View.GONE);
-            holder.approveMessage.setVisibility(View.GONE);
-            holder.cancelMessage.setVisibility(View.GONE);
+            holder.systemMessage.setVisibility(View.GONE);
 
             /**
              * receive layout setting
@@ -249,8 +221,11 @@ public class ChattingAdapter extends BaseAdapter {
                 case CommonConst.Chatting.MEETING_APPROVE :
                     item.setStatus(ChattingItem.MessageType.approve);
                     break;
-                case CommonConst.Chatting.MEETING_CANCEL_COMPLETE :
+                case CommonConst.Chatting.MEETING_CANCEL :
                     item.setStatus(ChattingItem.MessageType.cancel);
+                    break;
+                case CommonConst.Chatting.MEETING_COMPLETE :
+                    item.setStatus(ChattingItem.MessageType.complete);
                     break;
                 case CommonConst.Chatting.MEETING_OUT :
                     item.setStatus(ChattingItem.MessageType.finish);
@@ -296,28 +271,8 @@ public class ChattingAdapter extends BaseAdapter {
         private TextView sendTime;
 
         /**
-         * Initial ssom message
+         * System ssom message
          */
-        private View initialMessage;
-
-        /**
-         * Request ssom message
-         */
-        private TextView requestMessage;
-
-        /**
-         * Approve ssom message
-         */
-        private View approveMessage;
-
-        /**
-         * Cancel ssom message
-         */
-        private View cancelMessage;
-
-        /**
-         * Finish ssom message
-         */
-        private View finishMessage;
+        private TextView systemMessage;
     }
 }

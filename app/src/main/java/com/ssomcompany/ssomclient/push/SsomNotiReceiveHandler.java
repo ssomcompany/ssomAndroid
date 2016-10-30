@@ -35,7 +35,8 @@ public class SsomNotiReceiveHandler implements OneSignal.NotificationReceivedHan
             localIntent.putExtra(CommonConst.Intent.FROM_USER_ID, data.optString(CommonConst.Intent.FROM_USER_ID, null));
             localIntent.putExtra(CommonConst.Intent.TO_USER_ID, data.optString(CommonConst.Intent.TO_USER_ID, null));
             localIntent.putExtra(CommonConst.Intent.TIMESTAMP, data.optLong(CommonConst.Intent.TIMESTAMP, 0));
-            localIntent.putExtra(CommonConst.Intent.CHAT_ROOM_ID, data.optString(CommonConst.Intent.CHAT_ROOM_ID, null));
+            localIntent.putExtra(CommonConst.Intent.CHAT_ROOM_ID, data.optString(CommonConst.Intent.CHAT_ROOM_ID, null) == null ?
+                    data.optString("id", null) : data.optString(CommonConst.Intent.CHAT_ROOM_ID, null));
             localIntent.putExtra(CommonConst.Intent.STATUS, data.optString(CommonConst.Intent.STATUS, null));
             localIntent.putExtra(CommonConst.Intent.MESSAGE, message);
 
