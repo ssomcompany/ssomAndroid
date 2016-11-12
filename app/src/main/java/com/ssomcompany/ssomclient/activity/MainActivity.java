@@ -665,7 +665,7 @@ public class MainActivity extends BaseActivity
                 break;
             /**
              *  list menu item click event
-             *  1 : 개인정보 , 2 : 이용약관 , 3 : 문의하기
+             *  1 : 개인정보 , 2 : 이용약관 , 3 : 회원탈퇴
              */
             case 1:
                 Intent privacyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkConstant.WEB_PRIVACY));
@@ -674,6 +674,20 @@ public class MainActivity extends BaseActivity
             case 2:
                 Intent policyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkConstant.WEB_POLICY));
                 startActivity(policyIntent);
+                break;
+            case 3:
+                UiUtils.makeCommonDialog(this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
+                        R.string.dialog_withdraw_message, R.style.ssom_font_16_custom_666666,
+                        R.string.ok_upper, 0,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
                 break;
         }
     }
@@ -1154,14 +1168,15 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onBackPressed() {
+        if(mNavigationDrawerFragment.isDrawerOpen()) {
+            drawer.closeDrawers();
+            return;
+        }
+
         if(fragmentManager.findFragmentById(R.id.top_container) != null ||
                 fragmentManager.findFragmentById(R.id.whole_container) != null) {
             super.onBackPressed();
             return;
-        }
-
-        if(mNavigationDrawerFragment.isDrawerOpen()) {
-            drawer.closeDrawers();
         }
 
         if(canFinish) {

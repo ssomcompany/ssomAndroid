@@ -90,6 +90,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                         chatRoomItem.setLongitude(ssomItem.getLongitude());
                         chatRoomItem.setLatitude(ssomItem.getLatitude());
                         chatRoomItem.setPostId(ssomItem.getPostId());
+                        chatRoomItem.setCreatedTimestamp(response.getData().getCreatedTimestamp());
 
                         CURRENT_STATE = STATE_CHAT_ROOM;
                         startChattingFragment();

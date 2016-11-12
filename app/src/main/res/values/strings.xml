@@ -132,6 +132,7 @@
     <string name="dialog_logout_message">로그아웃 하시겠어요?</string>
     <string name="dialog_explain_location_permission_message">위치에 접근할 권한이 없습니다. \n위치권한이 없는경우 정확한 위치서비스를 제공할 수 없습니다.\n\n[앱]->[권한]에서 위치 권한을 허용해주세요.</string>
     <string name="dialog_explain_storage_permission_message">저장소에 접근할 권한이 없습니다. \n저장소 권한이 없는경우 게시물을 등록할 수 없습니다.\n\n[앱]->[권한]에서 저장소 권한을 허용해주세요.</string>
+    <string name="dialog_withdraw_message">쏨 서비스에 가입된 메일로\n탈퇴신청 메일을 보내주세요.\nssomcompany@gmail.com</string>
 
     <!-- toggle bar -->
     <string name="map">MAP</string>
@@ -144,6 +145,7 @@
     <string name="private_information">개인 정보 처리 방침</string>
     <string name="use_policy">이용 약관</string>
     <string name="question">문의 하기</string>
+    <string name="withdraw">회원 탈퇴</string>
 
     <!--heart store-->
     <string name="store_title">하트 만들기</string>

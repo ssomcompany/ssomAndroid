@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.ssomcompany.ssomclient.R;
 
 public class DrawerMenuAdapter extends BaseAdapter {
-    private int[] menuList = {R.string.private_information, R.string.use_policy};
+    private int[] menuList = {R.string.private_information, R.string.use_policy, R.string.withdraw};
 
     // context instance
     private LayoutInflater mInflater;
@@ -47,7 +47,7 @@ public class DrawerMenuAdapter extends BaseAdapter {
 
             holder = new MenuHolder();
             holder.tvDrawerMenu = (TextView) convertView.findViewById(R.id.tv_drawer_menu);
-            holder.imgDrawerMenu = (ImageView) convertView.findViewById(R.id.img_drawer_menu);
+//            holder.imgDrawerMenu = (ImageView) convertView.findViewById(R.id.img_drawer_menu);
             convertView.setTag(holder);
         } else {
             holder = (MenuHolder) convertView.getTag();
@@ -55,17 +55,17 @@ public class DrawerMenuAdapter extends BaseAdapter {
 
         switch (position) {
             case 0:
-                holder.imgDrawerMenu.setBackgroundResource(R.drawable.icon_lock);
+//                holder.imgDrawerMenu.setBackgroundResource(R.drawable.icon_lock);
                 holder.tvDrawerMenu.setText(mContext.getString(R.string.private_information));
                 break;
             case 1:
-                holder.imgDrawerMenu.setBackgroundResource(R.drawable.icon_book);
+//                holder.imgDrawerMenu.setBackgroundResource(R.drawable.icon_book);
                 holder.tvDrawerMenu.setText(mContext.getString(R.string.use_policy));
                 break;
-//            case 2:
-//                holder.imgDrawerMenu.setBackgroundResource(R.drawable.icon_mail);
-//                holder.tvDrawerMenu.setText(mContext.getString(R.string.question));
-//                break;
+            case 2:
+//                holder.imgDrawerMenu.setBackgroundResource(R.drawable.icon_arlet);
+                holder.tvDrawerMenu.setText(mContext.getString(R.string.withdraw));
+                break;
         }
 
         return convertView;
@@ -74,6 +74,6 @@ public class DrawerMenuAdapter extends BaseAdapter {
     private class MenuHolder {
         // view setting
         TextView tvDrawerMenu;
-        ImageView imgDrawerMenu;
+//        ImageView imgDrawerMenu;
     }
 }

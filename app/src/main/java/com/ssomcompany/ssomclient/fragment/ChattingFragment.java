@@ -179,7 +179,7 @@ public class ChattingFragment extends BaseFragment {
                             if(response.getData() != null) {
                                 chatList = response.getData().getChattingList();
                                 chatList.add(0, new ChattingItem().setStatus(ChattingItem.MessageType.initial)
-                                        .setMsgType(CommonConst.Chatting.SYSTEM));
+                                        .setMsgType(CommonConst.Chatting.SYSTEM).setTimestamp(roomItem.getCreatedTimestamp()));
                                 mAdapter.setItemList(chatList);
                                 mAdapter.notifyDataSetChanged();
                             } else {

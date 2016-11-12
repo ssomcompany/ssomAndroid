@@ -2,24 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="49dp"
-    android:paddingLeft="13dp">
+    android:paddingLeft="15dp">
 
-    <FrameLayout
-        android:layout_width="17dp"
-        android:layout_height="49dp">
+    <!--<FrameLayout-->
+        <!--android:layout_width="17dp"-->
+        <!--android:layout_height="49dp">-->
 
-        <ImageView
-            android:id="@+id/img_drawer_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
-    </FrameLayout>
+        <!--<ImageView-->
+            <!--android:id="@+id/img_drawer_menu"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"/>-->
+    <!--</FrameLayout>-->
 
     <TextView
         android:id="@+id/tv_drawer_menu"
         style="@style/ssom_font_13_999999_single"
         android:layout_width="match_parent"
         android:layout_height="49dp"
-        android:layout_marginLeft="27dp"
         android:gravity="center_vertical" />
 </RelativeLayout>

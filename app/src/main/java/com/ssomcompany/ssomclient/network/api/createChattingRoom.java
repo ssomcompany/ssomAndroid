@@ -25,6 +25,7 @@ public class CreateChattingRoom {
     
     public static class Response extends ToStringHelperClass {
         private int chatroomId;
+        private long createdTimestamp;
 
         public int getChatroomId() {
             return chatroomId;
@@ -32,6 +33,14 @@ public class CreateChattingRoom {
 
         public void setChatroomId(int chatroomId) {
             this.chatroomId = chatroomId;
+        }
+
+        public long getCreatedTimestamp() {
+            return createdTimestamp;
+        }
+
+        public void setCreatedTimestamp(long createdTimestamp) {
+            this.createdTimestamp = createdTimestamp;
         }
     }
 }

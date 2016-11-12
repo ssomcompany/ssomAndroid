@@ -36,7 +36,7 @@ public class UiUtils {
         if(titleStyle != 0) dialog.setTitleStyle(titleStyle);
         dialog.setMessage(context.getString(message));
         if(messageStyle != 0) dialog.setMessageStyle(messageStyle);
-        dialog.setPositiveButton(context.getString(positiveBtnTitle), new DialogInterface.OnClickListener() {
+        if(positiveBtnTitle != 0) dialog.setPositiveButton(context.getString(positiveBtnTitle), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(positiveBtnListener != null) {
@@ -45,7 +45,7 @@ public class UiUtils {
                 }
             }
         });
-        dialog.setNegativeButton(context.getString(negativeBtnTitle),
+        if(negativeBtnTitle != 0) dialog.setNegativeButton(context.getString(negativeBtnTitle),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
