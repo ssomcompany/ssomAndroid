@@ -1,8 +1,10 @@
 package com.ssomcompany.ssomclient.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.CountDownTimer;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -18,7 +20,13 @@ import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
+import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.network.APICaller;
+import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.AddHeartCount;
+import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.push.MessageManager;
 
 import java.util.Calendar;
 import java.util.TimerTask;
@@ -225,9 +233,24 @@ public class SsomActionBarView extends RelativeLayout {
                 public void onFinish() {
                     Log.d(TAG, "timerTask is finished");
                     timerIsRunning = false;
-                    ((BaseActivity) mContext).getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
-                    setHeartCount(getHeartCount() + 1);
                     setHeartRefillTime("00:00");
+                    APICaller.addHeartCount(((BaseActivity) mContext).getToken(), "1", "automatic",
+                            new NetworkManager.NetworkListener<SsomResponse<AddHeartCount.Response>>() {
+                                @Override
+                                public void onResponse(SsomResponse<AddHeartCount.Response> response) {
+                                    if(response.isSuccess()) {
+                                        Log.d(TAG, "success... to 4hour's heart");
+                                        ((BaseActivity) mContext).getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
+
+                                        Intent intent = new Intent();
+                                        intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
+                                        intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.getData().getHeartsCount());
+                                        LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(intent);
+                                    } else {
+                                        ((BaseActivity) mContext).showErrorMessage();
+                                    }
+                                }
+                            });
                 }
             }.start();
         } else {
