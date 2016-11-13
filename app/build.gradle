@@ -43,8 +43,8 @@ android {
         applicationId "com.ssomcompany.ssomclient"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 109
-        versionName "1.0.9"
+        versionCode 110
+        versionName "1.1.0"
 
         // for one signal
         manifestPlaceholders = [manifestApplicationId: "${applicationId}",
