@@ -375,10 +375,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         }
 
         if(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equalsIgnoreCase(intent.getAction())) {
-            Log.d(TAG, "100000");
-
             if (fragmentManager.findFragmentById(R.id.chat_container) instanceof ChatRoomListFragment) {
-                Log.d(TAG, "200000");
                 // chatting room 화면을 보고 있는 경우에 채팅룸 갱신
                 ArrayList<ChatRoomItem> roomList = roomListFragment.getChatRoomList();
                 String chatRoomId = intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID);
@@ -398,7 +395,6 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 roomListFragment.setChatRoomListAndNotify(roomList);
                 ssomBar.setSsomBarTitleText(String.format(getString(R.string.chat_list_title), ++unreadCount));
             } else {
-                Log.d(TAG, "300000");
                 // 푸시를 받은 방에서 chatting 중이라면 메시지를 추가해서 보여줌
                 if (chattingFragment.getChatRoomId().equalsIgnoreCase(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID))) {
                     ChattingItem chat = new ChattingItem();
@@ -445,6 +441,5 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 }
             }
         }
-        Log.d(TAG, "400000");
     }
 }
