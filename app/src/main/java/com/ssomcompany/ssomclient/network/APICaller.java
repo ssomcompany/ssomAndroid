@@ -139,7 +139,7 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<GetChattingRoomList.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void getChattingList(String token, long roomId, NetworkManager.NetworkListener<T> listener) {
+    public static <T extends BaseResponse> void getChattingList(String token, String roomId, NetworkManager.NetworkListener<T> listener) {
         GetChattingList.Request request = new GetChattingList.Request(roomId);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
@@ -155,7 +155,7 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<CreateChattingRoom.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void deleteChattingRoom(String token, long chatroomId, NetworkManager.NetworkListener<T> listener) {
+    public static <T extends BaseResponse> void deleteChattingRoom(String token, String chatroomId, NetworkManager.NetworkListener<T> listener) {
         DeleteChattingRoom.Request request = new DeleteChattingRoom.Request(chatroomId);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
@@ -171,7 +171,7 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomChatUnreadCount.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void sendChattingMessage(String token, long roomId, long lastMessageTime,
+    public static <T extends BaseResponse> void sendChattingMessage(String token, String roomId, long lastMessageTime,
                                            String msg, NetworkManager.NetworkListener<T> listener) {
         SendChattingMessage.Request request = new SendChattingMessage.Request(roomId, lastMessageTime).setMsg(msg);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
@@ -180,7 +180,7 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<SendChattingMessage.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void sendChattingRequest(String token, long roomId, int methodType,
+    public static <T extends BaseResponse> void sendChattingRequest(String token, String roomId, int methodType,
                                                                     NetworkManager.NetworkListener<T> listener) {
         SsomRequest request;
 

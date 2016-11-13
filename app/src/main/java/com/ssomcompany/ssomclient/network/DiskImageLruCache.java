@@ -6,6 +6,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.jakewharton.disklrucache.DiskLruCache;
@@ -123,6 +124,10 @@ class DiskImageLruCache {
     }
 
     Bitmap getBitmap( String key ) {
+        if(TextUtils.isEmpty(key)) {
+            return null;
+        }
+
         Bitmap bitmap = null;
         DiskLruCache.Snapshot snapshot = null;
 
@@ -166,6 +171,9 @@ class DiskImageLruCache {
     }
 
     public boolean containsKey( String key ) {
+        if(TextUtils.isEmpty(key)) {
+            return false;
+        }
 
         boolean contained = false;
         DiskLruCache.Snapshot snapshot = null;

@@ -58,6 +58,8 @@ public class ChatRoomListFragment extends BaseFragment {
     private ChatRoomListAdapter mAdapter;
     private ArrayList<ChatRoomItem> chatRoomList;
 
+    private ViewListener.OnChatRoomListLoadingFinished mLoadingListener;
+
     public ArrayList<ChatRoomItem> getChatRoomList() {
         return chatRoomList;
     }
@@ -66,6 +68,10 @@ public class ChatRoomListFragment extends BaseFragment {
         this.chatRoomList = chatRoomList;
         mAdapter.setChatRoomList(this.chatRoomList);
         mAdapter.notifyDataSetChanged();
+    }
+
+    public void setOnChatRoomListLoadingFinished(ViewListener.OnChatRoomListLoadingFinished mLoadingListener) {
+        this.mLoadingListener = mLoadingListener;
     }
 
     @Override
@@ -159,6 +165,8 @@ public class ChatRoomListFragment extends BaseFragment {
                         chatRoomList = response.getData().getChattingRoomList();
                         mAdapter.setChatRoomList(chatRoomList);
                         mAdapter.notifyDataSetChanged();
+                        // 채팅방으로 바로 보내기 위함
+                        if(mLoadingListener != null) mLoadingListener.onFinishLoadingRoomList(chatRoomList);
                     } else {
                         Log.e(TAG, "unexpected error, data is null");
                         showErrorMessage();

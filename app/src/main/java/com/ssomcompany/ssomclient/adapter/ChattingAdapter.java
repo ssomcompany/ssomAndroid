@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
+import com.ssomcompany.ssomclient.activity.SsomImageDetailActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
@@ -98,7 +100,7 @@ public class ChattingAdapter extends BaseAdapter {
         }
 
         // list view item setting
-        ChattingItem item = itemList.get(position);
+        final ChattingItem item = itemList.get(position);
 
         if(CommonConst.Chatting.SYSTEM.equals(item.getMsgType())) {
             holder.systemMessage.setVisibility(View.VISIBLE);
@@ -160,6 +162,15 @@ public class ChattingAdapter extends BaseAdapter {
                 if(position == 0 || getItem(position - 1) == null || !item.getFromUserId().equals(getItem(position - 1).getFromUserId())
                         || !Util.isSameTimeBetweenTwoTimes(item.getTimestamp(), getItem(position - 1).getTimestamp())) {
                     holder.leftChatProfileLayout.setVisibility(View.VISIBLE);
+                    holder.leftChatProfileLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, SsomImageDetailActivity.class);
+                            intent.putExtra(CommonConst.Intent.IMAGE_URL, ((BaseActivity) context).getUserId().equals(roomItem.getOwnerId()) ?
+                                    roomItem.getParticipantImageUrl() : roomItem.getOwnerImageUrl());
+                            context.startActivity(intent);
+                        }
+                    });
                     // profile image
                     holder.leftChatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
                     holder.leftChatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);

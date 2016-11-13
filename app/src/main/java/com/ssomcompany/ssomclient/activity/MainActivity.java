@@ -414,7 +414,7 @@ public class MainActivity extends BaseActivity
         });
 
         btnWrite = (ImageView) findViewById(R.id.btn_write);
-        setSsomWriteButtonImage();
+        setSsomWriteButtonImage(false);
 
         final Context context = this;
         btnWrite.setOnClickListener(new View.OnClickListener() {
@@ -442,7 +442,7 @@ public class MainActivity extends BaseActivity
 //        ((TextView) findViewById(R.id.tv_online_user)).setText();
     }
 
-    private void setSsomWriteButtonImage() {
+    private void setSsomWriteButtonImage(final boolean isRefresh) {
         if(!TextUtils.isEmpty(getUserId())) {
             APICaller.ssomExistMyPost(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomItem>>() {
 
@@ -466,6 +466,7 @@ public class MainActivity extends BaseActivity
                         btnWrite.setImageResource(R.drawable.btn_write);
                         showErrorMessage();
                     }
+                    if(isRefresh) requestSsomList(null, null, false);
                 }
             });
         } else {
@@ -642,7 +643,7 @@ public class MainActivity extends BaseActivity
                                     mNavigationDrawerFragment.setTodayImage();
                                     ssomActionBar.setHeartCount(-1);
                                     ssomActionBar.setChatCount("0");
-                                    setSsomWriteButtonImage();
+                                    setSsomWriteButtonImage(false);
                                     UiUtils.makeToastMessage(getApplicationContext(), "로그아웃 되었습니다.");
                                 }
                             }, null);
@@ -1100,7 +1101,8 @@ public class MainActivity extends BaseActivity
                 return;
             }
 
-            if(ssomActionBar.getHeartCount() == 0) {
+            if((ssomItem == null || TextUtils.isEmpty(ssomItem.getChatroomId()))  // 채팅 중인 상대이므로 채팅방으로 이동시키기
+                    && ssomActionBar.getHeartCount() == 0) {
                 UiUtils.makeCommonDialog(this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
                         R.string.heart_not_enough_go_to_store, R.style.ssom_font_16_custom_666666,
                         R.string.dialog_move, R.string.cancel,
@@ -1135,9 +1137,8 @@ public class MainActivity extends BaseActivity
                 break;
             case REQUEST_SSOM_WRITE :
                 if(resultCode == RESULT_OK) {
-                    requestSsomList(null, null, false);
+                    setSsomWriteButtonImage(true);
                     mNavigationDrawerFragment.setTodayImage();
-                    setSsomWriteButtonImage();
                     dismissProgressDialog();
                 }
                 break;
@@ -1145,7 +1146,7 @@ public class MainActivity extends BaseActivity
                 if(resultCode == RESULT_OK) {
                     mNavigationDrawerFragment.setLoginEmailLayout();
                     mNavigationDrawerFragment.setTodayImage();
-                    setSsomWriteButtonImage();
+                    setSsomWriteButtonImage(true);
                 }
                 break;
             case REQUEST_CHECK_LOCATION_PERMISSION:

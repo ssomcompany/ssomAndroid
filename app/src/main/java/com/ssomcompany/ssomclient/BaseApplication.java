@@ -86,6 +86,7 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
     @Override
     public void onActivityDestroyed(Activity activity) {
         int totalActivityCount = activityCount.decrementAndGet();
+        this.mCurrentActivity = null;
         Log.v(TAG, "target : " + (null == activity ? "null" : activity.getClass().getSimpleName()) + ", total activiy : " + totalActivityCount);
     }
 
@@ -104,7 +105,6 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
     @Override
     public void onActivityPaused(Activity activity) {
         Log.v(TAG, "target : " + (null == activity ? "null" : activity.getClass().getSimpleName()));
-        this.mCurrentActivity = null;
     }
 
     @Override

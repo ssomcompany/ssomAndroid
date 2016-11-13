@@ -24,14 +24,14 @@ public class CreateChattingRoom {
     }
     
     public static class Response extends ToStringHelperClass {
-        private int chatroomId;
+        private String chatroomId;
         private long createdTimestamp;
 
-        public int getChatroomId() {
+        public String getChatroomId() {
             return chatroomId;
         }
 
-        public void setChatroomId(int chatroomId) {
+        public void setChatroomId(String chatroomId) {
             this.chatroomId = chatroomId;
         }
 

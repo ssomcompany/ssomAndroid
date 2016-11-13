@@ -53,9 +53,9 @@ public class NetworkConstant {
         public static final String PROFILE_IMAGE = "/users/profileImgUrl";
 
         // $1 : roomId, $2 : currentTimeStamp
-        public static final String SEND_MESSAGE = "/chatroom/%d/chats?lastTimestamp=%d";
+        public static final String SEND_MESSAGE = "/chatroom/%s/chats?lastTimestamp=%d";
         // $1 : roomId
-        public static final String CHAT_LIST = "/chatroom/%d/chats";
+        public static final String CHAT_LIST = "/chatroom/%s/chats";
         // 하트관련
         public static final String USER_HEART = "/users/hearts";
 

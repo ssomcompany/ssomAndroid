@@ -16,6 +16,7 @@ public class SsomItem extends ToStringHelperClass implements Serializable {
     private int minAge;
     private int maxAge;
     private int userCount;
+    private String chatroomId;
     private String status;
     private String fromUserId;
     private long createdTimestamp;
@@ -133,5 +134,13 @@ public class SsomItem extends ToStringHelperClass implements Serializable {
 
     public void setFromUserId(String fromUserId) {
         this.fromUserId = fromUserId;
+    }
+
+    public String getChatroomId() {
+        return chatroomId;
+    }
+
+    public void setChatroomId(String chatroomId) {
+        this.chatroomId = chatroomId;
     }
 }

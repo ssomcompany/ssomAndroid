@@ -44,23 +44,29 @@ public class SsomNotiOpenedHandler implements OneSignal.NotificationOpenedHandle
         if(BaseApplication.getInstance().getCurrentActivityCount().get() == 0) {
             Log.i("OneSignalTabListener", "go to chatting activity !");
             Intent intent = new Intent(BaseApplication.getInstance(), IntroActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(CommonConst.Intent.IS_FROM_NOTI, true);
             BaseApplication.getInstance().startActivity(intent);
         } else {
-            Log.d("receive", "local broad cast sent");
-
-            Intent localIntent = new Intent(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH);
-            localIntent.putExtra(CommonConst.Intent.FROM_USER_ID, data.optString(CommonConst.Intent.FROM_USER_ID, null));
-            localIntent.putExtra(CommonConst.Intent.TO_USER_ID, data.optString(CommonConst.Intent.TO_USER_ID, null));
-            localIntent.putExtra(CommonConst.Intent.TIMESTAMP, data.optLong(CommonConst.Intent.TIMESTAMP, 0));
-            localIntent.putExtra(CommonConst.Intent.CHAT_ROOM_ID, data.optString(CommonConst.Intent.CHAT_ROOM_ID, null) == null ?
-                    data.optString("id", null) : data.optString(CommonConst.Intent.CHAT_ROOM_ID, null));
-            localIntent.putExtra(CommonConst.Intent.STATUS, data.optString(CommonConst.Intent.STATUS, null));
-            localIntent.putExtra(CommonConst.Intent.MESSAGE, message);
-
-            LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(localIntent);
+            Log.i("OneSignalTabListener", "go to current activity !");
+            Intent intent = new Intent(BaseApplication.getInstance(), BaseApplication.getInstance().getCurrentActivity().getClass());
+            intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
+            BaseApplication.getInstance().startActivity(intent);
         }
+//        else {
+//            Log.d("receive", "local broad cast sent");
+//
+//            Intent localIntent = new Intent(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH);
+//            localIntent.putExtra(CommonConst.Intent.FROM_USER_ID, data.optString(CommonConst.Intent.FROM_USER_ID, null));
+//            localIntent.putExtra(CommonConst.Intent.TO_USER_ID, data.optString(CommonConst.Intent.TO_USER_ID, null));
+//            localIntent.putExtra(CommonConst.Intent.TIMESTAMP, data.optLong(CommonConst.Intent.TIMESTAMP, 0));
+//            localIntent.putExtra(CommonConst.Intent.CHAT_ROOM_ID, data.optString(CommonConst.Intent.CHAT_ROOM_ID, null) == null ?
+//                    data.optString("id", null) : data.optString(CommonConst.Intent.CHAT_ROOM_ID, null));
+//            localIntent.putExtra(CommonConst.Intent.STATUS, data.optString(CommonConst.Intent.STATUS, null));
+//            localIntent.putExtra(CommonConst.Intent.MESSAGE, message);
+//
+//            LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(localIntent);
+//        }
 
         // Follow the instructions in the link below to prevent the launcher Activity from starting.
         // https://documentation.onesignal.com/docs/android-notification-customizations#changing-the-open-action-of-a-notification

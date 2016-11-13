@@ -1,5 +1,6 @@
 package com.ssomcompany.ssomclient.control;
 
+import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
 import java.util.ArrayList;
@@ -48,5 +49,9 @@ public class ViewListener {
         void onPermissionGranted();
 
         void onPermissionDenied(ArrayList<String> deniedPermissions);
+    }
+
+    public interface OnChatRoomListLoadingFinished {
+        void onFinishLoadingRoomList(ArrayList<ChatRoomItem> chatRoomList);
     }
 }

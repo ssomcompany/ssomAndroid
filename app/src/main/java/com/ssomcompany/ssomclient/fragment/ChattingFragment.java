@@ -100,6 +100,37 @@ public class ChattingFragment extends BaseFragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        showProgressDialog();
+        APICaller.getChattingList(getToken(), roomItem.getId(),
+                new NetworkManager.NetworkListener<SsomResponse<GetChattingList.Response>>() {
+                    @Override
+                    public void onResponse(SsomResponse<GetChattingList.Response> response) {
+                        if(response.isSuccess()) {
+                            Log.d(TAG, "response : " + response);
+                            if(response.getData() != null) {
+                                chatList = response.getData().getChattingList();
+                                chatList.add(0, new ChattingItem().setStatus(ChattingItem.MessageType.initial)
+                                        .setMsgType(CommonConst.Chatting.SYSTEM).setTimestamp(roomItem.getCreatedTimestamp()));
+                                mAdapter.setItemList(chatList);
+                                mAdapter.notifyDataSetChanged();
+                            } else {
+                                Log.e(TAG, "unexpected error, data is null");
+                                showErrorMessage();
+                            }
+                        } else {
+                            Log.e(TAG, "Response error with code " + response.getResultCode() +
+                                    ", message : " + response.getMessage(), response.getError());
+                            showErrorMessage();
+                        }
+                        dismissProgressDialog();
+                    }
+                });
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chatting, container, false);
@@ -168,31 +199,5 @@ public class ChattingFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        showProgressDialog();
-        APICaller.getChattingList(getToken(), roomItem.getId(),
-                new NetworkManager.NetworkListener<SsomResponse<GetChattingList.Response>>() {
-                    @Override
-                    public void onResponse(SsomResponse<GetChattingList.Response> response) {
-                        if(response.isSuccess()) {
-                            Log.d(TAG, "response : " + response);
-                            if(response.getData() != null) {
-                                chatList = response.getData().getChattingList();
-                                chatList.add(0, new ChattingItem().setStatus(ChattingItem.MessageType.initial)
-                                        .setMsgType(CommonConst.Chatting.SYSTEM).setTimestamp(roomItem.getCreatedTimestamp()));
-                                mAdapter.setItemList(chatList);
-                                mAdapter.notifyDataSetChanged();
-                            } else {
-                                Log.e(TAG, "unexpected error, data is null");
-                                showErrorMessage();
-                            }
-                        } else {
-                            Log.e(TAG, "Response error with code " + response.getResultCode() +
-                                    ", message : " + response.getMessage(), response.getError());
-                            showErrorMessage();
-                        }
-                        dismissProgressDialog();
-                    }
-                });
     }
 }

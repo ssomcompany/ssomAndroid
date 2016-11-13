@@ -53,6 +53,7 @@
     <!-- detail view -->
     <string name="detail_cancel">닫기</string>
     <string name="detail_apply">쏨 타기</string>
+    <string name="detail_see_chatting">채팅 보기</string>
     <string name="detail_age_people">%1$s, %2$d명 이에요</string>
     <string name="detail_distance">나와의 거리 %1$s</string>
     <string name="detail_category_ssom">내가 쏠게요!</string>

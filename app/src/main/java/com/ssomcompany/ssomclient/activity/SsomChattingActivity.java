@@ -73,40 +73,57 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         if(getIntent() != null && getIntent().getExtras() != null) {
             final SsomItem ssomItem = (SsomItem) getIntent().getSerializableExtra(CommonConst.Intent.SSOM_ITEM);
 
-            APICaller.createChattingRoom(getToken(), ssomItem.getPostId(),
-                    new NetworkManager.NetworkListener<SsomResponse<CreateChattingRoom.Response>>() {
-                @Override
-                public void onResponse(SsomResponse<CreateChattingRoom.Response> response) {
-                    if(response.isSuccess() && response.getData() != null) {
-                        chatRoomItem = new ChatRoomItem();
-                        chatRoomItem.setId(response.getData().getChatroomId());
-                        chatRoomItem.setOwnerId(getUserId());
-                        chatRoomItem.setOwnerImageUrl(getTodayImageUrl());
-                        chatRoomItem.setParticipantId(ssomItem.getUserId());
-                        chatRoomItem.setParticipantImageUrl(ssomItem.getImageUrl());
-                        chatRoomItem.setSsomType(ssomItem.getSsomType());
-                        chatRoomItem.setUserCount(ssomItem.getUserCount());
-                        chatRoomItem.setMinAge(ssomItem.getMinAge());
-                        chatRoomItem.setLongitude(ssomItem.getLongitude());
-                        chatRoomItem.setLatitude(ssomItem.getLatitude());
-                        chatRoomItem.setPostId(ssomItem.getPostId());
-                        chatRoomItem.setCreatedTimestamp(response.getData().getCreatedTimestamp());
+            if(!TextUtils.isEmpty(ssomItem.getChatroomId())) {
+                // 기존에 방이 있으므로 그쪽으로 이동시킴
+                roomListFragment = new ChatRoomListFragment();
+                roomListFragment.setOnChatRoomListLoadingFinished(new ViewListener.OnChatRoomListLoadingFinished() {
+                    @Override
+                    public void onFinishLoadingRoomList(ArrayList<ChatRoomItem> chatRoomList) {
+                        for(int i=0 ; i<chatRoomList.size() ; i++) {
+                            if(chatRoomList.get(i).getId().equals(ssomItem.getChatroomId())) {
+                                onChatItemClick(i);
+                                break;
+                            }
+                        }
+                    }
+                });
+                startChatRoomListFragment();
+            } else {
+                APICaller.createChattingRoom(getToken(), ssomItem.getPostId(),
+                        new NetworkManager.NetworkListener<SsomResponse<CreateChattingRoom.Response>>() {
+                            @Override
+                            public void onResponse(SsomResponse<CreateChattingRoom.Response> response) {
+                                if (response.isSuccess() && response.getData() != null) {
+                                    chatRoomItem = new ChatRoomItem();
+                                    chatRoomItem.setId(response.getData().getChatroomId());
+                                    chatRoomItem.setOwnerId(getUserId());
+                                    chatRoomItem.setOwnerImageUrl(getTodayImageUrl());
+                                    chatRoomItem.setParticipantId(ssomItem.getUserId());
+                                    chatRoomItem.setParticipantImageUrl(ssomItem.getImageUrl());
+                                    chatRoomItem.setSsomType(ssomItem.getSsomType());
+                                    chatRoomItem.setUserCount(ssomItem.getUserCount());
+                                    chatRoomItem.setMinAge(ssomItem.getMinAge());
+                                    chatRoomItem.setLongitude(ssomItem.getLongitude());
+                                    chatRoomItem.setLatitude(ssomItem.getLatitude());
+                                    chatRoomItem.setPostId(ssomItem.getPostId());
+                                    chatRoomItem.setCreatedTimestamp(response.getData().getCreatedTimestamp());
 
-                        CURRENT_STATE = STATE_CHAT_ROOM;
-                        startChattingFragment();
-                        changeSsomBarViewForChattingRoom();
-                        getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
+                                    CURRENT_STATE = STATE_CHAT_ROOM;
+                                    startChattingFragment();
+                                    changeSsomBarViewForChattingRoom();
+                                    getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
 //                        if(response.getStatusCode() == 304) {
 //                            Log.d(TAG, "chat already exist : " + response.getData().getChatroomId());
 //                            startChattingFragment(response.getData().getList().get(0));
 //                        } else {
 //                            Log.d(TAG, "chat began");
 //                        }
-                    } else {
-                        showErrorMessage();
-                    }
-                }
-            });
+                                } else {
+                                    showErrorMessage();
+                                }
+                            }
+                        });
+            }
         } else {
             startChatRoomListFragment();
         }
@@ -291,6 +308,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     public void onChatItemClick(final int position) {
         CURRENT_STATE = STATE_CHAT_ROOM;
         chatRoomItem = roomListFragment.getChatRoomList().get(position);
+        roomListFragment.setOnChatRoomListLoadingFinished(null);
         startChattingFragment();
         changeSsomBarViewForChattingRoom();
     }
@@ -357,15 +375,17 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         }
 
         if(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equalsIgnoreCase(intent.getAction())) {
+            Log.d(TAG, "100000");
 
             if (fragmentManager.findFragmentById(R.id.chat_container) instanceof ChatRoomListFragment) {
+                Log.d(TAG, "200000");
                 // chatting room 화면을 보고 있는 경우에 채팅룸 갱신
                 ArrayList<ChatRoomItem> roomList = roomListFragment.getChatRoomList();
-                int chatRoomId = Integer.parseInt(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID));
+                String chatRoomId = intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID);
                 int roomIndex = 0;
 
                 for (int i = 0; i < roomList.size(); i++) {
-                    if (roomList.get(i).getId() == chatRoomId) {
+                    if (!TextUtils.isEmpty(chatRoomId) && chatRoomId.equals(roomList.get(i).getId())) {
                         roomIndex = i;
                         break;
                     }
@@ -378,6 +398,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 roomListFragment.setChatRoomListAndNotify(roomList);
                 ssomBar.setSsomBarTitleText(String.format(getString(R.string.chat_list_title), ++unreadCount));
             } else {
+                Log.d(TAG, "300000");
                 // 푸시를 받은 방에서 chatting 중이라면 메시지를 추가해서 보여줌
                 if (chattingFragment.getChatRoomId().equalsIgnoreCase(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID))) {
                     ChattingItem chat = new ChattingItem();
@@ -424,5 +445,6 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 }
             }
         }
+        Log.d(TAG, "400000");
     }
 }

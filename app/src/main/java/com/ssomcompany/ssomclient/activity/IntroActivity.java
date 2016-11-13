@@ -69,7 +69,7 @@ public class IntroActivity extends BaseActivity {
                                     }
                                     startActivity(i);
                                 }
-                            }, 3000);
+                            }, 1500);
                         }
                     } catch(PackageManager.NameNotFoundException e) {
                         e.printStackTrace();

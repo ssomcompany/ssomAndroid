@@ -25,6 +25,8 @@
             android:id="@+id/icon_ing"
             android:layout_width="64dp"
             android:layout_height="64dp"
+            android:layout_marginLeft="3dp"
+            android:layout_gravity="center_vertical"
             android:visibility="gone"/>
 
         <ImageView

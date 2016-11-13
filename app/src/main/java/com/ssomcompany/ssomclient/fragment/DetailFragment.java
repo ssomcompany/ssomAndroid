@@ -246,9 +246,12 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             tvAgePeople.setText( String.format( getResources().getString(R.string.detail_age_people), Util.convertAgeRange(item.getMinAge()), item.getUserCount()) );
             tvContent.setText(item.getContent());
             btnApply.setBackgroundResource(CommonConst.SSOM.equals(item.getSsomType()) ? R.drawable.btn_write_apply_ssom : R.drawable.btn_write_apply_ssoa);
-            if(!TextUtils.isEmpty(item.getUserId()) && item.getUserId().equals(getUserId())) {
+            if(!TextUtils.isEmpty(item.getUserId()) && item.getUserId().equals(getUserId())) {   // 내 아이템인 경우 삭제하기로 문구 변경
                 btnApply.getChildAt(0).setVisibility(View.GONE);
                 ((TextView) btnApply.getChildAt(1)).setText(getResources().getString(R.string.dialog_delete));
+            } else if(!TextUtils.isEmpty(item.getChatroomId())) {   // 채팅 중인경우 채팅보기로 문구 변경
+                btnApply.getChildAt(0).setVisibility(View.GONE);
+                ((TextView) btnApply.getChildAt(1)).setText(getString(R.string.detail_see_chatting));
             }
 
             // btn setting

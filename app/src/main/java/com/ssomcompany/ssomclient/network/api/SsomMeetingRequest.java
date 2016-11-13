@@ -10,17 +10,17 @@ import com.ssomcompany.ssomclient.network.model.SsomPutRequest;
 public class SsomMeetingRequest {
 
     public static class PutRequest extends SsomPutRequest {
-        long chatroomId;
+        String chatroomId;
 
         public PutRequest() {
             super(NetworkConstant.API.MEETING_REQUEST);
         }
 
-        public long getChatroomId() {
+        public String getChatroomId() {
             return chatroomId;
         }
 
-        public PutRequest setChatroomId(long chatroomId) {
+        public PutRequest setChatroomId(String chatroomId) {
             this.chatroomId = chatroomId;
             return this;
         }
@@ -29,7 +29,7 @@ public class SsomMeetingRequest {
     public static class DeleteRequest extends SsomDeleteRequest {
 //        String chatroomId;
 
-        public DeleteRequest(long chatroomId) {
+        public DeleteRequest(String chatroomId) {
             super(NetworkConstant.API.MEETING_REQUEST + "/" + chatroomId);
         }
 
@@ -49,17 +49,17 @@ public class SsomMeetingRequest {
     }
 
     public static class PostRequest extends SsomPostRequest {
-        long chatroomId;
+        String chatroomId;
 
         public PostRequest() {
             super(NetworkConstant.API.MEETING_REQUEST);
         }
 
-        public long getChatroomId() {
+        public String getChatroomId() {
             return chatroomId;
         }
 
-        public PostRequest setChatroomId(long chatroomId) {
+        public PostRequest setChatroomId(String chatroomId) {
             this.chatroomId = chatroomId;
             return this;
         }
