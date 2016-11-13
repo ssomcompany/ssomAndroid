@@ -144,4 +144,8 @@ public class SsomItem extends ToStringHelperClass implements Serializable {
         this.chatroomId = chatroomId;
         return this;
     }
+
+    public String getThumbnailImageUrl() {
+        return getImageUrl() + "?thumbnail=200";
+    }
 }

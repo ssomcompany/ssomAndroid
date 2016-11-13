@@ -182,7 +182,7 @@ public class NavigationDrawerFragment extends Fragment {
             imgToday.setVisibility(View.VISIBLE);
         }
 
-        if(NetworkManager.getInstance().getBitmapFromMemoryCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "")) == null) {
+        if(NetworkManager.getInstance().getBitmapFromMemoryCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "") + "?thumbnail=200") == null) {
             ImageRequest imageRequest = new ImageRequest(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "") + "?thumbnail=200", new Response.Listener<Bitmap>() {
 
                 @Override
@@ -202,7 +202,7 @@ public class NavigationDrawerFragment extends Fragment {
             });
             Volley.newRequestQueue(getActivity()).add(imageRequest);
         } else {
-            imgToday.setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromMemoryCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "")));
+            imgToday.setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromMemoryCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "") + "?thumbnail=200"));
         }
     }
 

@@ -2,6 +2,7 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +11,16 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageRequest;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.common.BitmapWorkerTask;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
@@ -62,7 +71,7 @@ public class SsomItemListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        PostItemViewHolder holder;
+        final PostItemViewHolder holder;
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.ssom_list_item, null);
@@ -83,12 +92,34 @@ public class SsomItemListAdapter extends BaseAdapter {
         }
 
         // list view item setting
-        SsomItem item = itemList.get(position);
+        final SsomItem item = itemList.get(position);
 
         // profile
         holder.image.setDefaultImageResId(R.drawable.profile_img_basic);
         holder.image.setErrorImageResId(R.drawable.profile_img_basic);
-        holder.image.setImageUrl(item.getImageUrl() + "?thumbnail=200", mImageLoader);
+        if(NetworkManager.getInstance().hasBitmapInCache(item.getThumbnailImageUrl())) {
+            if(NetworkManager.getInstance().hasBitmapFromMemoryCache(item.getThumbnailImageUrl())) {
+                // get bitmap from memory cache
+                holder.image.setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromMemoryCache(item.getThumbnailImageUrl()));
+            } else {
+                // get bitmap from disk cache
+                BitmapWorkerTask diskCacheTask = new BitmapWorkerTask() {
+                    @Override
+                    protected void onPostExecute(Bitmap result) {
+                        super.onPostExecute(result);
+                        if (result != null) {
+                            // Add final bitmap to caches
+                            NetworkManager.getInstance().addBitmapToCache(item.getThumbnailImageUrl(), result);
+                            holder.image.setLocalImageBitmap(result);
+                        }
+                    }
+                };
+
+                diskCacheTask.execute(item.getThumbnailImageUrl());
+            }
+        } else {
+            holder.image.setImageUrl(item.getThumbnailImageUrl(), mImageLoader);
+        }
 
         //icon
         if(CommonConst.SSOM.equals(item.getSsomType())){

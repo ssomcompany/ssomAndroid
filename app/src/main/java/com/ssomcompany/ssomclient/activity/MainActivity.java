@@ -906,23 +906,24 @@ public class MainActivity extends BaseActivity
     }
 
     private void addMarker(final SsomItem item, final boolean isLastItem) {
-        if(NetworkManager.getInstance().hasBitmapInCache(item.getImageUrl())) {
+        if(NetworkManager.getInstance().hasBitmapInCache(item.getThumbnailImageUrl())) {
 
-            if(NetworkManager.getInstance().hasBitmapFromMemoryCache(item.getImageUrl())) {
+            if(NetworkManager.getInstance().hasBitmapFromMemoryCache(item.getThumbnailImageUrl())) {
                 // get bitmap from memory cache
                 mIdMap.put(mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
                         .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item,
-                                NetworkManager.getInstance().getBitmapFromMemoryCache(item.getImageUrl()))))), item.getPostId());
+                                NetworkManager.getInstance().getBitmapFromMemoryCache(item.getThumbnailImageUrl())))))
+                        , item.getPostId());
             } else {
                 // get bitmap from disk cache
-                BitmapWorkerTask uploadTask = new BitmapWorkerTask() {
+                BitmapWorkerTask diskCacheTask = new BitmapWorkerTask() {
                     @Override
                     protected void onPostExecute(Bitmap result) {
                         super.onPostExecute(result);
                         if (result != null) {
                             // Add final bitmap to caches
-                            NetworkManager.getInstance().addBitmapToCache(item.getImageUrl(), result);
+                            NetworkManager.getInstance().addBitmapToCache(item.getThumbnailImageUrl(), result);
 
                             mIdMap.put(mMap.addMarker(new MarkerOptions()
                                     .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
@@ -932,20 +933,20 @@ public class MainActivity extends BaseActivity
                     }
                 };
 
-                uploadTask.execute(item.getImageUrl());
-                TASK_LIST.add(uploadTask);
+                diskCacheTask.execute(item.getThumbnailImageUrl());
+                TASK_LIST.add(diskCacheTask);
             }
 //            if (isLastItem) {
 //                Log.d(TAG, "last item created!");
 //                dismissProgressDialog();
 //            }
         } else {
-            ImageRequest imageRequest = new ImageRequest(item.getImageUrl() + "?thumbnail=200", new Response.Listener<Bitmap>() {
+            ImageRequest imageRequest = new ImageRequest(item.getThumbnailImageUrl(), new Response.Listener<Bitmap>() {
                 Marker marker;
 
                 @Override
                 public void onResponse(Bitmap bitmap) {
-                    NetworkManager.getInstance().addBitmapToCache(item.getImageUrl() + "?thumbnail=200", bitmap);
+                    NetworkManager.getInstance().addBitmapToCache(item.getThumbnailImageUrl(), bitmap);
                     marker = mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
                             .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item, bitmap))));
