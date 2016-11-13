@@ -70,6 +70,7 @@ import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
+import com.ssomcompany.ssomclient.network.api.GetUserProfile;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
@@ -414,7 +415,6 @@ public class MainActivity extends BaseActivity
         });
 
         btnWrite = (ImageView) findViewById(R.id.btn_write);
-        setSsomWriteButtonImage(false);
 
         final Context context = this;
         btnWrite.setOnClickListener(new View.OnClickListener() {
@@ -437,6 +437,17 @@ public class MainActivity extends BaseActivity
 
         View filterImgLayout = findViewById(R.id.filter_img);
         filterImgLayout.setOnClickListener(filterClickListener);
+
+        if(!TextUtils.isEmpty(getUserEmail())) {
+            // user profile 정보를 셋팅한다
+            APICaller.getUserProfile(getToken(), getUserEmail(), new NetworkManager.NetworkListener<SsomResponse< GetUserProfile.Response>>() {
+                @Override
+                public void onResponse(SsomResponse<GetUserProfile.Response> response) {
+                    getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, response.getData().getProfileImgUrl());
+                    setSsomWriteButtonImage(false);
+                }
+            });
+        }
 
         // TODO online user count setting
 //        ((TextView) findViewById(R.id.tv_online_user)).setText();

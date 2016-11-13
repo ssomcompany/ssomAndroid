@@ -140,7 +140,8 @@ public class SsomItem extends ToStringHelperClass implements Serializable {
         return chatroomId;
     }
 
-    public void setChatroomId(String chatroomId) {
+    public SsomItem setChatroomId(String chatroomId) {
         this.chatroomId = chatroomId;
+        return this;
     }
 }

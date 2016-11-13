@@ -58,7 +58,8 @@ public class NetworkConstant {
         public static final String CHAT_LIST = "/chatroom/%s/chats";
         // 하트관련
         public static final String USER_HEART = "/users/hearts";
-
+        // user profile
+        public static final String USER_PROFILE = "/users/%s";
         // get app version
         public static final String APP_VERSION = "/version/android";
     }

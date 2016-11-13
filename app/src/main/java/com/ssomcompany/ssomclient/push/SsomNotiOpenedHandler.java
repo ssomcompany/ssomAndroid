@@ -50,7 +50,11 @@ public class SsomNotiOpenedHandler implements OneSignal.NotificationOpenedHandle
         } else {
             Log.i("OneSignalTabListener", "go to current activity !");
             Intent intent = new Intent(BaseApplication.getInstance(), BaseApplication.getInstance().getCurrentActivity().getClass());
-            intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(CommonConst.Intent.SSOM_ITEM,
+                    new SsomItem().setChatroomId(data.optString(CommonConst.Intent.CHAT_ROOM_ID, null) == null ?
+                            data.optString("id", null) : data.optString(CommonConst.Intent.CHAT_ROOM_ID, null)));
             BaseApplication.getInstance().startActivity(intent);
         }
 //        else {

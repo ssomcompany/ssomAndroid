@@ -34,6 +34,7 @@ import com.ssomcompany.ssomclient.network.api.GetChattingList;
 import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
 import com.ssomcompany.ssomclient.network.api.GetHeartCount;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
+import com.ssomcompany.ssomclient.network.api.GetUserProfile;
 import com.ssomcompany.ssomclient.network.api.SendChattingMessage;
 import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
 import com.ssomcompany.ssomclient.network.api.SsomExistMyPost;
@@ -233,6 +234,14 @@ public class APICaller {
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<GetHeartCount.Response>>() {}.getType(), listener);
+    }
+
+    public static <T extends BaseResponse> void getUserProfile(String token, String email, NetworkManager.NetworkListener<T> listener) {
+        GetUserProfile.Request request = new GetUserProfile.Request(email);
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<GetUserProfile.Response>>() {}.getType(), listener);
     }
 
     public static <T extends BaseResponse> void addHeartCount(String token, String count, String purchaseToken,
