@@ -19,7 +19,7 @@ public class GetUserProfile {
     }
 
     public static class Response extends ToStringHelperClass {
-        private int profileImgUrl;
+        private String profileImgUrl;
         private int hearts;
 
         public int getHearts() {
@@ -30,11 +30,11 @@ public class GetUserProfile {
             this.hearts = hearts;
         }
 
-        public int getProfileImgUrl() {
+        public String getProfileImgUrl() {
             return profileImgUrl;
         }
 
-        public void setProfileImgUrl(int profileImgUrl) {
+        public void setProfileImgUrl(String profileImgUrl) {
             this.profileImgUrl = profileImgUrl;
         }
     }

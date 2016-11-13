@@ -443,7 +443,11 @@ public class MainActivity extends BaseActivity
             APICaller.getUserProfile(getToken(), getUserEmail(), new NetworkManager.NetworkListener<SsomResponse< GetUserProfile.Response>>() {
                 @Override
                 public void onResponse(SsomResponse<GetUserProfile.Response> response) {
-                    getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, response.getData().getProfileImgUrl());
+                    if(response.isSuccess() && response.getData() != null) {
+                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, response.getData().getProfileImgUrl());
+                    } else {
+                        showErrorMessage();
+                    }
                     setSsomWriteButtonImage(false);
                 }
             });
