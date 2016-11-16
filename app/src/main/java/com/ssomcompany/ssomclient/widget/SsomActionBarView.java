@@ -39,6 +39,7 @@ public class SsomActionBarView extends RelativeLayout {
     public static final int SSOM_CHAT_LIST = 0x03;
     public static final int SSOM_CHATTING = 0x04;
     public static final int SSOM_CONTACT_PEOPLE = 0x05;
+    public static final int SSOM_MAP = 0x06;
 
     private int currentMode = SSOM_MAIN_MENU;
 

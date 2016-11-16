@@ -60,5 +60,6 @@ public class CommonConst {
         public static final String MESSAGE = "message";
 
         public static final String IS_FROM_NOTI = "isFromNoti";
+        public static final String EXTRA_ROOM_ITEM = "roomItem";
     }
 }

@@ -83,6 +83,7 @@
     <string name="chat_message_finish">상대방이 쏨을 종료했습니다. (T_T)</string>
     <string name="chat_message_hint">메시지를 입력하세요&#8230;</string>
     <string name="chat_room_no_info">정보가 없어요&#8230;</string>
+    <string name="chat_ssom_map"><u>쏨 위치 보기</u></string>
 
     <!-- button -->
     <string name="ok_upper">확인</string>
@@ -129,7 +130,7 @@
     <string name="dialog_meet_cancel_message">만남을 정말 취소 하시겠어요?\n취소 시 채팅방으로 돌아갑니다.</string>
     <string name="dialog_meet_finish_message">만남을 종료 하시겠어요?</string>
     <string name="dialog_meet_finish_by_exit_message">채팅방을 나가면 만남이 종료됩니다.\n종료 하시겠어요?</string>
-    <string name="dialog_chat_list_delete_message">끝낸 쏨은 되돌릴 수 없어요...\n쏨을 정말로 끝내시겠어요?</string>
+    <string name="dialog_chat_list_delete_message">끝낸 쏨은 되돌릴 수 없어요&#8230;\n쏨을 정말로 끝내시겠어요?</string>
     <string name="dialog_logout_message">로그아웃 하시겠어요?</string>
     <string name="dialog_explain_location_permission_message">위치에 접근할 권한이 없습니다. \n위치권한이 없는경우 정확한 위치서비스를 제공할 수 없습니다.\n\n[앱]->[권한]에서 위치 권한을 허용해주세요.</string>
     <string name="dialog_explain_storage_permission_message">저장소에 접근할 권한이 없습니다. \n저장소 권한이 없는경우 게시물을 등록할 수 없습니다.\n\n[앱]->[권한]에서 저장소 권한을 허용해주세요.</string>
@@ -150,10 +151,6 @@
 
     <!--heart store-->
     <string name="store_title">하트 만들기</string>
-    <string name="store_heart_item_first_price">￦ 4,900</string>
-    <string name="store_heart_item_second_price">￦ 15,900</string>
-    <string name="store_heart_item_third_price">￦ 28,900</string>
-    <string name="store_heart_item_fourth_price">￦ 39,900</string>
     <string name="heart_not_enough_go_to_store">하트가 부족해 쏨타기를 진행할 수 없어요.. \n상점으로 이동하시겠어요?</string>
 
     <!-- today profile -->

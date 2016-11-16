@@ -185,12 +185,9 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 String.format(getString(R.string.filter_age_n_count), Util.convertAgeRange(chatRoomItem.getMinAge()), Util.convertPeopleRange(chatRoomItem.getUserCount())));
         ssomBar.setSsomBarSubTitleStyle(R.style.ssom_font_12_pinkish_gray_two_single);
         ssomBar.setChatLayoutVisibility(false);
-
-        // 채팅룸 우측 상단의 버튼을 기능에 맞게 적용
-        setMeetingButton();
     }
 
-    private void setMeetingButton() {
+    public void setMeetingButton() {
         if((chatRoomItem.getMinAge() | chatRoomItem.getUserCount()) == 0 ||
                 CommonConst.Chatting.MEETING_OUT.equalsIgnoreCase(chatRoomItem.getStatus()) ||
                 (CommonConst.Chatting.SYSTEM.equals(chatRoomItem.getLastMsgType()) &&
@@ -211,6 +208,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 ssomBar.setChattingRoomBtnMeetingOnOff(!isMyRequest);
                 ssomBar.setChattingRoomBtnMeetingTitle(isMyRequest ?
                         getString(R.string.chat_room_info_btn_sent) : getString(R.string.dialog_meet_apply));
+                chattingFragment.enableMapLayout(false);
                 methodType = isMyRequest ? NetworkConstant.Method.DELETE : NetworkConstant.Method.PUT;
                 dialogMsg = isMyRequest ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message;
                 dialogOkBtn = isMyRequest ? R.string.chat_room_info_btn_sent : R.string.dialog_meet_apply;
@@ -219,6 +217,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 // 만남 중이니 서로 만남취소 가능
                 ssomBar.setChattingRoomBtnMeetingOnOff(false);
                 ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_finish));
+                chattingFragment.enableMapLayout(true);
                 methodType = NetworkConstant.Method.DELETE;
                 dialogMsg = R.string.dialog_meet_finish_message;
                 dialogOkBtn = R.string.dialog_meet_finish;
@@ -226,6 +225,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             } else {
                 ssomBar.setChattingRoomBtnMeetingOnOff(true);
                 ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_request));
+                chattingFragment.enableMapLayout(false);
                 methodType = NetworkConstant.Method.POST;
                 dialogMsg = R.string.dialog_meet_request_message;
                 dialogOkBtn = R.string.dialog_meet;

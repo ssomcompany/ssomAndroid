@@ -3,6 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/white" >
 
     <LinearLayout
@@ -43,6 +44,36 @@
         android:layout_height="1dp"
         android:background="@color/custom_e5e5e5"/>
 
+    <LinearLayout
+        android:id="@+id/ssom_map_layout"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:paddingTop="10dp"
+        android:background="#fcfcfc"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/ssom_font_13_5_red_pink_bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="18dp"
+            android:text="@string/chat_message_approve"/>
+
+        <TextView
+            style="@style/ssom_font_13_5_red_pink_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:layout_gravity="right"
+            android:drawablePadding="3dp"
+            android:drawableLeft="@drawable/icon_ssom_map"
+            android:gravity="right"
+            android:text="@string/chat_ssom_map"/>
+
+    </LinearLayout>
+
     <ListView
         android:id="@+id/chatting"
         android:headerDividersEnabled="false"
@@ -55,6 +86,7 @@
         android:stackFromBottom="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/ssom_map_layout"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="56dp" />
 </RelativeLayout>

@@ -353,6 +353,12 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="ssom_font_23_white">
+        <item name="android:textSize">23sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">normal</item>
+    </style>
+
     <style name="ssom_font_24_red_pink_bold">
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">@color/red_pink</item>

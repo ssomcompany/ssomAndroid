@@ -298,10 +298,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        if (Util.isMessageCountCheckingExcludeActivity(this)) {
-            LocalBroadcastManager.getInstance(BaseApplication.getInstance()).unregisterReceiver(mLocalReceiver);
-        }
     }
 
     public long getActivityCreatedTime() {
@@ -341,6 +337,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         this.paused.set(true);
         this.aHandler.pause();
+
+        if (Util.isMessageCountCheckingExcludeActivity(this)) {
+            LocalBroadcastManager.getInstance(BaseApplication.getInstance()).unregisterReceiver(mLocalReceiver);
+        }
     }
 
     public boolean isPaused() {

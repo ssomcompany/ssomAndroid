@@ -13,7 +13,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.SsomChattingActivity;
 import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
+import com.ssomcompany.ssomclient.activity.SsomMapActivity;
 import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.UiUtils;
@@ -34,6 +36,7 @@ public class ChattingFragment extends BaseFragment {
     private static final String IS_READ = "IS_READ";
 
     private EditText editMessage;
+    private View mapLayout;
 
     /**
      * The Adapter which will be used to populate the ListView/GridView with
@@ -138,6 +141,19 @@ public class ChattingFragment extends BaseFragment {
         ImageView btnSend = (ImageView) view.findViewById(R.id.btn_send);
         editMessage = (EditText) view.findViewById(R.id.edit_message);
         ListView chatListView = (ListView) view.findViewById(R.id.chatting);
+        mapLayout = view.findViewById(R.id.ssom_map_layout);
+
+        mapLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mapIntent = new Intent(getActivity(), SsomMapActivity.class);
+                mapIntent.putExtra(CommonConst.Intent.EXTRA_ROOM_ITEM, roomItem);
+                startActivity(mapIntent);
+            }
+        });
+
+        // 채팅룸 우측 상단의 버튼을 기능에 맞게 적용
+        ((SsomChattingActivity) getActivity()).setMeetingButton();
 
         btnSend.setOnClickListener(new View.OnClickListener() {
 
@@ -194,6 +210,10 @@ public class ChattingFragment extends BaseFragment {
         editMessage.setSelected(true);
 
         return view;
+    }
+
+    public void enableMapLayout(boolean enabled) {
+        mapLayout.setVisibility(enabled ? View.VISIBLE : View.GONE);
     }
 
     @Override
