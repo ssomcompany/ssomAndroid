@@ -21,6 +21,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -61,8 +63,12 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
     private GoogleMap mMap;
     private Location myLocation;
     private SupportMapFragment mapFragment;
+    private TextView tvDistance;
 
     private ChatRoomItem roomItem;
+
+    private boolean iAmOwner;
+    private Location yourLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +79,23 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
             roomItem = (ChatRoomItem) getIntent().getSerializableExtra(CommonConst.Intent.EXTRA_ROOM_ITEM);
         }
 
+        if(roomItem != null) {
+            iAmOwner = getUserId().equals(roomItem.getOwnerId());
+            // TODO call API for your location
+            if(iAmOwner) {
+                yourLocation = new Location("initial provider");
+                yourLocation.setLatitude(37.55595);
+                yourLocation.setLongitude(126.9230138);
+            } else {
+                yourLocation = new Location("initial provider");
+                yourLocation.setLatitude(roomItem.getLatitude());
+                yourLocation.setLongitude(roomItem.getLongitude());
+            }
+        }
+
         SsomActionBarView actionBarView = (SsomActionBarView) findViewById(R.id.ssom_action_bar);
         actionBarView.setCurrentMode(SsomActionBarView.SSOM_MAP);
-        actionBarView.setSsomBarTitleLayoutGravity(Gravity.CENTER_VERTICAL);
+//        actionBarView.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_VERTICAL|RelativeLayout.RIGHT_OF|);
         actionBarView.setSsomBarTitleText("채팅으로 돌아가기");
         actionBarView.setSsomBarTitleStyle(R.style.ssom_font_16_custom_4d4d4d_single);
         actionBarView.setHeartLayoutVisibility(false);
@@ -86,6 +106,7 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
                 finish();
             }
         });
+        tvDistance = (TextView) findViewById(R.id.tv_distance);
         checkLocationServiceEnabled();
     }
 
@@ -96,18 +117,21 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
 
         setMapUiSetting();
 
+        myLocation = locationTracker.getLocation();
         // marker 생성
         addMarker(roomItem);
 
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (Marker marker : markers) {
-            builder.include(marker.getPosition());
-        }
-        LatLngBounds bounds = builder.build();
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return new View(getApplicationContext());
+            }
 
-        int padding = 0; // offset from edges of the map in pixels
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-        mMap.moveCamera(cu);
+            @Override
+            public View getInfoContents(Marker marker) {
+                return null;
+            }
+        });
     }
 
     private void checkLocationServiceEnabled() {
@@ -235,7 +259,6 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
     }
 
     private void startMapFragment(){
-        locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
         if(mapFragment == null) mapFragment = SupportMapFragment.newInstance();
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.container, mapFragment).commitAllowingStateLoss();
@@ -247,6 +270,14 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
         public void onLocationChanged(Location location) {
             Log.d(TAG, "gpsLocationListener : " + location);
             myLocation = location;
+
+            if(iAmOwner) {
+                markers.get(0).setPosition(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()));
+            } else {
+                markers.get(1).setPosition(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()));
+            }
+
+            setBoundsBetweenMarkers(false);
         }
 
         @Override
@@ -271,6 +302,14 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
         public void onLocationChanged(Location location) {
             Log.d(TAG, "networkLocationListener : " + location);
             myLocation = location;
+
+            if(iAmOwner) {
+                markers.get(0).setPosition(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()));
+            } else {
+                markers.get(1).setPosition(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()));
+            }
+
+            setBoundsBetweenMarkers(false);
         }
 
         @Override
@@ -295,12 +334,11 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
         markers = new ArrayList<>();
         for(int i = 0 ; i < 2 ; i++) {
             final boolean isOwnerItem = i == 0;
-            final boolean iAmOwner = getUserId().equals(item.getOwnerId());
             final String thumbnailImageUrl = (isOwnerItem ? item.getOwnerImageUrl() : item.getParticipantImageUrl()) + "?thumbnail=200";
-            final double lat = iAmOwner ? item.getLatitude() : myLocation.getLatitude();
-            final double lon = iAmOwner ? item.getLongitude() : myLocation.getLongitude();
+            final double lat = isOwnerItem ? item.getLatitude() : iAmOwner ? yourLocation.getLatitude() : myLocation.getLatitude();
+            final double lon = isOwnerItem ? item.getLongitude() : iAmOwner ? yourLocation.getLongitude() : myLocation.getLongitude();
 
-            if (NetworkManager.getInstance().hasBitmapInCache(thumbnailImageUrl)) {
+            if (!thumbnailImageUrl.startsWith("?") && NetworkManager.getInstance().hasBitmapInCache(thumbnailImageUrl)) {
                 if (NetworkManager.getInstance().hasBitmapFromMemoryCache(thumbnailImageUrl)) {
                     // get bitmap from memory cache
                     marker = mMap.addMarker(new MarkerOptions()
@@ -308,6 +346,8 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
                             .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getStatus(), isOwnerItem ? item.getSsomType() :
                                             CommonConst.SSOM.equals(item.getSsomType()) ? CommonConst.SSOA : CommonConst.SSOM,
                                     NetworkManager.getInstance().getBitmapFromMemoryCache(thumbnailImageUrl)))));
+                    markers.add(marker);
+                    if(!isOwnerItem) setBoundsBetweenMarkers(true);
                 } else {
                     // get bitmap from disk cache
                     BitmapWorkerTask diskCacheTask = new BitmapWorkerTask() {
@@ -322,6 +362,9 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
                                         .position(new LatLng(lat, lon)).draggable(false)
                                         .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getStatus(), isOwnerItem ? item.getSsomType() :
                                                 CommonConst.SSOM.equals(item.getSsomType()) ? CommonConst.SSOA : CommonConst.SSOM, result))));
+
+                                markers.add(marker);
+                                if(!isOwnerItem) setBoundsBetweenMarkers(true);
                             }
                         }
                     };
@@ -329,32 +372,31 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
                     diskCacheTask.execute(thumbnailImageUrl);
                 }
             } else {
-                ImageRequest imageRequest = new ImageRequest(thumbnailImageUrl, new Response.Listener<Bitmap>() {
+                marker = mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(lat, lon)).draggable(false)
+                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getStatus(), isOwnerItem ? item.getSsomType() :
+                                CommonConst.SSOM.equals(item.getSsomType()) ? CommonConst.SSOA : CommonConst.SSOM,
+                                BitmapFactory.decodeResource(getResources(), R.drawable.profile_img_basic)))));
 
-                    @Override
-                    public void onResponse(Bitmap bitmap) {
-                        NetworkManager.getInstance().addBitmapToCache(thumbnailImageUrl, bitmap);
-                        marker = mMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(lat, lon)).draggable(false)
-                                .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getStatus(), isOwnerItem ? item.getSsomType() :
-                                        CommonConst.SSOM.equals(item.getSsomType()) ? CommonConst.SSOA : CommonConst.SSOM, bitmap))));
-                    }
-                }, 0  // max width
-                        , 0  // max height
-                        , ImageView.ScaleType.CENTER  // scale type
-                        , Bitmap.Config.RGB_565  // decode config
-                        , new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-
-                    }
-                });
-                NetworkManager.getInstance().getRequestQueue().add(imageRequest);
+                markers.add(marker);
+                if(!isOwnerItem) setBoundsBetweenMarkers(true);
             }
 
-            markers.add(marker);
         }
+    }
+
+    private void setBoundsBetweenMarkers(boolean isInit) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (Marker marker : markers) {
+            builder.include(marker.getPosition());
+        }
+        LatLngBounds bounds = builder.build();
+
+        int padding = 150; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        tvDistance.setText(LocationTracker.getInstance().getDistanceString(yourLocation.getLatitude(), yourLocation.getLongitude()));
+        if(isInit) mMap.moveCamera(cu);
+        else mMap.animateCamera(cu);
     }
 
     private Bitmap getMarkerImage(String status, String ssomType , Bitmap imageBitmap){
@@ -385,8 +427,8 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
             iconDrawable.draw(c);
             imageDrawable.draw(c);
             if(ingDrawable != null) {
-                ingDrawable.setBounds(Util.convertDpToPixel(2), Util.convertDpToPixel(2),
-                        Util.convertDpToPixel(47), Util.convertDpToPixel(47));
+                ingDrawable.setBounds(Util.convertDpToPixel(1), Util.convertDpToPixel(1),
+                        Util.convertDpToPixel(48), Util.convertDpToPixel(48));
                 ingDrawable.draw(c);
             }
 
@@ -395,5 +437,19 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
         }
 
         return mergedBitmap;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        locationTracker.stopLocationUpdates();
     }
 }

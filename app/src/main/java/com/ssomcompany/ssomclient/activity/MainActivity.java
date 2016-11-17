@@ -1004,8 +1004,8 @@ public class MainActivity extends BaseActivity
             iconDrawable.draw(c);
             imageDrawable.draw(c);
             if(ingDrawable != null) {
-                ingDrawable.setBounds(Util.convertDpToPixel(2), Util.convertDpToPixel(2),
-                        Util.convertDpToPixel(47), Util.convertDpToPixel(47));
+                ingDrawable.setBounds(Util.convertDpToPixel(1), Util.convertDpToPixel(1),
+                        Util.convertDpToPixel(48), Util.convertDpToPixel(48));
                 ingDrawable.draw(c);
             }
 

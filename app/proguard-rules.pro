@@ -54,22 +54,30 @@
 
 #FOR APPCOMPAT 23.1.1:
 -keep class !android.support.v7.view.menu.*MenuBuilder*, android.support.v7.** { *; }
--keep interface android.support.v7.* { *; }
+# The official support library.
+-keep class android.support.v4.** { *; }
+-keepclassmembers class android.support.v4.** { *; }
+-keep interface android.support.v4.** { *; }
+-keep class android.support.v7.** { *; }
+-keepclassmembers class android.support.v7.** { *; }
+-keep interface android.support.v7.** { *; }
+
 
 -keep class com.facebook.** { *; }
+-keepclassmembers class com.facebook.** { *; }
 -dontwarn com.facebook.**
 
 -keepattributes InnerClasses
 
--dontwarn org.apache.commons.**
--keep class org.apache.http.** { *; }
--dontwarn org.apache.http.**
+-dontwarn org.apache.**
+-keep class org.apache.** { *; }
+-dontwarn org.apache.**
+-keep class android.net.** { *; }
+-dontwarn android.net.**
 -keep class com.onesignal.** { *; }
 -dontwarn com.onesignal.**
 -keep class com.google.gson.** { *; }
 -dontwarn com.google.gson.**
-
--keep class android.location.** { *; }
 
 -keepnames class com.google.android.maps.** {*;}
 -keep public class com.google.android.maps.** {*;}
@@ -101,32 +109,39 @@
     public <init>(android.content.Context, android.util.AttributeSet, int);
 }
 
--keepclassmembers class * implements android.os.Parcelable {
-    static android.os.Parcelable$Creator CREATOR;
-}
-
+# Preserve static fields of inner classes of R classes that might be accessed
+# through introspection.
 -keepclassmembers class **.R$* {
-    public static <fields>;
+  public static <fields>;
 }
 
+# Preserve the special static methods that are required in all enumeration classes.
 -keepclasseswithmembers enum * {*;}
 
--keep class com.ssomcompany.ssomclient.network.api.model.** { *; }
+-keep public class * {
+    public protected *;
+}
 
-#-keep class com.android.volley.** { *; }
-#-dontwarn com.android.volley.**
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}
 
-#-keep class org-apache-commons.** { *; }
-#-dontwarn org-apache-commons.**
+-keep class com.ssomcompany.ssomclient.network.api.** { *; }
 
-#-keep class com.loopj.android.http.** { *; }
-#-dontwarn com.loopj.android.http.**
+-keep class com.android.volley.** { *; }
+-dontwarn com.android.volley.**
 
-#-keep class com.nineoldandroid.** { *; }
-#-dontwarn com.nineoldandroid.**
+-keep class org-apache-commons.** { *; }
+-dontwarn org-apache-commons.**
 
-#-keep class com.imagezoom.** { *; }
-#-dontwarn com.imagezoom.**
+-keep class com.loopj.android.http.** { *; }
+-dontwarn com.loopj.android.http.**
+
+-keep class com.nineoldandroid.** { *; }
+-dontwarn com.nineoldandroid.**
+
+-keep class com.imagezoom.** { *; }
+-dontwarn com.imagezoom.**
 
 -keep class udk.android.** { *; }
 -dontwarn udk.android.**
