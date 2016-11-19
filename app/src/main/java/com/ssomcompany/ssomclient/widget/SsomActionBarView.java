@@ -227,7 +227,7 @@ public class SsomActionBarView extends RelativeLayout {
                     timerIsRunning = true;
                     int hour = (int) millisUntilFinished / (60 * 60 * 1000);
                     int min = (int) (millisUntilFinished % (60 * 60 * 1000)) / (60 * 1000);
-                    setHeartRefillTime(hour + ":" + min);
+                    setHeartRefillTime("0" + hour + ":" + (min < 10 ? "0" + min : min));
                 }
 
                 @Override
