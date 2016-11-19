@@ -3,7 +3,9 @@ package com.ssomcompany.ssomclient.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +51,7 @@ public class ChattingFragment extends BaseFragment {
 
     // send btn 제어
     boolean isSending = false;
+    String sendingMsg;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -159,6 +162,24 @@ public class ChattingFragment extends BaseFragment {
             }
         });
 
+        editMessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(isSending && s.length() != sendingMsg.length()) {
+                    editMessage.setText(sendingMsg);
+                    editMessage.setSelection(sendingMsg.length());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
         // 채팅룸 우측 상단의 버튼을 기능에 맞게 적용
         ((SsomChattingActivity) getActivity()).setMeetingButton();
 
@@ -166,6 +187,11 @@ public class ChattingFragment extends BaseFragment {
 
             @Override
             public void onClick(View v) {
+
+                // TODO message 없는 경우 있는 경우 send 버튼의 이미지가 다르게 설정 할지 문의
+                // 빈 메시지 동작 없음
+                if(TextUtils.isEmpty(editMessage.getText())) return;
+                // 현재 메시지를 보내는 중이면 다시 보내지 않음
                 if(isSending) {
                     return;
                 }
@@ -175,16 +201,15 @@ public class ChattingFragment extends BaseFragment {
                     return;
                 }
 
-                // TODO message 없는 경우 있는 경우 send 버튼의 이미지가 다르게 설정 할지 문의
-                if(TextUtils.isEmpty(editMessage.getText())) return;
-
                 isSending = true;
+                sendingMsg = String.valueOf(editMessage.getText());
                 // 내가 보고 있는 목록의 가장 마지막 메시지의 시간을 가져와서 보내주면 그 사이 받은 메시지를 return 해줌
                 APICaller.sendChattingMessage(getToken(), roomItem.getId(),
-                        mAdapter.getItemList().get(mAdapter.getItemList().size() - 1).getTimestamp(), String.valueOf(editMessage.getText()),
+                        mAdapter.getItemList().get(mAdapter.getItemList().size() - 1).getTimestamp(), sendingMsg,
                         new NetworkManager.NetworkListener<SsomResponse<SendChattingMessage.Response>>() {
                             @Override
                             public void onResponse(SsomResponse<SendChattingMessage.Response> response) {
+                                isSending = false;
                                 if(response.isSuccess()) {
                                     Log.d(TAG, "response : " + response);
                                     if(response.getData() != null) {
@@ -192,7 +217,7 @@ public class ChattingFragment extends BaseFragment {
                                         for(ChattingItem item : response.getData().getChattingList()) {
                                             mAdapter.add(item);
                                         }
-                                        mAdapter.add(String.valueOf(editMessage.getText()));
+                                        mAdapter.add(sendingMsg);
                                         editMessage.setText("");
                                         mAdapter.notifyDataSetChanged();
                                     } else {
@@ -204,7 +229,6 @@ public class ChattingFragment extends BaseFragment {
                                             ", message : " + response.getMessage(), response.getError());
                                     showErrorMessage();
                                 }
-                                isSending = false;
                             }
                         });
             }
