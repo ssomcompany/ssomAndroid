@@ -78,7 +78,6 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
         findViewById(R.id.btn_close).setOnClickListener(this);
         findViewById(R.id.btn_load_image).setOnClickListener(this);
         findViewById(R.id.btn_take_picture).setOnClickListener(this);
-        findViewById(R.id.btn_delete_image).setOnClickListener(this);
         findViewById(R.id.btn_cancel).setOnClickListener(this);
         findViewById(R.id.btn_save).setOnClickListener(this);
 
@@ -131,23 +130,6 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                                 }
                             }
                         }).checkPermission();
-                break;
-            case R.id.btn_delete_image:
-                APICaller.deleteTodayPhoto(getToken(), new NetworkManager.NetworkListener<BaseResponse>() {
-                    @Override
-                    public void onResponse(BaseResponse response) {
-                        if(response.isSuccess()) {
-                            profileImage.setLocalImageBitmap(null);
-                            getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "");
-                            NetworkManager.getInstance().removeBitmapFromMemoryCache(getTodayImageUrl());
-                            picturePath = "";
-                            mCurrentPhotoPath = "";
-                            UiUtils.makeToastMessage(SsomTodayProfileActivity.this, "오늘의 사진을 삭제했쏨!");
-                        } else {
-                            showErrorMessage();
-                        }
-                    }
-                });
                 break;
             case R.id.btn_save:
                 if(TextUtils.isEmpty(picturePath) && TextUtils.isEmpty(mCurrentPhotoPath)) {

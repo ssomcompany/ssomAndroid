@@ -81,7 +81,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
-        android:padding="5dp"
+        android:padding="10dp"
         android:text="@string/today_load_image"/>
 
     <TextView
@@ -90,22 +90,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="13dp"
-        android:padding="5dp"
+        android:padding="10dp"
         android:text="@string/today_take_picture"/>
-
-    <TextView
-        android:id="@+id/btn_delete_image"
-        style="@style/ssom_font_16_red_pink"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="13dp"
-        android:padding="5dp"
-        android:text="@string/today_delete_image"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="47dp"
+        android:layout_marginTop="65dp"
         android:orientation="horizontal">
 
         <TextView
