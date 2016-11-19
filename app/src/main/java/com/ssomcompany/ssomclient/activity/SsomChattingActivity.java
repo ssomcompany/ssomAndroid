@@ -390,6 +390,8 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 ChatRoomItem tempItem = roomList.get(roomIndex);
                 tempItem.setLastMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
                 tempItem.setUnreadCount(tempItem.getUnreadCount() + 1);
+                if (!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS)))
+                    tempItem.setStatus(intent.getStringExtra(CommonConst.Intent.STATUS));
                 roomList.remove(roomIndex);
                 roomList.add(0, tempItem);
                 roomListFragment.setChatRoomListAndNotify(roomList);

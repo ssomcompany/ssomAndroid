@@ -68,6 +68,13 @@ public class ChattingFragment extends BaseFragment {
 
     public void setChatRoomItem(ChatRoomItem roomItem) {
         this.roomItem = roomItem;
+        checkEditEnable();
+    }
+
+    private void checkEditEnable() {
+        if(CommonConst.Chatting.MEETING_OUT.equalsIgnoreCase(roomItem.getStatus())) {
+            if(editMessage != null) editMessage.setEnabled(false);
+        }
     }
 
     public String getChatRoomId() {
@@ -208,6 +215,7 @@ public class ChattingFragment extends BaseFragment {
         dummy.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Util.convertDpToPixel(7f)));
         chatListView.addFooterView(dummy);
         editMessage.setSelected(true);
+        checkEditEnable();
 
         return view;
     }
