@@ -45,6 +45,7 @@ import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
 import com.ssomcompany.ssomclient.network.api.SsomProfileImageUpload;
 import com.ssomcompany.ssomclient.network.api.SsomRegisterUser;
+import com.ssomcompany.ssomclient.network.api.UpdateChattingRoom;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomRequest;
@@ -138,6 +139,15 @@ public class APICaller {
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<GetChattingRoomList.Response>>() {}.getType(), listener);
+    }
+
+    public static <T extends BaseResponse> void updateChattingRoom(String token, String chatRoomId, long lastAccessTime,
+                                                                   NetworkManager.NetworkListener<T> listener) {
+        UpdateChattingRoom.Request request = new UpdateChattingRoom.Request(chatRoomId, lastAccessTime);
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<UpdateChattingRoom.Response>>() {}.getType(), listener);
     }
 
     public static <T extends BaseResponse> void getChattingList(String token, String roomId, NetworkManager.NetworkListener<T> listener) {

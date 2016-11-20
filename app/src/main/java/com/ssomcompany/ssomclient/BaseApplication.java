@@ -39,12 +39,6 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
         // vibrate on
         OneSignal.enableVibrate(true);
 
-        OneSignal.startInit(this)
-                .setNotificationOpenedHandler(new SsomNotiOpenedHandler())
-                .setNotificationReceivedHandler(new SsomNotiReceiveHandler())
-                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None)
-                .init();
-
         mInstance = this;
         Log.d(TAG, TAG + " Created!!");
 

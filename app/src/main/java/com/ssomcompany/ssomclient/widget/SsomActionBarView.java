@@ -20,16 +20,12 @@ import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
-import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.AddHeartCount;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageManager;
-
-import java.util.Calendar;
-import java.util.TimerTask;
 
 public class SsomActionBarView extends RelativeLayout {
     public static final String TAG = SsomActionBarView.class.getSimpleName();
@@ -256,14 +252,19 @@ public class SsomActionBarView extends RelativeLayout {
             }.start();
         } else {
             Log.d(TAG, "setHeartCount refill time clear");
-            setHeartRefillTime("--:--");
             if(count < 0) {
                 count = 0;
                 if(timerIsRunning) {
                     timerTask.cancel();
                     timerIsRunning = false;
                 }
+            } else if(count > 2) {
+                if(timerIsRunning) {
+                    timerTask.cancel();
+                    timerIsRunning = false;
+                }
             }
+            setHeartRefillTime("--:--");
         }
         imgHeart.setText(String.valueOf(count));
         setHeartIconOnOff(count != 0);

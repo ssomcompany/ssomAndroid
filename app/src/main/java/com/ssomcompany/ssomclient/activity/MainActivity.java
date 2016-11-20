@@ -52,6 +52,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.onesignal.shortcutbadger.ShortcutBadger;
+import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.BitmapWorkerTask;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -591,9 +593,13 @@ public class MainActivity extends BaseActivity
         }
 
         if(msgCount != null && !msgCount.isEmpty()) {
+            getSession().put(SsomPreferences.PREF_SESSION_UNREAD_COUNT, Integer.parseInt(msgCount));
             ssomActionBar.setChatCount(msgCount);
+            ShortcutBadger.applyCount(this, Integer.parseInt(msgCount)); //for 1.1.4+
         } else {
+            getSession().put(SsomPreferences.PREF_SESSION_UNREAD_COUNT, 0);
             ssomActionBar.setChatCount("0");
+            ShortcutBadger.removeCount(this);
         }
     }
 
@@ -658,6 +664,7 @@ public class MainActivity extends BaseActivity
                                     mNavigationDrawerFragment.setTodayImage();
                                     ssomActionBar.setHeartCount(-1);
                                     ssomActionBar.setChatCount("0");
+                                    ShortcutBadger.removeCount(MainActivity.this);
                                     setSsomWriteButtonImage(false);
                                     UiUtils.makeToastMessage(getApplicationContext(), "로그아웃 되었습니다.");
                                 }

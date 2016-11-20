@@ -9,7 +9,7 @@ public class DeleteChattingRoom {
     public static class Request extends SsomDeleteRequest {
 
         public Request(String chatroomId) {
-            super(NetworkConstant.API.CREATE_ROOM + "/" + chatroomId);
+            super(NetworkConstant.API.CHAT_ROOM + "/" + chatroomId);
         }
     }
 

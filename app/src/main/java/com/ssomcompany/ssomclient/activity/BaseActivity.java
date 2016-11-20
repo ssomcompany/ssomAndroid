@@ -62,7 +62,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
         if(session == null) {
-            session = new SsomPreferences(this, SsomPreferences.LOGIN_PREF);
+            session = new SsomPreferences(BaseApplication.getInstance(), SsomPreferences.LOGIN_PREF);
         }
 
         if (0 == this.activityCreatedTime) {

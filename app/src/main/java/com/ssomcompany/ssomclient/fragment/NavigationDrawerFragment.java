@@ -33,12 +33,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
+import com.onesignal.OneSignal;
+import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.adapter.DrawerMenuAdapter;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.push.SsomNotiOpenedHandler;
+import com.ssomcompany.ssomclient.push.SsomNotiReceiveHandler;
 import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 
 /**
@@ -165,9 +169,16 @@ public class NavigationDrawerFragment extends Fragment {
                 && !TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_EMAIL, ""))) {
             tvLoginOrLogout.setText(R.string.logout);
             tvEmailOrDescription.setText(session.getString(SsomPreferences.PREF_SESSION_EMAIL, ""));
+            OneSignal.startInit(BaseApplication.getInstance())
+                    .setNotificationOpenedHandler(new SsomNotiOpenedHandler())
+                    .setNotificationReceivedHandler(new SsomNotiReceiveHandler())
+                    .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None)
+                    .init();
         } else { // otherwise
             tvLoginOrLogout.setText(R.string.login_needed);
             tvEmailOrDescription.setText(R.string.login_required);
+            OneSignal.removeNotificationOpenedHandler();
+            OneSignal.removeNotificationReceivedHandler();
         }
     }
 

@@ -10,7 +10,7 @@ public class CreateChattingRoom {
         String postId;
 
         public Request() {
-            super(NetworkConstant.API.CREATE_ROOM);
+            super(NetworkConstant.API.CHAT_ROOM);
         }
 
         public String getPostId() {

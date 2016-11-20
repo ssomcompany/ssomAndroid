@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 
+import com.onesignal.shortcutbadger.ShortcutBadger;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
@@ -28,6 +29,7 @@ import com.ssomcompany.ssomclient.network.api.SsomMeetingRequest;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.MessageManager;
@@ -130,29 +132,19 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     }
 
     private void initSsomBarView() {
-        ssomBar.setCurrentMode(SsomActionBarView.SSOM_CHAT_LIST);
         ssomBar.setHeartLayoutVisibility(false);
         ssomBar.setChatLayoutVisibility(false);
         ssomBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomBar.setSsomBarTitleStyle(R.style.ssom_font_16_custom_4d4d4d_single);
         ssomBar.setSsomBarTitleText(getString(R.string.chat_list_title_empty));
-        APICaller.totalChatUnreadCount(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomChatUnreadCount.Response>>() {
-            @Override
-            public void onResponse(SsomResponse<SsomChatUnreadCount.Response> response) {
-                if(response.isSuccess() && response.getData() != null) {
-                    unreadCount = response.getData().getUnreadCount();
-                    if(unreadCount != 0) ssomBar.setSsomBarTitleText(String.format(getString(R.string.chat_list_title), unreadCount));
-                } else {
-                    showErrorMessage();
-                }
-            }
-        });
         ssomBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
+
+        changeSsomBarViewForChatRoomList();
     }
 
     private void hideSoftKeyboard() {
@@ -167,24 +159,34 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     private void changeSsomBarViewForChatRoomList() {
         ssomBar.setCurrentMode(SsomActionBarView.SSOM_CHAT_LIST);
         ssomBar.setChattingRoomBtnMeetingVisibility(false);
-        ssomBar.setChatLayoutVisibility(false);
-        ssomBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
-        ssomBar.setSsomBarTitleText(unreadCount == 0 ?
-                getString(R.string.chat_list_title_empty) : String.format(getString(R.string.chat_list_title), unreadCount));
-        ssomBar.setSsomBarTitleStyle(R.style.ssom_font_16_custom_4d4d4d_single);
+        ssomBar.setSsomBarTitleText(getString(R.string.chat_list_title_empty));
+        APICaller.totalChatUnreadCount(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomChatUnreadCount.Response>>() {
+            @Override
+            public void onResponse(SsomResponse<SsomChatUnreadCount.Response> response) {
+                if(response.isSuccess() && response.getData() != null) {
+                    unreadCount = response.getData().getUnreadCount();
+                    getSession().put(SsomPreferences.PREF_SESSION_UNREAD_COUNT, unreadCount);
+                    if(unreadCount != 0) {
+                        ssomBar.setSsomBarTitleText(String.format(getString(R.string.chat_list_title), unreadCount));
+                        ShortcutBadger.applyCount(SsomChattingActivity.this, unreadCount); //for 1.1.4+
+                    } else {
+                        ShortcutBadger.removeCount(SsomChattingActivity.this);
+                    }
+                } else {
+                    showErrorMessage();
+                }
+            }
+        });
         ssomBar.setSsomBarSubTitleVisibility(false);
     }
 
     private void changeSsomBarViewForChattingRoom() {
         ssomBar.setCurrentMode(SsomActionBarView.SSOM_CHATTING);
-        ssomBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomBar.setSsomBarTitleText(getString(R.string.chat_room_title));
-        ssomBar.setSsomBarTitleStyle(R.style.ssom_font_16_custom_4d4d4d_single);
         ssomBar.setSsomBarSubTitleVisibility(true);
         ssomBar.setSsomBarSubTitleText((chatRoomItem.getMinAge() | chatRoomItem.getUserCount()) == 0 ? getString(R.string.chat_room_no_info) :
                 String.format(getString(R.string.filter_age_n_count), Util.convertAgeRange(chatRoomItem.getMinAge()), Util.convertPeopleRange(chatRoomItem.getUserCount())));
         ssomBar.setSsomBarSubTitleStyle(R.style.ssom_font_12_pinkish_gray_two_single);
-        ssomBar.setChatLayoutVisibility(false);
     }
 
     public void setMeetingButton() {
@@ -305,6 +307,13 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(CURRENT_STATE == STATE_CHAT_LIST) changeSsomBarViewForChatRoomList();
+    }
+
+    @Override
     public void onChatItemClick(final int position) {
         CURRENT_STATE = STATE_CHAT_ROOM;
         chatRoomItem = roomListFragment.getChatRoomList().get(position);
@@ -351,9 +360,15 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
 
             CURRENT_STATE = STATE_CHAT_LIST;
             hideSoftKeyboard();
-            if(unreadCount > 0 && chatRoomItem != null && chatRoomItem.getUnreadCount() != 0) unreadCount -= chatRoomItem.getUnreadCount();
             changeSsomBarViewForChatRoomList();
             startChatRoomListFragment();
+            APICaller.updateChattingRoom(getToken(), chatRoomItem.getId(), System.currentTimeMillis(),
+                    new NetworkManager.NetworkListener<BaseResponse>() {
+                @Override
+                public void onResponse(BaseResponse response) {
+                    if(response.isSuccess()) Log.d(TAG, "success to update chatting time");
+                }
+            });
         } else {
             super.onBackPressed();
         }

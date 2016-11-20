@@ -45,9 +45,8 @@ public class NetworkConstant {
         public static final String SSOM_LOGIN = "/login";
         public static final String FACE_BOOK_LOGIN = "/facebook";
         public static final String SSOM_REGISTER_USER = "/users";
-        public static final String CHAT_ROOM_LIST = "/chatroom";
         public static final String CHAT_TOTAL_UNREAD_COUNT = "/chatroom/unreadcount";
-        public static final String CREATE_ROOM = "/chatroom";
+        public static final String CHAT_ROOM = "/chatroom";
         public static final String SSOM_POST_DELETE = "/posts/%s";
         public static final String MEETING_REQUEST = "/request";
         public static final String PROFILE_IMAGE = "/users/profileImgUrl";

@@ -6,11 +6,13 @@ import android.util.Log;
 
 import com.onesignal.OSNotification;
 import com.onesignal.OneSignal;
+import com.onesignal.shortcutbadger.ShortcutBadger;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.activity.SsomChattingActivity;
 import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.common.SsomPreferences;
 
 import org.json.JSONObject;
 
@@ -19,6 +21,7 @@ import org.json.JSONObject;
  */
 
 public class SsomNotiReceiveHandler implements OneSignal.NotificationReceivedHandler {
+    private SsomPreferences pref = new SsomPreferences(BaseApplication.getInstance(), SsomPreferences.LOGIN_PREF);
 
     @Override
     public void notificationReceived(OSNotification notification) {
@@ -27,6 +30,10 @@ public class SsomNotiReceiveHandler implements OneSignal.NotificationReceivedHan
 
         Log.d("receive", "data : " + data.toString());
         Log.d("receive", "received : " + message);
+
+        int unreadCount = pref.getInt(SsomPreferences.PREF_SESSION_UNREAD_COUNT, 0);
+        pref.put(SsomPreferences.PREF_SESSION_UNREAD_COUNT, ++unreadCount);
+        ShortcutBadger.applyCount(BaseApplication.getInstance(), unreadCount);
 
         if(BaseApplication.getInstance().getCurrentActivityCount().get() != 0) {
             Log.d("receive", "local broad cast sent");

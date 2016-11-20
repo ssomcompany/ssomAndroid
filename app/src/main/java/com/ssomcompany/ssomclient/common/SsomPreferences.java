@@ -19,6 +19,7 @@ public class SsomPreferences {
     public static final String PREF_SESSION_EMAIL = "PREF_SESSION_EMAIL";
     public static final String PREF_SESSION_USER_ID = "PREF_SESSION_USER_ID";
     public static final String PREF_SESSION_TODAY_IMAGE_URL = "PREF_SESSION_TODAY_IMAGE_URL";
+    public static final String PREF_SESSION_UNREAD_COUNT = "PREF_SESSION_UNREAD_COUNT";
 
     // chatting preferences
     public static final String PREF_CHATTING_GUIDE_IS_READ = "PREF_CHATTING_GUIDE_IS_READ";

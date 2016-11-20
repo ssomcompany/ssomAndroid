@@ -84,6 +84,27 @@ public class ChatRoomListFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        showProgressDialog();
+        APICaller.getChattingRoomList(getToken(), new NetworkManager.NetworkListener<SsomResponse<GetChattingRoomList.Response>>() {
+            @Override
+            public void onResponse(SsomResponse<GetChattingRoomList.Response> response) {
+                if(response.isSuccess()) {
+                    if(response.getData() != null) {
+                        chatRoomList = response.getData().getChattingRoomList();
+                        mAdapter.setChatRoomList(chatRoomList);
+                        mAdapter.notifyDataSetChanged();
+                        // 채팅방으로 바로 보내기 위함
+                        if(mLoadingListener != null) mLoadingListener.onFinishLoadingRoomList(chatRoomList);
+                    } else {
+                        Log.e(TAG, "unexpected error, data is null");
+                        showErrorMessage();
+                    }
+                } else {
+                    showErrorMessage();
+                }
+                dismissProgressDialog();
+            }
+        });
     }
 
     @Override
@@ -150,33 +171,6 @@ public class ChatRoomListFragment extends BaseFragment {
         mListView.setAdapter(mAdapter);
 
         return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        showProgressDialog();
-        APICaller.getChattingRoomList(getToken(), new NetworkManager.NetworkListener<SsomResponse<GetChattingRoomList.Response>>() {
-            @Override
-            public void onResponse(SsomResponse<GetChattingRoomList.Response> response) {
-                if(response.isSuccess()) {
-                    if(response.getData() != null) {
-                        chatRoomList = response.getData().getChattingRoomList();
-                        mAdapter.setChatRoomList(chatRoomList);
-                        mAdapter.notifyDataSetChanged();
-                        // 채팅방으로 바로 보내기 위함
-                        if(mLoadingListener != null) mLoadingListener.onFinishLoadingRoomList(chatRoomList);
-                    } else {
-                        Log.e(TAG, "unexpected error, data is null");
-                        showErrorMessage();
-                    }
-                } else {
-                    showErrorMessage();
-                }
-                dismissProgressDialog();
-            }
-        });
     }
 
     @SuppressWarnings("deprecation")
