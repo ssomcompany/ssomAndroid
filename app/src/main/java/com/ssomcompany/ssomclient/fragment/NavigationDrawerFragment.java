@@ -169,16 +169,9 @@ public class NavigationDrawerFragment extends Fragment {
                 && !TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_EMAIL, ""))) {
             tvLoginOrLogout.setText(R.string.logout);
             tvEmailOrDescription.setText(session.getString(SsomPreferences.PREF_SESSION_EMAIL, ""));
-            OneSignal.startInit(BaseApplication.getInstance())
-                    .setNotificationOpenedHandler(new SsomNotiOpenedHandler())
-                    .setNotificationReceivedHandler(new SsomNotiReceiveHandler())
-                    .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None)
-                    .init();
         } else { // otherwise
             tvLoginOrLogout.setText(R.string.login_needed);
             tvEmailOrDescription.setText(R.string.login_required);
-            OneSignal.removeNotificationOpenedHandler();
-            OneSignal.removeNotificationReceivedHandler();
         }
     }
 
