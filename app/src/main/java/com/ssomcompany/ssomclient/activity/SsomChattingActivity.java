@@ -114,12 +114,10 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                                     startChattingFragment();
                                     changeSsomBarViewForChattingRoom();
                                     getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
-//                        if(response.getStatusCode() == 304) {
-//                            Log.d(TAG, "chat already exist : " + response.getData().getChatroomId());
-//                            startChattingFragment(response.getData().getList().get(0));
-//                        } else {
-//                            Log.d(TAG, "chat began");
-//                        }
+                                } else if(response.getStatusCode() == 428) {
+                                    Log.d(TAG, "ssom 진행 중, 더이상 쏨타기 못함");
+                                    showToastMessageShort(R.string.ssom_progress_message);
+                                    finish();
                                 } else {
                                     showErrorMessage();
                                 }
@@ -394,7 +392,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 // chatting room 화면을 보고 있는 경우에 채팅룸 갱신
                 ArrayList<ChatRoomItem> roomList = roomListFragment.getChatRoomList();
                 String chatRoomId = intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID);
-                int roomIndex = 0;
+                int roomIndex = -1;
 
                 for (int i = 0; i < roomList.size(); i++) {
                     if (!TextUtils.isEmpty(chatRoomId) && chatRoomId.equals(roomList.get(i).getId())) {
@@ -402,12 +400,26 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                         break;
                     }
                 }
-                ChatRoomItem tempItem = roomList.get(roomIndex);
-                tempItem.setLastMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
-                tempItem.setUnreadCount(tempItem.getUnreadCount() + 1);
-                if (!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS)))
-                    tempItem.setStatus(intent.getStringExtra(CommonConst.Intent.STATUS));
-                roomList.remove(roomIndex);
+
+                ChatRoomItem tempItem;
+                if(roomIndex < 0) {   // 방이 없는거임 처음 생성 된 방
+                    tempItem = new ChatRoomItem();
+                    tempItem.setId(chatRoomId);
+                    tempItem.setOwnerId(getUserId());
+                    tempItem.setParticipantId(intent.getStringExtra(CommonConst.Intent.FROM_USER_ID));
+                    tempItem.setLastTimestamp(intent.getLongExtra(CommonConst.Intent.TIMESTAMP, 0));
+                    tempItem.setLastMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
+                    tempItem.setUnreadCount(1);
+                    if (!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS)))
+                        tempItem.setStatus(intent.getStringExtra(CommonConst.Intent.STATUS));
+                } else {
+                    tempItem = roomList.get(roomIndex);
+                    tempItem.setLastMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
+                    tempItem.setUnreadCount(tempItem.getUnreadCount() + 1);
+                    if (!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS)))
+                        tempItem.setStatus(intent.getStringExtra(CommonConst.Intent.STATUS));
+                    roomList.remove(roomIndex);
+                }
                 roomList.add(0, tempItem);
                 roomListFragment.setChatRoomListAndNotify(roomList);
                 ssomBar.setSsomBarTitleText(String.format(getString(R.string.chat_list_title), ++unreadCount));

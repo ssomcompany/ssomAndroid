@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -236,7 +237,7 @@ public class ChattingFragment extends BaseFragment {
 
         chatListView.setAdapter(mAdapter);
         View dummy = new View(getActivity());
-        dummy.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Util.convertDpToPixel(7f)));
+        dummy.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, Util.convertDpToPixel(7f)));
         chatListView.addFooterView(dummy);
         editMessage.setSelected(true);
         checkEditEnable();

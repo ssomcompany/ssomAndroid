@@ -40,6 +40,7 @@ import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
 import com.ssomcompany.ssomclient.network.api.SsomExistMyPost;
 import com.ssomcompany.ssomclient.network.api.SsomImageUpload;
 import com.ssomcompany.ssomclient.network.api.SsomLogin;
+import com.ssomcompany.ssomclient.network.api.SsomLogout;
 import com.ssomcompany.ssomclient.network.api.SsomMeetingRequest;
 import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
@@ -115,6 +116,14 @@ public class APICaller {
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomLogin.Response>>() {}.getType(), listener);
+    }
+
+    public static <T extends BaseResponse> void ssomLogout(String token, NetworkManager.NetworkListener<T> listener) {
+        SsomLogout.Request request = new SsomLogout.Request();
+        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
+
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<SsomLogout.Response>>() {}.getType(), listener);
     }
 
     public static <T extends BaseResponse> void facebookLogin(String token, String playerId, NetworkManager.NetworkListener<T> listener) {

@@ -75,6 +75,7 @@ import com.ssomcompany.ssomclient.network.api.GetSsomList;
 import com.ssomcompany.ssomclient.network.api.GetUserProfile;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.MessageManager;
@@ -658,15 +659,24 @@ public class MainActivity extends BaseActivity
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    setSessionInfo("", "", "", "");
-                                    if(LoginManager.getInstance() != null) LoginManager.getInstance().logOut();
-                                    mNavigationDrawerFragment.setLoginEmailLayout();
-                                    mNavigationDrawerFragment.setTodayImage();
-                                    ssomActionBar.setHeartCount(-1);
-                                    ssomActionBar.setChatCount("0");
-                                    ShortcutBadger.removeCount(MainActivity.this);
-                                    setSsomWriteButtonImage(false);
-                                    UiUtils.makeToastMessage(getApplicationContext(), "로그아웃 되었습니다.");
+                                    APICaller.ssomLogout(getToken(), new NetworkManager.NetworkListener<BaseResponse>() {
+                                        @Override
+                                        public void onResponse(BaseResponse response) {
+                                            if(response.isSuccess()) {
+                                                setSessionInfo("", "", "", "");
+                                                if(LoginManager.getInstance() != null) LoginManager.getInstance().logOut();
+                                                mNavigationDrawerFragment.setLoginEmailLayout();
+                                                mNavigationDrawerFragment.setTodayImage();
+                                                ssomActionBar.setHeartCount(-1);
+                                                ssomActionBar.setChatCount("0");
+                                                ShortcutBadger.removeCount(MainActivity.this);
+                                                setSsomWriteButtonImage(false);
+                                                UiUtils.makeToastMessage(getApplicationContext(), "로그아웃 되었습니다.");
+                                            } else {
+                                                showErrorMessage();
+                                            }
+                                        }
+                                    });
                                 }
                             }, null);
                 } else {

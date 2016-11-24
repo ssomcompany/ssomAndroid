@@ -106,6 +106,7 @@
     <string name="invalid_email_format">사용이 불가능한 이메일 주소입니다.</string>
     <string name="login_failed">로그인에 실패하였습니다. 아이디 혹은 비밀번호를 확인해주세요.</string>
     <string name="success_registration">회원가입을 완료했습니다.</string>
+    <string name="ssom_progress_message">다른 만남 중이어서 쏨타기를 할 수 없어요.</string>
 
     <!-- dialog message -->
     <string name="dialog_notice">알림</string>
