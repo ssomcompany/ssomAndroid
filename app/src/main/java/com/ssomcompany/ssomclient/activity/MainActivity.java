@@ -42,8 +42,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -53,7 +51,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.onesignal.shortcutbadger.ShortcutBadger;
-import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.BitmapWorkerTask;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -75,7 +72,6 @@ import com.ssomcompany.ssomclient.network.api.GetSsomList;
 import com.ssomcompany.ssomclient.network.api.GetUserProfile;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
-import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.MessageManager;
@@ -95,12 +91,11 @@ public class MainActivity extends BaseActivity
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final int REQUEST_SSOM_WRITE = 1;
-    private static final int REQUEST_SSOM_LOGIN = 2;
-    private static final int REQUEST_CHECK_LOCATION_PERMISSION = 3;
-    private static final int REQUEST_CHECK_DETAIL_LOCATION_PERMISSION = 4;
-    private static final int REQUEST_PROFILE_ACTIVITY = 5;
-    private static final int REQUEST_SSOM_CHATTING = 6;
-    private static final int REQUEST_HEART_STORE = 7;
+    private static final int REQUEST_CHECK_LOCATION_PERMISSION = 2;
+    private static final int REQUEST_CHECK_DETAIL_LOCATION_PERMISSION = 3;
+    private static final int REQUEST_PROFILE_ACTIVITY = 4;
+    private static final int REQUEST_SSOM_CHATTING = 5;
+    private static final int REQUEST_HEART_STORE = 6;
 
     private static final String MAP_VIEW = "map";
     private static final String LIST_VIEW = "list";
@@ -168,7 +163,7 @@ public class MainActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // 페북 인스턴스 생성
-        FacebookSdk.sdkInitialize(getApplicationContext());
+//        FacebookSdk.sdkInitialize(getApplicationContext());
         selectedView = MAP_VIEW;
         selectedTab = CommonConst.SSOM;
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
@@ -311,7 +306,9 @@ public class MainActivity extends BaseActivity
     }
 
     private void requestSsomList(String ageFilter, String countFilter, final boolean needFilterToast) {
-        APICaller.getSsomList(getUserId(), ageFilter, countFilter, new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
+        APICaller.getSsomList(getUserId(), ageFilter, countFilter,
+                locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude(),
+                new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
 
             @Override
             public void onResponse(SsomResponse<GetSsomList.Response> response) {
@@ -423,11 +420,6 @@ public class MainActivity extends BaseActivity
         btnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
-                    requestLogin();
-                    return;
-                }
-
                 if(!TextUtils.isEmpty(myPostId)) {
                     startDetailFragment(getMyPostTypeItems(myPostSsomType), myPostId);
                 } else {
@@ -441,9 +433,9 @@ public class MainActivity extends BaseActivity
         View filterImgLayout = findViewById(R.id.filter_img);
         filterImgLayout.setOnClickListener(filterClickListener);
 
-        if(!TextUtils.isEmpty(getUserEmail())) {
+        if(!TextUtils.isEmpty(getUserId())) {
             // user profile 정보를 셋팅한다
-            APICaller.getUserProfile(getToken(), getUserEmail(), new NetworkManager.NetworkListener<SsomResponse< GetUserProfile.Response>>() {
+            APICaller.getUserProfile(getToken(), getUserId(), new NetworkManager.NetworkListener<SsomResponse< GetUserProfile.Response>>() {
                 @Override
                 public void onResponse(SsomResponse<GetUserProfile.Response> response) {
                     if(response.isSuccess() && response.getData() != null) {
@@ -526,23 +518,12 @@ public class MainActivity extends BaseActivity
         ssomActionBar.setOnHeartBtnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
-                    requestLogin();
-                    return;
-                }
-
                 startActivityForResult(new Intent(MainActivity.this, HeartStoreActivity.class), REQUEST_HEART_STORE);
-//                UiUtils.makeToastMessage(getApplicationContext(), "준비 중 입니다..");
             }
         });
         ssomActionBar.setOnChattingBtnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
-                    requestLogin();
-                    return;
-                }
-
                 Intent intent = new Intent(MainActivity.this, SsomChattingActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(intent);
@@ -643,58 +624,15 @@ public class MainActivity extends BaseActivity
         // update the main content by replacing fragments
         switch (position) {
             case R.id.today_photo:
-                if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
-                    requestLogin();
-                    return;
-                }
-
                 Intent i = new Intent(MainActivity.this, SsomTodayProfileActivity.class);
                 startActivityForResult(i, REQUEST_PROFILE_ACTIVITY);
-                break;
-            case R.id.tv_login_or_logout:
-                if(getSession() != null && !TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))
-                        && !TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_EMAIL, ""))) {
-                    UiUtils.makeCommonDialog(MainActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
-                            R.string.dialog_logout_message, 0, R.string.dialog_okay, R.string.dialog_cancel,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    APICaller.ssomLogout(getToken(), new NetworkManager.NetworkListener<BaseResponse>() {
-                                        @Override
-                                        public void onResponse(BaseResponse response) {
-                                            if(response.isSuccess()) {
-                                                setSessionInfo("", "", "", "");
-                                                if(LoginManager.getInstance() != null) LoginManager.getInstance().logOut();
-                                                mNavigationDrawerFragment.setLoginEmailLayout();
-                                                mNavigationDrawerFragment.setTodayImage();
-                                                ssomActionBar.setHeartCount(-1);
-                                                ssomActionBar.setChatCount("0");
-                                                ShortcutBadger.removeCount(MainActivity.this);
-                                                setSsomWriteButtonImage(false);
-                                                UiUtils.makeToastMessage(getApplicationContext(), "로그아웃 되었습니다.");
-                                            } else {
-                                                showErrorMessage();
-                                            }
-                                        }
-                                    });
-                                }
-                            }, null);
-                } else {
-                    startLoginActivity();
-                }
                 break;
             case R.id.tv_ssom_homepage:
                 Intent homepageIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkConstant.WEB_PAGE));
                 startActivity(homepageIntent);
                 break;
             case R.id.tv_make_heart:
-                if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
-                    requestLogin();
-                    return;
-                }
-
                 startActivityForResult(new Intent(MainActivity.this, HeartStoreActivity.class), REQUEST_HEART_STORE);
-//                UiUtils.makeToastMessage(getApplicationContext(), "준비 중 입니다..");
                 break;
             /**
              *  list menu item click event
@@ -707,20 +645,6 @@ public class MainActivity extends BaseActivity
             case 2:
                 Intent policyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkConstant.WEB_POLICY));
                 startActivity(policyIntent);
-                break;
-            case 3:
-                UiUtils.makeCommonDialog(this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
-                        R.string.dialog_withdraw_message, R.style.ssom_font_16_custom_666666,
-                        R.string.ok_upper, 0,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        }, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
                 break;
         }
     }
@@ -1004,7 +928,7 @@ public class MainActivity extends BaseActivity
 
             Bitmap iconIng = null;
             // ing image
-            if(CommonConst.Chatting.MEETING_APPROVE.equals(ssom.getStatus())) {
+            if(CommonConst.Chatting.MEETING_APPROVE.equals(ssom.getStatus()) && !TextUtils.isEmpty(ssom.getChatroomId())) {
                 iconIng = BitmapFactory.decodeResource(getResources(), CommonConst.SSOM.equals(ssom.getSsomType()) ?
                         R.drawable.ssom_ing_green_big : R.drawable.ssom_ing_red_big);
             }
@@ -1033,37 +957,10 @@ public class MainActivity extends BaseActivity
         return mergedBitmap;
     }
 
-    private void startLoginActivity() {
-        startActivityForResult(new Intent(this, SsomLoginBaseActivity.class), REQUEST_SSOM_LOGIN);
-    }
-
     private void startChattingActivity(SsomItem ssomItem) {
         Intent chattingIntent = new Intent(this, SsomChattingActivity.class);
         if(ssomItem != null) chattingIntent.putExtra(CommonConst.Intent.SSOM_ITEM, ssomItem);
         startActivity(chattingIntent);
-    }
-
-    private void requestLogin() {
-        CommonDialog dialog = CommonDialog.getInstance(CommonDialog.DIALOG_STYLE_ALERT_BUTTON);
-        dialog.setTitle(getString(R.string.dialog_notice));
-        dialog.setTitleStyle(R.style.ssom_font_20_grayish_brown_bold);
-        dialog.setMessage(getString(R.string.dialog_require_login));
-        dialog.setPositiveButton(getString(R.string.dialog_okay), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.i(TAG, "Move to LoginActivity");
-                startLoginActivity();
-            }
-        });
-        dialog.setNegativeButton(getString(R.string.dialog_close),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
-                    }
-                });
-        dialog.setAutoDismissEnable(true);
-        dialog.show(getFragmentManager(), null);
     }
 
 //    @Override
@@ -1095,13 +992,9 @@ public class MainActivity extends BaseActivity
         Log.i(TAG, "detail interaction : " + isApply);
 
         if(isApply) {
-            // login check
-            if(TextUtils.isEmpty(getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, ""))) {
-                requestLogin();
-                return;
-            }
+            if(ssomItem == null) return;
 
-            if(ssomItem != null && !TextUtils.isEmpty(getUserId()) && getUserId().equals(ssomItem.getUserId())) {
+            if(!TextUtils.isEmpty(getUserId()) && getUserId().equals(ssomItem.getUserId())) {
                 UiUtils.makeCommonDialog(this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
                         R.string.detail_my_post_delete, R.style.ssom_font_16_custom_666666,
                         R.string.dialog_delete, R.string.cancel,
@@ -1134,7 +1027,7 @@ public class MainActivity extends BaseActivity
                 return;
             }
 
-            if((ssomItem == null || TextUtils.isEmpty(ssomItem.getChatroomId()))  // 채팅 중인 상대이므로 채팅방으로 이동시키기
+            if(TextUtils.isEmpty(ssomItem.getChatroomId())  // 채팅 중인 상대이므로 채팅방으로 이동시키기
                     && ssomActionBar.getHeartCount() == 0) {
                 UiUtils.makeCommonDialog(this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
                         R.string.heart_not_enough_go_to_store, R.style.ssom_font_16_custom_666666,
@@ -1150,6 +1043,11 @@ public class MainActivity extends BaseActivity
                             public void onClick(DialogInterface dialog, int which) {
                             }
                         });
+                return;
+            }
+
+            if(CommonConst.Chatting.MEETING_APPROVE.equals(ssomItem.getStatus()) && TextUtils.isEmpty(ssomItem.getChatroomId())) {
+                UiUtils.makeToastMessage(this, "상대방이 이미 만남을 진행 중 입니다.");
                 return;
             }
 
@@ -1173,13 +1071,6 @@ public class MainActivity extends BaseActivity
                     setSsomWriteButtonImage(true);
                     mNavigationDrawerFragment.setTodayImage();
                     dismissProgressDialog();
-                }
-                break;
-            case REQUEST_SSOM_LOGIN :
-                if(resultCode == RESULT_OK) {
-                    mNavigationDrawerFragment.setLoginEmailLayout();
-                    mNavigationDrawerFragment.setTodayImage();
-                    setSsomWriteButtonImage(true);
                 }
                 break;
             case REQUEST_CHECK_LOCATION_PERMISSION:

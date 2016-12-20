@@ -75,6 +75,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.ssom_chat_list_item, parent, false);
 
             holder = new ChatItemViewHolder();
+            holder.setItemLayout(convertView.findViewById(R.id.item_layout));
             holder.setImage((CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image));
             holder.setIconCircle((ImageView) convertView.findViewById(R.id.icon_circle));
             holder.setIconIng((ImageView) convertView.findViewById(R.id.icon_ing));
@@ -93,6 +94,12 @@ public class ChatRoomListAdapter extends BaseAdapter {
 
         // list view item setting
         ChatRoomItem item = itemList.get(position);
+
+        if(CommonConst.Chatting.MEETING_REQUEST.equals(item.getStatus())) {
+            holder.getItemLayout().setBackgroundColor(context.getResources().getColor(R.color.pink_10));
+        } else {
+            holder.getItemLayout().setBackgroundColor(context.getResources().getColor(R.color.white));
+        }
 
         // profile image
         holder.getImage().setDefaultImageResId(R.drawable.profile_img_basic);
@@ -178,6 +185,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
         /**
          * holder for list items
          */
+        private View itemLayout;
         private CircularNetworkImageView image;
         private ImageView iconCircle;
         private ImageView iconIng;
@@ -188,6 +196,14 @@ public class ChatRoomListAdapter extends BaseAdapter {
         private TextView unreadCount;
         private TextView tvDistance;
         private TextView tvTime;
+
+        public View getItemLayout() {
+            return itemLayout;
+        }
+
+        public void setItemLayout(View itemLayout) {
+            this.itemLayout = itemLayout;
+        }
 
         public CircularNetworkImageView getImage() {
             return image;

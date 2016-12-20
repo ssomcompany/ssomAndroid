@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -33,16 +32,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
-import com.onesignal.OneSignal;
-import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.adapter.DrawerMenuAdapter;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.push.SsomNotiOpenedHandler;
-import com.ssomcompany.ssomclient.push.SsomNotiReceiveHandler;
 import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 
 /**
@@ -52,11 +47,6 @@ import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
  */
 public class NavigationDrawerFragment extends Fragment {
     private static final String TAG = NavigationDrawerFragment.class.getSimpleName();
-
-    /**
-     * Remember the position of the selected item.
-     */
-    private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
 
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
@@ -88,8 +78,6 @@ public class NavigationDrawerFragment extends Fragment {
      * Left menu list 구성
      */
     private CircularNetworkImageView imgToday;
-    private TextView tvLoginOrLogout;
-    private TextView tvEmailOrDescription;
 
     public NavigationDrawerFragment() {
     }
@@ -104,7 +92,6 @@ public class NavigationDrawerFragment extends Fragment {
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         if (savedInstanceState != null) {
-//            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
         }
 
@@ -128,8 +115,6 @@ public class NavigationDrawerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         FrameLayout todayPhoto = (FrameLayout) view.findViewById(R.id.today_photo);
         imgToday = (CircularNetworkImageView) view.findViewById(R.id.img_today);
-        tvLoginOrLogout = (TextView) view.findViewById(R.id.tv_login_or_logout);
-        tvEmailOrDescription = (TextView) view.findViewById(R.id.tv_email_or_description);
         TextView tvSsomHomepage = (TextView) view.findViewById(R.id.tv_ssom_homepage);
         TextView tvMakeHeart = (TextView) view.findViewById(R.id.tv_make_heart);
 
@@ -137,12 +122,8 @@ public class NavigationDrawerFragment extends Fragment {
         imgToday.setErrorImageResId(0);
 
         todayPhoto.setOnClickListener(menuItemClickListener);
-        tvLoginOrLogout.setOnClickListener(menuItemClickListener);
         tvSsomHomepage.setOnClickListener(menuItemClickListener);
         tvMakeHeart.setOnClickListener(menuItemClickListener);
-
-        // email 영역 셋팅
-        setLoginEmailLayout();
 
         ListView mDrawerListView = (ListView) view.findViewById(R.id.lv_drawer_menu);
         // dummy view for header divider
@@ -158,21 +139,6 @@ public class NavigationDrawerFragment extends Fragment {
 //        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
         return view;
-    }
-
-    /**
-     * login 여부 체크 후 email 영역 셋팅
-     */
-    public void setLoginEmailLayout() {
-        // user logged in
-        if(session != null && !TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_TOKEN, ""))
-                && !TextUtils.isEmpty(session.getString(SsomPreferences.PREF_SESSION_EMAIL, ""))) {
-            tvLoginOrLogout.setText(R.string.logout);
-            tvEmailOrDescription.setText(session.getString(SsomPreferences.PREF_SESSION_EMAIL, ""));
-        } else { // otherwise
-            tvLoginOrLogout.setText(R.string.login_needed);
-            tvEmailOrDescription.setText(R.string.login_required);
-        }
     }
 
     public void setTodayImage() {

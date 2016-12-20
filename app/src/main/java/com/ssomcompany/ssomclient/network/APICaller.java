@@ -40,6 +40,7 @@ import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
 import com.ssomcompany.ssomclient.network.api.SsomExistMyPost;
 import com.ssomcompany.ssomclient.network.api.SsomImageUpload;
 import com.ssomcompany.ssomclient.network.api.SsomLogin;
+import com.ssomcompany.ssomclient.network.api.SsomLoginWithoutID;
 import com.ssomcompany.ssomclient.network.api.SsomLogout;
 import com.ssomcompany.ssomclient.network.api.SsomMeetingRequest;
 import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
@@ -64,10 +65,11 @@ public class APICaller {
     private static final int TIME_OUT_LONG = 10000;
 
     public static <T extends BaseResponse> void getSsomList(String userId, String ageFilter, String countFilter,
-                                                            NetworkManager.NetworkListener<T> listener) {
-        GetSsomList.Request request;
-        if(TextUtils.isEmpty(ageFilter) || TextUtils.isEmpty(countFilter)) request = new GetSsomList.Request(userId);
-        else request = new GetSsomList.Request(userId, ageFilter, countFilter);
+                                                            double lat, double lng, NetworkManager.NetworkListener<T> listener) {
+        GetSsomList.Request request = new GetSsomList.Request().setUserId(userId).setAgeFilter(ageFilter)
+                .setCountFilter(countFilter).setLat(lat).setLng(lng);
+//        if(TextUtils.isEmpty(ageFilter) || TextUtils.isEmpty(countFilter)) request = new GetSsomList.Request(userId);
+//        else request = new GetSsomList.Request(userId, ageFilter, countFilter);
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<GetSsomList.Response>>() {}.getType(), listener);
@@ -106,6 +108,13 @@ public class APICaller {
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomPostDelete.Response>>() {}.getType(), listener);
+    }
+
+    public static <T extends BaseResponse> void ssomLoginWithoutID(String playerId, NetworkManager.NetworkListener<T> listener) {
+        SsomLoginWithoutID.Request request = new SsomLoginWithoutID.Request().setPlayerId(playerId);
+
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<SsomLoginWithoutID.Response>>() {}.getType(), listener);
     }
 
     public static <T extends BaseResponse> void ssomLogin(String email, String password, String playerId,
@@ -150,9 +159,8 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<GetChattingRoomList.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void updateChattingRoom(String token, String chatRoomId, long lastAccessTime,
-                                                                   NetworkManager.NetworkListener<T> listener) {
-        UpdateChattingRoom.Request request = new UpdateChattingRoom.Request(chatRoomId, lastAccessTime);
+    public static <T extends BaseResponse> void updateChattingRoom(String token, String chatRoomId, NetworkManager.NetworkListener<T> listener) {
+        UpdateChattingRoom.Request request = new UpdateChattingRoom.Request(chatRoomId);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
         request.setTimeoutMillis(TIME_OUT_LONG);
@@ -167,8 +175,9 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<GetChattingList.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void createChattingRoom(String token, String postId, NetworkManager.NetworkListener<T> listener) {
-        CreateChattingRoom.Request request = new CreateChattingRoom.Request().setPostId(postId);
+    public static <T extends BaseResponse> void createChattingRoom(String token, String postId,
+                                                                   double lat, double lng, NetworkManager.NetworkListener<T> listener) {
+        CreateChattingRoom.Request request = new CreateChattingRoom.Request().setPostId(postId).setLat(lat).setLng(lng);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
         request.setTimeoutMillis(TIME_OUT_LONG);
@@ -255,8 +264,8 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<GetHeartCount.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void getUserProfile(String token, String email, NetworkManager.NetworkListener<T> listener) {
-        GetUserProfile.Request request = new GetUserProfile.Request(email);
+    public static <T extends BaseResponse> void getUserProfile(String token, String userId, NetworkManager.NetworkListener<T> listener) {
+        GetUserProfile.Request request = new GetUserProfile.Request(userId);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
         request.setTimeoutMillis(TIME_OUT_LONG);

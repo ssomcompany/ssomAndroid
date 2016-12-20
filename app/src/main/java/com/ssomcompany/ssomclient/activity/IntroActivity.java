@@ -6,18 +6,24 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
+import com.onesignal.OneSignal;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.GetApplicationVersion;
+import com.ssomcompany.ssomclient.network.api.SsomLogin;
+import com.ssomcompany.ssomclient.network.api.SsomLoginWithoutID;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 public class IntroActivity extends BaseActivity {
+    private static final int REQUEST_SSOM_LOGIN = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,28 +63,68 @@ public class IntroActivity extends BaseActivity {
                                         }
                                     });
                         } else {
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Intent i = new Intent();
-                                    i.setClass(getApplicationContext(), MainActivity.class);
-                                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    if(getIntent() != null && getIntent().getExtras() != null) {
-                                        i.putExtra(CommonConst.Intent.IS_FROM_NOTI,
-                                                getIntent().getBooleanExtra(CommonConst.Intent.IS_FROM_NOTI, false));
+                            // 앱 실행 시 최초 로그인 진행. 토큰이 있으면 로그인 건너 뜀
+                            if(getSession() == null || TextUtils.isEmpty(getToken()) || TextUtils.isEmpty(getUserId())) {
+                                showProgressDialog();
+                                OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+                                    @Override
+                                    public void idsAvailable(String userId, String registrationId) {
+                                        Log.d(TAG, "User:" + userId);
+                                        if (registrationId != null) Log.d(TAG, "registrationId:" + registrationId);
+
+                                        if(TextUtils.isEmpty(userId)) {
+                                            UiUtils.makeToastMessage(IntroActivity.this, "푸시서비스에 연결할 수 없습니다. 다시 확인하시고 시도해주세요.");
+                                            finish();
+                                            return;
+                                        }
+
+                                        APICaller.ssomLoginWithoutID(userId, new NetworkManager.NetworkListener<SsomResponse<SsomLoginWithoutID.Response>>() {
+                                                    @Override
+                                                    public void onResponse(SsomResponse<SsomLoginWithoutID.Response> response) {
+                                                        if(response.isSuccess() && response.getData() != null) {
+                                                            SsomLoginWithoutID.Response data = response.getData();
+                                                            setSessionInfo(data.getToken(), data.getUserId(),
+                                                                    data.getProfileImgUrl() == null ? "" : data.getProfileImgUrl());
+                                                            startMainActivity();
+                                                        } else {
+                                                            Log.e(TAG, "Response error with code " + response.getStatusCode() +
+                                                                    ", message : " + response.getMessage(), response.getError());
+                                                            UiUtils.makeToastMessage(IntroActivity.this, "로그인할 수 없습니다. 서버 담당자에게 문의해주세요.");
+                                                            finish();
+                                                        }
+                                                        dismissProgressDialog();
+                                                    }
+                                                });
                                     }
-                                    startActivity(i);
-                                }
-                            }, 1500);
+                                });
+                            } else {
+                                startMainActivity();
+                            }
                         }
                     } catch(PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    UiUtils.makeToastMessage(IntroActivity.this, "네트워크에 연결할 수 없습니다. 다시 확인하시고 시도해주세요.");
+                    showErrorMessage();
                     finish();
                 }
             }
         });
+    }
+
+    private void startMainActivity() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent i = new Intent();
+                i.setClass(getApplicationContext(), MainActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                if(getIntent() != null && getIntent().getExtras() != null) {
+                    i.putExtra(CommonConst.Intent.IS_FROM_NOTI,
+                            getIntent().getBooleanExtra(CommonConst.Intent.IS_FROM_NOTI, false));
+                }
+                startActivity(i);
+            }
+        }, 1000);
     }
 }

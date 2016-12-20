@@ -11,8 +11,8 @@ import java.util.ArrayList;
 public class UpdateChattingRoom {
 
     public static class Request extends SsomPutRequest {
-        public Request(String chatRoomId, long lastAccessTime) {
-            super(API.CHAT_ROOM + "/" + chatRoomId + "/" + lastAccessTime);
+        public Request(String chatRoomId) {
+            super(API.CHAT_ROOM + "/" + chatRoomId + "/lastAccessTimestamp");
         }
     }
 

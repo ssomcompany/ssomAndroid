@@ -4,6 +4,12 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
     
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/photo_empty_full"
+        android:layout_centerInParent="true"/>
+    
     <com.ssomcompany.ssomclient.widget.NetworkImageView
         android:id="@+id/detail_image"
         android:layout_width="match_parent"

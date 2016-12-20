@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.ssomcompany.ssomclient.R;
 
 public class DrawerMenuAdapter extends BaseAdapter {
-    private int[] menuList = {R.string.private_information, R.string.use_policy, R.string.withdraw};
+    private int[] menuList = {R.string.private_information, R.string.use_policy};
 
     // context instance
     private LayoutInflater mInflater;

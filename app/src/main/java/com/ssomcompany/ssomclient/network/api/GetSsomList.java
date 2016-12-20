@@ -13,13 +13,64 @@ import java.util.Locale;
 public class GetSsomList {
 
     public static class Request extends SsomGetRequest {
-        public Request(String userId) {
-            super(API.SSOM_LIST + (TextUtils.isEmpty(userId) ? "" : ("userId=" + userId)));
+        String userId;
+        String ageFilter;
+        String countFilter;
+        double lat;
+        double lng;
+
+        public Request() {
+            super(API.SSOM_LIST);
         }
 
-        public Request(String userId, String age, String count) {
-            super(API.SSOM_LIST +
-                    ((TextUtils.isEmpty(userId) ? "" : ("userId=" + userId)) + "&ageFilter=" + age + "&countFilter=" + count));
+//        public Request(String userId, String age, String count) {
+//            super(API.SSOM_LIST +
+//                    ((TextUtils.isEmpty(userId) ? "" : ("userId=" + userId)) + "&ageFilter=" + age + "&countFilter=" + count));
+//        }
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public Request setUserId(String userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public String getAgeFilter() {
+            return ageFilter;
+        }
+
+        public Request setAgeFilter(String ageFilter) {
+            this.ageFilter = ageFilter;
+            return this;
+        }
+
+        public String getCountFilter() {
+            return countFilter;
+        }
+
+        public Request setCountFilter(String countFilter) {
+            this.countFilter = countFilter;
+            return this;
+        }
+
+        public double getLat() {
+            return lat;
+        }
+
+        public Request setLat(double lat) {
+            this.lat = lat;
+            return this;
+        }
+
+        public double getLng() {
+            return lng;
+        }
+
+        public Request setLng(double lng) {
+            this.lng = lng;
+            return this;
         }
     }
 

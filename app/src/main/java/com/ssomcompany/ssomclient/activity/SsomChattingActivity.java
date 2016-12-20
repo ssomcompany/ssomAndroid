@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import com.onesignal.shortcutbadger.ShortcutBadger;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
@@ -75,7 +76,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         if(getIntent() != null && getIntent().getExtras() != null) {
             final SsomItem ssomItem = (SsomItem) getIntent().getSerializableExtra(CommonConst.Intent.SSOM_ITEM);
 
-            if(!TextUtils.isEmpty(ssomItem.getChatroomId())) {
+            if(!TextUtils.isEmpty(ssomItem.getChatroomId()) && !CommonConst.Chatting.MEETING_OUT.equalsIgnoreCase(ssomItem.getStatus())) {
                 // 기존에 방이 있으므로 그쪽으로 이동시킴
                 roomListFragment = new ChatRoomListFragment();
                 roomListFragment.setOnChatRoomListLoadingFinished(new ViewListener.OnChatRoomListLoadingFinished() {
@@ -92,6 +93,7 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
                 startChatRoomListFragment();
             } else {
                 APICaller.createChattingRoom(getToken(), ssomItem.getPostId(),
+                        locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude(),
                         new NetworkManager.NetworkListener<SsomResponse<CreateChattingRoom.Response>>() {
                             @Override
                             public void onResponse(SsomResponse<CreateChattingRoom.Response> response) {
@@ -327,6 +329,13 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         }
 
         if(CURRENT_STATE == STATE_CHAT_ROOM) {
+            APICaller.updateChattingRoom(getToken(), chatRoomItem.getId(), new NetworkManager.NetworkListener<BaseResponse>() {
+                        @Override
+                        public void onResponse(BaseResponse response) {
+                            if(response.isSuccess()) Log.d(TAG, "success to update chatting time");
+                        }
+                    });
+
             if(chatRoomItem != null && CommonConst.Chatting.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
                 hideSoftKeyboard();
                 UiUtils.makeCommonDialog(SsomChattingActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
@@ -360,13 +369,6 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             hideSoftKeyboard();
             changeSsomBarViewForChatRoomList();
             startChatRoomListFragment();
-            APICaller.updateChattingRoom(getToken(), chatRoomItem.getId(), System.currentTimeMillis(),
-                    new NetworkManager.NetworkListener<BaseResponse>() {
-                @Override
-                public void onResponse(BaseResponse response) {
-                    if(response.isSuccess()) Log.d(TAG, "success to update chatting time");
-                }
-            });
         } else {
             super.onBackPressed();
         }

@@ -363,13 +363,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         return getSession().getString(SsomPreferences.PREF_SESSION_USER_ID, "");
     }
 
-    public String getUserEmail() {
-        return getSession().getString(SsomPreferences.PREF_SESSION_EMAIL, "");
-    }
-
-    public void setSessionInfo(String token, String email, String userId, String todayImageUrl) {
+    public void setSessionInfo(String token, String userId, String todayImageUrl) {
         getSession().put(SsomPreferences.PREF_SESSION_TOKEN, token);
-        getSession().put(SsomPreferences.PREF_SESSION_EMAIL, email);
         getSession().put(SsomPreferences.PREF_SESSION_USER_ID, userId);
         getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, todayImageUrl);
     }

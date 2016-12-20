@@ -8,6 +8,8 @@ public class CreateChattingRoom {
 
     public static class Request extends SsomPostRequest {
         String postId;
+        double lat;
+        double lng;
 
         public Request() {
             super(NetworkConstant.API.CHAT_ROOM);
@@ -19,6 +21,24 @@ public class CreateChattingRoom {
 
         public Request setPostId(String postId) {
             this.postId = postId;
+            return this;
+        }
+
+        public double getLat() {
+            return lat;
+        }
+
+        public Request setLat(double lat) {
+            this.lat = lat;
+            return this;
+        }
+
+        public double getLng() {
+            return lng;
+        }
+
+        public Request setLng(double lng) {
+            this.lng = lng;
             return this;
         }
     }

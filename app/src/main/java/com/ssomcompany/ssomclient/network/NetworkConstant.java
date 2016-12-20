@@ -43,6 +43,7 @@ public class NetworkConstant {
         public static final String IMAGE_PATH = "/file/images/";
         public static final String IMAGE_FILE_UPLOAD = "/file/upload";
         public static final String SSOM_LOGIN = "/login";
+        public static final String SSOM_LOGIN_WITHOUT_ID = "/loginWithoutId";
         public static final String SSOM_LOGOUT = "/logout";
         public static final String FACE_BOOK_LOGIN = "/facebook";
         public static final String SSOM_REGISTER_USER = "/users";

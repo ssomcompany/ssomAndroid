@@ -116,7 +116,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
                                                    if(response.isSuccess()) {
                                                        if(response.getData() != null) {
                                                            setSessionInfo(response.getData().getToken(),
-                                                                   TextUtils.isEmpty(email) ? "facebookUser" : email,
                                                                    response.getData().getUserId(),
                                                                    response.getData().getProfileImgUrl());
                                                            mListener.onLoginFragmentInteraction(R.id.btn_login);
@@ -203,7 +202,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
                                         if(response.isSuccess()) {
                                             if(response.getData() != null) {
                                                 setSessionInfo(response.getData().getToken(),
-                                                        String.valueOf(etLoginEmail.getText()), response.getData().getUserId(),
+                                                        response.getData().getUserId(),
                                                         response.getData().getProfileImgUrl());
                                                 mListener.onLoginFragmentInteraction(R.id.btn_login);
                                             } else {

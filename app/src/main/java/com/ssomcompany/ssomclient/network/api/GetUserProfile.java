@@ -13,8 +13,8 @@ import java.util.Locale;
 public class GetUserProfile {
 
     public static class Request extends SsomGetRequest {
-        public Request(String userEmail) {
-            super(String.format(Locale.getDefault(), NetworkConstant.API.USER_PROFILE, userEmail));
+        public Request(String userId) {
+            super(String.format(Locale.getDefault(), NetworkConstant.API.USER_PROFILE, userId));
         }
     }
 

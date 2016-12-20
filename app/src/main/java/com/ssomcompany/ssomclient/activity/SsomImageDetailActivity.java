@@ -30,8 +30,6 @@ public class SsomImageDetailActivity extends Activity {
         }
 
         com.ssomcompany.ssomclient.widget.NetworkImageView imageView = (com.ssomcompany.ssomclient.widget.NetworkImageView) findViewById(R.id.detail_image);
-        imageView.setDefaultImageResId(R.drawable.img_today_empty);
-        imageView.setErrorImageResId(R.drawable.img_today_empty);
         imageView.setImageUrl(getIntent().getStringExtra(CommonConst.Intent.IMAGE_URL), NetworkManager.getInstance().getImageLoader());
         findViewById(R.id.btn_close).setOnClickListener(new View.OnClickListener() {
             @Override
