@@ -115,13 +115,6 @@ public abstract class BaseFragment extends Fragment {
     }
 
     /**
-     * Set Session info
-     */
-    public void setSessionInfo(String token, String userId, String profileImgUrl) {
-        ((BaseActivity) getActivity()).setSessionInfo(token, userId, profileImgUrl);
-    }
-
-    /**
      * Get Session UserId
      */
     public String getUserId() {

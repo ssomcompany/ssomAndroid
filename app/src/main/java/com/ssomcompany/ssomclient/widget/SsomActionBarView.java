@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -27,7 +28,7 @@ import com.ssomcompany.ssomclient.network.api.AddHeartCount;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageManager;
 
-public class SsomActionBarView extends RelativeLayout {
+public class SsomActionBarView extends Toolbar {
     public static final String TAG = SsomActionBarView.class.getSimpleName();
 
     public static final int SSOM_MAIN_MENU = 0x01;
@@ -47,17 +48,10 @@ public class SsomActionBarView extends RelativeLayout {
     /* view settings */
     private RelativeLayout ssomActionBar;
     private ImageView btnLeftNavi;
-    private RelativeLayout toggleView;
     private LinearLayout ssomBarTitleLayout;
     private TextView ssomBarTitle;
     private TextView ssomBarSubTitle;
-    private FrameLayout chatLayout;
-    private TextView chatCount;
-    private LinearLayout heartLayout;
     private TextView btnChattingRoomMeeting;
-    private TextView imgHeart;
-    private View imgPlus;
-    private TextView heartRefillTime;
 
     public SsomActionBarView(Context context) {
         super(context);
@@ -99,51 +93,32 @@ public class SsomActionBarView extends RelativeLayout {
 
         ssomActionBar = (RelativeLayout) findViewById(R.id.ssom_action_bar);
         btnLeftNavi = (ImageView) findViewById(R.id.btn_left_navi);
-        toggleView = (RelativeLayout) findViewById(R.id.toggle_bg);
         ssomBarTitleLayout = (LinearLayout) findViewById(R.id.ssom_bar_title_layout);
         ssomBarTitle = (TextView) findViewById(R.id.ssom_bar_title);
         ssomBarSubTitle = (TextView) findViewById(R.id.ssom_bar_sub_title);
-        chatLayout = (FrameLayout) findViewById(R.id.chat_layout);
-        chatCount = (TextView) findViewById(R.id.chat_count);
-        heartLayout = (LinearLayout) findViewById(R.id.heart_layout);
-        imgHeart = (TextView) findViewById(R.id.img_heart);
-        imgPlus = findViewById(R.id.img_plus);
-        heartRefillTime = (TextView) findViewById(R.id.heart_refill_time);
         btnChattingRoomMeeting = (TextView) findViewById(R.id.btn_chatting_room_meeting);
     }
 
     private void initLayout() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        Toolbar.LayoutParams params = new Toolbar.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         switch (currentMode) {
             case SSOM_MAIN_MENU :
                 // set action bar height
-                params.height = Util.convertDpToPixel(58.5f);
+                params.height = Util.convertDpToPixel(35f);
                 ssomActionBar.setLayoutParams(params);
                 btnLeftNavi.setImageResource(R.drawable.icon_top_menu);
-                toggleView.setVisibility(View.VISIBLE);
-                ssomBarTitleLayout.setVisibility(View.GONE);
                 break;
             default:
                 // set action bar height
                 params.height = Util.convertDpToPixel(52f);
                 ssomActionBar.setLayoutParams(params);
                 btnLeftNavi.setImageResource(R.drawable.icon_back);
-                toggleView.setVisibility(View.GONE);
-                ssomBarTitleLayout.setVisibility(View.VISIBLE);
                 break;
         }
     }
 
     public void setOnLeftNaviBtnClickListener(View.OnClickListener listener) {
         if(btnLeftNavi != null) btnLeftNavi.setOnClickListener(listener);
-    }
-
-    public void setOnChattingBtnClickListener(View.OnClickListener listener) {
-        if(chatLayout != null) chatLayout.setOnClickListener(listener);
-    }
-
-    public void setOnHeartBtnClickListener(View.OnClickListener listener) {
-        if(heartLayout != null) heartLayout.setOnClickListener(listener);
     }
 
     public void setOnChattingRoomMeetingBtnClickListener(View.OnClickListener listener) {
@@ -166,6 +141,16 @@ public class SsomActionBarView extends RelativeLayout {
         ssomBarTitleLayout.setLayoutParams(params);
     }
 
+    /**
+     * title drawable 과 padding 설정
+     * @param resId drawable resources id
+     * @param padding left padding in pixel
+     */
+    public void setSsomBarTitleDrawable(int resId, int padding) {
+        ssomBarTitle.setCompoundDrawablesWithIntrinsicBounds(resId, 0, 0, 0);
+        ssomBarTitle.setCompoundDrawablePadding(padding);
+    }
+
     public void setSsomBarTitleText(String title) {
         ssomBarTitle.setText(title);
     }
@@ -184,124 +169,6 @@ public class SsomActionBarView extends RelativeLayout {
 
     public void setSsomBarSubTitleStyle(int styId) {
         ssomBarSubTitle.setTextAppearance(mContext, styId);
-    }
-
-    // right menu button settings
-    /**
-     * Call this method if want to set HeartLayout's visibility. (Default true)
-     * @param visibility set true if want this is visible false otherwise
-     */
-    public void setHeartLayoutVisibility(boolean visibility) {
-        heartLayout.setVisibility(visibility ? View.VISIBLE : View.GONE);
-    }
-
-    public void setHeartLayoutGravity(int gravity, int additional) {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(Util.convertDpToPixel(39), LayoutParams.WRAP_CONTENT);
-        params.addRule(gravity);
-        params.addRule(additional);
-
-        heartLayout.setLayoutParams(params);
-    }
-
-    /**
-     * Call this method if want to set HeartLayout's icon. (Default off)
-     * @param iconOnOff set true if want this is on false otherwise
-     */
-    public void setHeartIconOnOff(boolean iconOnOff) {
-        imgHeart.setBackgroundResource(iconOnOff ? R.drawable.top_heart : R.drawable.top_heart_gray);
-        imgPlus.setBackgroundResource(iconOnOff ? R.drawable.top_plus : R.drawable.top_plus_gray);
-    }
-
-    public void setHeartCount(int count) {
-        Log.d(TAG, "setHeartCount called");
-        if(!timerIsRunning && (count == 0 || count == 1)) {
-            Log.d(TAG, "setHeartCount timerTask start");
-            timerTask = new CountDownTimer(Util.getRefillTime(((BaseActivity) mContext)
-                    .getSession().getLong(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, 0)), 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    timerIsRunning = true;
-                    int hour = (int) millisUntilFinished / (60 * 60 * 1000);
-                    int min = (int) (millisUntilFinished % (60 * 60 * 1000)) / (60 * 1000);
-                    setHeartRefillTime("0" + hour + ":" + (min < 10 ? "0" + min : min));
-                }
-
-                @Override
-                public void onFinish() {
-                    Log.d(TAG, "timerTask is finished");
-                    timerIsRunning = false;
-                    setHeartRefillTime("00:00");
-                    APICaller.addHeartCount(((BaseActivity) mContext).getToken(), "1", "automatic",
-                            new NetworkManager.NetworkListener<SsomResponse<AddHeartCount.Response>>() {
-                                @Override
-                                public void onResponse(SsomResponse<AddHeartCount.Response> response) {
-                                    if(response.isSuccess()) {
-                                        Log.d(TAG, "success... to 4hour's heart");
-                                        ((BaseActivity) mContext).getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
-
-                                        Intent intent = new Intent();
-                                        intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
-                                        intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.getData().getHeartsCount());
-                                        LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(intent);
-                                    } else {
-                                        ((BaseActivity) mContext).showErrorMessage();
-                                    }
-                                }
-                            });
-                }
-            }.start();
-        } else {
-            Log.d(TAG, "setHeartCount refill time clear");
-            if(count < 0) {
-                count = 0;
-                if(timerIsRunning) {
-                    timerTask.cancel();
-                    timerIsRunning = false;
-                }
-            } else if(count > 2) {
-                if(timerIsRunning) {
-                    timerTask.cancel();
-                    timerIsRunning = false;
-                }
-            }
-            setHeartRefillTime("--:--");
-        }
-        imgHeart.setText(String.valueOf(count));
-        setHeartIconOnOff(count != 0);
-    }
-
-    public int getHeartCount() {
-        if(!TextUtils.isEmpty(imgHeart.getText())) return Integer.parseInt(imgHeart.getText().toString());
-        return 0;
-    }
-
-    public void setHeartRefillTime(String time) {
-        heartRefillTime.setText(time);
-    }
-
-    /**
-     * Call this method if want to set ChatLayout's visibility. (Default true)
-     * @param visibility set true if want this is visible false otherwise
-     */
-    public void setChatLayoutVisibility(boolean visibility) {
-        chatLayout.setVisibility(visibility ? View.VISIBLE : View.GONE);
-    }
-
-    /**
-     * Call this method if want to set ChatLayout's icon. (Default off)
-     * @param iconOnOff set true if want this is on false otherwise
-     */
-    public void setChatIconOnOff(boolean iconOnOff) {
-        chatLayout.setBackgroundResource(iconOnOff ? R.drawable.top_message : R.drawable.top_message_gray);
-    }
-
-    public void setChatCount(String count) {
-        chatCount.setText(count);
-        setChatIconOnOff(!"0".equalsIgnoreCase(count));
-    }
-
-    public int getChatCount() {
-        return Integer.parseInt(String.valueOf(chatCount.getText()));
     }
 
     public void setChattingRoomBtnMeetingVisibility(boolean visibility) {

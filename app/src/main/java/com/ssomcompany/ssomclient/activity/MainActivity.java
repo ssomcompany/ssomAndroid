@@ -20,10 +20,13 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -34,6 +37,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -89,16 +93,19 @@ public class MainActivity extends BaseActivity
         ViewListener.OnPostItemInteractionListener, ViewListener.OnDetailFragmentInteractionListener,
         OnMapReadyCallback, ViewListener.OnFilterFragmentInteractionListener, MessageCountCheck {
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int BOTTOM_MAP = 0;
+    private static final int BOTTOM_LIST = 1;
+    private static final int BOTTOM_STORE = 2;
+    private static final int BOTTOM_CHAT = 3;
 
-    private static final int REQUEST_SSOM_WRITE = 1;
-    private static final int REQUEST_CHECK_LOCATION_PERMISSION = 2;
-    private static final int REQUEST_CHECK_DETAIL_LOCATION_PERMISSION = 3;
-    private static final int REQUEST_PROFILE_ACTIVITY = 4;
-    private static final int REQUEST_SSOM_CHATTING = 5;
-    private static final int REQUEST_HEART_STORE = 6;
 
-    private static final String MAP_VIEW = "map";
-    private static final String LIST_VIEW = "list";
+    private static final int REQUEST_SSOM_WRITE = 100;
+    private static final int REQUEST_CHECK_LOCATION_PERMISSION = 101;
+    private static final int REQUEST_CHECK_DETAIL_LOCATION_PERMISSION = 102;
+    private static final int REQUEST_PROFILE_ACTIVITY = 103;
+    private static final int REQUEST_SSOM_CHATTING = 104;
+    private static final int REQUEST_HEART_STORE = 105;
+
     private static boolean canFinish;
     private static Toast toast = null;
 
@@ -112,14 +119,6 @@ public class MainActivity extends BaseActivity
     private CopyOnWriteArrayList<BitmapWorkerTask> TASK_LIST = new CopyOnWriteArrayList<>();
 
     /**
-     * The fragment's Tabs
-     */
-    private TextView giveTv;
-    private TextView takeTv;
-    private ImageView giveBtmBar;
-    private ImageView takeBtmBar;
-
-    /**
      * The filters resources
      */
     private SsomPreferences filterPref;
@@ -130,27 +129,25 @@ public class MainActivity extends BaseActivity
     private ImageView mBtnMapMyLocation;
 
     /**
-     * toolbar resources
-     */
-    private TextView mapBtn;
-    private TextView listBtn;
-
-    /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private GoogleMap mMap;
-    private String selectedView;
-    private String selectedTab;
     private FragmentManager fragmentManager;
+
+    // pager 관리
+    private ViewPager mainPager;
+    private MainPagerAdapter mainAdapter;
+    private TabLayout bottomTab;
+    private TextView msgCount;
 
     // fragment instance 저장
     private FilterFragment filterFragment;
     private SupportMapFragment mapFragment;
-    private SsomListFragment ssomListFragment;
 
     private Location myLocation;
     private ImageView btnWrite;
+    private View filterImgLayout;
 
     private SsomItem myPost;
     private String myPostId;
@@ -162,10 +159,6 @@ public class MainActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // 페북 인스턴스 생성
-//        FacebookSdk.sdkInitialize(getApplicationContext());
-        selectedView = MAP_VIEW;
-        selectedTab = CommonConst.SSOM;
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
 
         if(getIntent() != null && getIntent().getExtras() != null) {
@@ -181,6 +174,29 @@ public class MainActivity extends BaseActivity
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer, drawer);
+
+        // set pager instance
+        mainPager = (ViewPager) findViewById(R.id.main_pager);
+        mainAdapter = new MainPagerAdapter(getSupportFragmentManager());
+        bottomTab = (TabLayout) findViewById(R.id.bottom_tab);
+
+        if(bottomTab != null) {
+            bottomTab.addTab(bottomTab.newTab().setIcon(R.drawable.foot_icon_map_on));
+            bottomTab.addTab(bottomTab.newTab().setIcon(R.drawable.foot_icon_list_off));
+            bottomTab.addTab(bottomTab.newTab().setIcon(R.drawable.foot_icon_heart_off));
+            bottomTab.addTab(bottomTab.newTab().setIcon(R.drawable.foot_icon_chat_off));
+            bottomTab.setTabGravity(TabLayout.GRAVITY_FILL);
+
+            for (int i = 0; i < bottomTab.getTabCount(); i++) {
+                TabLayout.Tab tab = bottomTab.getTabAt(i);
+                if (tab != null) {
+                    tab.setCustomView(R.layout.view_bottom_tab);
+                    if(i == 3) {
+                        msgCount = (TextView) tab.getCustomView().findViewById(R.id.msg_count);
+                    }
+                }
+            }
+        }
 
         //set up the toolbar
         initToolbar();
@@ -353,84 +369,21 @@ public class MainActivity extends BaseActivity
     }
 
     private void initLayoutWrite(){
-        // Tab control
-        giveTv = (TextView) findViewById(R.id.tab_give_tv);
-        takeTv = (TextView) findViewById(R.id.tab_take_tv);
-        giveBtmBar = (ImageView) findViewById(R.id.tab_give_bottom_bar);
-        takeBtmBar = (ImageView) findViewById(R.id.tab_take_bottom_bar);
-
-        // Set tab click listener
-        giveTv.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (CommonConst.SSOM.equals(selectedTab)) return;
-
-                synchronized (TASK_LIST) {
-                    if(MAP_VIEW.equals(selectedView) && TASK_LIST.size() > 0) {
-                        for(BitmapWorkerTask task : TASK_LIST) {
-                            if(task.getStatus() == AsyncTask.Status.RUNNING) {
-                                task.cancel(true);
-                                TASK_LIST.remove(task);
-                            }
-                        }
-                    }
-                }
-                selectedTab = CommonConst.SSOM;
-                giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_green_blue);
-                giveBtmBar.setVisibility(View.VISIBLE);
-                takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
-                takeBtmBar.setVisibility(View.GONE);
-
-                if(ssomListFragment != null) ssomListFragment.setPostItemClickListener(null);
-                requestSsomList(null, null, false);
-            }
-        });
-
-        takeTv.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (CommonConst.SSOA.equals(selectedTab)) return;
-
-                synchronized (TASK_LIST) {
-                    if(MAP_VIEW.equals(selectedView) && TASK_LIST.size() > 0) {
-                        for(BitmapWorkerTask task : TASK_LIST) {
-                            if(task.getStatus() == AsyncTask.Status.RUNNING) {
-                                task.cancel(true);
-                                TASK_LIST.remove(task);
-                            }
-                        }
-                    }
-                }
-                selectedTab = CommonConst.SSOA;
-                takeTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_red_pink);
-                takeBtmBar.setVisibility(View.VISIBLE);
-                giveTv.setTextAppearance(getApplicationContext(), R.style.ssom_font_16_gray_warm);
-                giveBtmBar.setVisibility(View.GONE);
-
-                if(ssomListFragment != null) ssomListFragment.setPostItemClickListener(null);
-                requestSsomList(null, null, false);
-            }
-        });
-
         btnWrite = (ImageView) findViewById(R.id.btn_write);
-
-        final Context context = this;
         btnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!TextUtils.isEmpty(myPostId)) {
-                    startDetailFragment(getMyPostTypeItems(myPostSsomType), myPostId);
+                    startDetailFragment(ITEM_LIST, myPostId);
                 } else {
                     Intent i = new Intent();
-                    i.setClass(context, SsomWriteActivity.class);
+                    i.setClass(MainActivity.this, SsomWriteActivity.class);
                     startActivityForResult(i, REQUEST_SSOM_WRITE);
                 }
             }
         });
 
-        View filterImgLayout = findViewById(R.id.filter_img);
+        filterImgLayout = findViewById(R.id.filter_img);
         filterImgLayout.setOnClickListener(filterClickListener);
 
         if(!TextUtils.isEmpty(getUserId())) {
@@ -447,9 +400,6 @@ public class MainActivity extends BaseActivity
                 }
             });
         }
-
-        // TODO online user count setting
-//        ((TextView) findViewById(R.id.tv_online_user)).setText();
     }
 
     private void setSsomWriteButtonImage(final boolean isRefresh) {
@@ -486,11 +436,8 @@ public class MainActivity extends BaseActivity
     }
 
     private void ssomDataChangedListener() {
-        if(MAP_VIEW.equals(selectedView)){
-            initMarker();
-        } else {
-            mTabListener.onTabChangedAction(getCurrentPostItems());
-        }
+        initMarker();
+        mTabListener.onTabChangedAction(ITEM_LIST);
     }
 
     private View.OnClickListener filterClickListener = new View.OnClickListener() {
@@ -502,51 +449,22 @@ public class MainActivity extends BaseActivity
     };
 
     private void initToolbar() {
-        Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(tb);
         fragmentManager = getSupportFragmentManager();
 
-        ssomActionBar = (SsomActionBarView) tb.findViewById(R.id.ssom_action_bar);
-        ssomActionBar.setHeartCount(-1);
-        ssomActionBar.setChatCount("0");
+        ssomActionBar = (SsomActionBarView) findViewById(R.id.ssom_toolbar);
+        // TODO online user count setting
+        ssomActionBar.setSsomBarTitleText("현재 138명 접속 중");
+        ssomActionBar.setSsomBarTitleDrawable(R.drawable.icon_ssom_map, Util.convertDpToPixel(2f));
+        ssomActionBar.setSsomBarTitleStyle(R.style.ssom_font_12_gray_warm);
+        ssomActionBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomActionBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawer.openDrawer(Gravity.LEFT);
             }
         });
-        ssomActionBar.setOnHeartBtnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(MainActivity.this, HeartStoreActivity.class), REQUEST_HEART_STORE);
-            }
-        });
-        ssomActionBar.setOnChattingBtnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SsomChattingActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(intent);
-            }
-        });
 
-        mapBtn = (TextView) tb.findViewById(R.id.toggle_s_map);
-        listBtn = (TextView) tb.findViewById(R.id.toggle_s_list);
-        View toggleView = tb.findViewById(R.id.toggle_bg);
         mBtnMapMyLocation = (ImageView) findViewById(R.id.map_current_location);
-
-        toggleView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (selectedView.equals(MAP_VIEW)) {
-                    startListFragment();
-                } else {
-                    startMapFragment();
-                }
-
-                setToggleButtonUI();
-            }
-        });
     }
 
     @Override
@@ -559,9 +477,11 @@ public class MainActivity extends BaseActivity
         }
 
         if(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equalsIgnoreCase(intent.getAction())) {
-            ssomActionBar.setChatCount(String.valueOf(ssomActionBar.getChatCount() + 1));
+            setChattingCount(getUnreadCount() + 1);
         } else if(MessageManager.BROADCAST_HEART_COUNT_CHANGE.equalsIgnoreCase(intent.getAction())) {
-            ssomActionBar.setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
+            setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
+            // heart 갯수 표시는 임시로 막음
+//            ssomActionBar.setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
         }
     }
 
@@ -575,41 +495,78 @@ public class MainActivity extends BaseActivity
         }
 
         if(msgCount != null && !msgCount.isEmpty()) {
+            msgCount = msgCount.contains("+") ? "99" : msgCount;
             getSession().put(SsomPreferences.PREF_SESSION_UNREAD_COUNT, Integer.parseInt(msgCount));
-            ssomActionBar.setChatCount(msgCount);
             ShortcutBadger.applyCount(this, Integer.parseInt(msgCount)); //for 1.1.4+
         } else {
             getSession().put(SsomPreferences.PREF_SESSION_UNREAD_COUNT, 0);
-            ssomActionBar.setChatCount("0");
+            msgCount = "0";
             ShortcutBadger.removeCount(this);
         }
+        setChattingCount(Integer.parseInt(msgCount));
     }
 
-    private void setToggleButtonUI() {
-        mapBtn.setTextAppearance(getApplicationContext(),
-                MAP_VIEW.equals(selectedView)? R.style.ssom_font_12_white_single : R.style.ssom_font_12_grayish_brown_single);
-        mapBtn.setBackgroundResource(MAP_VIEW.equals(selectedView) ? R.drawable.bg_main_toggle_on : 0);
-        listBtn.setTextAppearance(getApplicationContext(),
-                LIST_VIEW.equals(selectedView) ? R.style.ssom_font_12_white_single : R.style.ssom_font_12_grayish_brown_single);
-        listBtn.setBackgroundResource(LIST_VIEW.equals(selectedView) ? R.drawable.bg_main_toggle_on : 0);
+    private void setChattingCount(int count) {
+        msgCount.setVisibility(count == 0 ? View.GONE : View.VISIBLE);
+        msgCount.setText(String.valueOf(count));
     }
 
     private void startMapFragment(){
         locationTracker.startLocationUpdates(gpsLocationListener, networkLocationListener);
-        selectedView = MAP_VIEW;
-        if(mapFragment == null) mapFragment = SupportMapFragment.newInstance();
-        fragmentManager.beginTransaction().
-                replace(R.id.container, mapFragment).commitAllowingStateLoss();
-        mapFragment.getMapAsync(this);
-    }
 
-    private void startListFragment() {
-        selectedView = LIST_VIEW;
-        mBtnMapMyLocation.setVisibility(View.INVISIBLE);
-        if(ssomListFragment == null) ssomListFragment = new SsomListFragment();
-        ssomListFragment.setSsomListData(getCurrentPostItems());
-        fragmentManager.beginTransaction().
-                replace(R.id.container, ssomListFragment, CommonConst.SSOM_LIST_FRAG).commit();
+        mainPager.setAdapter(mainAdapter);
+        mainPager.setOffscreenPageLimit(4);
+        mainPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(bottomTab));
+        bottomTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mBtnMapMyLocation.setVisibility(View.INVISIBLE);
+                btnWrite.setVisibility(View.INVISIBLE);
+                filterImgLayout.setVisibility(View.INVISIBLE);
+                mainPager.setCurrentItem(tab.getPosition());
+
+                switch (tab.getPosition()) {
+                    case BOTTOM_MAP:
+                        mBtnMapMyLocation.setVisibility(View.VISIBLE);
+                        btnWrite.setVisibility(View.VISIBLE);
+                        filterImgLayout.setVisibility(View.VISIBLE);
+                        tab.setIcon(R.drawable.foot_icon_map_on);
+                        break;
+                    case BOTTOM_LIST:
+                        btnWrite.setVisibility(View.VISIBLE);
+                        filterImgLayout.setVisibility(View.VISIBLE);
+                        tab.setIcon(R.drawable.foot_icon_list_on);
+                        break;
+                    case BOTTOM_STORE:
+                        tab.setIcon(R.drawable.foot_icon_heart_on);
+                        break;
+                    case BOTTOM_CHAT:
+                        tab.setIcon(R.drawable.foot_icon_chat_on);
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case BOTTOM_MAP:
+                        tab.setIcon(R.drawable.foot_icon_map_off);
+                        break;
+                    case BOTTOM_LIST:
+                        tab.setIcon(R.drawable.foot_icon_list_off);
+                        break;
+                    case BOTTOM_STORE:
+                        tab.setIcon(R.drawable.foot_icon_heart_off);
+                        break;
+                    case BOTTOM_CHAT:
+                        tab.setIcon(R.drawable.foot_icon_chat_off);
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
     }
 
     private void startDetailFragment(ArrayList<SsomItem> ssomList, String postId) {
@@ -645,17 +602,6 @@ public class MainActivity extends BaseActivity
             case 2:
                 Intent policyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkConstant.WEB_POLICY));
                 startActivity(policyIntent);
-                break;
-        }
-    }
-
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
                 break;
         }
     }
@@ -719,7 +665,7 @@ public class MainActivity extends BaseActivity
                         + marker.getPosition().latitude + ", longitude ="
                         + marker.getPosition().longitude);
 
-                startDetailFragment(getCurrentPostItems(), postId);
+                startDetailFragment(ITEM_LIST, postId);
                 return false;
             }
         });
@@ -816,18 +762,6 @@ public class MainActivity extends BaseActivity
         }
     };
 
-//    public Map<String, SsomItem> getCurrentPostMap() {
-//        return CommonConst.SSOM.equals(selectedTab)? Util.convertAllMapToSsomMap(ITEM_MAP) : Util.convertAllMapToSsoaMap(ITEM_MAP);
-//    }
-
-    private ArrayList<SsomItem> getMyPostTypeItems(String myPostSsomType) {
-        return CommonConst.SSOM.equals(myPostSsomType)? Util.convertAllListToSsomList(ITEM_LIST) : Util.convertAllListToSsoaList(ITEM_LIST);
-    }
-
-    public ArrayList<SsomItem> getCurrentPostItems() {
-        return CommonConst.SSOM.equals(selectedTab)? Util.convertAllListToSsomList(ITEM_LIST) : Util.convertAllListToSsoaList(ITEM_LIST);
-    }
-
     private void initMarker() {
         if(mMap != null) {
             mMap.clear();
@@ -840,12 +774,11 @@ public class MainActivity extends BaseActivity
             });
         }
         mIdMap.clear();
-        ArrayList<SsomItem> items = getCurrentPostItems();
-        if(items != null && items.size() > 0){
+        if(ITEM_LIST != null && ITEM_LIST.size() > 0){
             boolean isLastItem;
-            for (int i=0 ; i<items.size() ; i++) {
-                isLastItem = (i == items.size() - 1);
-                addMarker(items.get(i), isLastItem);
+            for (int i=0 ; i<ITEM_LIST.size() ; i++) {
+                isLastItem = (i == ITEM_LIST.size() - 1);
+                addMarker(ITEM_LIST.get(i), isLastItem);
             }
         }
     }
@@ -1027,8 +960,8 @@ public class MainActivity extends BaseActivity
                 return;
             }
 
-            if(TextUtils.isEmpty(ssomItem.getChatroomId())  // 채팅 중인 상대이므로 채팅방으로 이동시키기
-                    && ssomActionBar.getHeartCount() == 0) {
+            if(TextUtils.isEmpty(ssomItem.getChatroomId())
+                    && getHeartCount() == 0) {
                 UiUtils.makeCommonDialog(this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
                         R.string.heart_not_enough_go_to_store, R.style.ssom_font_16_custom_666666,
                         R.string.dialog_move, R.string.cancel,
@@ -1051,6 +984,7 @@ public class MainActivity extends BaseActivity
                 return;
             }
 
+            // 채팅 중인 상대이므로 채팅방으로 이동시키기
             startChattingActivity(ssomItem);
         }
 
@@ -1153,5 +1087,35 @@ public class MainActivity extends BaseActivity
         super.onDestroy();
 
         if(locationTracker != null) locationTracker.stopLocationUpdates();
+    }
+
+    class MainPagerAdapter extends FragmentPagerAdapter {
+
+        MainPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case BOTTOM_MAP:
+                    mapFragment = SupportMapFragment.newInstance();
+                    mapFragment.getMapAsync(MainActivity.this);
+                    return mapFragment;
+                case BOTTOM_LIST:
+                    return new SsomListFragment().setSsomListData(ITEM_LIST);
+                case BOTTOM_STORE:
+                    return new Fragment();
+                case BOTTOM_CHAT:
+                    return new Fragment();
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 4;
+        }
     }
 }

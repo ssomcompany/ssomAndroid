@@ -16,7 +16,7 @@ public class SsomPreferences {
     // session
     public static final String PREF_SESSION_HEART_REFILL_TIME = "PREF_SESSION_HEART_REFILL_TIME";
     public static final String PREF_SESSION_TOKEN = "PREF_SESSION_TOKEN";
-    public static final String PREF_SESSION_EMAIL = "PREF_SESSION_EMAIL";
+    public static final String PREF_SESSION_HEART = "PREF_SESSION_HEART";
     public static final String PREF_SESSION_USER_ID = "PREF_SESSION_USER_ID";
     public static final String PREF_SESSION_TODAY_IMAGE_URL = "PREF_SESSION_TODAY_IMAGE_URL";
     public static final String PREF_SESSION_UNREAD_COUNT = "PREF_SESSION_UNREAD_COUNT";

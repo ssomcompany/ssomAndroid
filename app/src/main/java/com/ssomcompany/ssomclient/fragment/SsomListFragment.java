@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
  */
 public class SsomListFragment extends BaseFragment implements AbsListView.OnItemClickListener {
     private static final String TAG = SsomListFragment.class.getSimpleName();
+    private static final String SSOM_LIST = "ssomList";
 
     private ViewListener.OnPostItemInteractionListener mListener;
 
@@ -46,8 +48,9 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
     private SsomItemListAdapter mAdapter;
     private ArrayList<SsomItem> ssomList;
 
-    public void setSsomListData(ArrayList<SsomItem> ssomList) {
+    public SsomListFragment setSsomListData(ArrayList<SsomItem> ssomList) {
         this.ssomList = ssomList;
+        return this;
     }
 
     public void setPostItemClickListener(ViewListener.OnPostItemInteractionListener mListener) {
@@ -68,6 +71,23 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
 
         mAdapter = new SsomItemListAdapter(getActivity());
         mAdapter.setItemList(ssomList);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if(outState == null) outState = new Bundle();
+        outState.putSerializable(SSOM_LIST, ssomList);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if(savedInstanceState != null && savedInstanceState.containsKey(SSOM_LIST)) {
+            ssomList = (ArrayList<SsomItem>) savedInstanceState.getSerializable(SSOM_LIST);
+        }
     }
 
     @Override

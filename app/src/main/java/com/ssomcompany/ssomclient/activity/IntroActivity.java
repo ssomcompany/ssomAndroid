@@ -84,7 +84,8 @@ public class IntroActivity extends BaseActivity {
                                                         if(response.isSuccess() && response.getData() != null) {
                                                             SsomLoginWithoutID.Response data = response.getData();
                                                             setSessionInfo(data.getToken(), data.getUserId(),
-                                                                    data.getProfileImgUrl() == null ? "" : data.getProfileImgUrl());
+                                                                    data.getProfileImgUrl() == null ? "" : data.getProfileImgUrl(), data.getHearts());
+
                                                             startMainActivity();
                                                         } else {
                                                             Log.e(TAG, "Response error with code " + response.getStatusCode() +

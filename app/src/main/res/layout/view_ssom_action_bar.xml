@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="58.5dp"
+    android:layout_height="35dp"
     android:id="@+id/ssom_action_bar"
     android:background="@color/white">
 
@@ -9,35 +9,10 @@
         android:id="@+id/btn_left_navi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="20dp"
         android:padding="10dp"
         android:layout_centerVertical="true"
         android:src="@drawable/icon_top_menu"/>
-
-    <RelativeLayout
-        android:id="@+id/toggle_bg"
-        android:layout_width="154dp"
-        android:layout_height="34dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10.5dp"
-        android:background="@drawable/bg_main_toggle">
-        <TextView
-            android:id="@+id/toggle_s_map"
-            style="@style/ssom_font_12_white_single"
-            android:layout_width="86dp"
-            android:layout_height="34dp"
-            android:background="@drawable/bg_main_toggle_on"
-            android:text="@string/map"
-            android:gravity="center"/>
-        <TextView
-            android:id="@+id/toggle_s_list"
-            style="@style/ssom_font_12_grayish_brown_single"
-            android:layout_width="86dp"
-            android:layout_height="34dp"
-            android:layout_alignParentRight="true"
-            android:text="@string/list"
-            android:gravity="center"/>
-    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/ssom_bar_title_layout"
@@ -56,65 +31,6 @@
             android:id="@+id/ssom_bar_sub_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/chat_layout"
-        android:layout_width="31dp"
-        android:layout_height="29dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginRight="12dp"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/top_message_gray">
-
-        <TextView
-            android:id="@+id/chat_count"
-            style="@style/ssom_font_12_white_single"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="4dp" />
-    </FrameLayout>
-
-    <LinearLayout
-        android:id="@+id/heart_layout"
-        android:layout_width="31dp"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="9dp"
-        android:layout_marginTop="12dp"
-        android:layout_toLeftOf="@id/chat_layout"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
-
-            <TextView
-                android:id="@+id/img_heart"
-                style="@style/ssom_font_12_white_single"
-                android:layout_width="27dp"
-                android:layout_height="24dp"
-                android:paddingTop="3dp"
-                android:gravity="center_horizontal|top"
-                android:background="@drawable/top_heart_gray" />
-
-            <View
-                android:id="@+id/img_plus"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_gravity="right"
-                android:layout_marginTop="2dp"
-                android:background="@drawable/top_plus_gray"/>
-        </FrameLayout>
-
-        <TextView
-            android:id="@+id/heart_refill_time"
-            style="@style/ssom_font_9_grayish_brown_single"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="2dp"
-            android:layout_gravity="center_horizontal"/>
     </LinearLayout>
 
     <TextView

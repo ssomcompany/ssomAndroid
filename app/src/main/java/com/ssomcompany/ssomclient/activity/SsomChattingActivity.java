@@ -132,8 +132,6 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     }
 
     private void initSsomBarView() {
-        ssomBar.setHeartLayoutVisibility(false);
-        ssomBar.setChatLayoutVisibility(false);
         ssomBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomBar.setSsomBarTitleStyle(R.style.ssom_font_16_custom_4d4d4d_single);
         ssomBar.setSsomBarTitleText(getString(R.string.chat_list_title_empty));

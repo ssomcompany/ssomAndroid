@@ -27,7 +27,7 @@ public class SsomLoginWithoutID {
         String token;
         String userId;
         String profileImgUrl;
-        String hearts;
+        int hearts;
 
         public String getUserId() {
             return userId;
@@ -53,11 +53,11 @@ public class SsomLoginWithoutID {
             this.profileImgUrl = profileImgUrl;
         }
 
-        public String getHearts() {
+        public int getHearts() {
             return hearts;
         }
 
-        public void setHearts(String hearts) {
+        public void setHearts(int hearts) {
             this.hearts = hearts;
         }
     }

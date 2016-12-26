@@ -363,13 +363,26 @@ public abstract class BaseActivity extends AppCompatActivity {
         return getSession().getString(SsomPreferences.PREF_SESSION_USER_ID, "");
     }
 
-    public void setSessionInfo(String token, String userId, String todayImageUrl) {
+    public void setSessionInfo(String token, String userId, String todayImageUrl, int heartCount) {
         getSession().put(SsomPreferences.PREF_SESSION_TOKEN, token);
         getSession().put(SsomPreferences.PREF_SESSION_USER_ID, userId);
         getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, todayImageUrl);
+        getSession().put(SsomPreferences.PREF_SESSION_HEART, heartCount);
     }
 
     public String getTodayImageUrl() {
         return getSession().getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "");
+    }
+
+    public int getUnreadCount() {
+        return getSession().getInt(SsomPreferences.PREF_SESSION_UNREAD_COUNT, 0);
+    }
+
+    public void setHeartCount(int heartCount) {
+        getSession().put(SsomPreferences.PREF_SESSION_HEART, heartCount);
+    }
+
+    public int getHeartCount() {
+        return getSession().getInt(SsomPreferences.PREF_SESSION_HEART, 0);
     }
 }

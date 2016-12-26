@@ -98,8 +98,6 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
 //        actionBarView.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_VERTICAL|RelativeLayout.RIGHT_OF|);
         actionBarView.setSsomBarTitleText("채팅으로 돌아가기");
         actionBarView.setSsomBarTitleStyle(R.style.ssom_font_16_custom_4d4d4d_single);
-        actionBarView.setHeartLayoutVisibility(false);
-        actionBarView.setChatLayoutVisibility(false);
         actionBarView.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
