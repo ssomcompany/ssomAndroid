@@ -104,7 +104,8 @@
     <string name="password_should_be_over_n_letters">비밀번호는 %d자 이상이어야 합니다.</string>
     <string name="invalid_password_format">비밀번호에 사용이 불가능한 문자가 포함되어 있습니다.</string>
     <string name="invalid_email_format">사용이 불가능한 이메일 주소입니다.</string>
-    <string name="login_failed">로그인에 실패하였습니다. 아이디 혹은 비밀번호를 확인해주세요.</string>
+    <string name="login_failed">로그인에 실패하였습니다. 다시 로그인 하시겠어요?</string>
+    <string name="request_to_admin">문제가 계속될 시 ssomcompany@gmail.com 으로 문의바랍니다.</string>
     <string name="success_registration">회원가입을 완료했습니다.</string>
     <string name="ssom_progress_message">다른 만남 중이어서 쏨타기를 할 수 없어요.</string>
 
@@ -152,7 +153,9 @@
 
     <!--heart store-->
     <string name="store_title">하트 만들기</string>
+    <string name="heart_current_count">현재 하트는 %d개 입니다.</string>
     <string name="heart_not_enough_go_to_store">하트가 부족해 쏨타기를 진행할 수 없어요.. \n상점으로 이동하시겠어요?</string>
+    <string name="heart_will_be_deleted_if_app_deleted">어플리케이션 삭제 시 모든 하트는 초기화 되니 주의하세요.</string>
 
     <!-- today profile -->
     <string name="today_photo">오늘의 사진</string>
@@ -176,6 +179,7 @@
     <string name="login_find_password">비밀번호 찾기</string>
     <string name="login_top_logo">서비스 이용을 위해서는 로그인이 필요합니다.</string>
     <string name="login">로그인</string>
+    <string name="login_retry">다시시도</string>
     <string name="login_required"><u>로그인 후 이용할 수 있습니다.</u></string>
     <string name="login_needed"><u>로그인</u></string>
     <string name="logout"><u>로그아웃</u></string>

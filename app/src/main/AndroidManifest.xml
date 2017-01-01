@@ -87,11 +87,6 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".activity.HeartStoreActivity"
-            android:exported="false"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"/>
-
         <activity android:name=".activity.SsomMapActivity"
             android:exported="false"
             android:launchMode="singleTop"
@@ -106,13 +101,6 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/FullScreenTheme"/>
-
-        <activity android:name="com.facebook.FacebookActivity"
-            android:configChanges=
-                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:label="@string/app_name"
-            tools:replace="android:theme"/>
 
     </application>
 

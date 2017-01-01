@@ -1,7 +1,6 @@
 package com.ssomcompany.ssomclient.activity;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -29,7 +27,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -63,12 +60,15 @@ import com.ssomcompany.ssomclient.common.RoundImage;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.control.InAppBillingHelper;
 import com.ssomcompany.ssomclient.control.SsomPermission;
 import com.ssomcompany.ssomclient.control.ViewListener;
+import com.ssomcompany.ssomclient.fragment.ChattingTabFragment;
 import com.ssomcompany.ssomclient.fragment.DetailFragment;
 import com.ssomcompany.ssomclient.fragment.FilterFragment;
+import com.ssomcompany.ssomclient.fragment.HeartStoreTabFragment;
 import com.ssomcompany.ssomclient.fragment.NavigationDrawerFragment;
-import com.ssomcompany.ssomclient.fragment.SsomListFragment;
+import com.ssomcompany.ssomclient.fragment.SsomListTabFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkManager;
@@ -104,7 +104,6 @@ public class MainActivity extends BaseActivity
     private static final int REQUEST_CHECK_DETAIL_LOCATION_PERMISSION = 102;
     private static final int REQUEST_PROFILE_ACTIVITY = 103;
     private static final int REQUEST_SSOM_CHATTING = 104;
-    private static final int REQUEST_HEART_STORE = 105;
 
     private static boolean canFinish;
     private static Toast toast = null;
@@ -589,7 +588,7 @@ public class MainActivity extends BaseActivity
                 startActivity(homepageIntent);
                 break;
             case R.id.tv_make_heart:
-                startActivityForResult(new Intent(MainActivity.this, HeartStoreActivity.class), REQUEST_HEART_STORE);
+                mainPager.setCurrentItem(2);
                 break;
             /**
              *  list menu item click event
@@ -968,8 +967,7 @@ public class MainActivity extends BaseActivity
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                startActivityForResult(new Intent(MainActivity.this, HeartStoreActivity.class), REQUEST_HEART_STORE);
-//                                UiUtils.makeToastMessage(getApplicationContext(), "준비 중 입니다..");
+                                mainPager.setCurrentItem(2);
                             }
                         }, new DialogInterface.OnClickListener() {
                             @Override
@@ -994,7 +992,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult called : " + requestCode + ", reusltCode : " + resultCode);
+        Log.d(TAG, "onActivityResult called : " + requestCode + ", resultCode : " + resultCode);
 
         switch (requestCode) {
             case REQUEST_PROFILE_ACTIVITY :
@@ -1014,6 +1012,9 @@ public class MainActivity extends BaseActivity
             case REQUEST_SSOM_CHATTING:
                 startMapFragment();
                 isFromNoti = false;
+                break;
+            case InAppBillingHelper.REQUEST_CODE:
+                mainAdapter.getItem(BOTTOM_STORE).onActivityResult(requestCode, resultCode, data);
                 break;
             default:
                 break;
@@ -1103,11 +1104,11 @@ public class MainActivity extends BaseActivity
                     mapFragment.getMapAsync(MainActivity.this);
                     return mapFragment;
                 case BOTTOM_LIST:
-                    return new SsomListFragment().setSsomListData(ITEM_LIST);
+                    return new SsomListTabFragment().setSsomListData(ITEM_LIST);
                 case BOTTOM_STORE:
-                    return new Fragment();
+                    return new HeartStoreTabFragment();
                 case BOTTOM_CHAT:
-                    return new Fragment();
+                    return new ChattingTabFragment();
                 default:
                     return null;
             }

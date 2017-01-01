@@ -43,6 +43,7 @@ public class IntroActivity extends BaseActivity {
                     appVersion = appVersion.replace(".", "");
                     try {
                         if(getPackageManager().getPackageInfo(getPackageName(), 0).versionCode < Integer.parseInt(appVersion)) {
+                            // 업데이트 버전이 있는 경우 마켓으로 이동 시킴
                             UiUtils.makeCommonDialog(IntroActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
                                     R.string.version_update_needed, R.style.ssom_font_16_custom_666666,
                                     R.string.update, R.string.finish,
@@ -78,24 +79,7 @@ public class IntroActivity extends BaseActivity {
                                             return;
                                         }
 
-                                        APICaller.ssomLoginWithoutID(userId, new NetworkManager.NetworkListener<SsomResponse<SsomLoginWithoutID.Response>>() {
-                                                    @Override
-                                                    public void onResponse(SsomResponse<SsomLoginWithoutID.Response> response) {
-                                                        if(response.isSuccess() && response.getData() != null) {
-                                                            SsomLoginWithoutID.Response data = response.getData();
-                                                            setSessionInfo(data.getToken(), data.getUserId(),
-                                                                    data.getProfileImgUrl() == null ? "" : data.getProfileImgUrl(), data.getHearts());
-
-                                                            startMainActivity();
-                                                        } else {
-                                                            Log.e(TAG, "Response error with code " + response.getStatusCode() +
-                                                                    ", message : " + response.getMessage(), response.getError());
-                                                            UiUtils.makeToastMessage(IntroActivity.this, "로그인할 수 없습니다. 서버 담당자에게 문의해주세요.");
-                                                            finish();
-                                                        }
-                                                        dismissProgressDialog();
-                                                    }
-                                                });
+                                        startLoginWithoutId(userId);
                                     }
                                 });
                             } else {
@@ -109,6 +93,42 @@ public class IntroActivity extends BaseActivity {
                     showErrorMessage();
                     finish();
                 }
+            }
+        });
+    }
+
+    private void startLoginWithoutId(final String userId) {
+        APICaller.ssomLoginWithoutID(userId, new NetworkManager.NetworkListener<SsomResponse<SsomLoginWithoutID.Response>>() {
+            @Override
+            public void onResponse(SsomResponse<SsomLoginWithoutID.Response> response) {
+                if(response.isSuccess() && response.getData() != null) {
+                    SsomLoginWithoutID.Response data = response.getData();
+                    setSessionInfo(data.getToken(), data.getUserId(),
+                            data.getProfileImgUrl() == null ? "" : data.getProfileImgUrl(), data.getHearts());
+
+                    startMainActivity();
+                } else {
+                    UiUtils.makeCommonDialog(IntroActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON, R.string.dialog_notice, 0,
+                            R.string.login_failed, R.style.ssom_font_16_custom_666666,
+                            R.string.login_retry, R.string.finish,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // 다시 로그인하기
+                                    startLoginWithoutId(userId);
+                                }
+                            }, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    UiUtils.makeToastMessage(getApplicationContext(), getString(R.string.request_to_admin));
+                                    finish();
+                                }
+                            });
+
+                    Log.e(TAG, "Response error with code " + response.getStatusCode() +
+                            ", message : " + response.getMessage(), response.getError());
+                }
+                dismissProgressDialog();
             }
         });
     }

@@ -1,29 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="vertical"
-    tools:context=".activity.HeartStoreActivity" >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/red_pink">
-
-        <FrameLayout
-            android:id="@+id/btn_close_top"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:padding="15dp"
-            android:layout_centerVertical="true">
-
-            <View android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_gravity="center"
-                android:background="@drawable/icon_close_white"/>
-        </FrameLayout>
 
         <TextView
             style="@style/ssom_font_16_white_bold"
@@ -33,38 +18,23 @@
             android:text="@string/store_title"/>
     </RelativeLayout>
 
-    <FrameLayout
+    <TextView
+        android:id="@+id/tv_heart_count"
+        style="@style/ssom_font_16_gray_warm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:layout_gravity="center_horizontal">
-
-        <View
-            android:layout_width="27dp"
-            android:layout_height="24dp"
-            android:background="@drawable/top_heart_shop"/>
-
-        <View
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_marginLeft="18dp"
-            android:background="@drawable/top_plus_shop" />
-
-        <TextView
-            style="@style/ssom_font_16_red_pink_bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:layout_gravity="center_vertical"
-            android:text="@string/store_title"/>
-    </FrameLayout>
+        android:layout_marginTop="27dp"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:drawableLeft="@drawable/heart_shop_mini"
+        android:drawablePadding="5dp" />
 
     <!-- item 영역 start -->
     <RelativeLayout
         android:id="@+id/layout_heart_first"
         android:layout_width="315dp"
         android:layout_height="70dp"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="20dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/shop_frame_gray">
 
@@ -378,14 +348,14 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/btn_close"
-        style="@style/ssom_font_16_white_bold"
+        style="@style/ssom_font_12_gray_warm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="55dp"
+        android:layout_marginTop="20dp"
         android:gravity="center"
-        android:background="@drawable/btn_write_cancel"
         android:layout_gravity="center_horizontal"
-        android:text="@string/dialog_close"/>
+        android:drawableLeft="@drawable/art_mini"
+        android:drawablePadding="5dp"
+        android:text="@string/heart_will_be_deleted_if_app_deleted"/>
 
 </LinearLayout>

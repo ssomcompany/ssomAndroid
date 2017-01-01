@@ -1,13 +1,5 @@
 package com.ssomcompany.ssomclient.common;
 
-import android.content.Context;
-import android.content.res.Resources;
-
-import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.fragment.SsomListFragment;
-
-import java.util.TreeMap;
-
 public class CommonConst {
 
     // fragment

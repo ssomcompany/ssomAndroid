@@ -30,8 +30,8 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link ViewListener.OnPostItemInteractionListener}
  * interface.
  */
-public class SsomListFragment extends BaseFragment implements AbsListView.OnItemClickListener {
-    private static final String TAG = SsomListFragment.class.getSimpleName();
+public class SsomListTabFragment extends RetainedStateFragment implements AbsListView.OnItemClickListener {
+    private static final String TAG = SsomListTabFragment.class.getSimpleName();
     private static final String SSOM_LIST = "ssomList";
 
     private ViewListener.OnPostItemInteractionListener mListener;
@@ -48,7 +48,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
     private SsomItemListAdapter mAdapter;
     private ArrayList<SsomItem> ssomList;
 
-    public SsomListFragment setSsomListData(ArrayList<SsomItem> ssomList) {
+    public SsomListTabFragment setSsomListData(ArrayList<SsomItem> ssomList) {
         this.ssomList = ssomList;
         return this;
     }
@@ -61,7 +61,7 @@ public class SsomListFragment extends BaseFragment implements AbsListView.OnItem
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public SsomListFragment() {
+    public SsomListTabFragment() {
         super();
     }
 

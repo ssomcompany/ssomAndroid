@@ -121,4 +121,14 @@ public abstract class BaseFragment extends Fragment {
         return ((BaseActivity) getActivity()).getUserId();
     }
 
+    /**
+     * Get Session
+     */
+    public int getUnreadCount() {
+        return getSession().getInt(SsomPreferences.PREF_SESSION_UNREAD_COUNT, 0);
+    }
+
+    public int getHeartCount() {
+        return getSession().getInt(SsomPreferences.PREF_SESSION_HEART, 0);
+    }
 }

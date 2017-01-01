@@ -90,7 +90,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         imgHeart = (ImageView) view.findViewById(R.id.img_heart);
         imgClose = (ImageView) view.findViewById(R.id.img_close);
 
-        imgHeart.setImageResource(CommonConst.SSOM.equals(ssomList.get(0).getSsomType()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
+        imgHeart.setImageResource(CommonConst.SSOM.equals(ssomList.get(currentPos).getSsomType()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
         imgHeart.setOnClickListener(this);
         imgClose.setOnClickListener(this);
 
@@ -153,6 +153,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         public void onPageSelected(int position) {
             postId = ssomList.get(position).getPostId();
             currentPos = position;
+            imgHeart.setImageResource(CommonConst.SSOM.equals(ssomList.get(position).getSsomType()) ? R.drawable.icon_heart_green : R.drawable.icon_heart_red);
         }
     };
 
