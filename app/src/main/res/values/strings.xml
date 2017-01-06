@@ -13,11 +13,14 @@
     <string name="action_settings">Settings</string>
 
     <!-- filter -->
+    <string name="filter_title">골라보기</string>
     <string name="filter_age_n_count">%1$s, %2$s</string>
-    <string name="filter_ssom_title">쏨 탐색기</string>
     <string name="filter_select_all"><u>모두선택</u></string>
+    <string name="filter_what_do_you_like">어떤 프로필을 보고 싶어요?</string>
     <string name="filter_how_old_do_you_like">몇 살이 좋아?</string>
     <string name="filter_how_many_do_you_like">몇 명이 좋아?</string>
+    <string name="filter_ssom">쏨</string>
+    <string name="filter_ssoa">쏴</string>
     <string name="filter_age_20_early">20대 초</string>
     <string name="filter_age_20_middle">20대 중</string>
     <string name="filter_age_20_late">20대 후</string>
