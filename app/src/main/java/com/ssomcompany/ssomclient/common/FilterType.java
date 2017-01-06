@@ -6,6 +6,28 @@ import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 
 public enum FilterType {
+    ssom("ssom") {
+        @Override
+        public String getTitle() {
+            return context.getString(R.string.filter_ssom);
+        }
+
+        @Override
+        public String getValue() {
+            return this.value;
+        }
+    },
+    ssoa("ssoa") {
+        @Override
+        public String getTitle() {
+            return context.getString(R.string.filter_ssoa);
+        }
+
+        @Override
+        public String getValue() {
+            return this.value;
+        }
+    },
     twentyEarly("20") {
         @Override
         public String getTitle() {
@@ -95,7 +117,7 @@ public enum FilterType {
         }
     };
     public String value;
-    private static Context context = BaseApplication.getInstance().getApplicationContext();
+    Context context = BaseApplication.getInstance().getApplicationContext();
 
     public abstract String getTitle();
     public abstract String getValue();
