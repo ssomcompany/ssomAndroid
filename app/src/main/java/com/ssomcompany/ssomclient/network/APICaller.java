@@ -34,6 +34,7 @@ import com.ssomcompany.ssomclient.network.api.GetChattingList;
 import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
 import com.ssomcompany.ssomclient.network.api.GetHeartCount;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
+import com.ssomcompany.ssomclient.network.api.GetUserCount;
 import com.ssomcompany.ssomclient.network.api.GetUserProfile;
 import com.ssomcompany.ssomclient.network.api.SendChattingMessage;
 import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
@@ -64,7 +65,7 @@ import java.util.Map;
 public class APICaller {
     private static final int TIME_OUT_LONG = 10000;
 
-    public static <T extends BaseResponse> void getSsomList(String userId, String ageFilter, String countFilter,
+    public static <T extends BaseResponse> void getSsomList(String userId, String typeFilter, String ageFilter, String countFilter,
                                                             double lat, double lng, NetworkManager.NetworkListener<T> listener) {
         GetSsomList.Request request = new GetSsomList.Request().setUserId(userId).setAgeFilter(ageFilter)
                 .setCountFilter(countFilter).setLat(lat).setLng(lng);
@@ -279,6 +280,13 @@ public class APICaller {
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<AddHeartCount.Response>>() {}.getType(), listener);
+    }
+
+    public static <T extends BaseResponse> void getCurrentUserCount(NetworkManager.NetworkListener<T> listener) {
+        GetUserCount.Request request = new GetUserCount.Request();
+
+        request.setTimeoutMillis(TIME_OUT_LONG);
+        NetworkManager.request(request, new TypeToken<SsomResponse<GetUserCount.Response>>() {}.getType(), listener);
     }
 
     public static void ssomImageUpload(final BaseActivity activity, Response.Listener<NetworkResponse> listener,

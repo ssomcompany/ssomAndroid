@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.FilterType;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
+import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.control.ViewListener;
 
 import java.util.ArrayList;
@@ -31,6 +32,9 @@ public class FilterFragment extends Fragment {
 
     // set preferences
     private SsomPreferences filterPref;
+
+    // top title
+    private TextView ssomFilter;
 
     // set views
     private TextView tvTypeSsom;
@@ -82,6 +86,9 @@ public class FilterFragment extends Fragment {
         ageArr = filterPref.getStringArray(SsomPreferences.PREF_FILTER_AGE, new ArrayList<>(Arrays.asList(baseAge)));
         peopleArr = filterPref.getStringArray(SsomPreferences.PREF_FILTER_PEOPLE, new ArrayList<>(Arrays.asList(basePeople)));
 
+        ssomFilter = (TextView) view.findViewById(R.id.ssomFilter);
+        ssomFilter.setCompoundDrawablesWithIntrinsicBounds(0, 0, getFilterDrawableResource(), 0);
+
         // view for type setting
         tvTypeSsom = (TextView) view.findViewById(R.id.tv_filter_type_ssom);
         tvTypeSsoa = (TextView) view.findViewById(R.id.tv_filter_type_ssoa);
@@ -125,6 +132,7 @@ public class FilterFragment extends Fragment {
                 if(!typeArr.contains(FilterType.ssom.getValue())) typeArr.add(FilterType.ssom.getValue());
                 if(!typeArr.contains(FilterType.ssoa.getValue())) typeArr.add(FilterType.ssoa.getValue());
                 Log.d(TAG, "typeArr : " + typeArr.size());
+                ssomFilter.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.top_icon_greenred, 0);
 
                 // age filter
                 tvTwentyEarly.setSelected(true);
@@ -155,19 +163,12 @@ public class FilterFragment extends Fragment {
                 closeView(false);
             }
         });
-        view.findViewById(R.id.icon_circle).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closeView(false);
-            }
-        });
         tvApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closeView(true);
             }
         });
-
         initView();
 
         return view;
@@ -175,6 +176,15 @@ public class FilterFragment extends Fragment {
 
     // setting init information
     private void initView() {
+        Log.i(TAG, "initView() type : " + typeArr.size());
+        for(String type : typeArr) {
+            if(FilterType.ssom.getValue().equals(type)) {
+                tvTypeSsom.setSelected(true);
+            } else if(FilterType.ssoa.getValue().equals(type)) {
+                tvTypeSsoa.setSelected(true);
+            }
+        }
+
         Log.i(TAG, "initView() age : " + ageArr.size());
         for(String age : ageArr) {
             if (FilterType.twentyEarly.getValue().equals(age)) {
@@ -204,6 +214,7 @@ public class FilterFragment extends Fragment {
 
     public void closeView(boolean isApply) {
         if(isApply) {
+            filterPref.put(SsomPreferences.PREF_FILTER_TYPE, typeArr);
             filterPref.put(SsomPreferences.PREF_FILTER_AGE, ageArr);
             filterPref.put(SsomPreferences.PREF_FILTER_PEOPLE, peopleArr);
         }
@@ -246,12 +257,88 @@ public class FilterFragment extends Fragment {
         mListener = null;
     }
 
+    public int getFilterDrawableResource() {
+        ArrayList<String> typeFilter = filterPref.getStringArray(SsomPreferences.PREF_FILTER_TYPE, new ArrayList<String>());
+        int resId;
+        switch (typeFilter.size()) {
+            case 1:
+                if(typeFilter.contains(FilterType.ssom.getValue())) {
+                    resId = R.drawable.top_icon_green;
+                } else {
+                    resId = R.drawable.top_icon_red;
+                }
+                break;
+            case 2:
+                resId = R.drawable.top_icon_greenred;
+                break;
+            default:
+                resId = R.drawable.top_icon_greenred;
+                break;
+        }
+        return resId;
+    }
+
     View.OnClickListener filterItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            // 같은 항목의 모든 필터를 해제할 수 없게 제어함
+            ArrayList<String> targetArr;
+            switch (v.getId()) {
+                case R.id.tv_filter_type_ssom:
+                case R.id.tv_filter_type_ssoa:
+                    targetArr = typeArr;
+                    break;
+                case R.id.tv_filter_age_20_early:
+                case R.id.tv_filter_age_20_middle:
+                case R.id.tv_filter_age_20_late:
+                case R.id.tv_filter_age_30_all:
+                    targetArr = ageArr;
+                    break;
+                case R.id.tv_filter_people_1:
+                case R.id.tv_filter_people_2:
+                case R.id.tv_filter_people_3:
+                case R.id.tv_filter_people_4_n_over:
+                    targetArr = peopleArr;
+                    break;
+                default:
+                    targetArr = new ArrayList<>();
+                    break;
+            }
+
+            // 하나만 남았는데 그게 자신이라면 메시지로 막음
+            if(targetArr.size() == 1 && targetArr.contains(FilterType.getValueFromId(v.getId()))) {
+                UiUtils.makeToastMessage(getContext(), getString(R.string.filter_cannot_remove_all));
+                return;
+            }
+
             v.setSelected(!v.isSelected());
 
+            // title drawable setting 을 위해 체크함
+            if(targetArr == typeArr) {
+                if(tvTypeSsom.isSelected() && tvTypeSsoa.isSelected()) {
+                    ssomFilter.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.top_icon_greenred, 0);
+                } else if(tvTypeSsom.isSelected()) {
+                    ssomFilter.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.top_icon_green, 0);
+                } else {
+                    ssomFilter.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.top_icon_red, 0);
+                }
+            }
+
             switch (v.getId()) {
+                case R.id.tv_filter_type_ssom :
+                    if(v.isSelected()) {
+                        typeArr.add(FilterType.ssom.getValue());
+                    } else {
+                        typeArr.remove(FilterType.ssom.getValue());
+                    }
+                    break;
+                case R.id.tv_filter_type_ssoa :
+                    if(v.isSelected()) {
+                        typeArr.add(FilterType.ssoa.getValue());
+                    } else {
+                        typeArr.remove(FilterType.ssoa.getValue());
+                    }
+                    break;
                 case R.id.tv_filter_age_20_early :
                     if(v.isSelected()) {
                         ageArr.add(FilterType.twentyEarly.getValue());

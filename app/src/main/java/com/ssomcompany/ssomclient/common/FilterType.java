@@ -125,4 +125,30 @@ public enum FilterType {
     FilterType(String value) {
         this.value = value;
     }
+
+    public static String getValueFromId(int viewId) {
+        switch (viewId) {
+            case R.id.tv_filter_type_ssom:
+                return ssom.getValue();
+            case R.id.tv_filter_type_ssoa:
+                return ssoa.getValue();
+            case R.id.tv_filter_age_20_early:
+                return twentyEarly.getValue();
+            case R.id.tv_filter_age_20_middle:
+                return twentyMiddle.getValue();
+            case R.id.tv_filter_age_20_late:
+                return twentyLate.getValue();
+            case R.id.tv_filter_age_30_all:
+                return thirtyOver.getValue();
+            case R.id.tv_filter_people_1:
+                return onePerson.getValue();
+            case R.id.tv_filter_people_2:
+                return twoPeople.getValue();
+            case R.id.tv_filter_people_3:
+                return threePeople.getValue();
+            case R.id.tv_filter_people_4_n_over:
+                return fourPeople.getValue();
+        }
+        return "";
+    }
 }

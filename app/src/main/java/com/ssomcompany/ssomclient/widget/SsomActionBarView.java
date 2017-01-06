@@ -1,32 +1,20 @@
 package com.ssomcompany.ssomclient.widget;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.CountDownTimer;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.activity.BaseActivity;
-import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.network.APICaller;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.AddHeartCount;
-import com.ssomcompany.ssomclient.network.model.SsomResponse;
-import com.ssomcompany.ssomclient.push.MessageManager;
 
 public class SsomActionBarView extends Toolbar {
     public static final String TAG = SsomActionBarView.class.getSimpleName();
@@ -51,6 +39,7 @@ public class SsomActionBarView extends Toolbar {
     private LinearLayout ssomBarTitleLayout;
     private TextView ssomBarTitle;
     private TextView ssomBarSubTitle;
+    private TextView ssomFilter;
     private TextView btnChattingRoomMeeting;
 
     public SsomActionBarView(Context context) {
@@ -96,6 +85,7 @@ public class SsomActionBarView extends Toolbar {
         ssomBarTitleLayout = (LinearLayout) findViewById(R.id.ssom_bar_title_layout);
         ssomBarTitle = (TextView) findViewById(R.id.ssom_bar_title);
         ssomBarSubTitle = (TextView) findViewById(R.id.ssom_bar_sub_title);
+        ssomFilter = (TextView) findViewById(R.id.ssomFilter);
         btnChattingRoomMeeting = (TextView) findViewById(R.id.btn_chatting_room_meeting);
     }
 
@@ -107,12 +97,14 @@ public class SsomActionBarView extends Toolbar {
                 params.height = Util.convertDpToPixel(35f);
                 ssomActionBar.setLayoutParams(params);
                 btnLeftNavi.setImageResource(R.drawable.icon_top_menu);
+                ssomFilter.setVisibility(View.VISIBLE);
                 break;
             default:
                 // set action bar height
                 params.height = Util.convertDpToPixel(52f);
                 ssomActionBar.setLayoutParams(params);
                 btnLeftNavi.setImageResource(R.drawable.icon_back);
+                ssomFilter.setVisibility(View.GONE);
                 break;
         }
     }
@@ -169,6 +161,18 @@ public class SsomActionBarView extends Toolbar {
 
     public void setSsomBarSubTitleStyle(int styId) {
         ssomBarSubTitle.setTextAppearance(mContext, styId);
+    }
+
+    public void setSsomFilterVisibility(boolean visibility) {
+        ssomFilter.setVisibility(visibility ? View.VISIBLE : View.GONE);
+    }
+
+    public void setSsomFilterDrawable(int resId) {
+        ssomFilter.setCompoundDrawablesWithIntrinsicBounds(0, 0, resId, 0);
+    }
+
+    public void setOnSsomFilterClickListener(View.OnClickListener listener) {
+        ssomFilter.setOnClickListener(listener);
     }
 
     public void setChattingRoomBtnMeetingVisibility(boolean visibility) {

@@ -67,6 +67,7 @@ public class IntroActivity extends BaseActivity {
                             // 앱 실행 시 최초 로그인 진행. 토큰이 있으면 로그인 건너 뜀
                             if(getSession() == null || TextUtils.isEmpty(getToken()) || TextUtils.isEmpty(getUserId())) {
                                 showProgressDialog();
+                                Log.d(TAG, "one signal called ..");
                                 OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
                                     @Override
                                     public void idsAvailable(String userId, String registrationId) {

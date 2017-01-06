@@ -21,7 +21,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="3dp"
-            android:drawableRight="@drawable/top_icon_greenred"
             android:text="@string/filter_title"/>
 
         <LinearLayout
@@ -230,14 +229,4 @@
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
-
-    <ImageView
-        android:id="@+id/icon_circle"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="19dp"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/icon_filter_on"/>
-
 </RelativeLayout>

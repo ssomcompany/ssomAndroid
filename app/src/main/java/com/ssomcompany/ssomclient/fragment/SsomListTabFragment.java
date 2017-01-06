@@ -104,15 +104,7 @@ public class SsomListTabFragment extends RetainedStateFragment implements AbsLis
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
-
-        TextView emptyView = new TextView(getContext());
-        emptyView.setTextAppearance(getContext(), R.style.ssom_font_14_pinkish_gray_two);
-        emptyView.setMaxLines(2);
-        emptyView.setGravity(Gravity.CENTER);
-        emptyView.setCompoundDrawablePadding(Util.convertDpToPixel(16f));
-        emptyView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_couple_gray, 0, 0);
-        mListView.setEmptyView(emptyView);
-        setEmptyText(getString(R.string.empty_ssom_list));
+        mListView.setEmptyView(view.findViewById(R.id.emptyView));
 
         return view;
     }

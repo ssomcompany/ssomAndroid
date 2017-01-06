@@ -48,7 +48,29 @@
                 android:layout_height="5dp"
                 android:background="@drawable/toolbar_dropshadow"/>
 
-            <include layout="@layout/layout_write"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/map_current_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/btn_site_me"
+                    android:layout_marginTop="22.7dp"
+                    android:layout_marginLeft="20dp"/>
+
+                <ImageView
+                    android:id="@+id/btn_write"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/btn_write"/>
+
+            </RelativeLayout>
         </FrameLayout>
 
         <FrameLayout

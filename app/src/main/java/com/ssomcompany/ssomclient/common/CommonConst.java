@@ -41,6 +41,8 @@ public class CommonConst {
         public static final String IMAGE_URL = "image_url";
         public static final String SSOM_TYPE = "ssom_type";
         public static final String SSOM_ITEM = "ssom_item";
+        public static final String CHAT_ROOM_LIST = "chat_room_list";
+        public static final String CHAT_ROOM_ITEM = "chat_room_item";
         public static final String FILE_ID = "fileId";
 
         // for push message

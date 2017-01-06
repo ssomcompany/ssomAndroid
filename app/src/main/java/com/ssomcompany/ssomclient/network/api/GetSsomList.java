@@ -14,6 +14,7 @@ public class GetSsomList {
 
     public static class Request extends SsomGetRequest {
         String userId;
+        String typeFilter;
         String ageFilter;
         String countFilter;
         double lat;

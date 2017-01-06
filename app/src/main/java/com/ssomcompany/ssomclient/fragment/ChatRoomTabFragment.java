@@ -3,6 +3,7 @@ package com.ssomcompany.ssomclient.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +15,9 @@ import android.view.animation.BounceInterpolator;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.activity.SsomChattingActivity;
 import com.ssomcompany.ssomclient.adapter.ChatRoomListAdapter;
+import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
@@ -41,10 +44,8 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link ViewListener.OnChatItemInteractionListener}
  * interface.
  */
-public class ChatRoomListFragment extends BaseFragment {
-    private static final String TAG = ChatRoomListFragment.class.getSimpleName();
-
-    private ViewListener.OnChatItemInteractionListener mListener;
+public class ChatRoomTabFragment extends RetainedStateFragment {
+    private static final String TAG = ChatRoomTabFragment.class.getSimpleName();
 
     /**
      * The fragment's ListView/GridView.
@@ -160,23 +161,14 @@ public class ChatRoomListFragment extends BaseFragment {
         mListView.setOnNormalItemClickListener(new SwipeMenuListView.OnNormalItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onChatItemClick(position);
-                }
+                Intent chatIntent = new Intent(getActivity(), SsomChattingActivity.class);
+                chatIntent.putExtra(CommonConst.Intent.CHAT_ROOM_ITEM, chatRoomList.get(position));
+                startActivity(chatIntent);
             }
         });
         mListView.setCloseInterpolator(new BounceInterpolator());
         mListView.setAdapter(mAdapter);
-        TextView emptyView = new TextView(getContext());
-        emptyView.setTextAppearance(getContext(), R.style.ssom_font_14_pinkish_gray_two);
-        emptyView.setMaxLines(1);
-        emptyView.setGravity(Gravity.CENTER);
-        emptyView.setCompoundDrawablePadding(Util.convertDpToPixel(11f));
-        emptyView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_face_t_t, 0, 0);
-        mListView.setEmptyView(emptyView);
-        setEmptyText(getString(R.string.empty_chat_list));
+        mListView.setEmptyView(view.findViewById(R.id.emptyView));
 
         return view;
     }
@@ -188,7 +180,7 @@ public class ChatRoomListFragment extends BaseFragment {
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             try {
-                mListener = (ViewListener.OnChatItemInteractionListener) activity;
+//                mListener = (ViewListener.OnChatItemInteractionListener) activity;
             } catch (ClassCastException e) {
                 throw new ClassCastException(activity.toString()
                         + " must implement OnPostItemInteractionListener");
@@ -201,7 +193,7 @@ public class ChatRoomListFragment extends BaseFragment {
         super.onAttach(context);
 
         try {
-            mListener = (ViewListener.OnChatItemInteractionListener) context;
+//            mListener = (ViewListener.OnChatItemInteractionListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
                     + " must implement OnPostItemInteractionListener");
@@ -211,7 +203,7 @@ public class ChatRoomListFragment extends BaseFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+//        mListener = null;
     }
 
     /**
@@ -225,5 +217,14 @@ public class ChatRoomListFragment extends BaseFragment {
         if (emptyView instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
         }
+    }
+
+    public ChatRoomItem getChatRoomItem(String chatRoomId) {
+        for(ChatRoomItem room : chatRoomList) {
+            if(room.getId().equals(chatRoomId)) {
+                return room;
+            }
+        }
+        return null;
     }
 }

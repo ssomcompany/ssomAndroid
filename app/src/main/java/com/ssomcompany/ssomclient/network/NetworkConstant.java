@@ -63,5 +63,7 @@ public class NetworkConstant {
         public static final String USER_PROFILE = "/users/%s";
         // get app version
         public static final String APP_VERSION = "/version/android";
+        // get user count
+        public static final String USER_COUNT = "/users?status=connected&field=count";
     }
 }

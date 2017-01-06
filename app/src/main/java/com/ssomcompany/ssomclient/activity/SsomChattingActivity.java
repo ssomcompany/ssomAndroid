@@ -11,25 +11,18 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 
-import com.onesignal.shortcutbadger.ShortcutBadger;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
-import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.control.ViewListener;
-import com.ssomcompany.ssomclient.fragment.ChatRoomListFragment;
 import com.ssomcompany.ssomclient.fragment.ChattingFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
-import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
 import com.ssomcompany.ssomclient.network.api.SsomMeetingRequest;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
@@ -37,18 +30,10 @@ import com.ssomcompany.ssomclient.push.MessageManager;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
-import java.util.ArrayList;
-
-public class SsomChattingActivity extends BaseActivity implements ViewListener.OnChatItemInteractionListener, MessageCountCheck {
+public class SsomChattingActivity extends BaseActivity implements MessageCountCheck {
     private static final String TAG = SsomChattingActivity.class.getSimpleName();
 
-    private static final int STATE_CHAT_LIST = 0;
-    private static final int STATE_CHAT_ROOM = 1;
-
-    private static int CURRENT_STATE = STATE_CHAT_LIST;
-
     // fragment instance 저장
-    private ChatRoomListFragment roomListFragment;
     private ChatRoomItem chatRoomItem;
     private ChattingFragment chattingFragment;
 
@@ -58,8 +43,6 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
     private SsomPreferences chatPref;
     private InputMethodManager imm;
 
-    private int unreadCount;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,82 +50,34 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         fragmentManager = getSupportFragmentManager();
         chatPref = new SsomPreferences(this, SsomPreferences.CHATTING_PREF);
-        ssomBar = (SsomActionBarView) findViewById(R.id.ssom_action_bar);
-        initSsomBarView();
-        initIntentData();
-    }
+        ssomBar = (SsomActionBarView) findViewById(R.id.ssom_toolbar);
 
-    private void initIntentData() {
         if(getIntent() != null && getIntent().getExtras() != null) {
-            final SsomItem ssomItem = (SsomItem) getIntent().getSerializableExtra(CommonConst.Intent.SSOM_ITEM);
-
-            if(!TextUtils.isEmpty(ssomItem.getChatroomId()) && !CommonConst.Chatting.MEETING_OUT.equalsIgnoreCase(ssomItem.getStatus())) {
-                // 기존에 방이 있으므로 그쪽으로 이동시킴
-                roomListFragment = new ChatRoomListFragment();
-                roomListFragment.setOnChatRoomListLoadingFinished(new ViewListener.OnChatRoomListLoadingFinished() {
-                    @Override
-                    public void onFinishLoadingRoomList(ArrayList<ChatRoomItem> chatRoomList) {
-                        for(int i=0 ; i<chatRoomList.size() ; i++) {
-                            if(chatRoomList.get(i).getId().equals(ssomItem.getChatroomId())) {
-                                onChatItemClick(i);
-                                break;
-                            }
-                        }
-                    }
-                });
-                startChatRoomListFragment();
-            } else {
-                APICaller.createChattingRoom(getToken(), ssomItem.getPostId(),
-                        locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude(),
-                        new NetworkManager.NetworkListener<SsomResponse<CreateChattingRoom.Response>>() {
-                            @Override
-                            public void onResponse(SsomResponse<CreateChattingRoom.Response> response) {
-                                if (response.isSuccess() && response.getData() != null) {
-                                    chatRoomItem = new ChatRoomItem();
-                                    chatRoomItem.setId(response.getData().getChatroomId());
-                                    chatRoomItem.setOwnerId(getUserId());
-                                    chatRoomItem.setOwnerImageUrl(getTodayImageUrl());
-                                    chatRoomItem.setParticipantId(ssomItem.getUserId());
-                                    chatRoomItem.setParticipantImageUrl(ssomItem.getImageUrl());
-                                    chatRoomItem.setSsomType(ssomItem.getSsomType());
-                                    chatRoomItem.setUserCount(ssomItem.getUserCount());
-                                    chatRoomItem.setMinAge(ssomItem.getMinAge());
-                                    chatRoomItem.setLongitude(ssomItem.getLongitude());
-                                    chatRoomItem.setLatitude(ssomItem.getLatitude());
-                                    chatRoomItem.setPostId(ssomItem.getPostId());
-                                    chatRoomItem.setCreatedTimestamp(response.getData().getCreatedTimestamp());
-
-                                    CURRENT_STATE = STATE_CHAT_ROOM;
-                                    startChattingFragment();
-                                    changeSsomBarViewForChattingRoom();
-                                    getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
-                                } else if(response.getStatusCode() == 428) {
-                                    Log.d(TAG, "ssom 진행 중, 더이상 쏨타기 못함");
-                                    showToastMessageShort(R.string.ssom_progress_message);
-                                    finish();
-                                } else {
-                                    showErrorMessage();
-                                }
-                            }
-                        });
-            }
+            chatRoomItem = (ChatRoomItem) getIntent().getSerializableExtra(CommonConst.Intent.CHAT_ROOM_ITEM);
         } else {
-            startChatRoomListFragment();
+            finish();
+            return;
         }
+
+        initSsomBarView();
+        startChattingFragment();
     }
 
     private void initSsomBarView() {
+        ssomBar.setCurrentMode(SsomActionBarView.SSOM_CHATTING);
         ssomBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomBar.setSsomBarTitleStyle(R.style.ssom_font_16_custom_4d4d4d_single);
-        ssomBar.setSsomBarTitleText(getString(R.string.chat_list_title_empty));
+        ssomBar.setSsomBarTitleText(getString(R.string.chat_room_title));
+        ssomBar.setSsomBarSubTitleVisibility(true);
+        ssomBar.setSsomBarSubTitleText((chatRoomItem.getMinAge() | chatRoomItem.getUserCount()) == 0 ? getString(R.string.chat_room_no_info) :
+                String.format(getString(R.string.filter_age_n_count), Util.convertAgeRange(chatRoomItem.getMinAge()), Util.convertPeopleRange(chatRoomItem.getUserCount())));
+        ssomBar.setSsomBarSubTitleStyle(R.style.ssom_font_12_pinkish_gray_two_single);
         ssomBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
-
-        changeSsomBarViewForChatRoomList();
     }
 
     private void hideSoftKeyboard() {
@@ -152,39 +87,6 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             view = new View(this);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    private void changeSsomBarViewForChatRoomList() {
-        ssomBar.setCurrentMode(SsomActionBarView.SSOM_CHAT_LIST);
-        ssomBar.setChattingRoomBtnMeetingVisibility(false);
-        ssomBar.setSsomBarTitleText(getString(R.string.chat_list_title_empty));
-        APICaller.totalChatUnreadCount(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomChatUnreadCount.Response>>() {
-            @Override
-            public void onResponse(SsomResponse<SsomChatUnreadCount.Response> response) {
-                if(response.isSuccess() && response.getData() != null) {
-                    unreadCount = response.getData().getUnreadCount();
-                    getSession().put(SsomPreferences.PREF_SESSION_UNREAD_COUNT, unreadCount);
-                    if(unreadCount != 0) {
-                        ssomBar.setSsomBarTitleText(String.format(getString(R.string.chat_list_title), unreadCount));
-                        ShortcutBadger.applyCount(SsomChattingActivity.this, unreadCount); //for 1.1.4+
-                    } else {
-                        ShortcutBadger.removeCount(SsomChattingActivity.this);
-                    }
-                } else {
-                    showErrorMessage();
-                }
-            }
-        });
-        ssomBar.setSsomBarSubTitleVisibility(false);
-    }
-
-    private void changeSsomBarViewForChattingRoom() {
-        ssomBar.setCurrentMode(SsomActionBarView.SSOM_CHATTING);
-        ssomBar.setSsomBarTitleText(getString(R.string.chat_room_title));
-        ssomBar.setSsomBarSubTitleVisibility(true);
-        ssomBar.setSsomBarSubTitleText((chatRoomItem.getMinAge() | chatRoomItem.getUserCount()) == 0 ? getString(R.string.chat_room_no_info) :
-                String.format(getString(R.string.filter_age_n_count), Util.convertAgeRange(chatRoomItem.getMinAge()), Util.convertPeopleRange(chatRoomItem.getUserCount())));
-        ssomBar.setSsomBarSubTitleStyle(R.style.ssom_font_12_pinkish_gray_two_single);
     }
 
     public void setMeetingButton() {
@@ -292,32 +194,10 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         }
     }
 
-    private void startChatRoomListFragment() {
-        if(roomListFragment == null) roomListFragment = new ChatRoomListFragment();
-        fragmentManager.beginTransaction().replace(R.id.chat_container, roomListFragment, CommonConst.CHAT_LIST_FRAG).commit();
-//        fragmentManager.executePendingTransactions();
-    }
-
     private void startChattingFragment() {
         chattingFragment = ChattingFragment.newInstance(chatPref.getBoolean(SsomPreferences.PREF_CHATTING_GUIDE_IS_READ, false));
         chattingFragment.setChatRoomItem(chatRoomItem);
         fragmentManager.beginTransaction().replace(R.id.chat_container, chattingFragment, CommonConst.CHATTING_FRAG).commit();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if(CURRENT_STATE == STATE_CHAT_LIST) changeSsomBarViewForChatRoomList();
-    }
-
-    @Override
-    public void onChatItemClick(final int position) {
-        CURRENT_STATE = STATE_CHAT_ROOM;
-        chatRoomItem = roomListFragment.getChatRoomList().get(position);
-        roomListFragment.setOnChatRoomListLoadingFinished(null);
-        startChattingFragment();
-        changeSsomBarViewForChattingRoom();
     }
 
     @Override
@@ -326,50 +206,42 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
             return;
         }
 
-        if(CURRENT_STATE == STATE_CHAT_ROOM) {
-            APICaller.updateChattingRoom(getToken(), chatRoomItem.getId(), new NetworkManager.NetworkListener<BaseResponse>() {
+        hideSoftKeyboard();
+        if(chatRoomItem != null && CommonConst.Chatting.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
+            UiUtils.makeCommonDialog(SsomChattingActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
+                    R.string.dialog_notice, R.style.ssom_font_20_red_pink_bold, R.string.dialog_meet_finish_by_exit_message,
+                    0, R.string.dialog_meet_finish, R.string.dialog_close,
+                    new DialogInterface.OnClickListener() {
                         @Override
-                        public void onResponse(BaseResponse response) {
-                            if(response.isSuccess()) Log.d(TAG, "success to update chatting time");
+                        public void onClick(DialogInterface dialog, int which) {
+                            APICaller.sendChattingRequest(getToken(), chatRoomItem.getId(), NetworkConstant.Method.DELETE,
+                                    new NetworkManager.NetworkListener<SsomResponse<SsomMeetingRequest.Response>>() {
+                                        @Override
+                                        public void onResponse(SsomResponse<SsomMeetingRequest.Response> response) {
+                                            if(response.isSuccess()) {
+                                                chatRoomItem.setStatus(null);
+                                                onBackPressed();
+                                            } else {
+                                                showErrorMessage();
+                                            }
+                                        }
+                                    });
+                        }
+                    }, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
                         }
                     });
-
-            if(chatRoomItem != null && CommonConst.Chatting.MEETING_APPROVE.equals(chatRoomItem.getStatus())) {
-                hideSoftKeyboard();
-                UiUtils.makeCommonDialog(SsomChattingActivity.this, CommonDialog.DIALOG_STYLE_ALERT_BUTTON,
-                        R.string.dialog_notice, R.style.ssom_font_20_red_pink_bold, R.string.dialog_meet_finish_by_exit_message,
-                        0, R.string.dialog_meet_finish, R.string.dialog_close,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                APICaller.sendChattingRequest(getToken(), chatRoomItem.getId(), NetworkConstant.Method.DELETE,
-                                        new NetworkManager.NetworkListener<SsomResponse<SsomMeetingRequest.Response>>() {
-                                            @Override
-                                            public void onResponse(SsomResponse<SsomMeetingRequest.Response> response) {
-                                                if(response.isSuccess()) {
-                                                    chatRoomItem.setStatus(null);
-                                                    onBackPressed();
-                                                } else {
-                                                    showErrorMessage();
-                                                }
-                                            }
-                                        });
-                            }
-                        }, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
-                return;
-            }
-
-            CURRENT_STATE = STATE_CHAT_LIST;
-            hideSoftKeyboard();
-            changeSsomBarViewForChatRoomList();
-            startChatRoomListFragment();
-        } else {
-            super.onBackPressed();
+            return;
         }
+
+        APICaller.updateChattingRoom(getToken(), chatRoomItem.getId(), new NetworkManager.NetworkListener<BaseResponse>() {
+            @Override
+            public void onResponse(BaseResponse response) {
+                if(response.isSuccess()) Log.d(TAG, "success to update chatting time");
+            }
+        });
+        super.onBackPressed();
     }
 
     @Override
@@ -388,86 +260,47 @@ public class SsomChattingActivity extends BaseActivity implements ViewListener.O
         }
 
         if(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equalsIgnoreCase(intent.getAction())) {
-            if (fragmentManager.findFragmentById(R.id.chat_container) instanceof ChatRoomListFragment) {
-                // chatting room 화면을 보고 있는 경우에 채팅룸 갱신
-                ArrayList<ChatRoomItem> roomList = roomListFragment.getChatRoomList();
-                String chatRoomId = intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID);
-                int roomIndex = -1;
-
-                for (int i = 0; i < roomList.size(); i++) {
-                    if (!TextUtils.isEmpty(chatRoomId) && chatRoomId.equals(roomList.get(i).getId())) {
-                        roomIndex = i;
-                        break;
+            // 푸시를 받은 방에서 chatting 중이라면 메시지를 추가해서 보여줌
+            if (chattingFragment.getChatRoomId().equalsIgnoreCase(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID))) {
+                ChattingItem chat = new ChattingItem();
+                chat.setMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
+                chat.setFromUserId(intent.getStringExtra(CommonConst.Intent.FROM_USER_ID));
+                chat.setToUserId(intent.getStringExtra(CommonConst.Intent.TO_USER_ID));
+                chat.setTimestamp(intent.getLongExtra(CommonConst.Intent.TIMESTAMP, 0));
+                if (!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS))) {
+                    String status = intent.getStringExtra(CommonConst.Intent.STATUS);
+                    ChattingItem.MessageType messageType;
+                    switch (status) {
+                        case CommonConst.Chatting.MEETING_REQUEST:
+                            messageType = ChattingItem.MessageType.request;
+                            break;
+                        case CommonConst.Chatting.MEETING_APPROVE:
+                            messageType = ChattingItem.MessageType.approve;
+                            break;
+                        case CommonConst.Chatting.MEETING_CANCEL:
+                            messageType = ChattingItem.MessageType.cancel;
+                            break;
+                        case CommonConst.Chatting.MEETING_COMPLETE:
+                            messageType = ChattingItem.MessageType.complete;
+                            break;
+                        case CommonConst.Chatting.MEETING_OUT:
+                            messageType = ChattingItem.MessageType.finish;
+                            break;
+                        default:
+                            messageType = null;
+                            break;
                     }
-                }
 
-                ChatRoomItem tempItem;
-                if(roomIndex < 0) {   // 방이 없는거임 처음 생성 된 방
-                    tempItem = new ChatRoomItem();
-                    tempItem.setId(chatRoomId);
-                    tempItem.setOwnerId(getUserId());
-                    tempItem.setParticipantId(intent.getStringExtra(CommonConst.Intent.FROM_USER_ID));
-                    tempItem.setLastTimestamp(intent.getLongExtra(CommonConst.Intent.TIMESTAMP, 0));
-                    tempItem.setLastMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
-                    tempItem.setUnreadCount(1);
-                    if (!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS)))
-                        tempItem.setStatus(intent.getStringExtra(CommonConst.Intent.STATUS));
+                    chat.setStatus(messageType);
+                    chat.setMsgType(CommonConst.Chatting.SYSTEM);
+                    chatRoomItem.setRequestId(chat.getFromUserId());
+                    chatRoomItem.setStatus(status);
+                    chattingFragment.setChatRoomItem(chatRoomItem);
+                    setMeetingButton();
                 } else {
-                    tempItem = roomList.get(roomIndex);
-                    tempItem.setLastMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
-                    tempItem.setUnreadCount(tempItem.getUnreadCount() + 1);
-                    if (!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS)))
-                        tempItem.setStatus(intent.getStringExtra(CommonConst.Intent.STATUS));
-                    roomList.remove(roomIndex);
+                    chat.setMsgType(CommonConst.Chatting.NORMAL);
                 }
-                roomList.add(0, tempItem);
-                roomListFragment.setChatRoomListAndNotify(roomList);
-                ssomBar.setSsomBarTitleText(String.format(getString(R.string.chat_list_title), ++unreadCount));
-            } else {
-                // 푸시를 받은 방에서 chatting 중이라면 메시지를 추가해서 보여줌
-                if (chattingFragment.getChatRoomId().equalsIgnoreCase(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID))) {
-                    ChattingItem chat = new ChattingItem();
-                    chat.setMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
-                    chat.setFromUserId(intent.getStringExtra(CommonConst.Intent.FROM_USER_ID));
-                    chat.setToUserId(intent.getStringExtra(CommonConst.Intent.TO_USER_ID));
-                    chat.setTimestamp(intent.getLongExtra(CommonConst.Intent.TIMESTAMP, 0));
-                    if (!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS))) {
-                        String status = intent.getStringExtra(CommonConst.Intent.STATUS);
-                        ChattingItem.MessageType messageType;
-                        switch (status) {
-                            case CommonConst.Chatting.MEETING_REQUEST:
-                                messageType = ChattingItem.MessageType.request;
-                                break;
-                            case CommonConst.Chatting.MEETING_APPROVE:
-                                messageType = ChattingItem.MessageType.approve;
-                                break;
-                            case CommonConst.Chatting.MEETING_CANCEL:
-                                messageType = ChattingItem.MessageType.cancel;
-                                break;
-                            case CommonConst.Chatting.MEETING_COMPLETE:
-                                messageType = ChattingItem.MessageType.complete;
-                                break;
-                            case CommonConst.Chatting.MEETING_OUT:
-                                messageType = ChattingItem.MessageType.finish;
-                                break;
-                            default:
-                                messageType = null;
-                                break;
-                        }
-
-                        chat.setStatus(messageType);
-                        chat.setMsgType(CommonConst.Chatting.SYSTEM);
-                        chatRoomItem.setRequestId(chat.getFromUserId());
-                        chatRoomItem.setStatus(status);
-                        chattingFragment.setChatRoomItem(chatRoomItem);
-                        setMeetingButton();
-                    } else {
-                        chat.setMsgType(CommonConst.Chatting.NORMAL);
-                    }
-                    chattingFragment.addChatting(chat);
-                } else {
-                    unreadCount++;
-                }
+                chattingFragment.addChatting(chat);
             }
         }
     }

@@ -55,6 +55,7 @@ import com.onesignal.shortcutbadger.ShortcutBadger;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.BitmapWorkerTask;
 import com.ssomcompany.ssomclient.common.CommonConst;
+import com.ssomcompany.ssomclient.common.FilterType;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.RoundImage;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
@@ -63,7 +64,7 @@ import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.InAppBillingHelper;
 import com.ssomcompany.ssomclient.control.SsomPermission;
 import com.ssomcompany.ssomclient.control.ViewListener;
-import com.ssomcompany.ssomclient.fragment.ChattingTabFragment;
+import com.ssomcompany.ssomclient.fragment.ChatRoomTabFragment;
 import com.ssomcompany.ssomclient.fragment.DetailFragment;
 import com.ssomcompany.ssomclient.fragment.FilterFragment;
 import com.ssomcompany.ssomclient.fragment.HeartStoreTabFragment;
@@ -72,9 +73,13 @@ import com.ssomcompany.ssomclient.fragment.SsomListTabFragment;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
 import com.ssomcompany.ssomclient.network.api.GetSsomList;
+import com.ssomcompany.ssomclient.network.api.GetUserCount;
 import com.ssomcompany.ssomclient.network.api.GetUserProfile;
+import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
 import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
+import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
@@ -146,7 +151,6 @@ public class MainActivity extends BaseActivity
 
     private Location myLocation;
     private ImageView btnWrite;
-    private View filterImgLayout;
 
     private SsomItem myPost;
     private String myPostId;
@@ -320,8 +324,10 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void requestSsomList(String ageFilter, String countFilter, final boolean needFilterToast) {
-        APICaller.getSsomList(getUserId(), ageFilter, countFilter,
+    private void requestSsomList(final boolean needFilterToast) {
+        APICaller.getSsomList(getUserId(), filterPref.getString(SsomPreferences.PREF_FILTER_TYPE, ""),
+                filterPref.getString(SsomPreferences.PREF_FILTER_AGE, ""),
+                filterPref.getString(SsomPreferences.PREF_FILTER_PEOPLE, ""),
                 locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude(),
                 new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
 
@@ -340,7 +346,7 @@ public class MainActivity extends BaseActivity
 
                     if(needFilterToast) {
                         Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.filter_apply_complete), Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.TOP, 0, Util.convertDpToPixel(120f));
+                        toast.setGravity(Gravity.TOP, 0, Util.convertDpToPixel(50f));
                         toast.show();
                     }
                 } else {
@@ -382,9 +388,6 @@ public class MainActivity extends BaseActivity
             }
         });
 
-        filterImgLayout = findViewById(R.id.filter_img);
-        filterImgLayout.setOnClickListener(filterClickListener);
-
         if(!TextUtils.isEmpty(getUserId())) {
             // user profile 정보를 셋팅한다
             APICaller.getUserProfile(getToken(), getUserId(), new NetworkManager.NetworkListener<SsomResponse< GetUserProfile.Response>>() {
@@ -425,7 +428,7 @@ public class MainActivity extends BaseActivity
                         btnWrite.setImageResource(R.drawable.btn_write);
                         showErrorMessage();
                     }
-                    if(isRefresh) requestSsomList(null, null, false);
+                    if(isRefresh) requestSsomList(false);
                 }
             });
         } else {
@@ -451,10 +454,6 @@ public class MainActivity extends BaseActivity
         fragmentManager = getSupportFragmentManager();
 
         ssomActionBar = (SsomActionBarView) findViewById(R.id.ssom_toolbar);
-        // TODO online user count setting
-        ssomActionBar.setSsomBarTitleText("현재 138명 접속 중");
-        ssomActionBar.setSsomBarTitleDrawable(R.drawable.icon_ssom_map, Util.convertDpToPixel(2f));
-        ssomActionBar.setSsomBarTitleStyle(R.style.ssom_font_12_gray_warm);
         ssomActionBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomActionBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
             @Override
@@ -462,8 +461,50 @@ public class MainActivity extends BaseActivity
                 drawer.openDrawer(Gravity.LEFT);
             }
         });
+        ssomActionBar.setOnSsomFilterClickListener(filterClickListener);
+        setFilterDrawable();
+        updateToolbarToMain();
+
+        // 최초 앱 실행 시 unread 메시지 카운트를 맞추기 위해 한번 호출함
+        APICaller.totalChatUnreadCount(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomChatUnreadCount.Response>>() {
+            @Override
+            public void onResponse(SsomResponse<SsomChatUnreadCount.Response> response) {
+                if(response.isSuccess() && response.getData() != null) {
+                    int unreadCount = response.getData().getUnreadCount();
+                    getSession().put(SsomPreferences.PREF_SESSION_UNREAD_COUNT, unreadCount);
+                    if(unreadCount != 0) {
+                        ShortcutBadger.applyCount(MainActivity.this, unreadCount); //for 1.1.4+
+                    } else {
+                        ShortcutBadger.removeCount(MainActivity.this);
+                    }
+                } else {
+                    showErrorMessage();
+                }
+            }
+        });
 
         mBtnMapMyLocation = (ImageView) findViewById(R.id.map_current_location);
+    }
+
+    private void updateToolbarToMain() {
+        APICaller.getCurrentUserCount(new NetworkManager.NetworkListener<SsomResponse<GetUserCount.Response>>() {
+            @Override
+            public void onResponse(SsomResponse<GetUserCount.Response> response) {
+                if(response.isSuccess()) {
+                    ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, response.getData().getUserCount()));
+                } else {
+                    ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, 100));
+                }
+            }
+        });
+        ssomActionBar.setSsomBarTitleDrawable(R.drawable.icon_ssom_map, Util.convertDpToPixel(2f));
+        ssomActionBar.setSsomBarTitleStyle(R.style.ssom_font_12_gray_warm);
+    }
+
+    private void updateToolbarToChatList() {
+        ssomActionBar.setSsomBarTitleText(String.format(getString(R.string.chat_list_title), getUnreadCount()));
+        ssomActionBar.setSsomBarTitleDrawable(0, 0);
+        ssomActionBar.setSsomBarTitleStyle(R.style.ssom_font_14_custom_4d4d4d_single);
     }
 
     @Override
@@ -476,7 +517,47 @@ public class MainActivity extends BaseActivity
         }
 
         if(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equalsIgnoreCase(intent.getAction())) {
-            setChattingCount(getUnreadCount() + 1);
+            // badge count 올림
+            setChattingCount(getUnreadCount());
+
+            // chatting list 업데이트
+            ChatRoomTabFragment chatRoomFragment = (ChatRoomTabFragment) mainAdapter.getItem(BOTTOM_CHAT);
+            ArrayList<ChatRoomItem> roomList = chatRoomFragment.getChatRoomList();
+            String chatRoomId = intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID);
+            int roomIndex = -1;
+
+            for (int i = 0; i < roomList.size(); i++) {
+                if (!TextUtils.isEmpty(chatRoomId) && chatRoomId.equals(roomList.get(i).getId())) {
+                    roomIndex = i;
+                    break;
+                }
+            }
+
+            ChatRoomItem tempItem;
+            if(roomIndex < 0) {   // 방이 없는거임 처음 생성 된 방
+                tempItem = new ChatRoomItem();
+                tempItem.setId(chatRoomId);
+                tempItem.setOwnerId(getUserId());
+                tempItem.setParticipantId(intent.getStringExtra(CommonConst.Intent.FROM_USER_ID));
+                tempItem.setLastTimestamp(intent.getLongExtra(CommonConst.Intent.TIMESTAMP, 0));
+                tempItem.setLastMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
+                tempItem.setUnreadCount(1);
+                if (!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS)))
+                    tempItem.setStatus(intent.getStringExtra(CommonConst.Intent.STATUS));
+            } else {
+                tempItem = roomList.get(roomIndex);
+                tempItem.setLastMsg(intent.getStringExtra(CommonConst.Intent.MESSAGE));
+                tempItem.setUnreadCount(tempItem.getUnreadCount() + 1);
+                if (!TextUtils.isEmpty(intent.getStringExtra(CommonConst.Intent.STATUS)))
+                    tempItem.setStatus(intent.getStringExtra(CommonConst.Intent.STATUS));
+                roomList.remove(roomIndex);
+            }
+            roomList.add(0, tempItem);
+            chatRoomFragment.setChatRoomListAndNotify(roomList);
+
+            if(mainPager.getCurrentItem() == BOTTOM_CHAT) {
+                updateToolbarToChatList();
+            }
         } else if(MessageManager.BROADCAST_HEART_COUNT_CHANGE.equalsIgnoreCase(intent.getAction())) {
             setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
             // heart 갯수 표시는 임시로 막음
@@ -521,25 +602,29 @@ public class MainActivity extends BaseActivity
             public void onTabSelected(TabLayout.Tab tab) {
                 mBtnMapMyLocation.setVisibility(View.INVISIBLE);
                 btnWrite.setVisibility(View.INVISIBLE);
-                filterImgLayout.setVisibility(View.INVISIBLE);
+                ssomActionBar.setSsomFilterVisibility(false);
                 mainPager.setCurrentItem(tab.getPosition());
 
                 switch (tab.getPosition()) {
                     case BOTTOM_MAP:
                         mBtnMapMyLocation.setVisibility(View.VISIBLE);
                         btnWrite.setVisibility(View.VISIBLE);
-                        filterImgLayout.setVisibility(View.VISIBLE);
+                        ssomActionBar.setSsomFilterVisibility(true);
+                        updateToolbarToMain();
                         tab.setIcon(R.drawable.foot_icon_map_on);
                         break;
                     case BOTTOM_LIST:
                         btnWrite.setVisibility(View.VISIBLE);
-                        filterImgLayout.setVisibility(View.VISIBLE);
+                        ssomActionBar.setSsomFilterVisibility(true);
+                        updateToolbarToMain();
                         tab.setIcon(R.drawable.foot_icon_list_on);
                         break;
                     case BOTTOM_STORE:
+                        updateToolbarToMain();
                         tab.setIcon(R.drawable.foot_icon_heart_on);
                         break;
                     case BOTTOM_CHAT:
+                        updateToolbarToChatList();
                         tab.setIcon(R.drawable.foot_icon_chat_on);
                         break;
                 }
@@ -649,7 +734,7 @@ public class MainActivity extends BaseActivity
                 moveToMyLocation(false);
             }
         });
-        requestSsomList(null, null, false);
+        requestSsomList(false);
 
         // 마커 클릭 리스너
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -889,9 +974,10 @@ public class MainActivity extends BaseActivity
         return mergedBitmap;
     }
 
-    private void startChattingActivity(SsomItem ssomItem) {
+    private void startChattingActivity(ChatRoomItem chatRoomItem) {
+        if(chatRoomItem == null) return;
         Intent chattingIntent = new Intent(this, SsomChattingActivity.class);
-        if(ssomItem != null) chattingIntent.putExtra(CommonConst.Intent.SSOM_ITEM, ssomItem);
+        chattingIntent.putExtra(CommonConst.Intent.CHAT_ROOM_ITEM, chatRoomItem);
         startActivity(chattingIntent);
     }
 
@@ -911,12 +997,33 @@ public class MainActivity extends BaseActivity
     public void onFilterFragmentInteraction(boolean isApply) {
         Log.i(TAG, "filter interaction : " + isApply);
         if(isApply) {
-            requestSsomList(filterPref.getString(SsomPreferences.PREF_FILTER_AGE, ""),
-                    filterPref.getString(SsomPreferences.PREF_FILTER_PEOPLE, ""), true);
+            requestSsomList(true);
+            setFilterDrawable();
         }
 
         fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.FILTER_FRAG)).commit();
         fragmentManager.popBackStack();
+    }
+
+    private void setFilterDrawable() {
+        ArrayList<String> typeFilter = filterPref.getStringArray(SsomPreferences.PREF_FILTER_TYPE, new ArrayList<String>());
+        int resId;
+        switch (typeFilter.size()) {
+            case 1:
+                if(typeFilter.contains(FilterType.ssom.getValue())) {
+                    resId = R.drawable.top_icon_green;
+                } else {
+                    resId = R.drawable.top_icon_red;
+                }
+                break;
+            case 2:
+                resId = R.drawable.top_icon_greenred;
+                break;
+            default:
+                resId = R.drawable.top_icon_greenred;
+                break;
+        }
+        ssomActionBar.setSsomFilterDrawable(resId);
     }
 
     @Override
@@ -942,7 +1049,7 @@ public class MainActivity extends BaseActivity
                                                     Log.d(TAG, "delete success : " + response);
                                                     fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
                                                     fragmentManager.popBackStack();
-                                                    requestSsomList(null, null, false);
+                                                    requestSsomList(false);
                                                     myPostId = "";
                                                     btnWrite.setImageResource(R.drawable.btn_write);
                                                 } else {
@@ -968,6 +1075,8 @@ public class MainActivity extends BaseActivity
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 mainPager.setCurrentItem(2);
+                                fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
+                                fragmentManager.popBackStack();
                             }
                         }, new DialogInterface.OnClickListener() {
                             @Override
@@ -983,7 +1092,41 @@ public class MainActivity extends BaseActivity
             }
 
             // 채팅 중인 상대이므로 채팅방으로 이동시키기
-            startChattingActivity(ssomItem);
+            if(!TextUtils.isEmpty(ssomItem.getChatroomId()) && !CommonConst.Chatting.MEETING_OUT.equalsIgnoreCase(ssomItem.getStatus())) {
+                // 기존에 방이 있으므로 그쪽으로 이동시킴
+                startChattingActivity(((ChatRoomTabFragment) mainAdapter.getItem(BOTTOM_CHAT)).getChatRoomItem(ssomItem.getChatroomId()));
+            } else {
+                APICaller.createChattingRoom(getToken(), ssomItem.getPostId(),
+                        locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude(),
+                        new NetworkManager.NetworkListener<SsomResponse<CreateChattingRoom.Response>>() {
+                            @Override
+                            public void onResponse(SsomResponse<CreateChattingRoom.Response> response) {
+                                if (response.isSuccess() && response.getData() != null) {
+                                    ChatRoomItem chatRoomItem = new ChatRoomItem();
+                                    chatRoomItem.setId(response.getData().getChatroomId());
+                                    chatRoomItem.setOwnerId(getUserId());
+                                    chatRoomItem.setOwnerImageUrl(getTodayImageUrl());
+                                    chatRoomItem.setParticipantId(ssomItem.getUserId());
+                                    chatRoomItem.setParticipantImageUrl(ssomItem.getImageUrl());
+                                    chatRoomItem.setSsomType(ssomItem.getSsomType());
+                                    chatRoomItem.setUserCount(ssomItem.getUserCount());
+                                    chatRoomItem.setMinAge(ssomItem.getMinAge());
+                                    chatRoomItem.setLongitude(ssomItem.getLongitude());
+                                    chatRoomItem.setLatitude(ssomItem.getLatitude());
+                                    chatRoomItem.setPostId(ssomItem.getPostId());
+                                    chatRoomItem.setCreatedTimestamp(response.getData().getCreatedTimestamp());
+
+                                    getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
+                                    startChattingActivity(chatRoomItem);
+                                } else if(response.getStatusCode() == 428) {
+                                    Log.d(TAG, "ssom 진행 중, 더이상 쏨타기 못함");
+                                    showToastMessageShort(R.string.ssom_progress_message);
+                                } else {
+                                    showErrorMessage();
+                                }
+                            }
+                        });
+            }
         }
 
         fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
@@ -1108,7 +1251,7 @@ public class MainActivity extends BaseActivity
                 case BOTTOM_STORE:
                     return new HeartStoreTabFragment();
                 case BOTTOM_CHAT:
-                    return new ChattingTabFragment();
+                    return new ChatRoomTabFragment();
                 default:
                     return null;
             }

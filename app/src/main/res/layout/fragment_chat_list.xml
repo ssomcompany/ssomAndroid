@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".fragment.ChatRoomListFragment" >
+    tools:context=".fragment.ChatRoomTabFragment" >
 
     <com.ssomcompany.ssomclient.widget.swipelistview.SwipeMenuListView
         android:id="@+id/list_chatting"
@@ -13,4 +13,17 @@
         android:divider="@color/custom_e5e5e5"
         android:dividerHeight="1dp"
         android:choiceMode="singleChoice"/>
+
+    <TextView
+        android:id="@+id/emptyView"
+        style="@style/ssom_font_14_pinkish_gray_two"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:drawablePadding="11dp"
+        android:drawableTop="@drawable/icon_face_t_t"
+        android:text="@string/empty_chat_list"
+        android:visibility="gone"/>
 </RelativeLayout>
