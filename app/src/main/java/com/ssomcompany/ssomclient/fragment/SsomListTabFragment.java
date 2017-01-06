@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.adapter.SsomItemListAdapter;
+import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
@@ -51,10 +53,6 @@ public class SsomListTabFragment extends RetainedStateFragment implements AbsLis
     public SsomListTabFragment setSsomListData(ArrayList<SsomItem> ssomList) {
         this.ssomList = ssomList;
         return this;
-    }
-
-    public void setPostItemClickListener(ViewListener.OnPostItemInteractionListener mListener) {
-        this.mListener = mListener;
     }
 
     /**
@@ -106,6 +104,15 @@ public class SsomListTabFragment extends RetainedStateFragment implements AbsLis
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
+
+        TextView emptyView = new TextView(getContext());
+        emptyView.setTextAppearance(getContext(), R.style.ssom_font_14_pinkish_gray_two);
+        emptyView.setMaxLines(2);
+        emptyView.setGravity(Gravity.CENTER);
+        emptyView.setCompoundDrawablePadding(Util.convertDpToPixel(16f));
+        emptyView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_couple_gray, 0, 0);
+        mListView.setEmptyView(emptyView);
+        setEmptyText(getString(R.string.empty_ssom_list));
 
         return view;
     }

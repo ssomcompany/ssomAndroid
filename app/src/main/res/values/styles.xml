@@ -236,6 +236,12 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="ssom_font_14_pinkish_gray_two">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/pinkish_gray_two</item>
+        <item name="android:typeface">normal</item>
+    </style>
+
     <style name="ssom_font_14_pinkish_gray_two_selector">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@drawable/filter_button_selector</item>

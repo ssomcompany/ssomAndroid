@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -169,6 +169,14 @@ public class ChatRoomListFragment extends BaseFragment {
         });
         mListView.setCloseInterpolator(new BounceInterpolator());
         mListView.setAdapter(mAdapter);
+        TextView emptyView = new TextView(getContext());
+        emptyView.setTextAppearance(getContext(), R.style.ssom_font_14_pinkish_gray_two);
+        emptyView.setMaxLines(1);
+        emptyView.setGravity(Gravity.CENTER);
+        emptyView.setCompoundDrawablePadding(Util.convertDpToPixel(11f));
+        emptyView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_face_t_t, 0, 0);
+        mListView.setEmptyView(emptyView);
+        setEmptyText(getString(R.string.empty_chat_list));
 
         return view;
     }
