@@ -25,6 +25,7 @@ public class SsomPreferences {
     public static final String PREF_CHATTING_GUIDE_IS_READ = "PREF_CHATTING_GUIDE_IS_READ";
 
     // filter preferences
+    public static final String PREF_FILTER_TYPE = "PREF_FILTER_TYPE";
     public static final String PREF_FILTER_AGE = "PREF_FILTER_AGE";
     public static final String PREF_FILTER_PEOPLE = "PREF_FILTER_PEOPLE";
 

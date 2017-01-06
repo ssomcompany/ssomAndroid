@@ -33,6 +33,8 @@ public class FilterFragment extends Fragment {
     private SsomPreferences filterPref;
 
     // set views
+    private TextView tvTypeSsom;
+    private TextView tvTypeSsoa;
     private TextView tvTwentyEarly;
     private TextView tvTwentyMiddle;
     private TextView tvTwentyLate;
@@ -43,6 +45,7 @@ public class FilterFragment extends Fragment {
     private TextView tvFourPeopleOrMore;
 
     // set global filter params
+    private static ArrayList<String> typeArr;
     private static ArrayList<String> ageArr;
     private static ArrayList<String> peopleArr;
 
@@ -67,14 +70,21 @@ public class FilterFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
 
+        String[] baseType = {FilterType.ssom.getValue(), FilterType.ssoa.getValue()};
+
         String[] baseAge = {FilterType.twentyEarly.getValue(), FilterType.twentyMiddle.getValue(),
                 FilterType.twentyLate.getValue(), FilterType.thirtyOver.getValue()};
 
         String[] basePeople = {FilterType.onePerson.getValue(), FilterType.twoPeople.getValue(),
                 FilterType.threePeople.getValue(), FilterType.fourPeople.getValue()};
 
+        typeArr = filterPref.getStringArray(SsomPreferences.PREF_FILTER_TYPE, new ArrayList<>(Arrays.asList(baseType)));
         ageArr = filterPref.getStringArray(SsomPreferences.PREF_FILTER_AGE, new ArrayList<>(Arrays.asList(baseAge)));
         peopleArr = filterPref.getStringArray(SsomPreferences.PREF_FILTER_PEOPLE, new ArrayList<>(Arrays.asList(basePeople)));
+
+        // view for type setting
+        tvTypeSsom = (TextView) view.findViewById(R.id.tv_filter_type_ssom);
+        tvTypeSsoa = (TextView) view.findViewById(R.id.tv_filter_type_ssoa);
 
         // view for age settings
         tvTwentyEarly = (TextView) view.findViewById(R.id.tv_filter_age_20_early);
@@ -87,6 +97,9 @@ public class FilterFragment extends Fragment {
         tvTwoPeople = (TextView) view.findViewById(R.id.tv_filter_people_2);
         tvThreePeople = (TextView) view.findViewById(R.id.tv_filter_people_3);
         tvFourPeopleOrMore = (TextView) view.findViewById(R.id.tv_filter_people_4_n_over);
+
+        tvTypeSsom.setOnClickListener(filterItemClickListener);
+        tvTypeSsoa.setOnClickListener(filterItemClickListener);
 
         tvTwentyEarly.setOnClickListener(filterItemClickListener);
         tvTwentyMiddle.setOnClickListener(filterItemClickListener);
@@ -103,9 +116,16 @@ public class FilterFragment extends Fragment {
         TextView tvApply = (TextView) view.findViewById(R.id.tv_filter_apply);
 
         // listener 등록
-        view.findViewById(R.id.btn_select_all).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.tv_filter_select_all).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // type filter
+                tvTypeSsom.setSelected(true);
+                tvTypeSsoa.setSelected(true);
+                if(!typeArr.contains(FilterType.ssom.getValue())) typeArr.add(FilterType.ssom.getValue());
+                if(!typeArr.contains(FilterType.ssoa.getValue())) typeArr.add(FilterType.ssoa.getValue());
+                Log.d(TAG, "typeArr : " + typeArr.size());
+
                 // age filter
                 tvTwentyEarly.setSelected(true);
                 tvTwentyMiddle.setSelected(true);
