@@ -215,6 +215,13 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="ssom_font_14_custom_4d4d4d_single">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/custom_4d4d4d</item>
+        <item name="android:typeface">normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
     <style name="ssom_font_14_custom_515151_single">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/custom_515151</item>
