@@ -31,16 +31,12 @@ import java.util.ArrayList;
 public class ChatRoomListAdapter extends BaseAdapter {
     private static final String TAG = ChatRoomListAdapter.class.getSimpleName();
 
-    private LayoutInflater mInflater;
     private Context context;
     private ImageLoader mImageLoader;
     private ArrayList<ChatRoomItem> itemList;
 
     public ChatRoomListAdapter(Context context){
         this.context = context;
-        this.mInflater = (LayoutInflater) context
-                .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-
         this.mImageLoader = NetworkManager.getInstance().getImageLoader();
     }
 
@@ -72,7 +68,8 @@ public class ChatRoomListAdapter extends BaseAdapter {
         ChatItemViewHolder holder;
 
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.ssom_chat_list_item, parent, false);
+            convertView = ((LayoutInflater) context
+                    .getSystemService(Activity.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.ssom_chat_list_item, parent, false);
 
             holder = new ChatItemViewHolder();
             holder.setItemLayout(convertView.findViewById(R.id.item_layout));

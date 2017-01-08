@@ -137,7 +137,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
                 setMessageCount(msText);
             } else if (MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equals(action) ||
-                    MessageManager.BROADCAST_HEART_COUNT_CHANGE.equals(action)) {
+                    MessageManager.BROADCAST_HEART_COUNT_CHANGE.equals(action) ||
+                    MessageManager.BROADCAST_MESSAGE_OPENED_PUSH.equals(action)) {
                 receivedPushMessage(intent);
             }
         }
@@ -325,6 +326,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             filter.addAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
             filter.addAction(MessageManager.BROADCAST_MESSAGE_COUNT_CHANGE);
             filter.addAction(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH);
+            filter.addAction(MessageManager.BROADCAST_MESSAGE_OPENED_PUSH);
 
             LocalBroadcastManager.getInstance(BaseApplication.getInstance())
                     .registerReceiver(this.mLocalReceiver, filter);

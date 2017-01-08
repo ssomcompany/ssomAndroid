@@ -67,10 +67,8 @@ public class APICaller {
 
     public static <T extends BaseResponse> void getSsomList(String userId, String typeFilter, String ageFilter, String countFilter,
                                                             double lat, double lng, NetworkManager.NetworkListener<T> listener) {
-        GetSsomList.Request request = new GetSsomList.Request().setUserId(userId).setAgeFilter(ageFilter)
+        GetSsomList.Request request = new GetSsomList.Request().setUserId(userId).setSsomTypeFilter(typeFilter).setAgeFilter(ageFilter)
                 .setCountFilter(countFilter).setLat(lat).setLng(lng);
-//        if(TextUtils.isEmpty(ageFilter) || TextUtils.isEmpty(countFilter)) request = new GetSsomList.Request(userId);
-//        else request = new GetSsomList.Request(userId, ageFilter, countFilter);
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<GetSsomList.Response>>() {}.getType(), listener);

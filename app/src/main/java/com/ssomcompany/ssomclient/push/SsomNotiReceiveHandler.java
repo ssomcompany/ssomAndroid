@@ -8,9 +8,6 @@ import com.onesignal.OSNotification;
 import com.onesignal.OneSignal;
 import com.onesignal.shortcutbadger.ShortcutBadger;
 import com.ssomcompany.ssomclient.BaseApplication;
-import com.ssomcompany.ssomclient.activity.MainActivity;
-import com.ssomcompany.ssomclient.activity.SsomChattingActivity;
-import com.ssomcompany.ssomclient.activity.SsomChattingGuideActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 

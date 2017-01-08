@@ -14,7 +14,7 @@ public class GetSsomList {
 
     public static class Request extends SsomGetRequest {
         String userId;
-        String typeFilter;
+        String ssomTypeFilter;
         String ageFilter;
         String countFilter;
         double lat;
@@ -24,17 +24,21 @@ public class GetSsomList {
             super(API.SSOM_LIST);
         }
 
-//        public Request(String userId, String age, String count) {
-//            super(API.SSOM_LIST +
-//                    ((TextUtils.isEmpty(userId) ? "" : ("userId=" + userId)) + "&ageFilter=" + age + "&countFilter=" + count));
-//        }
-
         public String getUserId() {
             return userId;
         }
 
         public Request setUserId(String userId) {
             this.userId = userId;
+            return this;
+        }
+
+        public String getSsomTypeFilter() {
+            return ssomTypeFilter;
+        }
+
+        public Request setSsomTypeFilter(String ssomTypeFilter) {
+            this.ssomTypeFilter = ssomTypeFilter;
             return this;
         }
 

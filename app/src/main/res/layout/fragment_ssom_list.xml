@@ -13,7 +13,8 @@
         <!--android:src="@drawable/bg_list_bot"/>-->
     <ListView android:id="@android:id/list" android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@drawable/post_list_divider"/>
+        android:divider="@color/custom_e5e5e5"
+        android:dividerHeight="0.5dp"/>
 
     <TextView android:id="@+id/emptyView"
         style="@style/ssom_font_14_pinkish_gray_two"

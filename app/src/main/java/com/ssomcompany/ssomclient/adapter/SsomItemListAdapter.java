@@ -84,6 +84,7 @@ public class SsomItemListAdapter extends BaseAdapter {
             holder.contentTv = (TextView) convertView.findViewById(R.id.content);
             holder.image = (CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image);
             holder.iconView = (ImageView) convertView.findViewById(R.id.icon_list_r);
+            holder.markView = (ImageView) convertView.findViewById(R.id.icon_list_mark);
             holder.iconIng = (ImageView) convertView.findViewById(R.id.icon_ing);
 
             convertView.setTag(holder);
@@ -123,9 +124,11 @@ public class SsomItemListAdapter extends BaseAdapter {
 
         //icon
         if(CommonConst.SSOM.equals(item.getSsomType())){
-            holder.iconView.setImageResource(R.drawable.icon_list_st_g);
+            holder.iconView.setImageResource(R.drawable.list_green_border);
+            holder.markView.setImageResource(R.drawable.list_mark_green);
         }else{
-            holder.iconView.setImageResource(R.drawable.icon_list_st_r);
+            holder.iconView.setImageResource(R.drawable.list_red_border);
+            holder.markView.setImageResource(R.drawable.list_mark_red);
         }
 
         // ing image
@@ -158,6 +161,7 @@ public class SsomItemListAdapter extends BaseAdapter {
          * holder for list items
          */
         public ImageView iconView;
+        public ImageView markView;
         public ImageView iconIng;
         public CircularNetworkImageView image;
         public TextView titleTv;

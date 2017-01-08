@@ -33,6 +33,7 @@ public class MessageManager {
     public static final String BROADCAST_HEART_COUNT_CHANGE = "com.ssomcompany.ssomclient.BROADCAST_HEART_COUNT_CHANGE";
     public static final String BROADCAST_MESSAGE_COUNT_CHANGE = "com.ssomcompany.ssomclient.BROADCAST_MESSAGE_COUNT_CHANGE";
     public static final String BROADCAST_MESSAGE_RECEIVED_PUSH = "com.ssomcompany.ssomclient.BROADCAST_MESSAGE_RECEIVED_PUSH";
+    public static final String BROADCAST_MESSAGE_OPENED_PUSH = "com.ssomcompany.ssomclient.BROADCAST_MESSAGE_OPENED_PUSH";
     public static final String EXTRA_KEY_MESSAGE_COUNT = "messageCount";
     public static final String EXTRA_KEY_HEART_COUNT = "heartCount";
 

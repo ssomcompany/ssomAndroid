@@ -9,9 +9,8 @@ import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OneSignal;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.activity.IntroActivity;
-import com.ssomcompany.ssomclient.activity.SsomChattingActivity;
+import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
 
 import org.json.JSONObject;
 
@@ -41,21 +40,27 @@ public class SsomNotiOpenedHandler implements OneSignal.NotificationOpenedHandle
 
         // The following can be used to open an Activity of your choice.
 
-        if(BaseApplication.getInstance().getCurrentActivityCount().get() == 0) {
-            Log.i("OneSignalTabListener", "go to chatting activity !");
+        if(BaseApplication.getInstance().getCurrentActivityCount() == null ||
+                BaseApplication.getInstance().getCurrentActivityCount().get() == 0) {
+            Log.i("OneSignalTabListener", "go to chatting tab!");
             Intent intent = new Intent(BaseApplication.getInstance(), IntroActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(CommonConst.Intent.IS_FROM_NOTI, true);
             BaseApplication.getInstance().startActivity(intent);
         } else {
-            Log.i("OneSignalTabListener", "go to current activity !");
-            Intent intent = new Intent(BaseApplication.getInstance(), SsomChattingActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(CommonConst.Intent.SSOM_ITEM,
-                    new SsomItem().setChatroomId(data.optString(CommonConst.Intent.CHAT_ROOM_ID, null) == null ?
-                            data.optString("id", null) : data.optString(CommonConst.Intent.CHAT_ROOM_ID, null)));
-            BaseApplication.getInstance().startActivity(intent);
+            Log.i("OneSignalTabListener", "go to main activity !");
+            for(int i=0 ; i<BaseApplication.getInstance().getCurrentActivityCount().get() ; i++) {
+                if(BaseApplication.getInstance().getCurrentActivity() instanceof MainActivity) {
+                    Intent intent = new Intent();
+                    intent.setAction(MessageManager.BROADCAST_MESSAGE_OPENED_PUSH);
+                    intent.putExtra(CommonConst.Intent.CHAT_ROOM_ID, data.optString(CommonConst.Intent.CHAT_ROOM_ID, null) == null ?
+                            data.optString("id", null) : data.optString(CommonConst.Intent.CHAT_ROOM_ID, null));
+                    LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(intent);
+                    break;
+                } else {
+                    BaseApplication.getInstance().getCurrentActivity().finish();
+                }
+            }
         }
 //        else {
 //            Log.d("receive", "local broad cast sent");

@@ -17,7 +17,7 @@ public enum FilterType {
             return this.value;
         }
     },
-    ssoa("ssoa") {
+    ssoa("ssoseyo") {
         @Override
         public String getTitle() {
             return context.getString(R.string.filter_ssoa);

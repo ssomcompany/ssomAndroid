@@ -88,6 +88,7 @@ import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -96,7 +97,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class MainActivity extends BaseActivity
         implements ViewListener.NavigationDrawerCallbacks,
         ViewListener.OnPostItemInteractionListener, ViewListener.OnDetailFragmentInteractionListener,
-        OnMapReadyCallback, ViewListener.OnFilterFragmentInteractionListener, MessageCountCheck {
+        OnMapReadyCallback, ViewListener.OnFilterFragmentInteractionListener,
+        ViewListener.OnChatRoomListLoadingFinished, MessageCountCheck {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int BOTTOM_MAP = 0;
     private static final int BOTTOM_LIST = 1;
@@ -108,7 +110,6 @@ public class MainActivity extends BaseActivity
     private static final int REQUEST_CHECK_LOCATION_PERMISSION = 101;
     private static final int REQUEST_CHECK_DETAIL_LOCATION_PERMISSION = 102;
     private static final int REQUEST_PROFILE_ACTIVITY = 103;
-    private static final int REQUEST_SSOM_CHATTING = 104;
 
     private static boolean canFinish;
     private static Toast toast = null;
@@ -216,10 +217,6 @@ public class MainActivity extends BaseActivity
     private ViewListener.OnPermissionListener mPermissionListener = new ViewListener.OnPermissionListener() {
         @Override
         public void onPermissionGranted() {
-            if(isFromNoti) {
-                startActivityForResult(new Intent(MainActivity.this, SsomChattingActivity.class), REQUEST_SSOM_CHATTING);
-                return;
-            }
             startMapFragment();
         }
 
@@ -315,17 +312,14 @@ public class MainActivity extends BaseActivity
                     permissionMap.get(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 makeDialogForRequestLocationPermission();
             } else {
-                if(isFromNoti) {
-                    startActivityForResult(new Intent(MainActivity.this, SsomChattingActivity.class), REQUEST_SSOM_CHATTING);
-                    return;
-                }
                 startMapFragment();
             }
         }
     }
 
     private void requestSsomList(final boolean needFilterToast) {
-        APICaller.getSsomList(getUserId(), filterPref.getString(SsomPreferences.PREF_FILTER_TYPE, ""),
+        String typeFilter = filterPref.getString(SsomPreferences.PREF_FILTER_TYPE, "");
+        APICaller.getSsomList(getUserId(), typeFilter.contains(",") ? null : filterPref.getString(SsomPreferences.PREF_FILTER_TYPE, ""),
                 filterPref.getString(SsomPreferences.PREF_FILTER_AGE, ""),
                 filterPref.getString(SsomPreferences.PREF_FILTER_PEOPLE, ""),
                 locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude(),
@@ -420,12 +414,12 @@ public class MainActivity extends BaseActivity
                             if(TextUtils.isEmpty(getTodayImageUrl())) getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, myPost.getImageUrl());
                         } else {
                             myPostId = "";
-                            btnWrite.setImageResource(R.drawable.btn_write);
+                            btnWrite.setImageResource(R.drawable.main_write_btn);
                         }
                     } else {
                         Log.d(TAG, "get my post is failed");
                         myPostId = "";
-                        btnWrite.setImageResource(R.drawable.btn_write);
+                        btnWrite.setImageResource(R.drawable.main_write_btn);
                         showErrorMessage();
                     }
                     if(isRefresh) requestSsomList(false);
@@ -433,7 +427,7 @@ public class MainActivity extends BaseActivity
             });
         } else {
             myPostId = "";
-            btnWrite.setImageResource(R.drawable.btn_write);
+            btnWrite.setImageResource(R.drawable.main_write_btn);
         }
     }
 
@@ -516,6 +510,11 @@ public class MainActivity extends BaseActivity
             return;
         }
 
+        if(mainPager == null || mainAdapter == null) {
+            Log.d(TAG, "main pager / adapter is null");
+            return;
+        }
+
         if(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equalsIgnoreCase(intent.getAction())) {
             // badge count 올림
             setChattingCount(getUnreadCount());
@@ -562,6 +561,12 @@ public class MainActivity extends BaseActivity
             setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
             // heart 갯수 표시는 임시로 막음
 //            ssomActionBar.setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
+        } else if(MessageManager.BROADCAST_MESSAGE_OPENED_PUSH.equalsIgnoreCase(intent.getAction())) {
+            mainPager.setCurrentItem(BOTTOM_CHAT);
+            if(intent.getExtras() != null) {
+                startChattingActivity(((ChatRoomTabFragment) mainAdapter.getItem(BOTTOM_CHAT))
+                        .getChatRoomItem(intent.getStringExtra(CommonConst.Intent.CHAT_ROOM_ID)));
+            }
         }
     }
 
@@ -604,12 +609,16 @@ public class MainActivity extends BaseActivity
                 btnWrite.setVisibility(View.INVISIBLE);
                 ssomActionBar.setSsomFilterVisibility(false);
                 mainPager.setCurrentItem(tab.getPosition());
+//                findViewById(R.id.topMapShadow).setVisibility(View.GONE);
+//                findViewById(R.id.topDropShadow).setVisibility(View.VISIBLE);
 
                 switch (tab.getPosition()) {
                     case BOTTOM_MAP:
                         mBtnMapMyLocation.setVisibility(View.VISIBLE);
                         btnWrite.setVisibility(View.VISIBLE);
                         ssomActionBar.setSsomFilterVisibility(true);
+//                        findViewById(R.id.topMapShadow).setVisibility(View.VISIBLE);
+//                        findViewById(R.id.topDropShadow).setVisibility(View.GONE);
                         updateToolbarToMain();
                         tab.setIcon(R.drawable.foot_icon_map_on);
                         break;
@@ -651,6 +660,11 @@ public class MainActivity extends BaseActivity
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
+
+        if(isFromNoti) {
+            mainPager.setCurrentItem(BOTTOM_CHAT);
+            isFromNoti = false;
+        }
     }
 
     private void startDetailFragment(ArrayList<SsomItem> ssomList, String postId) {
@@ -722,7 +736,6 @@ public class MainActivity extends BaseActivity
         setMapUiSetting();
 
         // current position settings
-        mBtnMapMyLocation.setVisibility(View.VISIBLE);
         mBtnMapMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1051,7 +1064,7 @@ public class MainActivity extends BaseActivity
                                                     fragmentManager.popBackStack();
                                                     requestSsomList(false);
                                                     myPostId = "";
-                                                    btnWrite.setImageResource(R.drawable.btn_write);
+                                                    btnWrite.setImageResource(R.drawable.main_write_btn);
                                                 } else {
                                                     showErrorMessage();
                                                 }
@@ -1152,10 +1165,6 @@ public class MainActivity extends BaseActivity
             case REQUEST_CHECK_DETAIL_LOCATION_PERMISSION:
                 continueProcess();
                 break;
-            case REQUEST_SSOM_CHATTING:
-                startMapFragment();
-                isFromNoti = false;
-                break;
             case InAppBillingHelper.REQUEST_CODE:
                 mainAdapter.getItem(BOTTOM_STORE).onActivityResult(requestCode, resultCode, data);
                 break;
@@ -1233,28 +1242,41 @@ public class MainActivity extends BaseActivity
         if(locationTracker != null) locationTracker.stopLocationUpdates();
     }
 
+    @Override
+    public void onFinishLoadingRoomList(ArrayList<ChatRoomItem> chatRoomList) {
+        int unreadCount = 0;
+        for(ChatRoomItem roomItem : chatRoomList) {
+            unreadCount += roomItem.getUnreadCount();
+        }
+        setChattingCount(unreadCount);
+        getSession().put(SsomPreferences.PREF_SESSION_UNREAD_COUNT, unreadCount);
+        if(unreadCount != 0) {
+            ShortcutBadger.applyCount(MainActivity.this, unreadCount); //for 1.1.4+
+        } else {
+            ShortcutBadger.removeCount(MainActivity.this);
+        }
+        if(mainPager.getCurrentItem() == BOTTOM_CHAT) updateToolbarToChatList();
+    }
+
     class MainPagerAdapter extends FragmentPagerAdapter {
+        Fragment[] tabFragments;
 
         MainPagerAdapter(FragmentManager fm) {
             super(fm);
+
+            mapFragment = SupportMapFragment.newInstance();
+            mapFragment.getMapAsync(MainActivity.this);
+            tabFragments = new Fragment[]{
+                    mapFragment,
+                    new SsomListTabFragment().setSsomListData(ITEM_LIST),
+                    new HeartStoreTabFragment(),
+                    new ChatRoomTabFragment()
+            };
         }
 
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case BOTTOM_MAP:
-                    mapFragment = SupportMapFragment.newInstance();
-                    mapFragment.getMapAsync(MainActivity.this);
-                    return mapFragment;
-                case BOTTOM_LIST:
-                    return new SsomListTabFragment().setSsomListData(ITEM_LIST);
-                case BOTTOM_STORE:
-                    return new HeartStoreTabFragment();
-                case BOTTOM_CHAT:
-                    return new ChatRoomTabFragment();
-                default:
-                    return null;
-            }
+            return tabFragments[position];
         }
 
         @Override

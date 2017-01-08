@@ -47,6 +47,7 @@ import java.util.ArrayList;
 public class ChatRoomTabFragment extends RetainedStateFragment {
     private static final String TAG = ChatRoomTabFragment.class.getSimpleName();
 
+    private Context mContext;
     /**
      * The fragment's ListView/GridView.
      */
@@ -57,7 +58,7 @@ public class ChatRoomTabFragment extends RetainedStateFragment {
      * Views.
      */
     private ChatRoomListAdapter mAdapter;
-    private ArrayList<ChatRoomItem> chatRoomList;
+    private ArrayList<ChatRoomItem> chatRoomList = new ArrayList<>();
 
     private ViewListener.OnChatRoomListLoadingFinished mLoadingListener;
 
@@ -71,15 +72,11 @@ public class ChatRoomTabFragment extends RetainedStateFragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    public void setOnChatRoomListLoadingFinished(ViewListener.OnChatRoomListLoadingFinished mLoadingListener) {
-        this.mLoadingListener = mLoadingListener;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new ChatRoomListAdapter(getActivity());
+        mAdapter = new ChatRoomListAdapter(mContext);
     }
 
     @Override
@@ -180,7 +177,8 @@ public class ChatRoomTabFragment extends RetainedStateFragment {
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             try {
-//                mListener = (ViewListener.OnChatItemInteractionListener) activity;
+                mContext = activity;
+                mLoadingListener = (ViewListener.OnChatRoomListLoadingFinished) activity;
             } catch (ClassCastException e) {
                 throw new ClassCastException(activity.toString()
                         + " must implement OnPostItemInteractionListener");
@@ -193,7 +191,8 @@ public class ChatRoomTabFragment extends RetainedStateFragment {
         super.onAttach(context);
 
         try {
-//            mListener = (ViewListener.OnChatItemInteractionListener) context;
+            mContext = context;
+            mLoadingListener = (ViewListener.OnChatRoomListLoadingFinished) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
                     + " must implement OnPostItemInteractionListener");
