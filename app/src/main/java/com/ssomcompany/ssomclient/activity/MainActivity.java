@@ -88,7 +88,6 @@ import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -158,6 +157,7 @@ public class MainActivity extends BaseActivity
     private String myPostSsomType;
 
     private boolean isFromNoti;
+    private int userCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -446,7 +446,6 @@ public class MainActivity extends BaseActivity
 
     private void initToolbar() {
         fragmentManager = getSupportFragmentManager();
-
         ssomActionBar = (SsomActionBarView) findViewById(R.id.ssom_toolbar);
         ssomActionBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomActionBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
@@ -457,7 +456,7 @@ public class MainActivity extends BaseActivity
         });
         ssomActionBar.setOnSsomFilterClickListener(filterClickListener);
         setFilterDrawable();
-        updateToolbarToMain();
+        getUserCount(true);
 
         // 최초 앱 실행 시 unread 메시지 카운트를 맞추기 위해 한번 호출함
         APICaller.totalChatUnreadCount(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomChatUnreadCount.Response>>() {
@@ -480,17 +479,28 @@ public class MainActivity extends BaseActivity
         mBtnMapMyLocation = (ImageView) findViewById(R.id.map_current_location);
     }
 
-    private void updateToolbarToMain() {
+    private void getUserCount(final boolean isInit) {
         APICaller.getCurrentUserCount(new NetworkManager.NetworkListener<SsomResponse<GetUserCount.Response>>() {
             @Override
             public void onResponse(SsomResponse<GetUserCount.Response> response) {
                 if(response.isSuccess()) {
-                    ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, response.getData().getUserCount()));
+                    userCount = response.getData().getUserCount();
                 } else {
-                    ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, 100));
+                    userCount = userCount == 0 ? 100 : userCount;
+                }
+
+                if(isInit) {
+                    ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, userCount));
+                    ssomActionBar.setSsomBarTitleDrawable(R.drawable.icon_ssom_map, Util.convertDpToPixel(2f));
+                    ssomActionBar.setSsomBarTitleStyle(R.style.ssom_font_12_gray_warm);
                 }
             }
         });
+    }
+
+    private void updateToolbarToMain() {
+        getUserCount(false);
+        ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, userCount));
         ssomActionBar.setSsomBarTitleDrawable(R.drawable.icon_ssom_map, Util.convertDpToPixel(2f));
         ssomActionBar.setSsomBarTitleStyle(R.style.ssom_font_12_gray_warm);
     }

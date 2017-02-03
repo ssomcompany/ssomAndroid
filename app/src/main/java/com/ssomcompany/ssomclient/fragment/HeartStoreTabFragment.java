@@ -82,8 +82,8 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
 
             @Override
             public void onFail() {
-                UiUtils.makeToastMessage(getActivity(), "마켓에 연결하는데 실패하였습니다.");
-                getActivity().finish();
+                UiUtils.makeToastMessage(getActivity(), "구글마켓에 연결할 수 없는 상태입니다.");
+//                getActivity().finish();
             }
         });
 

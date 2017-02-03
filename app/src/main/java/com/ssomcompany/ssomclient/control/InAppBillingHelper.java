@@ -190,7 +190,7 @@ public class InAppBillingHelper {
     // 실제 소진 처리.
     private void consumeItem(String sku, Purchase purchase) {
         final String refinedSKU = mIsTest ? TEST_SKU : sku;
-        if (purchase != null || mInventory.hasPurchase(refinedSKU)) {
+        if (purchase != null || mInventory != null && mInventory.hasPurchase(refinedSKU)) {
             // purchase가 있다면 해당 구매 인스턴스를 통해 처리하고, 그게 아니라면 mInventory를 통해처리
             // 보통 구매성공, 소진실패일 경우일때 mInventory.hasPurchase(refinedSKU)를 통해서 가져오면 된다.
             Purchase refiendPurchase = (purchase == null) ? mInventory.getPurchase(refinedSKU) : purchase;
