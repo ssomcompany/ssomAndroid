@@ -6,20 +6,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.adapter.SsomItemListAdapter;
-import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.widget.pulltorefresh.PullToRefreshBase;
+import com.ssomcompany.ssomclient.widget.pulltorefresh.PullToRefreshListView;
 
 import java.util.ArrayList;
 
@@ -41,6 +42,7 @@ public class SsomListTabFragment extends RetainedStateFragment implements AbsLis
     /**
      * The fragment's ListView/GridView.
      */
+    private PullToRefreshListView pullToRefreshListView;
     private AbsListView mListView;
 
     /**
@@ -99,12 +101,25 @@ public class SsomListTabFragment extends RetainedStateFragment implements AbsLis
         View view = inflater.inflate(R.layout.fragment_ssom_list, container, false);
 
         // Set the adapter
-        mListView = (AbsListView) view.findViewById(android.R.id.list);
+        pullToRefreshListView = (PullToRefreshListView) view.findViewById(android.R.id.list);
+        pullToRefreshListView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        pullToRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+                ((MainActivity) getActivity()).requestSsomList(false);
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+            }
+        });
+        pullToRefreshListView.setEmptyView(inflater.inflate(R.layout.view_empty, null));
+        mListView = pullToRefreshListView.getRefreshableView();
         mListView.setAdapter(mAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
-        mListView.setEmptyView(view.findViewById(R.id.emptyView));
 
         return view;
     }
@@ -177,6 +192,9 @@ public class SsomListTabFragment extends RetainedStateFragment implements AbsLis
             Log.d(TAG, "onTabChangedAction() called !!");
             setSsomListData(ssomList);
             ssomListNotifyDataSetChanged();
+            if(pullToRefreshListView != null) {
+                pullToRefreshListView.onRefreshComplete();
+            }
             mListener = (ViewListener.OnPostItemInteractionListener) getActivity();
             ((MainActivity) getActivity()).dismissProgressDialog();
         }

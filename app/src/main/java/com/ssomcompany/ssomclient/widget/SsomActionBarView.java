@@ -2,10 +2,8 @@ package com.ssomcompany.ssomclient.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.CountDownTimer;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,10 +25,6 @@ public class SsomActionBarView extends Toolbar {
     public static final int SSOM_MAP = 0x06;
 
     private int currentMode = SSOM_MAIN_MENU;
-
-    private CountDownTimer timerTask;
-    private boolean timerIsRunning;
-
     private Context mContext;
 
     /* view settings */
@@ -198,16 +192,5 @@ public class SsomActionBarView extends Toolbar {
     public void setCurrentMode(int currentMode) {
         this.currentMode = currentMode;
         initLayout();
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        Log.d(TAG, "onDetachedFromWindow called");
-
-        if(timerTask != null && timerIsRunning) {
-            timerTask.cancel();
-        }
     }
 }

@@ -137,7 +137,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
                 setMessageCount(msText);
             } else if (MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH.equals(action) ||
-                    MessageManager.BROADCAST_HEART_COUNT_CHANGE.equals(action) ||
                     MessageManager.BROADCAST_MESSAGE_OPENED_PUSH.equals(action)) {
                 receivedPushMessage(intent);
             }
@@ -323,7 +322,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (Util.isMessageCountCheckingExcludeActivity(this)) {
             IntentFilter filter = new IntentFilter();
-            filter.addAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
             filter.addAction(MessageManager.BROADCAST_MESSAGE_COUNT_CHANGE);
             filter.addAction(MessageManager.BROADCAST_MESSAGE_RECEIVED_PUSH);
             filter.addAction(MessageManager.BROADCAST_MESSAGE_OPENED_PUSH);
@@ -378,10 +376,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public int getUnreadCount() {
         return getSession().getInt(SsomPreferences.PREF_SESSION_UNREAD_COUNT, 0);
-    }
-
-    public void setHeartCount(int heartCount) {
-        getSession().put(SsomPreferences.PREF_SESSION_HEART, heartCount);
     }
 
     public int getHeartCount() {

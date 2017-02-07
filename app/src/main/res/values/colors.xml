@@ -23,4 +23,8 @@
     <color name="custom_4d4d4d">#4d4d4d</color>
     <color name="custom_979797">#979797</color>
 
+    <!-- basic_list_item -->
+    <color name="list_item_pressed_bg_color">#0D000000</color>
+    <color name="list_item_selected_bg_color">#07000000</color>
+
 </resources> 

@@ -12,6 +12,10 @@
     <!-- setting -->
     <string name="action_settings">Settings</string>
 
+    <!-- pull to refresh view -->
+    <string name="release_to_refresh" formatted="false">Release to refresh</string>
+    <string name="settings_loading" formatted="false">Loading&#8230;</string>
+
     <!-- filter -->
     <string name="filter_title">골라보기</string>
     <string name="filter_age_n_count">%1$s, %2$s</string>

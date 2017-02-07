@@ -29,12 +29,20 @@
         android:drawableLeft="@drawable/heart_shop_mini"
         android:drawablePadding="5dp" />
 
+    <TextView
+        android:id="@+id/tv_heart_refill_time"
+        style="@style/ssom_font_12_gray_warm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="13dp"
+        android:layout_gravity="center_horizontal" />
+
     <!-- item 영역 start -->
     <RelativeLayout
         android:id="@+id/layout_heart_first"
         android:layout_width="315dp"
         android:layout_height="70dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="12dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/shop_frame_gray">
 
@@ -87,7 +95,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="22dp">
+        android:layout_marginTop="13dp">
 
         <RelativeLayout
             android:id="@+id/layout_heart_second"
@@ -180,7 +188,7 @@
         android:id="@+id/layout_heart_third"
         android:layout_width="315dp"
         android:layout_height="70dp"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="14dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/shop_frame_gray">
 
@@ -258,7 +266,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="22dp">
+        android:layout_marginTop="12dp">
 
         <RelativeLayout
             android:id="@+id/layout_heart_fourth"

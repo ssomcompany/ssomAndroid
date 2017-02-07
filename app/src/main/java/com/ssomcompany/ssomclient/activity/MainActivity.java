@@ -24,6 +24,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -52,6 +53,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.onesignal.shortcutbadger.ShortcutBadger;
+import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.BitmapWorkerTask;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -317,7 +319,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void requestSsomList(final boolean needFilterToast) {
+    public void requestSsomList(final boolean needFilterToast) {
         String typeFilter = filterPref.getString(SsomPreferences.PREF_FILTER_TYPE, "");
         APICaller.getSsomList(getUserId(), typeFilter.contains(",") ? null : filterPref.getString(SsomPreferences.PREF_FILTER_TYPE, ""),
                 filterPref.getString(SsomPreferences.PREF_FILTER_AGE, ""),
@@ -567,10 +569,6 @@ public class MainActivity extends BaseActivity
             if(mainPager.getCurrentItem() == BOTTOM_CHAT) {
                 updateToolbarToChatList();
             }
-        } else if(MessageManager.BROADCAST_HEART_COUNT_CHANGE.equalsIgnoreCase(intent.getAction())) {
-            setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
-            // heart 갯수 표시는 임시로 막음
-//            ssomActionBar.setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
         } else if(MessageManager.BROADCAST_MESSAGE_OPENED_PUSH.equalsIgnoreCase(intent.getAction())) {
             mainPager.setCurrentItem(BOTTOM_CHAT);
             if(intent.getExtras() != null) {
@@ -1138,6 +1136,12 @@ public class MainActivity extends BaseActivity
                                     chatRoomItem.setLatitude(ssomItem.getLatitude());
                                     chatRoomItem.setPostId(ssomItem.getPostId());
                                     chatRoomItem.setCreatedTimestamp(response.getData().getCreatedTimestamp());
+
+                                    // create room heart 소진
+                                    Intent intent = new Intent();
+                                    intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
+                                    intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, getHeartCount() - 1);
+                                    LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(intent);
 
                                     getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
                                     startChattingActivity(chatRoomItem);
