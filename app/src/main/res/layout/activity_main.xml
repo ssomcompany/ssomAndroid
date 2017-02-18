@@ -49,11 +49,11 @@
                 <!--android:layout_height="68dp"-->
                 <!--android:background="@drawable/map_shadow"/>-->
 
-            <View
-                android:id="@+id/topDropShadow"
+            <ImageView
+                android:id="@+id/topShadow"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
-                android:background="@drawable/toolbar_dropshadow" />
+                android:layout_height="wrap_content"
+                android:background="@drawable/map_shadow" />
 
             <ImageView
                 android:id="@+id/map_current_location"
@@ -71,6 +71,13 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginRight="10dp"
                 android:src="@drawable/main_write_btn"/>
+
+            <ImageView
+                android:id="@+id/bottomShadow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@drawable/map_shadow_foot" />
         </FrameLayout>
 
         <FrameLayout

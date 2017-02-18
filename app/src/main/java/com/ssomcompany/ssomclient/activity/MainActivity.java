@@ -33,6 +33,8 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -157,6 +159,10 @@ public class MainActivity extends BaseActivity
     private String myPostId;
     private String myPostSsomType;
 
+    // shadow 객체 관리
+    private View topShadow;
+    private View bottomShadow;
+
     private boolean isFromNoti;
 
     @Override
@@ -183,6 +189,10 @@ public class MainActivity extends BaseActivity
         mainPager = (ViewPager) findViewById(R.id.main_pager);
         mainAdapter = new MainPagerAdapter(getSupportFragmentManager());
         bottomTab = (TabLayout) findViewById(R.id.bottom_tab);
+
+        // set shadow instance
+        topShadow = findViewById(R.id.topShadow);
+        bottomShadow = findViewById(R.id.bottomShadow);
 
         if(bottomTab != null) {
             bottomTab.addTab(bottomTab.newTab().setIcon(R.drawable.foot_icon_map_on));
@@ -609,6 +619,11 @@ public class MainActivity extends BaseActivity
                 btnWrite.setVisibility(View.INVISIBLE);
                 ssomActionBar.setSsomFilterVisibility(false);
                 mainPager.setCurrentItem(tab.getPosition());
+
+                topShadow.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, Util.convertDpToPixel(5f)));
+                FrameLayout.LayoutParams bottomParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, Util.convertDpToPixel(5f));
+                bottomParams.gravity = Gravity.BOTTOM;
+                bottomShadow.setLayoutParams(bottomParams);
 //                findViewById(R.id.topMapShadow).setVisibility(View.GONE);
 //                findViewById(R.id.topDropShadow).setVisibility(View.VISIBLE);
 
@@ -617,6 +632,9 @@ public class MainActivity extends BaseActivity
                         mBtnMapMyLocation.setVisibility(View.VISIBLE);
                         btnWrite.setVisibility(View.VISIBLE);
                         ssomActionBar.setSsomFilterVisibility(true);
+                        topShadow.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+                        bottomParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+                        bottomShadow.setLayoutParams(bottomParams);
 //                        findViewById(R.id.topMapShadow).setVisibility(View.VISIBLE);
 //                        findViewById(R.id.topDropShadow).setVisibility(View.GONE);
                         updateToolbarToMain();
