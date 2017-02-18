@@ -8,6 +8,8 @@ import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 public abstract class BaseFragment extends Fragment {
+    protected static final String TAG = BaseFragment.class.getSimpleName();
+
     private static final String PROGRESS_DIALOG_TAG = "WAIT";
     private CommonDialog mProgressDialog = null;
 

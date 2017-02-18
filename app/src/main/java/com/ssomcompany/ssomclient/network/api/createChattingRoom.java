@@ -42,7 +42,7 @@ public class CreateChattingRoom {
             return this;
         }
     }
-    
+
     public static class Response extends ToStringHelperClass {
         private String chatroomId;
         private long createdTimestamp;

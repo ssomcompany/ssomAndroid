@@ -15,6 +15,7 @@ import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -547,6 +548,31 @@ public class Util {
 
     /**
      *
+     * @param fragment target fragment
+     * @return boolean
+     */
+    public static boolean isMessageCountCheckingExcludeFragment(Fragment fragment) {
+        Class<?>[] validList = new Class<?>[] {
+                /* BaseLoginActivity.class, BaseIntroActivity.class, PassCodeActivity.class, OtpVerificationActivity.class, */
+                MessageCountCheck.class
+        };
+
+        if (null == fragment) {
+            return false;
+        }
+
+        for (Class<?> exclude : validList) {
+            if (exclude.isInstance(fragment)) {
+                Log.v(TAG, fragment.getClass().getSimpleName() + " is instance of " + exclude.getSimpleName());
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     *
      * @param activity target activity
      * @return boolean
      */
@@ -585,5 +611,12 @@ public class Util {
         redSpannable.setSpan(new ForegroundColorSpan(context.getResources().getColor(colorRes)), 0, context.getString(sysStrRes).length(), 0);
         builder.append(redSpannable);
         return builder;
+    }
+
+    public static void callDummyRequestToBypassStupidPMD(Object... args) {
+        // Nothing to do. go away crazy PMD!!
+        for (Object arg : args) {
+            arg.hashCode();
+        }
     }
 }

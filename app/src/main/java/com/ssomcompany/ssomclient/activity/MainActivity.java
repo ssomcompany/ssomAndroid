@@ -24,6 +24,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -54,6 +55,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.onesignal.shortcutbadger.ShortcutBadger;
+import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.BitmapWorkerTask;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -90,7 +92,6 @@ import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -164,6 +165,7 @@ public class MainActivity extends BaseActivity
     private View bottomShadow;
 
     private boolean isFromNoti;
+    private int userCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -327,7 +329,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void requestSsomList(final boolean needFilterToast) {
+    public void requestSsomList(final boolean needFilterToast) {
         String typeFilter = filterPref.getString(SsomPreferences.PREF_FILTER_TYPE, "");
         APICaller.getSsomList(getUserId(), typeFilter.contains(",") ? null : filterPref.getString(SsomPreferences.PREF_FILTER_TYPE, ""),
                 filterPref.getString(SsomPreferences.PREF_FILTER_AGE, ""),
@@ -456,7 +458,6 @@ public class MainActivity extends BaseActivity
 
     private void initToolbar() {
         fragmentManager = getSupportFragmentManager();
-
         ssomActionBar = (SsomActionBarView) findViewById(R.id.ssom_toolbar);
         ssomActionBar.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_IN_PARENT);
         ssomActionBar.setOnLeftNaviBtnClickListener(new View.OnClickListener() {
@@ -467,7 +468,7 @@ public class MainActivity extends BaseActivity
         });
         ssomActionBar.setOnSsomFilterClickListener(filterClickListener);
         setFilterDrawable();
-        updateToolbarToMain();
+        getUserCount(true);
 
         // 최초 앱 실행 시 unread 메시지 카운트를 맞추기 위해 한번 호출함
         APICaller.totalChatUnreadCount(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomChatUnreadCount.Response>>() {
@@ -490,17 +491,28 @@ public class MainActivity extends BaseActivity
         mBtnMapMyLocation = (ImageView) findViewById(R.id.map_current_location);
     }
 
-    private void updateToolbarToMain() {
+    private void getUserCount(final boolean isInit) {
         APICaller.getCurrentUserCount(new NetworkManager.NetworkListener<SsomResponse<GetUserCount.Response>>() {
             @Override
             public void onResponse(SsomResponse<GetUserCount.Response> response) {
                 if(response.isSuccess()) {
-                    ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, response.getData().getUserCount()));
+                    userCount = response.getData().getUserCount();
                 } else {
-                    ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, 100));
+                    userCount = userCount == 0 ? 100 : userCount;
+                }
+
+                if(isInit) {
+                    ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, userCount));
+                    ssomActionBar.setSsomBarTitleDrawable(R.drawable.icon_ssom_map, Util.convertDpToPixel(2f));
+                    ssomActionBar.setSsomBarTitleStyle(R.style.ssom_font_12_gray_warm);
                 }
             }
         });
+    }
+
+    private void updateToolbarToMain() {
+        getUserCount(false);
+        ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, userCount));
         ssomActionBar.setSsomBarTitleDrawable(R.drawable.icon_ssom_map, Util.convertDpToPixel(2f));
         ssomActionBar.setSsomBarTitleStyle(R.style.ssom_font_12_gray_warm);
     }
@@ -567,10 +579,6 @@ public class MainActivity extends BaseActivity
             if(mainPager.getCurrentItem() == BOTTOM_CHAT) {
                 updateToolbarToChatList();
             }
-        } else if(MessageManager.BROADCAST_HEART_COUNT_CHANGE.equalsIgnoreCase(intent.getAction())) {
-            setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
-            // heart 갯수 표시는 임시로 막음
-//            ssomActionBar.setHeartCount(intent.getIntExtra(MessageManager.EXTRA_KEY_HEART_COUNT, 0));
         } else if(MessageManager.BROADCAST_MESSAGE_OPENED_PUSH.equalsIgnoreCase(intent.getAction())) {
             mainPager.setCurrentItem(BOTTOM_CHAT);
             if(intent.getExtras() != null) {
@@ -1146,6 +1154,12 @@ public class MainActivity extends BaseActivity
                                     chatRoomItem.setLatitude(ssomItem.getLatitude());
                                     chatRoomItem.setPostId(ssomItem.getPostId());
                                     chatRoomItem.setCreatedTimestamp(response.getData().getCreatedTimestamp());
+
+                                    // create room heart 소진
+                                    Intent intent = new Intent();
+                                    intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
+                                    intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, getHeartCount() - 1);
+                                    LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(intent);
 
                                     getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
                                     startChattingActivity(chatRoomItem);

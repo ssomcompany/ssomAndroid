@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".fragment.SsomListTabFragment">
 
-    <!--<ImageView-->
-        <!--android:id="@+id/bg_list_bot"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:src="@drawable/bg_list_bot"/>-->
-    <ListView android:id="@android:id/list" android:layout_width="match_parent"
+    <com.ssomcompany.ssomclient.widget.pulltorefresh.PullToRefreshListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@color/custom_e5e5e5"
-        android:dividerHeight="0.5dp"/>
-
-    <TextView android:id="@+id/emptyView"
-        style="@style/ssom_font_14_pinkish_gray_two"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:maxLines="2"
-        android:gravity="center"
-        android:layout_centerInParent="true"
-        android:drawablePadding="16dp"
-        android:drawableTop="@drawable/icon_couple_gray"
-        android:text="@string/empty_ssom_list"
-        android:visibility="gone"/>
+        android:dividerHeight="0.5dp"
+        android:fadingEdge="none"
+        android:fastScrollEnabled="false"
+        android:footerDividersEnabled="false"
+        android:headerDividersEnabled="false"
+        android:listSelector="@drawable/basic_list_item_bg_selector"
+        android:smoothScrollbar="true"
+        app:ptrStyle="drive" />
 </RelativeLayout>
