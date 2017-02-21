@@ -266,23 +266,23 @@ public class InAppBillingHelper {
         mHelper = null;
     }
 
-    private String getHeartCount(String refinedSKU) {
-        String count;
+    private int getHeartCount(String refinedSKU) {
+        int count;
         switch (refinedSKU) {
             case CommonConst.HEART_2:
-                count = "2";
+                count = 2;
                 break;
             case CommonConst.HEART_8:
-                count = "8";
+                count = 8;
                 break;
             case CommonConst.HEART_17:
-                count = "17";
+                count = 17;
                 break;
             case CommonConst.HEART_28:
-                count = "28";
+                count = 28;
                 break;
             default:
-                count = "0";
+                count = 0;
                 break;
         }
         return count;

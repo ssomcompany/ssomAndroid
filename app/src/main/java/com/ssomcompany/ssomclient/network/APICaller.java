@@ -1,16 +1,11 @@
 package com.ssomcompany.ssomclient.network;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
-import android.net.Uri;
-import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -19,10 +14,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
-import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.api.AddHeartCount;
 import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
@@ -271,9 +264,9 @@ public class APICaller {
         NetworkManager.request(request, new TypeToken<SsomResponse<GetUserProfile.Response>>() {}.getType(), listener);
     }
 
-    public static <T extends BaseResponse> void addHeartCount(String token, String count, String purchaseToken,
+    public static <T extends BaseResponse> void addHeartCount(String token, int count, String purchaseToken,
                                                               NetworkManager.NetworkListener<T> listener) {
-        AddHeartCount.Request request = new AddHeartCount.Request().setCount(count).setDevice("android").setToken(purchaseToken);
+        AddHeartCount.Request request = new AddHeartCount.Request().setCount(String.valueOf(count)).setDevice("android").setToken(purchaseToken);
         request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION, token);
 
         request.setTimeoutMillis(TIME_OUT_LONG);
