@@ -45,6 +45,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -166,11 +167,14 @@ public class MainActivity extends BaseActivity
     private boolean isFromNoti;
     private int userCount;
 
+    private RequestQueue imageRequestQueue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
+        imageRequestQueue = Volley.newRequestQueue(BaseApplication.getInstance());
 
         if(getIntent() != null && getIntent().getExtras() != null) {
             isFromNoti = getIntent().getBooleanExtra(CommonConst.Intent.IS_FROM_NOTI, false);
@@ -887,13 +891,15 @@ public class MainActivity extends BaseActivity
     private void initMarker() {
         if(mMap != null) {
             mMap.clear();
-            NetworkManager.getInstance().getRequestQueue().cancelAll(new RequestQueue.RequestFilter() {
-                @Override
-                public boolean apply(Request<?> request) {
-                    Log.d(TAG, "all requests canceled");
-                    return true;
-                }
-            });
+            if(imageRequestQueue != null) {
+                imageRequestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                    @Override
+                    public boolean apply(Request<?> request) {
+                        Log.d(TAG, "all requests canceled");
+                        return true;
+                    }
+                });
+            }
         }
         mIdMap.clear();
         if(ITEM_LIST != null && ITEM_LIST.size() > 0){
@@ -968,7 +974,7 @@ public class MainActivity extends BaseActivity
 
                 }
             });
-            NetworkManager.getInstance().getRequestQueue().add(imageRequest);
+            imageRequestQueue.add(imageRequest);
         }
     }
 
