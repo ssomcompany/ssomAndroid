@@ -34,7 +34,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -135,6 +134,7 @@ public class MainActivity extends BaseActivity
      * layout write resources
      */
     private ImageView mBtnMapMyLocation;
+    private ImageView mapRefresh;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -492,6 +492,7 @@ public class MainActivity extends BaseActivity
         });
 
         mBtnMapMyLocation = (ImageView) findViewById(R.id.map_current_location);
+        mapRefresh = (ImageView) findViewById(R.id.map_refresh);
     }
 
     private void getUserCount(final boolean isInit) {
@@ -627,13 +628,14 @@ public class MainActivity extends BaseActivity
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mBtnMapMyLocation.setVisibility(View.INVISIBLE);
+                mapRefresh.setVisibility(View.INVISIBLE);
                 btnWrite.setVisibility(View.INVISIBLE);
                 ssomActionBar.setSsomFilterVisibility(false);
                 mainPager.setCurrentItem(tab.getPosition());
 
-                topShadow.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, Util.convertDpToPixel(5f)));
-                FrameLayout.LayoutParams bottomParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, Util.convertDpToPixel(5f));
-                bottomParams.gravity = Gravity.BOTTOM;
+                topShadow.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, Util.convertDpToPixel(5f)));
+                RelativeLayout.LayoutParams bottomParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, Util.convertDpToPixel(5f));
+                bottomParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 bottomShadow.setLayoutParams(bottomParams);
 //                findViewById(R.id.topMapShadow).setVisibility(View.GONE);
 //                findViewById(R.id.topDropShadow).setVisibility(View.VISIBLE);
@@ -641,10 +643,11 @@ public class MainActivity extends BaseActivity
                 switch (tab.getPosition()) {
                     case BOTTOM_MAP:
                         mBtnMapMyLocation.setVisibility(View.VISIBLE);
+                        mapRefresh.setVisibility(View.VISIBLE);
                         btnWrite.setVisibility(View.VISIBLE);
                         ssomActionBar.setSsomFilterVisibility(true);
-                        topShadow.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
-                        bottomParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+                        topShadow.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                        bottomParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
                         bottomShadow.setLayoutParams(bottomParams);
 //                        findViewById(R.id.topMapShadow).setVisibility(View.VISIBLE);
 //                        findViewById(R.id.topDropShadow).setVisibility(View.GONE);
@@ -774,6 +777,12 @@ public class MainActivity extends BaseActivity
                 }
 
                 moveToMyLocation(false);
+            }
+        });
+        mapRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestSsomList(false);
             }
         });
         requestSsomList(false);

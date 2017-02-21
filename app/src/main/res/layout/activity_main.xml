@@ -37,7 +37,7 @@
 
         <!-- As the main content view, the view below consumes the entire
              space available using match_parent in both dimensions. -->
-        <FrameLayout
+        <RelativeLayout
             android:layout_below="@id/ssom_toolbar"
             android:layout_above="@id/bottom_tab"
             android:layout_width="match_parent"
@@ -64,10 +64,20 @@
                 android:layout_marginLeft="13.5dp"/>
 
             <ImageView
+                android:id="@+id/map_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/map_current_location"
+                android:src="@drawable/refresh_button"
+                android:layout_marginTop="11dp"
+                android:layout_marginLeft="13.5dp"/>
+
+            <ImageView
                 android:id="@+id/btn_write"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right|bottom"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
                 android:layout_marginBottom="10dp"
                 android:layout_marginRight="10dp"
                 android:src="@drawable/main_write_btn"/>
@@ -76,9 +86,9 @@
                 android:id="@+id/bottomShadow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
+                android:layout_alignParentBottom="true"
                 android:background="@drawable/map_shadow_foot" />
-        </FrameLayout>
+        </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/top_container"
