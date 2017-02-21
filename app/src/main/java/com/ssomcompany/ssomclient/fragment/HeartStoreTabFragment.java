@@ -113,7 +113,12 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
         Log.d(TAG, "setHeartCount called");
         if(!timerIsRunning && (count == 0 || count == 1)) {
             Log.d(TAG, "setHeartCount timerTask start");
-            timerTask = new CountDownTimer(Util.getRefillTime(getSession().getLong(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, 0)), 1000) {
+            // 하트가 2개 미만인 유져가 앱을 새로 설치해서 들어온 경우 0,1 개 에서 refill time 이 0임.. 그럼 또 쓸경우 다시 셋팅이 되는 문제가 생김
+            long refillTime = getSession().getLong(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, 0);
+            if(refillTime == 0) {
+                getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
+            }
+            timerTask = new CountDownTimer(Util.getRefillTime(refillTime), 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     timerIsRunning = true;
@@ -133,7 +138,8 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
                                 public void onResponse(SsomResponse<AddHeartCount.Response> response) {
                                     if(response.isSuccess()) {
                                         Log.d(TAG, "success... to 4hour's heart");
-                                        getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
+                                        getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME,
+                                                response.getData() != null && response.getData().getHeartsCount() < 2 ? System.currentTimeMillis() : 0);
 
                                         Intent intent = new Intent();
                                         intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);

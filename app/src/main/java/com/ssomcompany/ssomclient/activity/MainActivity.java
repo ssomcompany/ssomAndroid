@@ -34,7 +34,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -1161,7 +1160,9 @@ public class MainActivity extends BaseActivity
                                     intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, getHeartCount() - 1);
                                     LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(intent);
 
-                                    getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
+                                    if(getSession().getLong(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, 0) == 0) {
+                                        getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
+                                    }
                                     startChattingActivity(chatRoomItem);
                                 } else if(response.getStatusCode() == 428) {
                                     Log.d(TAG, "ssom 진행 중, 더이상 쏨타기 못함");

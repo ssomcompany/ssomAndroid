@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,12 +26,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Response;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.FilterType;
@@ -50,6 +47,7 @@ import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
 import com.ssomcompany.ssomclient.network.api.UploadFiles;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.widget.SsomNetworkImageView;
+import com.ssomcompany.ssomclient.widget.SsomToast;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.io.File;
@@ -548,15 +546,21 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                     protected void onPostExecute(String result) {
                         super.onPostExecute(result);
                         Log.d(TAG, "Response from server: " + result);
-                        Gson gson = new Gson();
-                        Map data = gson.fromJson(result, Map.class);
-                        if(data.get(CommonConst.Intent.FILE_ID) != null) {
-                            String fileId = data.get(CommonConst.Intent.FILE_ID).toString();
-                            final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
-                            getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
-                            createPost(fileId);
-                        } else {
-                            showErrorMessage();
+                        try {
+                            Gson gson = new Gson();
+                            Map data = gson.fromJson(result, Map.class);
+                            if (data.get(CommonConst.Intent.FILE_ID) != null) {
+                                String fileId = data.get(CommonConst.Intent.FILE_ID).toString();
+                                final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
+                                getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
+                                createPost(fileId);
+                            } else {
+                                showErrorMessage();
+                            }
+                        } catch (JsonSyntaxException e) {
+                            Log.e(TAG, "error with message : " + e.toString());
+                            SsomToast.makeText(SsomWriteActivity.this, "업로드할 수 없습니다.\n문제가 지속될 경우 관리자에게\n문의하시기 바랍니다.");
+                            finish();
                         }
                     }
                 };
