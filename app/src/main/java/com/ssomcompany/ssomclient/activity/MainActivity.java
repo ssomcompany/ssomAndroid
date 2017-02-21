@@ -998,7 +998,7 @@ public class MainActivity extends BaseActivity
 
             Bitmap iconIng = null;
             // ing image
-            if(CommonConst.Chatting.MEETING_APPROVE.equals(ssom.getStatus()) && !TextUtils.isEmpty(ssom.getChatroomId())) {
+            if(CommonConst.Chatting.MEETING_APPROVE.equals(ssom.getStatus())) {
                 iconIng = BitmapFactory.decodeResource(getResources(), CommonConst.SSOM.equals(ssom.getSsomType()) ?
                         R.drawable.ssom_ing_green_big : R.drawable.ssom_ing_red_big);
             }
