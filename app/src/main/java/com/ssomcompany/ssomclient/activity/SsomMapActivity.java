@@ -18,15 +18,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -93,7 +87,7 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
             }
         }
 
-        SsomActionBarView actionBarView = (SsomActionBarView) findViewById(R.id.ssom_action_bar);
+        SsomActionBarView actionBarView = (SsomActionBarView) findViewById(R.id.ssom_toolbar);
         actionBarView.setCurrentMode(SsomActionBarView.SSOM_MAP);
 //        actionBarView.setSsomBarTitleLayoutGravity(RelativeLayout.CENTER_VERTICAL|RelativeLayout.RIGHT_OF|);
         actionBarView.setSsomBarTitleText("채팅으로 돌아가기");

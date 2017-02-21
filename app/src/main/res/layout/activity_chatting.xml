@@ -10,7 +10,7 @@
     <com.ssomcompany.ssomclient.widget.SsomActionBarView
         android:id="@+id/ssom_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="52dp"
         app:popupTheme="@style/AppTheme"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"/>
