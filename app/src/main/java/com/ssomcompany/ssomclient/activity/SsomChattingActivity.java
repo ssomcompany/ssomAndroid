@@ -246,7 +246,6 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
 
     @Override
     protected void receivedPushMessage(Intent intent) {
-        super.receivedPushMessage(intent);
         Log.d(TAG, "receivedPushMessage............");
 
         if(fragmentManager == null) {
@@ -301,6 +300,8 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
                     chat.setMsgType(CommonConst.Chatting.NORMAL);
                 }
                 chattingFragment.addChatting(chat);
+            } else {
+                runVibrator();
             }
         }
     }

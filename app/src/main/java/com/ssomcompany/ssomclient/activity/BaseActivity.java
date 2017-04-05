@@ -11,6 +11,7 @@ import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -45,6 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private long activityCreatedTime;
 
     private SsomPreferences session;
+    private Vibrator vibrator;
 
     private final AtomicBoolean paused = new AtomicBoolean(false);
     protected final AdvancedHandler aHandler = new AdvancedHandler();
@@ -63,6 +65,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if(session == null) {
             session = new SsomPreferences(BaseApplication.getInstance(), SsomPreferences.LOGIN_PREF);
+        }
+
+        if(vibrator == null) {
+            vibrator = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
         }
 
         if (0 == this.activityCreatedTime) {
@@ -146,6 +152,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void receivedPushMessage(Intent intent) {
         Log.d(TAG, "receivedPushMessage called");
+        runVibrator();
+    }
+
+    public void runVibrator() {
+        vibrator.vibrate(100);
     }
 
     // this method must be overwritten when use notification count on the activity
