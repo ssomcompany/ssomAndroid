@@ -11,7 +11,9 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.reflect.TypeToken;
+import com.squareup.okhttp.OkHttpClient;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.network.model.BaseRequest;
 import com.ssomcompany.ssomclient.network.model.BaseResponse;
@@ -34,7 +36,6 @@ public class NetworkManager {
 
     private NetworkManager() {
         mRequestQueue = getRequestQueue();
-
         bitmapCache = new BitmapLruCache();
         diskCache = new DiskImageLruCache(BaseApplication.getInstance());
         mImageLoader = new ImageLoader(mRequestQueue, bitmapCache);
@@ -99,9 +100,12 @@ public class NetworkManager {
         return !TextUtils.isEmpty(key) && bitmapCache.getBitmap(key) != null;
     }
 
+    @SuppressWarnings("deprecation")
     public RequestQueue getRequestQueue() {
         if(mRequestQueue == null) {
-            mRequestQueue = Volley.newRequestQueue(BaseApplication.getInstance());
+            OkHttpClient okHttpClient = new OkHttpClient();
+            okHttpClient.networkInterceptors().add(new StethoInterceptor());
+            mRequestQueue = Volley.newRequestQueue(BaseApplication.getInstance(), new OkHttpStack(okHttpClient));
         }
         return mRequestQueue;
     }

@@ -146,6 +146,13 @@
 -keep class udk.android.** { *; }
 -dontwarn udk.android.**
 
+# okhttp for stetho library
+-keep class com.squareup.okhttp.** { *; }
+-dontwarn com.squareup.okhttp.**
+# okhttp for stetho library
+-keep class okio.** { *; }
+-dontwarn okio.**
+
 -assumenosideeffects class com.android.volley.VolleyLog {
     public static *** e(...);
     public static *** wtf(...);

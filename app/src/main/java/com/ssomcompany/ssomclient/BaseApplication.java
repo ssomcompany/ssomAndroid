@@ -5,11 +5,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.facebook.stetho.Stetho;
 import com.onesignal.OneSignal;
+import com.ssomcompany.ssomclient.network.HttpsTrustManager;
 import com.ssomcompany.ssomclient.push.SsomNotiOpenedHandler;
 import com.ssomcompany.ssomclient.push.SsomNotiReceiveHandler;
 
@@ -29,6 +32,13 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
     @Override
     public void onCreate() {
         super.onCreate();
+        // for stetho
+        // trust all certificates for debug application
+        if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE)) {
+            Log.d(TAG, "trust all certificates and initialize stetho library for debugging mode");
+            Stetho.initializeWithDefaults(this);
+            HttpsTrustManager.allowAllSSL();
+        }
 
         // Logging set to help debug issues, remove before releasing your app.
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.DEBUG, OneSignal.LOG_LEVEL.WARN);
