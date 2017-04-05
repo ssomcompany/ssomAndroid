@@ -1,7 +1,6 @@
 package com.ssomcompany.ssomclient.network.api;
 
 import android.os.AsyncTask;
-import android.view.View;
 import android.widget.ProgressBar;
 
 import com.ssomcompany.ssomclient.network.NetworkConstant;
