@@ -153,6 +153,13 @@
 -keep class okio.** { *; }
 -dontwarn okio.**
 
+# glide for image loading
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+
 -assumenosideeffects class com.android.volley.VolleyLog {
     public static *** e(...);
     public static *** wtf(...);

@@ -18,16 +18,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.ImageLoader;
+import com.bumptech.glide.Glide;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.SsomImageDetailActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
-import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
-import com.ssomcompany.ssomclient.widget.RoundedNetworkImageView;
+import com.ssomcompany.ssomclient.widget.RoundedImageView;
 
 import java.util.ArrayList;
 
@@ -215,19 +214,17 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     private class DetailPagerAdapter extends PagerAdapter implements View.OnClickListener {
         LayoutInflater inflater;
-        ImageLoader mImageLoader;
 
         DetailPagerAdapter(LayoutInflater inflater) {
             super();
             this.inflater = inflater;
-            this.mImageLoader = NetworkManager.getInstance().getImageLoader();
         }
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             View mView = inflater.inflate(R.layout.detail_pager_adapter, container, false);
 
-            RoundedNetworkImageView profileImg = (RoundedNetworkImageView) mView.findViewById(R.id.profile_img);
+            RoundedImageView profileImg = (RoundedImageView) mView.findViewById(R.id.profile_img);
             LinearLayout centerLine = (LinearLayout) mView.findViewById(R.id.center_line_layout);
             TextView tvCategory = (TextView) mView.findViewById(R.id.tv_category);
             TextView tvDistance = (TextView) mView.findViewById(R.id.tv_distance);
@@ -238,7 +235,10 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
             SsomItem item = ssomList.get(position);
             // item setting
-            profileImg.setImageUrl(item.getImageUrl(), mImageLoader);
+            Glide.with(DetailFragment.this).load(item.getImageUrl())
+                    .crossFade()
+                    .centerCrop()
+                    .into(profileImg);
             profileImg.setOnClickListener(this);
             centerLine.setBackgroundResource(CommonConst.SSOM.equals(item.getSsomType()) ? R.drawable.bg_detail_center_green : R.drawable.bg_detail_center_red);
             tvCategory.setText(CommonConst.SSOM.equals(item.getSsomType()) ? R.string.detail_category_ssom : R.string.detail_category_ssoa);

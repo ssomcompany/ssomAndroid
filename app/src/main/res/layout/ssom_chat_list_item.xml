@@ -17,7 +17,7 @@
         android:layout_marginRight="14.5dp"
         android:layout_alignParentLeft="true">
 
-        <com.ssomcompany.ssomclient.widget.CircularNetworkImageView
+        <ImageView
             android:id="@+id/icon_list_image"
             android:layout_width="40dp"
             android:layout_height="40dp"

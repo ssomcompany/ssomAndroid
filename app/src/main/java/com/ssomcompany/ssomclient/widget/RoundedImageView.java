@@ -7,26 +7,25 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 
-import com.android.volley.toolbox.NetworkImageView;
 import com.ssomcompany.ssomclient.common.Util;
 
-public class RoundedNetworkImageView extends SsomNetworkImageView {
-    private static final String TAG = RoundedNetworkImageView.class.getSimpleName();
+public class RoundedImageView extends android.support.v7.widget.AppCompatImageView {
+    private static final String TAG = RoundedImageView.class.getSimpleName();
 
     private Path clipPath = new Path();
     private RectF rectF = new RectF();
 
-    public RoundedNetworkImageView(Context context) {
-        this(context, (AttributeSet) null);
+    public RoundedImageView(Context context) {
+        this(context, null);
         Log.d(TAG, "RoundedNetworkImageView(context) called!");
     }
 
-    public RoundedNetworkImageView(Context context, AttributeSet attrs) {
+    public RoundedImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
         Log.d(TAG, "RoundedNetworkImageView(context, attrs) called!");
     }
 
-    public RoundedNetworkImageView(Context context, AttributeSet attrs, int defStyle) {
+    public RoundedImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         Log.d(TAG, "RoundedNetworkImageView(context, attrs, defStyle) called!");
     }

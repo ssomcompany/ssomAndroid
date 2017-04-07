@@ -6,11 +6,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
-import com.android.volley.toolbox.NetworkImageView;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.widget.SsomNetworkImageView;
 
 /**
  * Created by AaronMac on 2016. 9. 17..

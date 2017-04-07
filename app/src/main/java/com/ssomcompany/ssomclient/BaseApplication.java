@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
@@ -39,6 +40,10 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
             Stetho.initializeWithDefaults(this);
             HttpsTrustManager.allowAllSSL();
         }
+
+        // this is for file access when target sdk version is higher than 24.
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
 
         // Logging set to help debug issues, remove before releasing your app.
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.DEBUG, OneSignal.LOG_LEVEL.WARN);

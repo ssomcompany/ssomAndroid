@@ -6,9 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,8 +17,10 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -30,13 +29,9 @@ import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.SsomPermission;
 import com.ssomcompany.ssomclient.control.ViewListener;
-import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
-import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.NetworkUtil;
 import com.ssomcompany.ssomclient.network.api.UploadFiles;
-import com.ssomcompany.ssomclient.network.model.BaseResponse;
-import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.io.File;
@@ -48,20 +43,22 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
+
 public class SsomTodayProfileActivity extends BaseActivity implements View.OnClickListener {
     private static final int REQUEST_SELECT_PICTURE = 10001;
     private static final int REQUEST_IMAGE_CAPTURE = 10002;
     private static final int REQUEST_CHECK_WRITE_EXTERNAL_STORAGE = 1;
 
-    CircularNetworkImageView profileImage;
+    ImageView profileImage;
 
     // camera 변수
     private String mCurrentPhotoPath;
     private Uri mContentUri;
     private String picturePath;
 
-    enum ButtonType {
-        GALLERY, CAMERA;
+    private enum ButtonType {
+        GALLERY, CAMERA
     }
 
     ButtonType currentType;
@@ -71,7 +68,7 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        profileImage = (CircularNetworkImageView) findViewById(R.id.profile_img);
+        profileImage = (ImageView) findViewById(R.id.profile_img);
         ((TextView) findViewById(R.id.explanation_profile)).setText(
                 Html.fromHtml(getString(R.string.today_photo_will_be_delete_in_the_morning)));
 
@@ -81,7 +78,10 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
         findViewById(R.id.btn_cancel).setOnClickListener(this);
         findViewById(R.id.btn_save).setOnClickListener(this);
 
-        profileImage.setImageUrl(getTodayImageUrl() + "?thumbnail=200", NetworkManager.getInstance().getImageLoader());
+        Glide.with(this).load(getTodayImageUrl() + "?thumbnail=200")
+                .crossFade()
+                .bitmapTransform(new CropCircleTransformation(this))
+                .into(profileImage);
     }
 
     @Override
@@ -254,14 +254,20 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                         Log.d(TAG, "path : " + picturePath);
 
                         picturePath = Util.rotatePhoto(this, picturePath);
-                        profileImage.setLocalImageBitmap(BitmapFactory.decodeFile(picturePath));
+                        Glide.with(this).load(picturePath)
+                                .crossFade()
+                                .bitmapTransform(new CropCircleTransformation(this))
+                                .into(profileImage);
                     }
                     break;
                 case REQUEST_IMAGE_CAPTURE:
                     mContentUri = Uri.fromFile(new File(Util.rotatePhoto(this, mCurrentPhotoPath)));
                     File file = new File(mCurrentPhotoPath);
                     if(file.delete()) mCurrentPhotoPath = mContentUri.getPath();
-                    profileImage.setLocalImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
+                    Glide.with(this).load(mCurrentPhotoPath)
+                            .crossFade()
+                            .bitmapTransform(new CropCircleTransformation(this))
+                            .into(profileImage);
                     break;
             }
         }

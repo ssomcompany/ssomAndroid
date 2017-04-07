@@ -2,8 +2,6 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,24 +9,18 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageRequest;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.bumptech.glide.Glide;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.common.BitmapWorkerTask;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.SsomItem;
-import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 
 import java.util.ArrayList;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 public class SsomItemListAdapter extends BaseAdapter {
 
@@ -82,7 +74,7 @@ public class SsomItemListAdapter extends BaseAdapter {
             holder.timeTv = (TextView) convertView.findViewById(R.id.post_item_time);
             holder.distanceTv = (TextView) convertView.findViewById(R.id.post_item_distance);
             holder.contentTv = (TextView) convertView.findViewById(R.id.content);
-            holder.image = (CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image);
+            holder.image = (ImageView) convertView.findViewById(R.id.icon_list_image);
             holder.iconView = (ImageView) convertView.findViewById(R.id.icon_list_r);
             holder.markView = (ImageView) convertView.findViewById(R.id.icon_list_mark);
             holder.iconIng = (ImageView) convertView.findViewById(R.id.icon_ing);
@@ -96,31 +88,11 @@ public class SsomItemListAdapter extends BaseAdapter {
         final SsomItem item = itemList.get(position);
 
         // profile
-        holder.image.setDefaultImageResId(R.drawable.profile_img_basic);
-        holder.image.setErrorImageResId(R.drawable.profile_img_basic);
-        if(NetworkManager.getInstance().hasBitmapInCache(item.getThumbnailImageUrl())) {
-            if(NetworkManager.getInstance().hasBitmapFromMemoryCache(item.getThumbnailImageUrl())) {
-                // get bitmap from memory cache
-                holder.image.setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromMemoryCache(item.getThumbnailImageUrl()));
-            } else {
-                // get bitmap from disk cache
-                BitmapWorkerTask diskCacheTask = new BitmapWorkerTask() {
-                    @Override
-                    protected void onPostExecute(Bitmap result) {
-                        super.onPostExecute(result);
-                        if (result != null) {
-                            // Add final bitmap to caches
-                            NetworkManager.getInstance().addBitmapToCache(item.getThumbnailImageUrl(), result);
-                            holder.image.setLocalImageBitmap(result);
-                        }
-                    }
-                };
-
-                diskCacheTask.execute(item.getThumbnailImageUrl());
-            }
-        } else {
-            holder.image.setImageUrl(item.getThumbnailImageUrl(), mImageLoader);
-        }
+        Glide.with(context).load(item.getThumbnailImageUrl())
+                .crossFade()
+                .bitmapTransform(new CropCircleTransformation(context))
+                .placeholder(R.drawable.profile_img_basic)
+                .into(holder.image);
 
         //icon
         if(CommonConst.SSOM.equals(item.getSsomType())){
@@ -163,7 +135,7 @@ public class SsomItemListAdapter extends BaseAdapter {
         public ImageView iconView;
         public ImageView markView;
         public ImageView iconIng;
-        public CircularNetworkImageView image;
+        public ImageView image;
         public TextView titleTv;
         public TextView timeTv;
         public TextView distanceTv;

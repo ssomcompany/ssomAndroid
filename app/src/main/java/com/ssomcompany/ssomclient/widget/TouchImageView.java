@@ -19,7 +19,6 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.ImageView;
 import android.widget.Scroller;
 
 /**
@@ -29,7 +28,7 @@ import android.widget.Scroller;
  * https://github.com/MikeOrtiz/TouchImageView/blob/master/src/com/example/touch/TouchImageView.java
  * @author Tarandeep Singh
  */
-public class TouchImageView extends ImageView {
+public class TouchImageView extends android.support.v7.widget.AppCompatImageView {
     private static final String DEBUG = "DEBUG";
 
     //

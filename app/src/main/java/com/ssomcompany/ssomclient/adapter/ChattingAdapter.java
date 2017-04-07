@@ -13,25 +13,24 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.ImageLoader;
+import com.bumptech.glide.Glide;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.activity.SsomImageDetailActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
-import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 
 import java.util.ArrayList;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 public class ChattingAdapter extends BaseAdapter {
     private static final String TAG = ChattingAdapter.class.getSimpleName();
 
     private LayoutInflater mInflater;
     private Context context;
-    private ImageLoader mImageLoader;
     private ChatMessageViewHolder holder;
     private ArrayList<ChattingItem> itemList;
     private ChatRoomItem roomItem;
@@ -40,8 +39,6 @@ public class ChattingAdapter extends BaseAdapter {
         this.context = context;
         this.mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-
-        this.mImageLoader = NetworkManager.getInstance().getImageLoader();
         this.roomItem = roomItem;
     }
 
@@ -81,14 +78,14 @@ public class ChattingAdapter extends BaseAdapter {
             // received message layout
             holder.receiveMessageLayout = (RelativeLayout) convertView.findViewById(R.id.receive_message_layout);
             holder.leftChatProfileLayout = (FrameLayout) convertView.findViewById(R.id.left_chat_profile_layout);
-            holder.leftChatProfileImage = (CircularNetworkImageView) convertView.findViewById(R.id.left_chat_profile_image);
+            holder.leftChatProfileImage = (ImageView) convertView.findViewById(R.id.left_chat_profile_image);
             holder.leftChatProfileCircle = (ImageView) convertView.findViewById(R.id.left_chat_profile_circle);
             holder.receiveMessage = (TextView) convertView.findViewById(R.id.receive_message);
             holder.receiveTime = (TextView) convertView.findViewById(R.id.receive_time);
             // send message layout
             holder.sendMessageLayout = (RelativeLayout) convertView.findViewById(R.id.send_message_layout);
             holder.rightChatProfileLayout = (FrameLayout) convertView.findViewById(R.id.right_chat_profile_layout);
-            holder.rightChatProfileImage = (CircularNetworkImageView) convertView.findViewById(R.id.right_chat_profile_image);
+            holder.rightChatProfileImage = (ImageView) convertView.findViewById(R.id.right_chat_profile_image);
             holder.sendMessage = (TextView) convertView.findViewById(R.id.send_message);
             holder.sendTime = (TextView) convertView.findViewById(R.id.send_time);
             // system message
@@ -172,10 +169,13 @@ public class ChattingAdapter extends BaseAdapter {
                         }
                     });
                     // profile image
-                    holder.leftChatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
-                    holder.leftChatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
-                    holder.leftChatProfileImage.setImageUrl(((BaseActivity) context).getUserId().equals(roomItem.getOwnerId()) ?
-                            roomItem.getParticipantImageUrl() + "?thumbnail=200" : roomItem.getOwnerImageUrl() + "?thumbnail=200", mImageLoader);
+                    Glide.with(context).load(((BaseActivity) context).getUserId().equals(roomItem.getOwnerId()) ?
+                            roomItem.getParticipantImageUrl() + "?thumbnail=200" : roomItem.getOwnerImageUrl() + "?thumbnail=200")
+                            .crossFade()
+                            .bitmapTransform(new CropCircleTransformation(context))
+                            .placeholder(R.drawable.profile_img_basic)
+                            .into(holder.leftChatProfileImage);
+
                     // profile circle type
                     holder.leftChatProfileCircle.setImageResource(CommonConst.SSOM.equals(roomItem.getSsomType()) ? R.drawable.chat_profile_border_green : R.drawable.chat_profile_border_red);
                 } else {
@@ -202,9 +202,11 @@ public class ChattingAdapter extends BaseAdapter {
                         || !Util.isSameTimeBetweenTwoTimes(item.getTimestamp(), getItem(position - 1).getTimestamp())) {
                     holder.rightChatProfileLayout.setVisibility(View.VISIBLE);
                     // profile image
-                    holder.rightChatProfileImage.setDefaultImageResId(R.drawable.profile_img_basic);
-                    holder.rightChatProfileImage.setErrorImageResId(R.drawable.profile_img_basic);
-                    holder.rightChatProfileImage.setImageUrl(((BaseActivity) context).getTodayImageUrl() + "?thumbnail=200", mImageLoader);
+                    Glide.with(context).load(((BaseActivity) context).getTodayImageUrl() + "?thumbnail=200")
+                            .crossFade()
+                            .bitmapTransform(new CropCircleTransformation(context))
+                            .placeholder(R.drawable.profile_img_basic)
+                            .into(holder.rightChatProfileImage);
                 } else {
                     holder.rightChatProfileLayout.setVisibility(View.INVISIBLE);
                 }
@@ -267,7 +269,7 @@ public class ChattingAdapter extends BaseAdapter {
          */
         private RelativeLayout receiveMessageLayout;
         private FrameLayout leftChatProfileLayout;
-        private CircularNetworkImageView leftChatProfileImage;
+        private ImageView leftChatProfileImage;
         private ImageView leftChatProfileCircle;
         private TextView receiveMessage;
         private TextView receiveTime;
@@ -277,7 +279,7 @@ public class ChattingAdapter extends BaseAdapter {
          */
         private RelativeLayout sendMessageLayout;
         private FrameLayout rightChatProfileLayout;
-        private CircularNetworkImageView rightChatProfileImage;
+        private ImageView rightChatProfileImage;
         private TextView sendMessage;
         private TextView sendTime;
 

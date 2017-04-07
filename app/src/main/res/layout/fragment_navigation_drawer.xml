@@ -31,7 +31,7 @@
                 android:layout_gravity="center"
                 android:background="@drawable/img_today_empty"/>
 
-            <com.ssomcompany.ssomclient.widget.CircularNetworkImageView
+            <ImageView
                 android:id="@+id/img_today"
                 android:layout_gravity="center"
                 android:layout_width="90dp"

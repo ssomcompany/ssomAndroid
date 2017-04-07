@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +27,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.ssomcompany.ssomclient.R;
@@ -46,7 +46,6 @@ import com.ssomcompany.ssomclient.network.NetworkUtil;
 import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
 import com.ssomcompany.ssomclient.network.api.UploadFiles;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
-import com.ssomcompany.ssomclient.widget.SsomNetworkImageView;
 import com.ssomcompany.ssomclient.widget.SsomToast;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
@@ -72,7 +71,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
     private ImageView imgEmpty;
     private ImageView imgShadow;
-    private SsomNetworkImageView imgProfile;
+    private ImageView imgProfile;
 
     private FrameLayout imgCamera;
 
@@ -126,7 +125,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         imgEmpty = (ImageView) findViewById(R.id.img_empty);
 
         // delete view when picture loaded
-        imgProfile = (SsomNetworkImageView) findViewById(R.id.img_profile);
+        imgProfile = (ImageView) findViewById(R.id.img_profile);
         imgShadow = (ImageView) findViewById(R.id.img_shadow);
 
         // camera
@@ -164,7 +163,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
         // 올사가 있는 경우 로딩함. 없는경우 empty 이미지 보여짐
         if(!TextUtils.isEmpty(getTodayImageUrl())) {
-            imgProfile.setImageUrl(getTodayImageUrl(), NetworkManager.getInstance().getImageLoader());
+            Glide.with(this).load(getTodayImageUrl()).fitCenter().into(imgProfile);
             imgEmpty.setVisibility(View.INVISIBLE);
             imgShadow.setVisibility(View.INVISIBLE);
         }
@@ -303,7 +302,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 //                    cropImage();
                     Bundle extras = data.getExtras();
                     Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    imgProfile.setImageBitmap(imageBitmap);
+                    Glide.with(this).load(imageBitmap).fitCenter().into(imgProfile);
                     imgEmpty.setVisibility(View.INVISIBLE);
                     imgShadow.setVisibility(View.INVISIBLE);
                     break;
@@ -311,7 +310,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 //                    Bundle extras = data.getExtras();
 //                    Log.d(TAG, "crop finished : " + extras);
 //                    if (extras != null) {
-                        imgProfile.setImageURI(mContentUri);
+                        Glide.with(this).load(mContentUri).fitCenter().into(imgProfile);
                         imgEmpty.setVisibility(View.INVISIBLE);
                         imgShadow.setVisibility(View.INVISIBLE);
 //                    }
@@ -334,7 +333,7 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
                         imgShadow.setVisibility(View.INVISIBLE);
 
                         picturePath = Util.rotatePhoto(this, picturePath);
-                        imgProfile.setLocalImageBitmap(BitmapFactory.decodeFile(picturePath));
+                        Glide.with(this).load(picturePath).fitCenter().into(imgProfile);
                     }
                     break;
                 default:

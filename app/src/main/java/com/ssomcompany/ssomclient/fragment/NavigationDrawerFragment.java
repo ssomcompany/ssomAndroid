@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -28,17 +27,14 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.adapter.DrawerMenuAdapter;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.control.ViewListener;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -77,7 +73,7 @@ public class NavigationDrawerFragment extends Fragment {
     /**
      * Left menu list 구성
      */
-    private CircularNetworkImageView imgToday;
+    private ImageView imgToday;
 
     public NavigationDrawerFragment() {
     }
@@ -114,12 +110,9 @@ public class NavigationDrawerFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         FrameLayout todayPhoto = (FrameLayout) view.findViewById(R.id.today_photo);
-        imgToday = (CircularNetworkImageView) view.findViewById(R.id.img_today);
+        imgToday = (ImageView) view.findViewById(R.id.img_today);
         TextView tvSsomHomepage = (TextView) view.findViewById(R.id.tv_ssom_homepage);
         TextView tvMakeHeart = (TextView) view.findViewById(R.id.tv_make_heart);
-
-        imgToday.setDefaultImageResId(0);
-        imgToday.setErrorImageResId(0);
 
         todayPhoto.setOnClickListener(menuItemClickListener);
         tvSsomHomepage.setOnClickListener(menuItemClickListener);
@@ -152,28 +145,10 @@ public class NavigationDrawerFragment extends Fragment {
             imgToday.setVisibility(View.VISIBLE);
         }
 
-        if(NetworkManager.getInstance().getBitmapFromMemoryCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "") + "?thumbnail=200") == null) {
-            ImageRequest imageRequest = new ImageRequest(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "") + "?thumbnail=200", new Response.Listener<Bitmap>() {
-
-                @Override
-                public void onResponse(Bitmap bitmap) {
-                    NetworkManager.getInstance().addBitmapToCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "") + "?thumbnail=200", bitmap);
-                    imgToday.setLocalImageBitmap(bitmap);
-                }
-            }, 0  // max width
-                    , 0  // max height
-                    , ImageView.ScaleType.CENTER  // scale type
-                    , Bitmap.Config.RGB_565  // decode config
-                    , new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
-                }
-            });
-            Volley.newRequestQueue(getActivity()).add(imageRequest);
-        } else {
-            imgToday.setLocalImageBitmap(NetworkManager.getInstance().getBitmapFromMemoryCache(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "") + "?thumbnail=200"));
-        }
+        Glide.with(this).load(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "") + "?thumbnail=200")
+                .crossFade()
+                .bitmapTransform(new CropCircleTransformation(getActivity()))
+                .into(imgToday);
     }
 
     public boolean isDrawerOpen() {

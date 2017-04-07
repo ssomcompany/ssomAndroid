@@ -24,7 +24,7 @@
             android:background="@drawable/img_write_shadow"/>
     </FrameLayout>
 
-    <com.ssomcompany.ssomclient.widget.RoundedNetworkImageView
+    <com.ssomcompany.ssomclient.widget.RoundedImageView
         android:id="@+id/profile_img"
         android:layout_width="306dp"
         android:layout_height="248dp"

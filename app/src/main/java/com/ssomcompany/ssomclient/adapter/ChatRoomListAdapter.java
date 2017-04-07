@@ -2,11 +2,8 @@ package com.ssomcompany.ssomclient.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +12,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.ImageLoader;
+import com.bumptech.glide.Glide;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -24,9 +21,10 @@ import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
-import com.ssomcompany.ssomclient.widget.CircularNetworkImageView;
 
 import java.util.ArrayList;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 public class ChatRoomListAdapter extends BaseAdapter {
     private static final String TAG = ChatRoomListAdapter.class.getSimpleName();
@@ -73,7 +71,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
 
             holder = new ChatItemViewHolder();
             holder.setItemLayout(convertView.findViewById(R.id.item_layout));
-            holder.setImage((CircularNetworkImageView) convertView.findViewById(R.id.icon_list_image));
+            holder.setImage((ImageView) convertView.findViewById(R.id.icon_list_image));
             holder.setIconCircle((ImageView) convertView.findViewById(R.id.icon_circle));
             holder.setIconIng((ImageView) convertView.findViewById(R.id.icon_ing));
             holder.setTvChatInfo((TextView) convertView.findViewById(R.id.chat_information));
@@ -99,10 +97,12 @@ public class ChatRoomListAdapter extends BaseAdapter {
         }
 
         // profile image
-        holder.getImage().setDefaultImageResId(R.drawable.profile_img_basic);
-        holder.getImage().setErrorImageResId(R.drawable.profile_img_basic);
-        holder.getImage().setImageUrl(((BaseActivity) context).getUserId().equals(item.getOwnerId()) ?
-                item.getParticipantImageUrl() + "?thumbnail=200" : item.getOwnerImageUrl() + "?thumbnail=200", mImageLoader);
+        Glide.with(context).load(((BaseActivity) context).getUserId().equals(item.getOwnerId()) ?
+                item.getParticipantImageUrl() + "?thumbnail=200" : item.getOwnerImageUrl() + "?thumbnail=200")
+                .crossFade()
+                .bitmapTransform(new CropCircleTransformation(context))
+                .placeholder(R.drawable.profile_img_basic)
+                .into(holder.getImage());
 
         //icon
         if(CommonConst.SSOM.equals(item.getSsomType())){
@@ -183,7 +183,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
          * holder for list items
          */
         private View itemLayout;
-        private CircularNetworkImageView image;
+        private ImageView image;
         private ImageView iconCircle;
         private ImageView iconIng;
         private TextView tvChatInfo;
@@ -202,11 +202,11 @@ public class ChatRoomListAdapter extends BaseAdapter {
             this.itemLayout = itemLayout;
         }
 
-        public CircularNetworkImageView getImage() {
+        public ImageView getImage() {
             return image;
         }
 
-        public void setImage(CircularNetworkImageView image) {
+        public void setImage(ImageView image) {
             this.image = image;
         }
 
