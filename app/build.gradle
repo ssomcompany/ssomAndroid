@@ -49,8 +49,8 @@ android {
         applicationId "com.ssomcompany.ssomclient"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 115
-        versionName "1.1.5"
+        versionCode 116
+        versionName "1.1.6"
 
         // for one signal
         manifestPlaceholders = [manifestApplicationId: "${applicationId}",
@@ -60,8 +60,8 @@ android {
 
     signingConfigs {
         debug {
-//            storeFile file('/Users/AaronMac/.android/debug.keystore')
-            storeFile file('C:/Users/SDS/.android/debug.keystore')
+            storeFile file('/Users/AaronMac/.android/debug.keystore')
+//            storeFile file('C:/Users/SDS/.android/debug.keystore')
         }
         release {
             storeFile file('/Users/AaronMac/ssomcompany.keystore')

@@ -62,11 +62,6 @@
 -keepclassmembers class android.support.v7.** { *; }
 -keep interface android.support.v7.** { *; }
 
-
--keep class com.facebook.** { *; }
--keepclassmembers class com.facebook.** { *; }
--dontwarn com.facebook.**
-
 -keepattributes InnerClasses
 
 -dontwarn org.apache.**

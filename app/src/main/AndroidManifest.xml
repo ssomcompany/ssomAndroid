@@ -33,8 +33,6 @@
         android:glEsVersion="0x00020000"
         android:required="true" />
 
-    <uses-sdk android:targetSdkVersion="23" android:minSdkVersion="9" tools:overrideLibrary="com.facebook" />
-
     <application
         android:name=".BaseApplication"
         android:allowBackup="true"
