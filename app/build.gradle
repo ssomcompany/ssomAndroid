@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -16,7 +17,7 @@ dependencies {
     compile 'com.onesignal:OneSignal:3.+@aar'
     // Required for OneSignal, even if you have added FCM.
     compile 'com.google.android.gms:play-services-gcm:10.2.1'
-    // Required for geotagging
+    // Required for geo tagging
     compile "com.google.android.gms:play-services-location:10.2.1"
     compile "com.google.android.gms:play-services-maps:10.2.1"
 
@@ -28,6 +29,16 @@ dependencies {
     // this is for image loading (glide)
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'jp.wasabeef:glide-transformations:2.0.2'
+
+    // this is for network (retrofit)
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta3'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.3.1'
+
+    // this is for fabric crashlytics
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+        transitive = true;
+    }
 }
 
 android {
@@ -59,10 +70,6 @@ android {
     }
 
     signingConfigs {
-        debug {
-//            storeFile file('/Users/AaronMac/.android/debug.keystore')
-            storeFile file('C:/Users/SDS/.android/debug.keystore')
-        }
         release {
             storeFile file('/Users/AaronMac/ssomcompany.keystore')
             keyAlias "ssomcompany"
@@ -72,6 +79,12 @@ android {
     }
 
     buildTypes {
+//        debug {
+//            // Only use this flag on builds you don't proguard or upload to beta-by-crashlytics
+//            ext.alwaysUpdateBuildId = false
+//            // Disable fabric build ID generation for debug builds
+//            ext.enableCrashlytics = false
+//        }
         release {
             minifyEnabled true
             zipAlignEnabled true

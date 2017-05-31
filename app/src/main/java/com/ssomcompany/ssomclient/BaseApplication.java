@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.onesignal.OneSignal;
 import com.ssomcompany.ssomclient.network.HttpsTrustManager;
@@ -18,6 +19,8 @@ import com.ssomcompany.ssomclient.push.SsomNotiOpenedHandler;
 import com.ssomcompany.ssomclient.push.SsomNotiReceiveHandler;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.fabric.sdk.android.Fabric;
 
 public class BaseApplication extends Application implements ActivityLifecycleCallbacks {
 
@@ -40,6 +43,15 @@ public class BaseApplication extends Application implements ActivityLifecycleCal
             Stetho.initializeWithDefaults(this);
             HttpsTrustManager.allowAllSSL();
         }
+
+        // Set up Crashlytics, disabled for debug builds
+//        Crashlytics crashlyticsKit = new Crashlytics.Builder()
+//                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+//                .build();
+
+        // Initialize Fabric with the debug-disabled crashlytics.
+//        Fabric.with(this, crashlyticsKit);
+        Fabric.with(this, new Crashlytics());
 
         // this is for file access when target sdk version is higher than 24.
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();

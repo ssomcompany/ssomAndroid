@@ -62,7 +62,6 @@
 -keepclassmembers class android.support.v7.** { *; }
 -keep interface android.support.v7.** { *; }
 
-
 -keep class com.facebook.** { *; }
 -keepclassmembers class com.facebook.** { *; }
 -dontwarn com.facebook.**
@@ -74,10 +73,15 @@
 -dontwarn org.apache.**
 -keep class android.net.** { *; }
 -dontwarn android.net.**
+
 -keep class com.onesignal.** { *; }
 -dontwarn com.onesignal.**
+
 -keep class com.google.gson.** { *; }
 -dontwarn com.google.gson.**
+
+-keep class com.crashlytics.** { *; }
+-dontwarn com.crashlytics.**
 
 -keepnames class com.google.android.maps.** {*;}
 -keep public class com.google.android.maps.** {*;}

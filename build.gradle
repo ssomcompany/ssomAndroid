@@ -3,14 +3,19 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.3'
+
+        // for fabric crashlytics
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
 allprojects {
     repositories {
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
 }
