@@ -21,7 +21,6 @@ import com.ssomcompany.ssomclient.network.api.AddHeartCount;
 import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
 import com.ssomcompany.ssomclient.network.api.DeleteChattingRoom;
 import com.ssomcompany.ssomclient.network.api.DeleteTodayPhoto;
-import com.ssomcompany.ssomclient.network.api.FacebookLogin;
 import com.ssomcompany.ssomclient.network.api.GetApplicationVersion;
 import com.ssomcompany.ssomclient.network.api.GetChattingList;
 import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
@@ -125,15 +124,6 @@ public class APICaller {
 
         request.setTimeoutMillis(TIME_OUT_LONG);
         NetworkManager.request(request, new TypeToken<SsomResponse<SsomLogout.Response>>() {}.getType(), listener);
-    }
-
-    public static <T extends BaseResponse> void facebookLogin(String token, String playerId, NetworkManager.NetworkListener<T> listener) {
-        FacebookLogin.Request request = new FacebookLogin.Request().setPlayerId(playerId);
-        request.putHeader(NetworkConstant.HeaderParam.AUTHORIZATION,
-                "Bearer " + token);
-
-        request.setTimeoutMillis(TIME_OUT_LONG);
-        NetworkManager.request(request, new TypeToken<SsomResponse<FacebookLogin.Response>>() {}.getType(), listener);
     }
 
     public static <T extends BaseResponse> void ssomRegisterUser(String email, String password, NetworkManager.NetworkListener<T> listener) {
