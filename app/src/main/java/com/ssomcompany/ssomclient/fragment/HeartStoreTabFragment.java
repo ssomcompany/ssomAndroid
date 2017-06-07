@@ -1,6 +1,5 @@
 package com.ssomcompany.ssomclient.fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -17,24 +16,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.android.vending.billing.util.Inventory;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.control.InAppBillingHelper;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.AddHeartCount;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.MessageManager;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class HeartStoreTabFragment extends RetainedStateFragment implements View.OnClickListener, MessageCountCheck {
     private static final String TAG = HeartStoreTabFragment.class.getSimpleName();
@@ -46,7 +39,6 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
             CommonConst.HEART_28
     };
 
-    private InAppBillingHelper billingHelper;
     private TextView tvHeartCount;
     private TextView tvHeartRefillTime;
 
@@ -71,31 +63,6 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
         final TextView secondPrice = (TextView) view.findViewById(R.id.heart_price_second);
         final TextView thirdPrice = (TextView) view.findViewById(R.id.heart_price_third);
         final TextView fourthPrice = (TextView) view.findViewById(R.id.heart_price_fourth);
-
-        billingHelper = new InAppBillingHelper((BaseActivity) getActivity(), getString(R.string.in_app_purchase_id));
-        // test 아이템 구매를 위해 설정
-//        billingHelper.setTest(true);
-        billingHelper.startSetup(new ArrayList<>(Arrays.asList(items)), new InAppBillingHelper.InventoryLoadListener(){
-            @Override
-            public void onBefore() {
-            }
-
-            @Override
-            public void onSuccess(Inventory inventory) {
-                Log.d(TAG, "로딩에 성공하였습니다.");
-                Log.d(TAG, inventory.getSkuDetails(items[0]) == null ? "null" : inventory.getSkuDetails(items[0]).toString());
-                firstPrice.setText(inventory.getSkuDetails(items[0]).getPrice());
-                secondPrice.setText(inventory.getSkuDetails(items[1]).getPrice());
-                thirdPrice.setText(inventory.getSkuDetails(items[2]).getPrice());
-                fourthPrice.setText(inventory.getSkuDetails(items[3]).getPrice());
-            }
-
-            @Override
-            public void onFail() {
-                UiUtils.makeToastMessage(getActivity(), "구글마켓에 연결할 수 없는 상태입니다.");
-//                getActivity().finish();
-            }
-        });
 
         view.findViewById(R.id.layout_heart_first).setOnClickListener(this);
         view.findViewById(R.id.layout_heart_second).setOnClickListener(this);
@@ -188,16 +155,16 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
         try {
             switch (v.getId()) {
                 case R.id.layout_heart_first:
-                    billingHelper.purchaseItem(CommonConst.HEART_2);
+
                     break;
                 case R.id.layout_heart_second:
-                    billingHelper.purchaseItem(CommonConst.HEART_8);
+
                     break;
                 case R.id.layout_heart_third:
-                    billingHelper.purchaseItem(CommonConst.HEART_17);
+
                     break;
                 case R.id.layout_heart_fourth:
-                    billingHelper.purchaseItem(CommonConst.HEART_28);
+
                     break;
             }
         } catch (IllegalStateException e) {
@@ -211,16 +178,15 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult called from fragment : " + requestCode + ", resultCode : " + resultCode);
 
-        if(resultCode == Activity.RESULT_OK && requestCode == InAppBillingHelper.REQUEST_CODE) {
-            billingHelper.onActivityResult(requestCode, resultCode, data);
-        }
+//        if(resultCode == Activity.RESULT_OK && requestCode == InAppBillingHelper.REQUEST_CODE) {
+//            billingHelper.onActivityResult(requestCode, resultCode, data);
+//        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView called");
-        billingHelper.disposeHelper();
         if(timerTask != null && timerIsRunning) {
             timerTask.cancel();
         }
