@@ -64,6 +64,7 @@ import com.ssomcompany.ssomclient.common.RoundImage;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
+import com.ssomcompany.ssomclient.control.InAppBillingHelper;
 import com.ssomcompany.ssomclient.control.SsomPermission;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.fragment.ChatRoomTabFragment;
@@ -1212,9 +1213,9 @@ public class MainActivity extends BaseActivity
             case REQUEST_CHECK_DETAIL_LOCATION_PERMISSION:
                 continueProcess();
                 break;
-//            case InAppBillingHelper.REQUEST_CODE:
-//                mainAdapter.getItem(BOTTOM_STORE).onActivityResult(requestCode, resultCode, data);
-//                break;
+            case InAppBillingHelper.REQUEST_CODE:
+                mainAdapter.getItem(BOTTOM_STORE).onActivityResult(requestCode, resultCode, data);
+                break;
             default:
                 break;
         }
