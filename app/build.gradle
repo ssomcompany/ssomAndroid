@@ -60,8 +60,6 @@ android {
         applicationId "com.ssomcompany.ssomclient"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 116
-        versionName "1.1.6"
 
         // for one signal
         manifestPlaceholders = [manifestApplicationId: "${applicationId}",
@@ -75,6 +73,17 @@ android {
             keyAlias "ssomcompany"
             storePassword "!234rewq"
             keyPassword "!234rewq"
+        }
+    }
+
+    productFlavors {
+        google {
+            versionCode 116
+            versionName "1.1.6"
+        }
+        onestore {
+            versionCode 101
+            versionName "1.0.1"
         }
     }
 
