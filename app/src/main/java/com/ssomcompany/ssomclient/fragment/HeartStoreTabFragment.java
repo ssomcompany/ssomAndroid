@@ -336,7 +336,7 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
         super.onAttach(context);
 
         // injection plugin
-        mPlugin = IapPlugin.getPlugin(context, "development");
+        mPlugin = IapPlugin.getPlugin(context, "release");
     }
 
     @SuppressWarnings("deprecation")
@@ -345,7 +345,7 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
         super.onAttach(activity);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            mPlugin = IapPlugin.getPlugin(activity, "development");
+            mPlugin = IapPlugin.getPlugin(activity, "release");
         }
     }
 
