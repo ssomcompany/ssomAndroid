@@ -24,7 +24,6 @@ import com.skplanet.dodo.IapPlugin;
 import com.skplanet.dodo.IapResponse;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
@@ -46,13 +45,6 @@ import static com.ssomcompany.ssomclient.common.CommonConst.oneAppId;
 
 public class HeartStoreTabFragment extends RetainedStateFragment implements View.OnClickListener, MessageCountCheck {
     private static final String TAG = HeartStoreTabFragment.class.getSimpleName();
-
-    private String[] items = new String[]{
-            CommonConst.HEART_2,
-            CommonConst.HEART_8,
-            CommonConst.HEART_17,
-            CommonConst.HEART_28
-    };
 
     private TextView tvHeartCount;
     private TextView tvHeartRefillTime;
