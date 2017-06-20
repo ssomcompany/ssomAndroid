@@ -15,6 +15,12 @@ public class CommonConst {
     public static final String SSOM = "ssom";
     public static final String SSOA = "ssoseyo";
 
+    // ssom purchase
+    public static final String HEART_2 = "hearts_2";
+    public static final String HEART_8 = "hearts_8";
+    public static final String HEART_17 = "hearts_17";
+    public static final String HEART_28 = "hearts_28";
+
     // image file size
     public static final int LIMIT_IMAGE_SIZE = 1024 * 1024 * 10;
 
