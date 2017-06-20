@@ -24,17 +24,18 @@ import com.skplanet.dodo.IapPlugin;
 import com.skplanet.dodo.IapResponse;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
+import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.AddHeartCount;
+import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.purchase.StoreProductListRequest;
 import com.ssomcompany.ssomclient.purchase.StorePurchaseResponse;
 import com.ssomcompany.ssomclient.purchase.model.StoreParam;
 import com.ssomcompany.ssomclient.purchase.model.StoreProduct;
-import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.MessageManager;
 
@@ -221,19 +222,19 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
             final String itemId;
             switch (v.getId()) {
                 case R.id.layout_heart_first:
-                    itemId = items[0];
+                    itemId = CommonConst.HEART_2;
                     break;
                 case R.id.layout_heart_second:
-                    itemId = items[1];
+                    itemId = CommonConst.HEART_8;
                     break;
                 case R.id.layout_heart_third:
-                    itemId = items[2];
+                    itemId = CommonConst.HEART_17;
                     break;
                 case R.id.layout_heart_fourth:
-                    itemId = items[3];
+                    itemId = CommonConst.HEART_28;
                     break;
                 default:
-                    itemId = items[0];
+                    itemId = CommonConst.HEART_2;
                     break;
             }
 
