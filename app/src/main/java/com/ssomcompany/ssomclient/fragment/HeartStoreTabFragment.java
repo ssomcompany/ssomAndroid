@@ -1,7 +1,10 @@
 package com.ssomcompany.ssomclient.fragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -16,6 +19,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.skplanet.dodo.IapPlugin;
+import com.skplanet.dodo.IapResponse;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -25,9 +31,18 @@ import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.api.AddHeartCount;
+import com.ssomcompany.ssomclient.purchase.StoreProductListRequest;
+import com.ssomcompany.ssomclient.purchase.StorePurchaseResponse;
+import com.ssomcompany.ssomclient.purchase.model.StoreParam;
+import com.ssomcompany.ssomclient.purchase.model.StoreProduct;
 import com.ssomcompany.ssomclient.network.model.SsomResponse;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.MessageManager;
+
+import java.util.ArrayList;
+import java.util.Locale;
+
+import static com.ssomcompany.ssomclient.common.CommonConst.oneAppId;
 
 public class HeartStoreTabFragment extends RetainedStateFragment implements View.OnClickListener, MessageCountCheck {
     private static final String TAG = HeartStoreTabFragment.class.getSimpleName();
@@ -42,9 +57,17 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
     private TextView tvHeartCount;
     private TextView tvHeartRefillTime;
 
+    private TextView firstPrice;
+    private TextView secondPrice;
+    private TextView thirdPrice;
+    private TextView fourthPrice;
+
     // heart timer 관련
     private CountDownTimer timerTask;
     private boolean timerIsRunning;
+
+    // one store 결제 관련
+    private IapPlugin mPlugin;
 
     @Override
     public void onResume() {
@@ -59,10 +82,60 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
 
         tvHeartCount = (TextView) view.findViewById(R.id.tv_heart_count);
         tvHeartRefillTime = (TextView) view.findViewById(R.id.tv_heart_refill_time);
-        final TextView firstPrice = (TextView) view.findViewById(R.id.heart_price_first);
-        final TextView secondPrice = (TextView) view.findViewById(R.id.heart_price_second);
-        final TextView thirdPrice = (TextView) view.findViewById(R.id.heart_price_third);
-        final TextView fourthPrice = (TextView) view.findViewById(R.id.heart_price_fourth);
+        firstPrice = (TextView) view.findViewById(R.id.heart_price_first);
+        secondPrice = (TextView) view.findViewById(R.id.heart_price_second);
+        thirdPrice = (TextView) view.findViewById(R.id.heart_price_third);
+        fourthPrice = (TextView) view.findViewById(R.id.heart_price_fourth);
+
+        StoreProductListRequest request = new StoreProductListRequest();
+        request.setMethod("request_product_info");
+        request.setParam(new StoreParam().setAppid(oneAppId).setProduct_id(new ArrayList<String>()));
+        mPlugin.sendCommandRequest(new Gson().toJson(request),
+                new IapPlugin.RequestCallback() {
+                    @Override
+                    public void onError(String s, String s1, String s2) {
+                        Log.e(TAG, s1);
+                        UiUtils.makeToastMessage(getActivity(), s2);
+                    }
+
+                    @Override
+                    public void onResponse(IapResponse data) {
+                        if (data == null || data.getContentLength() == 0) {
+                            UiUtils.makeToastMessage(getActivity(), "스토어에서 조회된 결과가 없습니다.");
+                            return;
+                        }
+
+                        Gson gson = new Gson();
+                        StorePurchaseResponse response = gson.fromJson(data.getContentToString(), StorePurchaseResponse.class);
+                        if(response == null || response.getResult() == null) {
+                            UiUtils.makeToastMessage(getActivity(), "데이터 변환에 실패하였습니다.");
+                            return;
+                        }
+
+                        if("0000".equals(response.getResult().getCode())) {
+                            String price;
+                            for(StoreProduct product : response.getResult().getProduct()) {
+                                price = String.format(Locale.getDefault(), "￦%,d", Math.round(product.getPrice()));
+                                switch (product.getId()) {
+                                    case CommonConst.HEART_2 :
+                                        firstPrice.setText(price);
+                                        break;
+                                    case CommonConst.HEART_8 :
+                                        secondPrice.setText(price);
+                                        break;
+                                    case CommonConst.HEART_17 :
+                                        thirdPrice.setText(price);
+                                        break;
+                                    case CommonConst.HEART_28 :
+                                        fourthPrice.setText(price);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                });
 
         view.findViewById(R.id.layout_heart_first).setOnClickListener(this);
         view.findViewById(R.id.layout_heart_second).setOnClickListener(this);
@@ -153,24 +226,97 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
     @Override
     public void onClick(View v) {
         try {
+            final String itemId;
             switch (v.getId()) {
                 case R.id.layout_heart_first:
-
+                    itemId = items[0];
                     break;
                 case R.id.layout_heart_second:
-
+                    itemId = items[1];
                     break;
                 case R.id.layout_heart_third:
-
+                    itemId = items[2];
                     break;
                 case R.id.layout_heart_fourth:
-
+                    itemId = items[3];
+                    break;
+                default:
+                    itemId = items[0];
                     break;
             }
+
+            mPlugin.sendPaymentRequest("appid=" + oneAppId + "&product_id=" + itemId,
+                    new IapPlugin.RequestCallback() {
+                        @Override
+                        public void onError(String s, String s1, String s2) {
+                            Log.e(TAG, s1);
+                            UiUtils.makeToastMessage(getActivity(), s2);
+                        }
+
+                        @Override
+                        public void onResponse(IapResponse data) {
+                            if (data == null || data.getContentLength() == 0) {
+                                UiUtils.makeToastMessage(getActivity(), "스토어에서 조회된 결과가 없습니다.");
+                                return;
+                            }
+
+                            Gson gson = new Gson();
+                            StorePurchaseResponse response = gson.fromJson(data.getContentToString(), StorePurchaseResponse.class);
+                            if(response == null || response.getResult() == null) {
+                                UiUtils.makeToastMessage(getActivity(), "데이터 변환에 실패하였습니다.");
+                                return;
+                            }
+
+                            if("0000".equals(response.getResult().getCode())) {
+                                showProgressDialog(false);
+                                APICaller.addHeartCount(getToken(), getHeartCount(itemId), response.getResult().getTxid(),
+                                        new NetworkManager.NetworkListener<SsomResponse<AddHeartCount.Response>>() {
+                                            @Override
+                                            public void onResponse(SsomResponse<AddHeartCount.Response> response) {
+                                                if(response.isSuccess()) {
+                                                    Log.d(TAG, "success... : " + response.getData().toString());
+
+                                                    Intent intent = new Intent();
+                                                    intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
+                                                    intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.getData().getHeartsCount());
+                                                    LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(intent);
+
+                                                    UiUtils.makeToastMessage(getActivity(), "구매해주셔서 감사합니다. 하트를 채워드릴게욤 =)");
+                                                } else {
+                                                    showErrorMessage();
+                                                }
+                                                dismissProgressDialog();
+                                            }
+                                        });
+                            }
+                        }
+                    });
         } catch (IllegalStateException e) {
             UiUtils.makeToastMessage(getActivity(), "결제가 진행 중 입니다.");
             e.printStackTrace();
         }
+    }
+
+    private int getHeartCount(String itemId) {
+        int count;
+        switch (itemId) {
+            case CommonConst.HEART_2 :
+                count = 2;
+                break;
+            case CommonConst.HEART_8 :
+                count = 8;
+                break;
+            case CommonConst.HEART_17 :
+                count = 17;
+                break;
+            case CommonConst.HEART_28 :
+                count = 28;
+                break;
+            default:
+                count = 0;
+                break;
+        }
+        return count;
     }
 
     @Override
@@ -190,5 +336,31 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
         if(timerTask != null && timerIsRunning) {
             timerTask.cancel();
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        // injection plugin
+        mPlugin = IapPlugin.getPlugin(context, "development");
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            mPlugin = IapPlugin.getPlugin(activity, "development");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        // release instance
+        mPlugin.exit();
     }
 }
