@@ -41,11 +41,11 @@ import com.ssomcompany.ssomclient.push.MessageManager;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import static com.ssomcompany.ssomclient.common.CommonConst.oneAppId;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.ssomcompany.ssomclient.common.CommonConst.oneAppId;
 
 public class HeartStoreTabFragment extends RetainedStateFragment implements View.OnClickListener, MessageCountCheck {
     private static final String TAG = HeartStoreTabFragment.class.getSimpleName();
@@ -271,16 +271,17 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
 
                             if("0000".equals(response.getResult().getCode())) {
                                 showProgressDialog(false);
-                                APICaller.addHeartCount(getToken(), getHeartCount(itemId), response.getResult().getTxid(),
-                                        new NetworkManager.NetworkListener<SsomResponse<AddHeartCount.Response>>() {
+                                RetrofitManager.getInstance().create(UserService.class)
+                                        .addHeart(String.valueOf(getHeartCount(itemId)), "android", response.getResult().getTxid())
+                                        .enqueue(new Callback<HeartResult>() {
                                             @Override
-                                            public void onResponse(SsomResponse<AddHeartCount.Response> response) {
-                                                if(response.isSuccess()) {
-                                                    Log.d(TAG, "success... : " + response.getData().toString());
+                                            public void onResponse(Call<HeartResult> call, Response<HeartResult> response) {
+                                                if(response.isSuccessful()) {
+                                                    Log.d(TAG, "success... : " + response.body().toString());
 
                                                     Intent intent = new Intent();
                                                     intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
-                                                    intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.getData().getHeartsCount());
+                                                    intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.body().getHeartsCount());
                                                     LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(intent);
 
                                                     UiUtils.makeToastMessage(getActivity(), "구매해주셔서 감사합니다. 하트를 채워드릴게욤 =)");
@@ -288,6 +289,11 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
                                                     showErrorMessage();
                                                 }
                                                 dismissProgressDialog();
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<HeartResult> call, Throwable t) {
+
                                             }
                                         });
                             }
