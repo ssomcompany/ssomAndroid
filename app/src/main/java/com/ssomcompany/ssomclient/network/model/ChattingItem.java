@@ -1,4 +1,4 @@
-package com.ssomcompany.ssomclient.network.api.model;
+package com.ssomcompany.ssomclient.network.model;
 
 public class ChattingItem {
     public enum MessageType {

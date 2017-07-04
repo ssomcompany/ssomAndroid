@@ -21,6 +21,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,7 +35,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.common.BitmapWorkerTask;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.RoundImage;
@@ -40,14 +42,14 @@ import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.SsomPermission;
 import com.ssomcompany.ssomclient.control.ViewListener;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
+import com.ssomcompany.ssomclient.network.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback {
     private static final String TAG = SsomMapActivity.class.getSimpleName();
@@ -326,53 +328,31 @@ public class SsomMapActivity extends BaseActivity implements OnMapReadyCallback 
         markers = new ArrayList<>();
         for(int i = 0 ; i < 2 ; i++) {
             final boolean isOwnerItem = i == 0;
-            final String thumbnailImageUrl = (isOwnerItem ? item.getOwnerImageUrl() : item.getParticipantImageUrl()) + "?thumbnail=200";
+            final String thumbnailImageUrl = isOwnerItem ? item.getOwnerThumbnailImageUrl() : item.getParticipantThumbnailImageUrl();
             final double lat = isOwnerItem ? item.getLatitude() : iAmOwner ? yourLocation.getLatitude() : myLocation.getLatitude();
             final double lon = isOwnerItem ? item.getLongitude() : iAmOwner ? yourLocation.getLongitude() : myLocation.getLongitude();
 
-            if (!thumbnailImageUrl.startsWith("?") && NetworkManager.getInstance().hasBitmapInCache(thumbnailImageUrl)) {
-                if (NetworkManager.getInstance().hasBitmapFromMemoryCache(thumbnailImageUrl)) {
-                    // get bitmap from memory cache
-                    marker = mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(lat, lon)).draggable(false)
-                            .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getStatus(), isOwnerItem ? item.getSsomType() :
-                                            CommonConst.SSOM.equals(item.getSsomType()) ? CommonConst.SSOA : CommonConst.SSOM,
-                                    NetworkManager.getInstance().getBitmapFromMemoryCache(thumbnailImageUrl)))));
-                    markers.add(marker);
-                    if(!isOwnerItem) setBoundsBetweenMarkers(true);
-                } else {
-                    // get bitmap from disk cache
-                    BitmapWorkerTask diskCacheTask = new BitmapWorkerTask() {
-                        @Override
-                        protected void onPostExecute(Bitmap result) {
-                            super.onPostExecute(result);
-                            if (result != null) {
-                                // Add final bitmap to caches
-                                NetworkManager.getInstance().addBitmapToCache(thumbnailImageUrl, result);
-
-                                marker = mMap.addMarker(new MarkerOptions()
-                                        .position(new LatLng(lat, lon)).draggable(false)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getStatus(), isOwnerItem ? item.getSsomType() :
-                                                CommonConst.SSOM.equals(item.getSsomType()) ? CommonConst.SSOA : CommonConst.SSOM, result))));
-
-                                markers.add(marker);
-                                if(!isOwnerItem) setBoundsBetweenMarkers(true);
-                            }
-                        }
-                    };
-
-                    diskCacheTask.execute(thumbnailImageUrl);
-                }
-            } else {
+            try {
                 marker = mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(lat, lon)).draggable(false)
-                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getStatus(), isOwnerItem ? item.getSsomType() :
-                                CommonConst.SSOM.equals(item.getSsomType()) ? CommonConst.SSOA : CommonConst.SSOM,
-                                BitmapFactory.decodeResource(getResources(), R.drawable.profile_img_basic)))));
-
-                markers.add(marker);
-                if(!isOwnerItem) setBoundsBetweenMarkers(true);
+                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item.getStatus(),
+                                isOwnerItem ? item.getSsomType() : CommonConst.SSOM.equals(item.getSsomType()) ? CommonConst.SSOA : CommonConst.SSOM,
+                                Glide.with(this).load(thumbnailImageUrl)
+                                        .asBitmap()
+                                        .placeholder(R.drawable.profile_img_basic)
+                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                        .format(DecodeFormat.PREFER_RGB_565)
+                                        .fitCenter()
+                                        .into(49, 57)
+                                        .get()))));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
             }
+
+            markers.add(marker);
+            if(!isOwnerItem) setBoundsBetweenMarkers(true);
 
         }
     }

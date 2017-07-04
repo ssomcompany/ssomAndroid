@@ -23,15 +23,16 @@ import com.ssomcompany.ssomclient.adapter.ChattingAdapter;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.network.APICaller;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.GetChattingList;
-import com.ssomcompany.ssomclient.network.api.SendChattingMessage;
-import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
-import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
-import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.network.RetrofitManager;
+import com.ssomcompany.ssomclient.network.api.ChatService;
+import com.ssomcompany.ssomclient.network.model.ChatRoomItem;
+import com.ssomcompany.ssomclient.network.model.ChattingItem;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChattingFragment extends BaseFragment {
     private static final String TAG = ChattingFragment.class.getSimpleName();
@@ -101,6 +102,7 @@ public class ChattingFragment extends BaseFragment {
         if(getArguments() != null && !getArguments().getBoolean(IS_READ, false)) {
             Intent intent = new Intent(getActivity(), SsomChattingGuideActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
         }
 
@@ -118,14 +120,15 @@ public class ChattingFragment extends BaseFragment {
         super.onStart();
 
         showProgressDialog();
-        APICaller.getChattingList(getToken(), roomItem.getId(),
-                new NetworkManager.NetworkListener<SsomResponse<GetChattingList.Response>>() {
+        RetrofitManager.getInstance().create(ChatService.class)
+                .requestChatList(roomItem.getId())
+                .enqueue(new Callback<ArrayList<ChattingItem>>() {
                     @Override
-                    public void onResponse(SsomResponse<GetChattingList.Response> response) {
-                        if(response.isSuccess()) {
+                    public void onResponse(Call<ArrayList<ChattingItem>> call, Response<ArrayList<ChattingItem>> response) {
+                        if(response.isSuccessful()) {
                             Log.d(TAG, "response : " + response);
-                            if(response.getData() != null) {
-                                chatList = response.getData().getChattingList();
+                            if(response.body() != null) {
+                                chatList = response.body();
                                 chatList.add(0, new ChattingItem().setStatus(ChattingItem.MessageType.initial)
                                         .setMsgType(CommonConst.Chatting.SYSTEM).setTimestamp(roomItem.getCreatedTimestamp()));
                                 mAdapter.setItemList(chatList);
@@ -135,11 +138,15 @@ public class ChattingFragment extends BaseFragment {
                                 showErrorMessage();
                             }
                         } else {
-                            Log.e(TAG, "Response error with code " + response.getResultCode() +
-                                    ", message : " + response.getMessage(), response.getError());
+                            Log.e(TAG, "Response error with code " + response.code() + ", message : " + response.message());
                             showErrorMessage();
                         }
                         dismissProgressDialog();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ArrayList<ChattingItem>> call, Throwable t) {
+
                     }
                 });
     }
@@ -205,17 +212,17 @@ public class ChattingFragment extends BaseFragment {
                 isSending = true;
                 sendingMsg = String.valueOf(editMessage.getText());
                 // 내가 보고 있는 목록의 가장 마지막 메시지의 시간을 가져와서 보내주면 그 사이 받은 메시지를 return 해줌
-                APICaller.sendChattingMessage(getToken(), roomItem.getId(),
-                        mAdapter.getItemList().get(mAdapter.getItemList().size() - 1).getTimestamp(), sendingMsg,
-                        new NetworkManager.NetworkListener<SsomResponse<SendChattingMessage.Response>>() {
+                RetrofitManager.getInstance().create(ChatService.class)
+                        .sendChatMessage(roomItem.getId(), mAdapter.getItemList().get(mAdapter.getItemList().size() - 1).getTimestamp(), sendingMsg)
+                        .enqueue(new Callback<ArrayList<ChattingItem>>() {
                             @Override
-                            public void onResponse(SsomResponse<SendChattingMessage.Response> response) {
+                            public void onResponse(Call<ArrayList<ChattingItem>> call, Response<ArrayList<ChattingItem>> response) {
                                 isSending = false;
-                                if(response.isSuccess()) {
+                                if(response.isSuccessful()) {
                                     Log.d(TAG, "response : " + response);
-                                    if(response.getData() != null) {
+                                    if(response.body() != null) {
                                         Log.d(TAG, "sent a message successfully.");
-                                        for(ChattingItem item : response.getData().getChattingList()) {
+                                        for(ChattingItem item : response.body()) {
                                             mAdapter.add(item);
                                         }
                                         mAdapter.add(sendingMsg);
@@ -226,10 +233,14 @@ public class ChattingFragment extends BaseFragment {
                                         showErrorMessage();
                                     }
                                 } else {
-                                    Log.e(TAG, "Response error with code " + response.getResultCode() +
-                                            ", message : " + response.getMessage(), response.getError());
+                                    Log.e(TAG, "Response error with code " + response.code() + ", message : " + response.message());
                                     showErrorMessage();
                                 }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ArrayList<ChattingItem>> call, Throwable t) {
+
                             }
                         });
             }

@@ -17,18 +17,18 @@ import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.fragment.ChattingFragment;
-import com.ssomcompany.ssomclient.network.APICaller;
-import com.ssomcompany.ssomclient.network.NetworkConstant;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.SsomMeetingRequest;
-import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
-import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
-import com.ssomcompany.ssomclient.network.model.BaseResponse;
-import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.network.RetrofitManager;
+import com.ssomcompany.ssomclient.network.api.ChatService;
+import com.ssomcompany.ssomclient.network.model.ChatRoomItem;
+import com.ssomcompany.ssomclient.network.model.ChattingItem;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.MessageManager;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SsomChattingActivity extends BaseActivity implements MessageCountCheck {
     private static final String TAG = SsomChattingActivity.class.getSimpleName();
@@ -42,6 +42,13 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
 
     private SsomPreferences chatPref;
     private InputMethodManager imm;
+
+    // network
+    private ChatService service;
+
+    private enum REQUEST_STATUS {
+        REQUEST, APPROVE, DELETE
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +66,7 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
             return;
         }
 
+        service = RetrofitManager.getInstance().create(ChatService.class);
         initSsomBarView();
         startChattingFragment();
     }
@@ -102,7 +110,7 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
             final int dialogMsg;
             final int dialogOkBtn;
             final int dialogNoBtn;
-            final int methodType;
+            final REQUEST_STATUS status;
 
             if (CommonConst.Chatting.MEETING_REQUEST.equals(chatRoomItem.getStatus())) {
                 boolean isMyRequest = getUserId().equals(chatRoomItem.getRequestId());
@@ -111,7 +119,7 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
                 ssomBar.setChattingRoomBtnMeetingTitle(isMyRequest ?
                         getString(R.string.chat_room_info_btn_sent) : getString(R.string.dialog_meet_apply));
                 chattingFragment.enableMapLayout(false);
-                methodType = isMyRequest ? NetworkConstant.Method.DELETE : NetworkConstant.Method.PUT;
+                status = isMyRequest ?  REQUEST_STATUS.DELETE : REQUEST_STATUS.APPROVE;
                 dialogMsg = isMyRequest ? R.string.dialog_meet_request_cancel_message : R.string.dialog_meet_received_message;
                 dialogOkBtn = isMyRequest ? R.string.chat_room_info_btn_sent : R.string.dialog_meet_apply;
                 dialogNoBtn = isMyRequest ? R.string.dialog_close : R.string.dialog_not_now;
@@ -120,7 +128,7 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
                 ssomBar.setChattingRoomBtnMeetingOnOff(false);
                 ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_finish));
                 chattingFragment.enableMapLayout(true);
-                methodType = NetworkConstant.Method.DELETE;
+                status = REQUEST_STATUS.DELETE;
                 dialogMsg = R.string.dialog_meet_finish_message;
                 dialogOkBtn = R.string.dialog_meet_finish;
                 dialogNoBtn = R.string.dialog_close;
@@ -128,7 +136,7 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
                 ssomBar.setChattingRoomBtnMeetingOnOff(true);
                 ssomBar.setChattingRoomBtnMeetingTitle(getString(R.string.dialog_meet_request));
                 chattingFragment.enableMapLayout(false);
-                methodType = NetworkConstant.Method.POST;
+                status = REQUEST_STATUS.REQUEST;
                 dialogMsg = R.string.dialog_meet_request_message;
                 dialogOkBtn = R.string.dialog_meet;
                 dialogNoBtn = R.string.dialog_cancel;
@@ -142,47 +150,51 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    APICaller.sendChattingRequest(getToken(), chatRoomItem.getId(), methodType,
-                                            new NetworkManager.NetworkListener<SsomResponse<SsomMeetingRequest.Response>>() {
-                                                @Override
-                                                public void onResponse(SsomResponse<SsomMeetingRequest.Response> response) {
-                                                    if(response.isSuccess()) {
-                                                        switch (methodType) {
-                                                            case NetworkConstant.Method.PUT:
-                                                                chatRoomItem.setRequestId(getUserId());
-                                                                chatRoomItem.setStatus(CommonConst.Chatting.MEETING_APPROVE);
-                                                                chattingFragment.addChatting(new ChattingItem()
-                                                                        .setStatus(ChattingItem.MessageType.approve)
-                                                                        .setMsgType(CommonConst.Chatting.SYSTEM)
-                                                                        .setFromUserId(getUserId())
-                                                                        .setTimestamp(System.currentTimeMillis()));
-                                                                break;
-                                                            case NetworkConstant.Method.DELETE:
-                                                                chatRoomItem.setRequestId(null);
-                                                                chatRoomItem.setStatus(null);
-                                                                chattingFragment.addChatting(new ChattingItem()
-                                                                        .setStatus(ChattingItem.MessageType.cancel)
-                                                                        .setMsgType(CommonConst.Chatting.SYSTEM)
-                                                                        .setFromUserId(getUserId())
-                                                                        .setTimestamp(System.currentTimeMillis()));
-                                                                break;
-                                                            case NetworkConstant.Method.POST:
-                                                            default:
-                                                                chatRoomItem.setRequestId(getUserId());
-                                                                chatRoomItem.setStatus(CommonConst.Chatting.MEETING_REQUEST);
-                                                                chattingFragment.addChatting(new ChattingItem()
-                                                                        .setStatus(ChattingItem.MessageType.request)
-                                                                        .setMsgType(CommonConst.Chatting.SYSTEM)
-                                                                        .setFromUserId(getUserId())
-                                                                        .setTimestamp(System.currentTimeMillis()));
-                                                                break;
-                                                        }
-                                                        setMeetingButton();
-                                                    } else {
-                                                        showErrorMessage();
-                                                    }
+                                    requestMethod(status).enqueue(new Callback<Void>() {
+                                        @Override
+                                        public void onResponse(Call<Void> call, Response<Void> response) {
+                                            if(response.isSuccessful()) {
+                                                switch (status) {
+                                                    case APPROVE:
+                                                        chatRoomItem.setRequestId(getUserId());
+                                                        chatRoomItem.setStatus(CommonConst.Chatting.MEETING_APPROVE);
+                                                        chattingFragment.addChatting(new ChattingItem()
+                                                                .setStatus(ChattingItem.MessageType.approve)
+                                                                .setMsgType(CommonConst.Chatting.SYSTEM)
+                                                                .setFromUserId(getUserId())
+                                                                .setTimestamp(System.currentTimeMillis()));
+                                                        break;
+                                                    case DELETE:
+                                                        chatRoomItem.setRequestId(null);
+                                                        chatRoomItem.setStatus(null);
+                                                        chattingFragment.addChatting(new ChattingItem()
+                                                                .setStatus(ChattingItem.MessageType.cancel)
+                                                                .setMsgType(CommonConst.Chatting.SYSTEM)
+                                                                .setFromUserId(getUserId())
+                                                                .setTimestamp(System.currentTimeMillis()));
+                                                        break;
+                                                    case REQUEST:
+                                                    default:
+                                                        chatRoomItem.setRequestId(getUserId());
+                                                        chatRoomItem.setStatus(CommonConst.Chatting.MEETING_REQUEST);
+                                                        chattingFragment.addChatting(new ChattingItem()
+                                                                .setStatus(ChattingItem.MessageType.request)
+                                                                .setMsgType(CommonConst.Chatting.SYSTEM)
+                                                                .setFromUserId(getUserId())
+                                                                .setTimestamp(System.currentTimeMillis()));
+                                                        break;
                                                 }
-                                            });
+                                                setMeetingButton();
+                                            } else {
+                                                showErrorMessage();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Void> call, Throwable t) {
+
+                                        }
+                                    });
                                 }
                             }, new DialogInterface.OnClickListener() {
                                 @Override
@@ -192,6 +204,23 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
                 }
             });
         }
+    }
+
+    private Call<Void> requestMethod(REQUEST_STATUS status) {
+        Call<Void> call;
+        switch (status) {
+            case APPROVE:
+                call = service.approveMeeting(chatRoomItem.getId());
+                break;
+            case DELETE:
+                call = service.cancelMeeting(chatRoomItem.getId());
+                break;
+            case REQUEST:
+            default:
+                call = service.requestMeeting(chatRoomItem.getId());
+                break;
+        }
+        return call;
     }
 
     private void startChattingFragment() {
@@ -214,16 +243,21 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            APICaller.sendChattingRequest(getToken(), chatRoomItem.getId(), NetworkConstant.Method.DELETE,
-                                    new NetworkManager.NetworkListener<SsomResponse<SsomMeetingRequest.Response>>() {
+                            service.cancelMeeting(chatRoomItem.getId())
+                                    .enqueue(new Callback<Void>() {
                                         @Override
-                                        public void onResponse(SsomResponse<SsomMeetingRequest.Response> response) {
-                                            if(response.isSuccess()) {
+                                        public void onResponse(Call<Void> call, Response<Void> response) {
+                                            if(response.isSuccessful()) {
                                                 chatRoomItem.setStatus(null);
                                                 onBackPressed();
                                             } else {
                                                 showErrorMessage();
                                             }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Void> call, Throwable t) {
+
                                         }
                                     });
                         }
@@ -235,12 +269,20 @@ public class SsomChattingActivity extends BaseActivity implements MessageCountCh
             return;
         }
 
-        APICaller.updateChattingRoom(getToken(), chatRoomItem.getId(), new NetworkManager.NetworkListener<BaseResponse>() {
-            @Override
-            public void onResponse(BaseResponse response) {
-                if(response.isSuccess()) Log.d(TAG, "success to update chatting time");
-            }
-        });
+        service.updateChatRoom(chatRoomItem.getId())
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if(response.isSuccessful()) {
+                            Log.d(TAG, "success to update chatting time");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+
+                    }
+                });
         super.onBackPressed();
     }
 

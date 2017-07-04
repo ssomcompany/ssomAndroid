@@ -10,7 +10,7 @@
         android:src="@drawable/photo_empty_full"
         android:layout_centerInParent="true"/>
     
-    <com.ssomcompany.ssomclient.widget.NetworkImageView
+    <uk.co.senab.photoview.PhotoView
         android:id="@+id/detail_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

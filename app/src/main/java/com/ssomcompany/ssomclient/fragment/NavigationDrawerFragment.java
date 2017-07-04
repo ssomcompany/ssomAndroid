@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.adapter.DrawerMenuAdapter;
@@ -148,6 +149,7 @@ public class NavigationDrawerFragment extends Fragment {
         Glide.with(this).load(session.getString(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, "") + "?thumbnail=200")
                 .crossFade()
                 .bitmapTransform(new CropCircleTransformation(getActivity()))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imgToday);
     }
 

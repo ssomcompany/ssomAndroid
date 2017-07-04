@@ -1,6 +1,4 @@
-package com.ssomcompany.ssomclient.network.api.model;
-
-import android.util.Log;
+package com.ssomcompany.ssomclient.network.model;
 
 import com.ssomcompany.ssomclient.common.ToStringHelperClass;
 import com.ssomcompany.ssomclient.common.Util;

@@ -31,6 +31,12 @@ public class SsomChattingGuideActivity extends Activity {
     }
 
     @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    @Override
     public void onBackPressed() {
         // do nothing
     }

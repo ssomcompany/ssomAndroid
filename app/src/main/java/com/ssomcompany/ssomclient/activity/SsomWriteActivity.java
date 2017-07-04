@@ -28,8 +28,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.FilterType;
@@ -39,13 +38,12 @@ import com.ssomcompany.ssomclient.common.UniqueIdGenUtil;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.SsomPermission;
 import com.ssomcompany.ssomclient.control.ViewListener;
-import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
-import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.network.NetworkUtil;
-import com.ssomcompany.ssomclient.network.api.SsomPostCreate;
-import com.ssomcompany.ssomclient.network.api.UploadFiles;
-import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.network.RetrofitManager;
+import com.ssomcompany.ssomclient.network.api.SsomPostService;
+import com.ssomcompany.ssomclient.network.api.UploadFile;
+import com.ssomcompany.ssomclient.network.model.FileResponse;
 import com.ssomcompany.ssomclient.widget.SsomToast;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
@@ -57,6 +55,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SsomWriteActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = SsomWriteActivity.class.getSimpleName();
@@ -163,7 +168,10 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
 
         // 올사가 있는 경우 로딩함. 없는경우 empty 이미지 보여짐
         if(!TextUtils.isEmpty(getTodayImageUrl())) {
-            Glide.with(this).load(getTodayImageUrl()).fitCenter().into(imgProfile);
+            Glide.with(this).load(getTodayImageUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .fitCenter()
+                    .into(imgProfile);
             imgEmpty.setVisibility(View.INVISIBLE);
             imgShadow.setVisibility(View.INVISIBLE);
         }
@@ -505,70 +513,52 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
             }
 
             if(!TextUtils.isEmpty(picturePath)) {
-//                APICaller.ssomImageUpload(this, new Response.Listener<NetworkResponse>() {
-//                    @Override
-//                    public void onResponse(NetworkResponse response) {
-//                        dismissProgressDialog();
-//                        if(response.statusCode != 200 || response.data == null) {
-//                            showErrorMessage();
-//                            return;
-//                        }
-//
-//                        String jsonData = new String(response.data);
-//                        Gson gson = new Gson();
-//                        Map data = gson.fromJson(jsonData, Map.class);
-//
-//                        if(data.get(CommonConst.Intent.FILE_ID) == null) {
-//                            showErrorMessage();
-//                            return;
-//                        }
-//
-//                        String fileId = data.get(CommonConst.Intent.FILE_ID).toString();
-//                        final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
-//                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
-//                        Bitmap saveBitmap = BitmapFactory.decodeFile(picturePath);
-//                        int orientation = Util.getOrientationFromUri(picturePath);
-//                        if(orientation != 0) {
-//                            Matrix matrix = new Matrix();
-//                            matrix.postRotate(orientation);
-//                            saveBitmap = Bitmap.createBitmap(saveBitmap, 0, 0, saveBitmap.getWidth(), saveBitmap.getHeight(), matrix, true);
-//                        }
-//
-//                        NetworkManager.getInstance().addBitmapToCache(imageUrl, saveBitmap);
-//
-//                        createPost(fileId);
-//                    }
-//                }, picturePath);
+                // create file
+                File file = new File(picturePath);
 
-                final UploadFiles uploadTask = new UploadFiles() {
+                // create RequestBody instance from file
+                RequestBody requestFile =
+                        RequestBody.create(
+                                MediaType.parse("multipart/form-data"),
+                                file
+                        );
+
+                // MultipartBody.Part is used to send also the actual file name
+                MultipartBody.Part body =
+                        MultipartBody.Part.createFormData("pict", file.getName(), requestFile);
+
+                final Call<FileResponse> call = RetrofitManager.getInstance().create(UploadFile.class)
+                        .uploadFile(body);
+
+                call.enqueue(new Callback<FileResponse>() {
                     @Override
-                    protected void onPostExecute(String result) {
-                        super.onPostExecute(result);
-                        Log.d(TAG, "Response from server: " + result);
-                        try {
-                            Gson gson = new Gson();
-                            Map data = gson.fromJson(result, Map.class);
-                            if (data.get(CommonConst.Intent.FILE_ID) != null) {
-                                String fileId = data.get(CommonConst.Intent.FILE_ID).toString();
-                                final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
-                                getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
-                                createPost(fileId);
-                            } else {
-                                showErrorMessage();
-                            }
-                        } catch (JsonSyntaxException e) {
-                            Log.e(TAG, "error with message : " + e.toString());
-                            SsomToast.makeText(SsomWriteActivity.this, "업로드할 수 없습니다.\n문제가 지속될 경우 관리자에게\n문의하시기 바랍니다.");
-                            finish();
+                    public void onResponse(Call<FileResponse> call, Response<FileResponse> response) {
+                        Log.v("Upload", "success");
+                        dismissProgressDialog();
+                        FileResponse fileResponse = response.body();
+                        if(response.isSuccessful() && fileResponse != null) {
+                            String fileId = fileResponse.getFileId();
+                            Log.v("Upload", "fileId : " + fileId);
+                            final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
+                            getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
+                            createPost(fileId);
+                        } else {
+                            showErrorMessage();
                         }
                     }
-                };
 
-                uploadTask.execute(getToken(), picturePath);
+                    @Override
+                    public void onFailure(Call<FileResponse> call, Throwable t) {
+                        Log.e("Upload error:", t.getMessage());
+                        SsomToast.makeText(SsomWriteActivity.this, "업로드할 수 없습니다.\n문제가 지속될 경우 관리자에게\n문의하시기 바랍니다.");
+                        finish();
+                    }
+                });
+
                 showProgressDialog(true, new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
-                        uploadTask.cancel(true);
+                        call.cancel();
                     }
                 });
             } else {
@@ -638,25 +628,29 @@ public class SsomWriteActivity extends BaseActivity implements View.OnClickListe
         Log.d(TAG, "createPost()");
 
         showProgressDialog(false);
-        APICaller.ssomPostCreate(getToken(), "" + System.currentTimeMillis(), UniqueIdGenUtil.getId(getApplicationContext()),
-                Util.getEncodedString(editWriteContent.getText().toString()),
-                TextUtils.isEmpty(fileId) ? getTodayImageUrl() : NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId),
-                age.getValue(), people.getValue(),
-                tvSsomBalloon.isSelected() ? CommonConst.SSOM : CommonConst.SSOA, myLocation.getLatitude(), myLocation.getLongitude(),
-                new NetworkManager.NetworkListener<SsomResponse<SsomPostCreate.Response>>() {
+        RetrofitManager.getInstance().create(SsomPostService.class)
+                .createPost(String.valueOf(System.currentTimeMillis()), UniqueIdGenUtil.getId(getApplicationContext()),
+                        Util.getEncodedString(editWriteContent.getText().toString()),
+                        TextUtils.isEmpty(fileId) ? getTodayImageUrl() : NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId),
+                        age.getValue(), people.getValue(),
+                        tvSsomBalloon.isSelected() ? CommonConst.SSOM : CommonConst.SSOA, myLocation.getLatitude(), myLocation.getLongitude())
+                .enqueue(new Callback<Void>() {
                     @Override
-                    public void onResponse(SsomResponse<SsomPostCreate.Response> response) {
-                        if (response != null) {
-                            if (response.isSuccess()) {
-                                Log.d(TAG, "success to create post!");
-                                setResult(RESULT_OK);
-                                finish();
-                            } else {
-                                Log.d(TAG, "failed to create post!");
-                                showErrorMessage();
-                            }
-                            dismissProgressDialog();
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            Log.d(TAG, "success to create post!");
+                            setResult(RESULT_OK);
+                            finish();
+                        } else {
+                            Log.d(TAG, "failed to create post!");
+                            showErrorMessage();
                         }
+                        dismissProgressDialog();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+
                     }
                 });
     }

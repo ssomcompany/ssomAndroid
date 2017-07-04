@@ -13,10 +13,6 @@ import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.push.MessageManager;
 
-/**
- * Created by AaronMac on 2017. 1. 2..
- */
-
 public class RetainedStateFragment extends BaseFragment {
 
     @Override

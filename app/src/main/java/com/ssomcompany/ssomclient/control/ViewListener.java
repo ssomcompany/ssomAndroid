@@ -1,7 +1,7 @@
 package com.ssomcompany.ssomclient.control;
 
-import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.network.model.ChatRoomItem;
+import com.ssomcompany.ssomclient.network.model.SsomItem;
 
 import java.util.ArrayList;
 

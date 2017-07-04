@@ -21,9 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
@@ -31,7 +30,10 @@ import com.ssomcompany.ssomclient.control.SsomPermission;
 import com.ssomcompany.ssomclient.control.ViewListener;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
 import com.ssomcompany.ssomclient.network.NetworkUtil;
-import com.ssomcompany.ssomclient.network.api.UploadFiles;
+import com.ssomcompany.ssomclient.network.RetrofitManager;
+import com.ssomcompany.ssomclient.network.api.UploadFile;
+import com.ssomcompany.ssomclient.network.model.FileResponse;
+import com.ssomcompany.ssomclient.widget.SsomToast;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.io.File;
@@ -44,6 +46,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SsomTodayProfileActivity extends BaseActivity implements View.OnClickListener {
     private static final int REQUEST_SELECT_PICTURE = 10001;
@@ -80,6 +88,7 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
 
         Glide.with(this).load(getTodayImageUrl() + "?thumbnail=200")
                 .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .bitmapTransform(new CropCircleTransformation(this))
                 .into(profileImage);
     }
@@ -137,15 +146,31 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                     return;
                 }
 
-                final UploadFiles uploadTask = new UploadFiles() {
+                // create file
+                File file = new File(currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
+
+                // create RequestBody instance from file
+                RequestBody requestFile =
+                        RequestBody.create(
+                                MediaType.parse("multipart/form-data"),
+                                file
+                        );
+
+                // MultipartBody.Part is used to send also the actual file name
+                MultipartBody.Part body =
+                        MultipartBody.Part.createFormData("pict", file.getName(), requestFile);
+
+                final Call<FileResponse> call = RetrofitManager.getInstance().create(UploadFile.class)
+                        .uploadFile(body);
+
+                call.enqueue(new Callback<FileResponse>() {
                     @Override
-                    protected void onPostExecute(String result) {
-                        super.onPostExecute(result);
-                        Log.d(TAG, "Response from server: " + result);
-                        Gson gson = new Gson();
-                        Map data = gson.fromJson(result, Map.class);
-                        if(data.get(CommonConst.Intent.FILE_ID) != null) {
-                            String fileId = data.get(CommonConst.Intent.FILE_ID).toString();
+                    public void onResponse(Call<FileResponse> call, Response<FileResponse> response) {
+                        Log.v("Upload", "success");
+                        FileResponse fileResponse = response.body();
+                        if(response.isSuccessful() && fileResponse != null) {
+                            String fileId = fileResponse.getFileId();
+                            Log.v("Upload", "fileId : " + fileId);
                             final String imageUrl = NetworkUtil.getSsomHostUrl().concat(NetworkConstant.API.IMAGE_PATH).concat(fileId);
                             getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, imageUrl);
                             setResult(RESULT_OK);
@@ -155,13 +180,18 @@ public class SsomTodayProfileActivity extends BaseActivity implements View.OnCli
                         }
                         dismissProgressDialog();
                     }
-                };
 
-                uploadTask.execute(getToken(), currentType == ButtonType.GALLERY ? picturePath : mCurrentPhotoPath);
+                    @Override
+                    public void onFailure(Call<FileResponse> call, Throwable t) {
+                        Log.e("Upload error:", t.getMessage());
+                        SsomToast.makeText(SsomTodayProfileActivity.this, "업로드할 수 없습니다.\n문제가 지속될 경우 관리자에게\n문의하시기 바랍니다.");
+                        finish();
+                    }
+                });
                 showProgressDialog(true, new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
-                        uploadTask.cancel(true);
+                        call.cancel();
                     }
                 });
                 break;
