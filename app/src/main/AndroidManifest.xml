@@ -53,7 +53,7 @@
         <meta-data android:name="com.onesignal.BadgeCount" android:value="DISABLE" />
 
         <!-- one store purchase -->
-        <meta-data android:name="iap:api_version" android:value="3" />
+        <meta-data android:name="iap:api_version" android:value="4" />
 
         <activity android:name=".activity.IntroActivity"
             android:launchMode="singleTop"
