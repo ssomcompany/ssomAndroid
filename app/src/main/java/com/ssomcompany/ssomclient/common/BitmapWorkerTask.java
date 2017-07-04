@@ -1,17 +1,24 @@
 package com.ssomcompany.ssomclient.common;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
-import com.ssomcompany.ssomclient.network.NetworkManager;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import java.lang.ref.WeakReference;
+import java.util.concurrent.ExecutionException;
 
 /**
- * Created by AaronMac on 2016. 10. 23..
+ * this task makes get from url with glide library asynchronous
  */
-
 public class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
+    private Context mContext;
+
+    public BitmapWorkerTask(Context context) {
+        mContext = context;
+    }
 
     @Override
     protected void onPreExecute() {
@@ -27,7 +34,21 @@ public class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
             return null;
         }
 
-        // Check disk cache in background thread
-        return NetworkManager.getInstance().getBitmapFromDiskCache(imageKey);
+        try {
+            return Glide.with(mContext)
+                    .load(imageKey)
+                    .asBitmap()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .format(DecodeFormat.PREFER_RGB_565)
+                    .fitCenter()
+                    .into(Util.convertDpToPixel(49), Util.convertDpToPixel(57))
+                    .get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

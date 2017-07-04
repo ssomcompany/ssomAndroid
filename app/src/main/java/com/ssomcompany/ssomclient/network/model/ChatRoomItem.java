@@ -1,4 +1,4 @@
-package com.ssomcompany.ssomclient.network.api.model;
+package com.ssomcompany.ssomclient.network.model;
 
 public class ChatRoomItem extends SsomItem {
     private String id;
@@ -84,11 +84,19 @@ public class ChatRoomItem extends SsomItem {
         this.ownerImageUrl = ownerImageUrl;
     }
 
+    public String getOwnerThumbnailImageUrl() {
+        return ownerImageUrl + "?thumbnail=200";
+    }
+
     public String getParticipantImageUrl() {
         return participantImageUrl;
     }
 
     public void setParticipantImageUrl(String participantImageUrl) {
         this.participantImageUrl = participantImageUrl;
+    }
+
+    public String getParticipantThumbnailImageUrl() {
+        return participantImageUrl + "?thumbnail=200";
     }
 }

@@ -12,15 +12,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.ImageLoader;
 import com.bumptech.glide.Glide;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
+import com.ssomcompany.ssomclient.network.model.ChatRoomItem;
 
 import java.util.ArrayList;
 
@@ -30,12 +28,10 @@ public class ChatRoomListAdapter extends BaseAdapter {
     private static final String TAG = ChatRoomListAdapter.class.getSimpleName();
 
     private Context context;
-    private ImageLoader mImageLoader;
     private ArrayList<ChatRoomItem> itemList;
 
     public ChatRoomListAdapter(Context context){
         this.context = context;
-        this.mImageLoader = NetworkManager.getInstance().getImageLoader();
     }
 
     public void setChatRoomList(ArrayList<ChatRoomItem> itemList) {
@@ -67,20 +63,20 @@ public class ChatRoomListAdapter extends BaseAdapter {
 
         if (convertView == null) {
             convertView = ((LayoutInflater) context
-                    .getSystemService(Activity.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.ssom_chat_list_item, parent, false);
+                    .getSystemService(Activity.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.ssom_chat_list_item, null);
 
             holder = new ChatItemViewHolder();
-            holder.setItemLayout(convertView.findViewById(R.id.item_layout));
-            holder.setImage((ImageView) convertView.findViewById(R.id.icon_list_image));
-            holder.setIconCircle((ImageView) convertView.findViewById(R.id.icon_circle));
-            holder.setIconIng((ImageView) convertView.findViewById(R.id.icon_ing));
-            holder.setTvChatInfo((TextView) convertView.findViewById(R.id.chat_information));
-            holder.setTvChatContent((TextView) convertView.findViewById(R.id.chat_content));
-            holder.setUnreadLayout((FrameLayout) convertView.findViewById(R.id.unread_layout));
-            holder.setImgUnreadCount((ImageView) convertView.findViewById(R.id.bg_unread_count));
-            holder.setUnreadCount((TextView) convertView.findViewById(R.id.unread_count));
-            holder.setTvDistance((TextView) convertView.findViewById(R.id.tv_distance));
-            holder.setTvTime((TextView) convertView.findViewById(R.id.tv_time));
+            holder.itemLayout = convertView.findViewById(R.id.item_layout);
+            holder.image = (ImageView) convertView.findViewById(R.id.icon_list_image);
+            holder.iconCircle = (ImageView) convertView.findViewById(R.id.icon_circle);
+            holder.iconIng = (ImageView) convertView.findViewById(R.id.icon_ing);
+            holder.tvChatInfo = (TextView) convertView.findViewById(R.id.chat_information);
+            holder.tvChatContent = (TextView) convertView.findViewById(R.id.chat_content);
+            holder.unreadLayout = (FrameLayout) convertView.findViewById(R.id.unread_layout);
+            holder.imgUnreadCount = (ImageView) convertView.findViewById(R.id.bg_unread_count);
+            holder.unreadCount = (TextView) convertView.findViewById(R.id.unread_count);
+            holder.tvDistance = (TextView) convertView.findViewById(R.id.tv_distance);
+            holder.tvTime = (TextView) convertView.findViewById(R.id.tv_time);
 
             convertView.setTag(holder);
         } else {
@@ -91,40 +87,40 @@ public class ChatRoomListAdapter extends BaseAdapter {
         ChatRoomItem item = itemList.get(position);
 
         if(CommonConst.Chatting.MEETING_REQUEST.equals(item.getStatus())) {
-            holder.getItemLayout().setBackgroundColor(context.getResources().getColor(R.color.pink_10));
+            holder.itemLayout.setBackgroundColor(context.getResources().getColor(R.color.pink_10));
         } else {
-            holder.getItemLayout().setBackgroundColor(context.getResources().getColor(R.color.white));
+            holder.itemLayout.setBackgroundColor(context.getResources().getColor(R.color.white));
         }
 
         // profile image
         Glide.with(context).load(((BaseActivity) context).getUserId().equals(item.getOwnerId()) ?
-                item.getParticipantImageUrl() + "?thumbnail=200" : item.getOwnerImageUrl() + "?thumbnail=200")
+                item.getParticipantThumbnailImageUrl() : item.getOwnerThumbnailImageUrl())
                 .crossFade()
-                .bitmapTransform(new CropCircleTransformation(context))
                 .placeholder(R.drawable.profile_img_basic)
-                .into(holder.getImage());
+                .bitmapTransform(new CropCircleTransformation(context))
+                .into(holder.image);
 
         //icon
         if(CommonConst.SSOM.equals(item.getSsomType())){
-            holder.getIconCircle().setImageResource(R.drawable.chat_profile_border_green);
+            holder.iconCircle.setImageResource(R.drawable.chat_profile_border_green);
         }else{
-            holder.getIconCircle().setImageResource(R.drawable.chat_profile_border_red);
+            holder.iconCircle.setImageResource(R.drawable.chat_profile_border_red);
         }
 
         // ing image
         if(CommonConst.Chatting.MEETING_APPROVE.equals(item.getStatus())) {
-            holder.getIconIng().setVisibility(View.VISIBLE);
-            holder.getIconIng().setImageResource(CommonConst.SSOM.equals(item.getSsomType()) ?
+            holder.iconIng.setVisibility(View.VISIBLE);
+            holder.iconIng.setImageResource(CommonConst.SSOM.equals(item.getSsomType()) ?
                     R.drawable.chat_ssom_ing_green : R.drawable.chat_ssom_ing_red);
         } else {
-            holder.getIconIng().setVisibility(View.GONE);
+            holder.iconIng.setVisibility(View.GONE);
         }
 
         // chat info
         if(item.getMinAge() == 0 || item.getUserCount() == 0) {
-            holder.getTvChatInfo().setText(context.getString(R.string.chat_room_no_info));
+            holder.tvChatInfo.setText(context.getString(R.string.chat_room_no_info));
         } else {
-            holder.getTvChatInfo().setText(String.format(context.getResources().getString(R.string.post_title),
+            holder.tvChatInfo.setText(String.format(context.getResources().getString(R.string.post_title),
                     Util.convertAgeRangeAtBackOneChar(item.getMinAge()), item.getUserCount()));
         }
 
@@ -134,41 +130,41 @@ public class ChatRoomListAdapter extends BaseAdapter {
                 CommonConst.Chatting.MEETING_REQUEST.equals(item.getLastMsg())) {
             sysStr = Util.getSystemMsg(context, ((BaseActivity) context).getUserId().equals(item.getRequestId()) ?
                     R.string.chat_message_request_sent : R.string.chat_message_request_received, R.color.red_pink);
-            holder.getTvChatContent().setText(sysStr, TextView.BufferType.SPANNABLE);
+            holder.tvChatContent.setText(sysStr, TextView.BufferType.SPANNABLE);
         } else if(CommonConst.Chatting.MEETING_APPROVE.equals(item.getStatus()) &&
                 CommonConst.Chatting.MEETING_APPROVE.equals(item.getLastMsg())) {
             sysStr = Util.getSystemMsg(context, R.string.chat_message_approve, R.color.red_pink);
-            holder.getTvChatContent().setText(sysStr, TextView.BufferType.SPANNABLE);
+            holder.tvChatContent.setText(sysStr, TextView.BufferType.SPANNABLE);
         } else if(CommonConst.Chatting.MEETING_CANCEL.equals(item.getLastMsg())) {
             sysStr = Util.getSystemMsg(context, R.string.chat_message_cancel_first, R.color.red_pink);
-            holder.getTvChatContent().setText(sysStr, TextView.BufferType.SPANNABLE);
+            holder.tvChatContent.setText(sysStr, TextView.BufferType.SPANNABLE);
         } else if(CommonConst.Chatting.MEETING_COMPLETE.equals(item.getLastMsg())) {
             sysStr = Util.getSystemMsg(context, R.string.chat_message_complete, R.color.red_pink);
-            holder.getTvChatContent().setText(sysStr, TextView.BufferType.SPANNABLE);
+            holder.tvChatContent.setText(sysStr, TextView.BufferType.SPANNABLE);
         } else if(CommonConst.Chatting.MEETING_OUT.equals(item.getLastMsg())) {
             sysStr = Util.getSystemMsg(context, R.string.chat_message_finish, R.color.red_pink);
-            holder.getTvChatContent().setText(sysStr, TextView.BufferType.SPANNABLE);
+            holder.tvChatContent.setText(sysStr, TextView.BufferType.SPANNABLE);
         } else {
-            holder.getTvChatContent().setText(TextUtils.isEmpty(item.getLastMsg()) ? getEmptyLastMsg() : item.getLastMsg(),
+            holder.tvChatContent.setText(TextUtils.isEmpty(item.getLastMsg()) ? getEmptyLastMsg() : item.getLastMsg(),
                     TextUtils.isEmpty(item.getLastMsg()) ? TextView.BufferType.SPANNABLE : TextView.BufferType.NORMAL);
         }
 
         if(item.getUnreadCount() > 0) {
-            holder.getUnreadLayout().setVisibility(View.VISIBLE);
+            holder.unreadLayout.setVisibility(View.VISIBLE);
             // TODO 쏨 요청이 왔을 때 하트로 변경 icon_heart_ssom_ing
-            holder.getImgUnreadCount().setImageResource(R.drawable.icon_chat_unread_count);
+            holder.imgUnreadCount.setImageResource(R.drawable.icon_chat_unread_count);
             // TODO 쏨 요청이 왔을 때 count view 숨김
-            holder.getUnreadCount().setText(String.valueOf(item.getUnreadCount()));
+            holder.unreadCount.setText(String.valueOf(item.getUnreadCount()));
         } else {
             // TODO 쏨 요청이 왔을 경우에는 하트로 변경해야 함
-            holder.getUnreadLayout().setVisibility(View.INVISIBLE);
+            holder.unreadLayout.setVisibility(View.INVISIBLE);
         }
 
         // distance
-        holder.getTvDistance().setText(LocationTracker.getInstance().getDistanceString(item.getLatitude(), item.getLongitude()));
+        holder.tvDistance.setText(LocationTracker.getInstance().getDistanceString(item.getLatitude(), item.getLongitude()));
 
         //time
-        holder.getTvTime().setText(Util.getTimeTextForChatRoom(item.getLastTimestamp()));
+        holder.tvTime.setText(Util.getTimeTextForChatRoom(item.getLastTimestamp()));
 
         return convertView;
     }
@@ -182,104 +178,16 @@ public class ChatRoomListAdapter extends BaseAdapter {
         /**
          * holder for list items
          */
-        private View itemLayout;
-        private ImageView image;
-        private ImageView iconCircle;
-        private ImageView iconIng;
-        private TextView tvChatInfo;
-        private TextView tvChatContent;
-        private FrameLayout unreadLayout;
-        private ImageView imgUnreadCount;
-        private TextView unreadCount;
-        private TextView tvDistance;
-        private TextView tvTime;
-
-        public View getItemLayout() {
-            return itemLayout;
-        }
-
-        public void setItemLayout(View itemLayout) {
-            this.itemLayout = itemLayout;
-        }
-
-        public ImageView getImage() {
-            return image;
-        }
-
-        public void setImage(ImageView image) {
-            this.image = image;
-        }
-
-        public ImageView getIconCircle() {
-            return iconCircle;
-        }
-
-        public void setIconCircle(ImageView iconCircle) {
-            this.iconCircle = iconCircle;
-        }
-
-        public ImageView getIconIng() {
-            return iconIng;
-        }
-
-        public void setIconIng(ImageView iconIng) {
-            this.iconIng = iconIng;
-        }
-
-        public TextView getTvChatInfo() {
-            return tvChatInfo;
-        }
-
-        public void setTvChatInfo(TextView tvChatInfo) {
-            this.tvChatInfo = tvChatInfo;
-        }
-
-        public TextView getTvChatContent() {
-            return tvChatContent;
-        }
-
-        public void setTvChatContent(TextView tvChatContent) {
-            this.tvChatContent = tvChatContent;
-        }
-
-        public FrameLayout getUnreadLayout() {
-            return unreadLayout;
-        }
-
-        public void setUnreadLayout(FrameLayout unreadLayout) {
-            this.unreadLayout = unreadLayout;
-        }
-
-        public ImageView getImgUnreadCount() {
-            return imgUnreadCount;
-        }
-
-        public void setImgUnreadCount(ImageView imgUnreadCount) {
-            this.imgUnreadCount = imgUnreadCount;
-        }
-
-        public TextView getUnreadCount() {
-            return unreadCount;
-        }
-
-        public void setUnreadCount(TextView unreadCount) {
-            this.unreadCount = unreadCount;
-        }
-
-        public TextView getTvDistance() {
-            return tvDistance;
-        }
-
-        public void setTvDistance(TextView tvDistance) {
-            this.tvDistance = tvDistance;
-        }
-
-        public TextView getTvTime() {
-            return tvTime;
-        }
-
-        public void setTvTime(TextView tvTime) {
-            this.tvTime = tvTime;
-        }
+        View itemLayout;
+        public ImageView image;
+        ImageView iconCircle;
+        ImageView iconIng;
+        TextView tvChatInfo;
+        TextView tvChatContent;
+        FrameLayout unreadLayout;
+        ImageView imgUnreadCount;
+        TextView unreadCount;
+        TextView tvDistance;
+        TextView tvTime;
     }
 }

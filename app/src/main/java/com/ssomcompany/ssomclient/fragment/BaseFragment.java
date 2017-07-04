@@ -110,13 +110,6 @@ public abstract class BaseFragment extends Fragment {
     }
 
     /**
-     * Get Session Token
-     */
-    public String getToken() {
-        return ((BaseActivity) getActivity()).getToken();
-    }
-
-    /**
      * Get Session UserId
      */
     public String getUserId() {

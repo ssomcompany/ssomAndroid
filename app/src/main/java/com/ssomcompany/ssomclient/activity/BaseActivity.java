@@ -26,7 +26,6 @@ import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.network.NetworkManager;
 import com.ssomcompany.ssomclient.push.MessageManager;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
@@ -171,7 +170,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private OnCancelListener basicCancelListener = new OnCancelListener() {
         @Override
         public void onCancel(DialogInterface dialog) {
-            NetworkManager.getInstance().cancelPendingRequests(TAG);
+            Log.d(TAG, "nothing to dismiss");
         }
     };
 
@@ -179,7 +178,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * Show progress dialog(Cancel by Back key)
      */
     public void showProgressDialog() {
-        showProgressDialog(true, basicCancelListener);
+        showProgressDialog(false);
     }
 
     /**
@@ -364,10 +363,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public SsomPreferences getSession() {
         return session;
-    }
-
-    public String getToken() {
-        return "JWT " + getSession().getString(SsomPreferences.PREF_SESSION_TOKEN, "");
     }
 
     public String getUserId() {

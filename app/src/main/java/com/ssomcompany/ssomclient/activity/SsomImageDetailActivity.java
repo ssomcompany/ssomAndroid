@@ -6,13 +6,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
-import com.ssomcompany.ssomclient.network.NetworkManager;
 
-/**
- * Created by AaronMac on 2016. 9. 17..
- */
+import uk.co.senab.photoview.PhotoView;
+
 public class SsomImageDetailActivity extends Activity {
 
     @Override
@@ -27,8 +27,12 @@ public class SsomImageDetailActivity extends Activity {
             return;
         }
 
-        com.ssomcompany.ssomclient.widget.NetworkImageView imageView = (com.ssomcompany.ssomclient.widget.NetworkImageView) findViewById(R.id.detail_image);
-        imageView.setImageUrl(getIntent().getStringExtra(CommonConst.Intent.IMAGE_URL), NetworkManager.getInstance().getImageLoader());
+        PhotoView imageView = (PhotoView) findViewById(R.id.detail_image);
+        Glide.with(this).load(getIntent().getStringExtra(CommonConst.Intent.IMAGE_URL))
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(imageView);
+
         findViewById(R.id.btn_close).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

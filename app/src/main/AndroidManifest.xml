@@ -36,7 +36,10 @@
         android:windowActionBar="false"
         android:windowNoTitle="true" >
 
-        <!-- google map -->
+        <!-- for glide -->
+        <meta-data android:name="com.ssomcompany.ssomclient.network.SsomGlideModule" android:value="GlideModule" />
+
+        <!-- for google map -->
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_debug_key"/>
 

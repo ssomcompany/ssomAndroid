@@ -19,8 +19,8 @@ import com.ssomcompany.ssomclient.activity.BaseActivity;
 import com.ssomcompany.ssomclient.activity.SsomImageDetailActivity;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
-import com.ssomcompany.ssomclient.network.api.model.ChattingItem;
+import com.ssomcompany.ssomclient.network.model.ChatRoomItem;
+import com.ssomcompany.ssomclient.network.model.ChattingItem;
 
 import java.util.ArrayList;
 
@@ -170,7 +170,7 @@ public class ChattingAdapter extends BaseAdapter {
                     });
                     // profile image
                     Glide.with(context).load(((BaseActivity) context).getUserId().equals(roomItem.getOwnerId()) ?
-                            roomItem.getParticipantImageUrl() + "?thumbnail=200" : roomItem.getOwnerImageUrl() + "?thumbnail=200")
+                            roomItem.getParticipantThumbnailImageUrl() : roomItem.getOwnerThumbnailImageUrl())
                             .crossFade()
                             .bitmapTransform(new CropCircleTransformation(context))
                             .placeholder(R.drawable.profile_img_basic)
