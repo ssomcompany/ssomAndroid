@@ -16,11 +16,15 @@ import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.common.UiUtils;
-import com.ssomcompany.ssomclient.network.APICaller;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.GetHeartCount;
-import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
-import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.network.RetrofitManager;
+import com.ssomcompany.ssomclient.network.api.ChatService;
+import com.ssomcompany.ssomclient.network.api.UserService;
+import com.ssomcompany.ssomclient.network.model.ChatUnreadCountResult;
+import com.ssomcompany.ssomclient.network.model.HeartResult;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MessageManager {
     public static final String TAG = MessageManager.class.getSimpleName();
@@ -55,14 +59,14 @@ public class MessageManager {
         return mInstance;
     }
 
-    public void getMessageCount(String token) {
+    public void getMessageCount() {
         Log.d(TAG, "getMessageCount call");
-        getUnreadCount(token);
+        getUnreadCount();
     }
 
-    public void getHeartCount(String token) {
+    public void getHeartCount() {
         Log.d(TAG, "getHeartCount call");
-        getTotalHeartCount(token);
+        getTotalHeartCount();
     }
 
     // TODO push message setting 화면
@@ -156,48 +160,59 @@ public class MessageManager {
         notificationManager.cancel(NOTIFICATION_ID);
     }
 
-    private void getTotalHeartCount(String token) {
+    private void getTotalHeartCount() {
         Log.i(TAG, "::getHeartCount:");
 
-        APICaller.getHeartCount(token, new NetworkManager.NetworkListener<SsomResponse<GetHeartCount.Response>>() {
-            @Override
-            public void onResponse(SsomResponse<GetHeartCount.Response> response) {
-                if(response.isSuccess() && response.getData() != null) {
-                    Integer data = response.getData().getHeartsCount();
+        RetrofitManager.getInstance().create(UserService.class)
+                .getHeart()
+                .enqueue(new Callback<HeartResult>() {
+                    @Override
+                    public void onResponse(Call<HeartResult> call, Response<HeartResult> response) {
+                        if(response.isSuccessful() && response.body() != null) {
+                            Integer data = response.body().getHeartsCount();
 
-                    changeHeartCount(data);
+                            changeHeartCount(data);
 
-                    Log.d(TAG, "heartCount : " + data);
-                } else {
-                    Log.i(TAG,
-                            "getHeartCount error with code " + response.getResultCode() + ", message : " + response.getMessage(),
-                            response.getError());
-                    UiUtils.makeToastMessage(BaseApplication.getInstance(), BaseApplication.getInstance().getResources().getString(R.string.error_occurred));
-                }
-            }
-        });
+                            Log.d(TAG, "heartCount : " + data);
+                        } else {
+                            Log.i(TAG, "getHeartCount error with code " + response.code() + ", message : " + response.message());
+                            UiUtils.makeToastMessage(BaseApplication.getInstance(), BaseApplication.getInstance().getResources().getString(R.string.error_occurred));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<HeartResult> call, Throwable t) {
+
+                    }
+                });
     }
 
-    private void getUnreadCount(String token) {
+    private void getUnreadCount() {
         Log.i(TAG, "::getUnreadCount:");
 
-        APICaller.totalChatUnreadCount(token, new NetworkManager.NetworkListener<SsomResponse<SsomChatUnreadCount.Response>>() {
-            @Override
-            public void onResponse(SsomResponse<SsomChatUnreadCount.Response> response) {
-                if(response.isSuccess() && response.getData() != null) {
-                    Integer data = response.getData().getUnreadCount();
+        RetrofitManager.getInstance().create(ChatService.class)
+                .getChatUnreadCount()
+                .enqueue(new Callback<ChatUnreadCountResult>() {
+                    @Override
+                    public void onResponse(Call<ChatUnreadCountResult> call, Response<ChatUnreadCountResult> response) {
+                        if(response.isSuccessful() && response.body() != null) {
+                            Integer data = response.body().getUnreadCount();
 
-                    changeCount(data);
+                            changeCount(data);
 
-                    Log.d(TAG, "alarmCount : " + data);
-                } else {
-                    Log.i(TAG,
-                            "getUnreadCount error with code " + response.getResultCode() + ", message : " + response.getMessage(),
-                            response.getError());
-                    UiUtils.makeToastMessage(BaseApplication.getInstance(), BaseApplication.getInstance().getResources().getString(R.string.error_occurred));
-                }
-            }
-        });
+                            Log.d(TAG, "alarmCount : " + data);
+                        } else {
+                            Log.i(TAG,
+                                    "getUnreadCount error with code " + response.code() + ", message : " + response.message());
+                            UiUtils.makeToastMessage(BaseApplication.getInstance(), BaseApplication.getInstance().getResources().getString(R.string.error_occurred));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ChatUnreadCountResult> call, Throwable t) {
+
+                    }
+                });
     }
 
     private void changeHeartCount(Integer count) {

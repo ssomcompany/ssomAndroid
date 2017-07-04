@@ -39,12 +39,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -73,18 +68,17 @@ import com.ssomcompany.ssomclient.fragment.FilterFragment;
 import com.ssomcompany.ssomclient.fragment.HeartStoreTabFragment;
 import com.ssomcompany.ssomclient.fragment.NavigationDrawerFragment;
 import com.ssomcompany.ssomclient.fragment.SsomListTabFragment;
-import com.ssomcompany.ssomclient.network.APICaller;
 import com.ssomcompany.ssomclient.network.NetworkConstant;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.CreateChattingRoom;
-import com.ssomcompany.ssomclient.network.api.GetSsomList;
-import com.ssomcompany.ssomclient.network.api.GetUserCount;
-import com.ssomcompany.ssomclient.network.api.GetUserProfile;
-import com.ssomcompany.ssomclient.network.api.SsomChatUnreadCount;
-import com.ssomcompany.ssomclient.network.api.SsomPostDelete;
-import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
-import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.network.RetrofitManager;
+import com.ssomcompany.ssomclient.network.api.ChatService;
+import com.ssomcompany.ssomclient.network.api.SsomPostService;
+import com.ssomcompany.ssomclient.network.api.UserService;
+import com.ssomcompany.ssomclient.network.model.ChatRoomCreateResult;
+import com.ssomcompany.ssomclient.network.model.ChatRoomItem;
+import com.ssomcompany.ssomclient.network.model.ChatUnreadCountResult;
+import com.ssomcompany.ssomclient.network.model.ProfileResult;
+import com.ssomcompany.ssomclient.network.model.SsomItem;
+import com.ssomcompany.ssomclient.network.model.UserCountResult;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.MessageManager;
 import com.ssomcompany.ssomclient.widget.SsomActionBarView;
@@ -93,7 +87,10 @@ import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MainActivity extends BaseActivity
@@ -122,8 +119,6 @@ public class MainActivity extends BaseActivity
 
     private SsomActionBarView ssomActionBar;
     private DrawerLayout drawer;
-
-    private CopyOnWriteArrayList<BitmapWorkerTask> TASK_LIST = new CopyOnWriteArrayList<>();
 
     /**
      * The filters resources
@@ -167,14 +162,11 @@ public class MainActivity extends BaseActivity
     private boolean isFromNoti;
     private int userCount;
 
-    private RequestQueue imageRequestQueue;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         filterPref = new SsomPreferences(this, SsomPreferences.FILTER_PREF);
-        imageRequestQueue = Volley.newRequestQueue(BaseApplication.getInstance());
 
         if(getIntent() != null && getIntent().getExtras() != null) {
             isFromNoti = getIntent().getBooleanExtra(CommonConst.Intent.IS_FROM_NOTI, false);
@@ -334,37 +326,47 @@ public class MainActivity extends BaseActivity
 
     public void requestSsomList(final boolean needFilterToast) {
         String typeFilter = filterPref.getString(SsomPreferences.PREF_FILTER_TYPE, "");
-        APICaller.getSsomList(getUserId(), typeFilter.contains(",") ? null : filterPref.getString(SsomPreferences.PREF_FILTER_TYPE, ""),
-                filterPref.getString(SsomPreferences.PREF_FILTER_AGE, ""),
-                filterPref.getString(SsomPreferences.PREF_FILTER_PEOPLE, ""),
-                locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude(),
-                new NetworkManager.NetworkListener<SsomResponse<GetSsomList.Response>>() {
+        Map<String, String> params = new HashMap<>();
+        params.put("userId", getUserId());
+        if(!typeFilter.contains(",")) {
+            params.put("ssomTypeFilter", filterPref.getString(SsomPreferences.PREF_FILTER_TYPE, ""));
+        }
+        params.put("ageFilter", filterPref.getString(SsomPreferences.PREF_FILTER_AGE, ""));
+        params.put("countFilter", filterPref.getString(SsomPreferences.PREF_FILTER_PEOPLE, ""));
+        params.put("lat", String.valueOf(locationTracker.getLocation().getLatitude()));
+        params.put("lng", String.valueOf(locationTracker.getLocation().getLongitude()));
 
-            @Override
-            public void onResponse(SsomResponse<GetSsomList.Response> response) {
-                Log.i(TAG, "response : " + response.isSuccess());
-                if (response.isSuccess() && response.getData() != null) {
-                    GetSsomList.Response data = response.getData();
-                    ITEM_LIST.clear();
-                    if (data != null && data.getSsomList() != null && data.getSsomList().size() > 0) {
-                        ITEM_LIST = data.getSsomList();
-                    } else {
-                        Log.i(TAG, "data is null !! nothing to show");
-                    }
-                    ssomDataChangedListener();
+        RetrofitManager.getInstance().create(SsomPostService.class)
+                .requestSsomList(params)
+                .enqueue(new Callback<ArrayList<SsomItem>>() {
+                    @Override
+                    public void onResponse(Call<ArrayList<SsomItem>> call, Response<ArrayList<SsomItem>> response) {
+                        Log.i(TAG, "response : " + response.isSuccessful());
+                        ArrayList<SsomItem> items = response.body();
+                        if (response.isSuccessful() && items != null) {
+                            ITEM_LIST.clear();
+                            if (items.size() > 0) {
+                                ITEM_LIST = items;
+                            } else {
+                                Log.i(TAG, "data is null !! nothing to show");
+                            }
+                            ssomDataChangedListener();
 
-                    if(needFilterToast) {
-                        Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.filter_apply_complete), Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.TOP, 0, Util.convertDpToPixel(50f));
-                        toast.show();
+                            if(needFilterToast) {
+                                Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.filter_apply_complete), Toast.LENGTH_SHORT);
+                                toast.setGravity(Gravity.TOP, 0, Util.convertDpToPixel(50f));
+                                toast.show();
+                            }
+                        } else {
+                            showErrorMessage();
+                        }
                     }
-                } else {
-                    Log.e(TAG, "Response error with code " + response.getResultCode() + ", message : " + response.getMessage(),
-                            response.getError());
-                    showErrorMessage();
-                }
-            }
-        });
+
+                    @Override
+                    public void onFailure(Call<ArrayList<SsomItem>> call, Throwable t) {
+                        Log.e(TAG, "Response error with ", t);
+                    }
+                });
     }
 
     @Override
@@ -373,8 +375,8 @@ public class MainActivity extends BaseActivity
 
         // message count 얻어오기
         if(getSession() != null && !TextUtils.isEmpty(getUserId())) {
-            MessageManager.getInstance().getMessageCount(getToken());
-            MessageManager.getInstance().getHeartCount(getToken());
+            MessageManager.getInstance().getMessageCount();
+            MessageManager.getInstance().getHeartCount();
         }
 
 //        if(locationTracker != null && locationTracker.chkCanGetLocation()) {
@@ -399,47 +401,61 @@ public class MainActivity extends BaseActivity
 
         if(!TextUtils.isEmpty(getUserId())) {
             // user profile 정보를 셋팅한다
-            APICaller.getUserProfile(getToken(), getUserId(), new NetworkManager.NetworkListener<SsomResponse< GetUserProfile.Response>>() {
-                @Override
-                public void onResponse(SsomResponse<GetUserProfile.Response> response) {
-                    if(response.isSuccess() && response.getData() != null) {
-                        getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, response.getData().getProfileImgUrl());
-                    } else {
-                        showErrorMessage();
-                    }
-                    setSsomWriteButtonImage(false);
-                }
-            });
+            RetrofitManager.getInstance().create(UserService.class)
+                    .getUserProfile(getUserId())
+                    .enqueue(new Callback<ProfileResult>() {
+                        @Override
+                        public void onResponse(Call<ProfileResult> call, Response<ProfileResult> response) {
+                            if(response.isSuccessful() && response.body() != null) {
+                                getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, response.body().getProfileImgUrl());
+                            } else {
+                                showErrorMessage();
+                            }
+                            setSsomWriteButtonImage(false);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ProfileResult> call, Throwable t) {
+
+                        }
+                    });
         }
     }
 
     private void setSsomWriteButtonImage(final boolean isRefresh) {
         if(!TextUtils.isEmpty(getUserId())) {
-            APICaller.ssomExistMyPost(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomItem>>() {
-
-                @Override
-                public void onResponse(SsomResponse<SsomItem> response) {
-                    if (response.isSuccess()) {
-                        Log.d(TAG, "data : " + response.getData());
-                        if(response.getData() != null && !TextUtils.isEmpty(response.getData().getPostId())) {
-                            myPost = response.getData();
-                            myPostId = myPost.getPostId();
-                            myPostSsomType = myPost.getSsomType();
-                            btnWrite.setImageResource(R.drawable.my_btn);
-                            if(TextUtils.isEmpty(getTodayImageUrl())) getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, myPost.getImageUrl());
-                        } else {
-                            myPostId = "";
-                            btnWrite.setImageResource(R.drawable.main_write_btn);
+            RetrofitManager.getInstance().create(SsomPostService.class)
+                    .requestGetMyPost()
+                    .enqueue(new Callback<SsomItem>() {
+                        @Override
+                        public void onResponse(Call<SsomItem> call, Response<SsomItem> response) {
+                            if (response.isSuccessful()) {
+                                Log.d(TAG, "data : " + response.body());
+                                SsomItem data = response.body();
+                                if(data != null && !TextUtils.isEmpty(data.getPostId())) {
+                                    myPost = data;
+                                    myPostId = myPost.getPostId();
+                                    myPostSsomType = myPost.getSsomType();
+                                    btnWrite.setImageResource(R.drawable.my_btn);
+                                    if(TextUtils.isEmpty(getTodayImageUrl())) getSession().put(SsomPreferences.PREF_SESSION_TODAY_IMAGE_URL, myPost.getImageUrl());
+                                } else {
+                                    myPostId = "";
+                                    btnWrite.setImageResource(R.drawable.main_write_btn);
+                                }
+                            } else {
+                                Log.d(TAG, "get my post is failed");
+                                myPostId = "";
+                                btnWrite.setImageResource(R.drawable.main_write_btn);
+                                showErrorMessage();
+                            }
+                            if(isRefresh) requestSsomList(false);
                         }
-                    } else {
-                        Log.d(TAG, "get my post is failed");
-                        myPostId = "";
-                        btnWrite.setImageResource(R.drawable.main_write_btn);
-                        showErrorMessage();
-                    }
-                    if(isRefresh) requestSsomList(false);
-                }
-            });
+
+                        @Override
+                        public void onFailure(Call<SsomItem> call, Throwable t) {
+
+                        }
+                    });
         } else {
             myPostId = "";
             btnWrite.setImageResource(R.drawable.main_write_btn);
@@ -455,7 +471,7 @@ public class MainActivity extends BaseActivity
         @Override
         public void onClick(View v) {
             if(filterFragment == null) filterFragment = new FilterFragment();
-            replaceFragment(R.id.top_container, filterFragment, CommonConst.FILTER_FRAG, true);
+            replaceFragment(R.id.whole_container, filterFragment, CommonConst.FILTER_FRAG, true);
         }
     };
 
@@ -474,44 +490,58 @@ public class MainActivity extends BaseActivity
         getUserCount(true);
 
         // 최초 앱 실행 시 unread 메시지 카운트를 맞추기 위해 한번 호출함
-        APICaller.totalChatUnreadCount(getToken(), new NetworkManager.NetworkListener<SsomResponse<SsomChatUnreadCount.Response>>() {
-            @Override
-            public void onResponse(SsomResponse<SsomChatUnreadCount.Response> response) {
-                if(response.isSuccess() && response.getData() != null) {
-                    int unreadCount = response.getData().getUnreadCount();
-                    getSession().put(SsomPreferences.PREF_SESSION_UNREAD_COUNT, unreadCount);
-                    if(unreadCount != 0) {
-                        ShortcutBadger.applyCount(MainActivity.this, unreadCount); //for 1.1.4+
-                    } else {
-                        ShortcutBadger.removeCount(MainActivity.this);
+        RetrofitManager.getInstance().create(ChatService.class)
+                .getChatUnreadCount()
+                .enqueue(new Callback<ChatUnreadCountResult>() {
+                    @Override
+                    public void onResponse(Call<ChatUnreadCountResult> call, Response<ChatUnreadCountResult> response) {
+                        if(response.isSuccessful() && response.body() != null) {
+                            int unreadCount = response.body().getUnreadCount();
+                            getSession().put(SsomPreferences.PREF_SESSION_UNREAD_COUNT, unreadCount);
+                            if(unreadCount != 0) {
+                                ShortcutBadger.applyCount(MainActivity.this, unreadCount); //for 1.1.4+
+                            } else {
+                                ShortcutBadger.removeCount(MainActivity.this);
+                            }
+                        } else {
+                            showErrorMessage();
+                        }
                     }
-                } else {
-                    showErrorMessage();
-                }
-            }
-        });
+
+                    @Override
+                    public void onFailure(Call<ChatUnreadCountResult> call, Throwable t) {
+
+                    }
+                });
 
         mBtnMapMyLocation = (ImageView) findViewById(R.id.map_current_location);
         mapRefresh = (ImageView) findViewById(R.id.map_refresh);
     }
 
     private void getUserCount(final boolean isInit) {
-        APICaller.getCurrentUserCount(new NetworkManager.NetworkListener<SsomResponse<GetUserCount.Response>>() {
-            @Override
-            public void onResponse(SsomResponse<GetUserCount.Response> response) {
-                if(response.isSuccess()) {
-                    userCount = response.getData().getUserCount();
-                } else {
-                    userCount = userCount == 0 ? 100 : userCount;
-                }
+        RetrofitManager.getInstance().create(UserService.class)
+                .getUserCount()
+                .enqueue(new Callback<UserCountResult>() {
+                    @Override
+                    public void onResponse(Call<UserCountResult> call, Response<UserCountResult> response) {
+                        if(response.isSuccessful()) {
+                            userCount = response.body().getUserCount();
+                        } else {
+                            userCount = userCount == 0 ? 100 : userCount;
+                        }
 
-                if(isInit) {
-                    ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, userCount));
-                    ssomActionBar.setSsomBarTitleDrawable(R.drawable.icon_ssom_map, Util.convertDpToPixel(2f));
-                    ssomActionBar.setSsomBarTitleStyle(R.style.ssom_font_12_gray_warm);
-                }
-            }
-        });
+                        if(isInit) {
+                            ssomActionBar.setSsomBarTitleText(getString(R.string.current_user_count, userCount));
+                            ssomActionBar.setSsomBarTitleDrawable(R.drawable.icon_ssom_map, Util.convertDpToPixel(2f));
+                            ssomActionBar.setSsomBarTitleStyle(R.style.ssom_font_12_gray_warm);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserCountResult> call, Throwable t) {
+
+                    }
+                });
     }
 
     private void updateToolbarToMain() {
@@ -623,7 +653,17 @@ public class MainActivity extends BaseActivity
 
         mainPager.setAdapter(mainAdapter);
         mainPager.setOffscreenPageLimit(4);
-        mainPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(bottomTab));
+        mainPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(bottomTab) {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+
+                // request call for chat room list
+                if(position == BOTTOM_CHAT) {
+                    ((ChatRoomTabFragment) mainAdapter.getItem(position)).notifyChatRoomAdapter();
+                }
+            }
+        });
         bottomTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -900,15 +940,7 @@ public class MainActivity extends BaseActivity
     private void initMarker() {
         if(mMap != null) {
             mMap.clear();
-            if(imageRequestQueue != null) {
-                imageRequestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                    @Override
-                    public boolean apply(Request<?> request) {
-                        Log.d(TAG, "all requests canceled");
-                        return true;
-                    }
-                });
-            }
+            Glide.with(this).onDestroy();
         }
         mIdMap.clear();
         if(ITEM_LIST != null && ITEM_LIST.size() > 0){
@@ -921,70 +953,18 @@ public class MainActivity extends BaseActivity
     }
 
     private void addMarker(final SsomItem item, final boolean isLastItem) {
-        if(NetworkManager.getInstance().hasBitmapInCache(item.getThumbnailImageUrl())) {
-
-            if(NetworkManager.getInstance().hasBitmapFromMemoryCache(item.getThumbnailImageUrl())) {
-                // get bitmap from memory cache
-                mIdMap.put(mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
-                        .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item,
-                                NetworkManager.getInstance().getBitmapFromMemoryCache(item.getThumbnailImageUrl())))))
-                        , item.getPostId());
-            } else {
-                // get bitmap from disk cache
-                BitmapWorkerTask diskCacheTask = new BitmapWorkerTask() {
-                    @Override
-                    protected void onPostExecute(Bitmap result) {
-                        super.onPostExecute(result);
-                        if (result != null) {
-                            // Add final bitmap to caches
-                            NetworkManager.getInstance().addBitmapToCache(item.getThumbnailImageUrl(), result);
-
-                            mIdMap.put(mMap.addMarker(new MarkerOptions()
-                                    .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
-                                    .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item, result)))), item.getPostId());
-                            TASK_LIST.remove(this);
-                        }
-                    }
-                };
-
-                diskCacheTask.execute(item.getThumbnailImageUrl());
-                TASK_LIST.add(diskCacheTask);
-            }
-//            if (isLastItem) {
-//                Log.d(TAG, "last item created!");
-//                dismissProgressDialog();
-//            }
-        } else {
-            ImageRequest imageRequest = new ImageRequest(item.getThumbnailImageUrl(), new Response.Listener<Bitmap>() {
-                Marker marker;
-
-                @Override
-                public void onResponse(Bitmap bitmap) {
-                    NetworkManager.getInstance().addBitmapToCache(item.getThumbnailImageUrl(), bitmap);
-                    marker = mMap.addMarker(new MarkerOptions()
+        new BitmapWorkerTask(this){
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                super.onPostExecute(bitmap);
+                if (bitmap != null) {
+                    // Add final bitmap to caches
+                    mIdMap.put(mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(item.getLatitude(), item.getLongitude())).draggable(false)
-                            .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item, bitmap))));
-
-                    mIdMap.put(marker, item.getPostId());
-//                    if (isLastItem) {
-//                        Log.d(TAG, "last item created!");
-//                        dismissProgressDialog();
-//                    }
+                            .icon(BitmapDescriptorFactory.fromBitmap(getMarkerImage(item, bitmap)))), item.getPostId());
                 }
-            }, 0  // max width
-                    , 0  // max height
-                    , ImageView.ScaleType.CENTER  // scale type
-                    , Bitmap.Config.RGB_565  // decode config
-                    , new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
-
-                }
-            });
-            imageRequestQueue.add(imageRequest);
-        }
+            }
+        }.execute(item.getThumbnailImageUrl());
     }
 
     private Bitmap getMarkerImage(SsomItem ssom , Bitmap imageBitmap){
@@ -1094,11 +1074,12 @@ public class MainActivity extends BaseActivity
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // 삭제 진행
-                                APICaller.ssomPostDelete(getToken(), ssomItem.getPostId(),
-                                        new NetworkManager.NetworkListener<SsomResponse<SsomPostDelete.Response>>() {
+                                RetrofitManager.getInstance().create(SsomPostService.class)
+                                        .deletePost(ssomItem.getPostId())
+                                        .enqueue(new Callback<Void>() {
                                             @Override
-                                            public void onResponse(SsomResponse<SsomPostDelete.Response> response) {
-                                                if(response.isSuccess()) {
+                                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                                if(response.isSuccessful()) {
                                                     Log.d(TAG, "delete success : " + response);
                                                     fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(CommonConst.DETAIL_FRAG)).commit();
                                                     fragmentManager.popBackStack();
@@ -1108,6 +1089,11 @@ public class MainActivity extends BaseActivity
                                                 } else {
                                                     showErrorMessage();
                                                 }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<Void> call, Throwable t) {
+
                                             }
                                         });
                             }
@@ -1149,14 +1135,15 @@ public class MainActivity extends BaseActivity
                 // 기존에 방이 있으므로 그쪽으로 이동시킴
                 startChattingActivity(((ChatRoomTabFragment) mainAdapter.getItem(BOTTOM_CHAT)).getChatRoomItem(ssomItem.getChatroomId()));
             } else {
-                APICaller.createChattingRoom(getToken(), ssomItem.getPostId(),
-                        locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude(),
-                        new NetworkManager.NetworkListener<SsomResponse<CreateChattingRoom.Response>>() {
+                RetrofitManager.getInstance().create(ChatService.class)
+                        .createChatRoom(ssomItem.getPostId(), locationTracker.getLocation().getLatitude(), locationTracker.getLocation().getLongitude())
+                        .enqueue(new Callback<ChatRoomCreateResult>() {
                             @Override
-                            public void onResponse(SsomResponse<CreateChattingRoom.Response> response) {
-                                if (response.isSuccess() && response.getData() != null) {
+                            public void onResponse(Call<ChatRoomCreateResult> call, Response<ChatRoomCreateResult> response) {
+                                ChatRoomCreateResult data = response.body();
+                                if (response.isSuccessful() && data != null) {
                                     ChatRoomItem chatRoomItem = new ChatRoomItem();
-                                    chatRoomItem.setId(response.getData().getChatroomId());
+                                    chatRoomItem.setId(data.getChatroomId());
                                     chatRoomItem.setOwnerId(getUserId());
                                     chatRoomItem.setOwnerImageUrl(getTodayImageUrl());
                                     chatRoomItem.setParticipantId(ssomItem.getUserId());
@@ -1167,7 +1154,7 @@ public class MainActivity extends BaseActivity
                                     chatRoomItem.setLongitude(ssomItem.getLongitude());
                                     chatRoomItem.setLatitude(ssomItem.getLatitude());
                                     chatRoomItem.setPostId(ssomItem.getPostId());
-                                    chatRoomItem.setCreatedTimestamp(response.getData().getCreatedTimestamp());
+                                    chatRoomItem.setCreatedTimestamp(data.getCreatedTimestamp());
 
                                     // create room heart 소진
                                     Intent intent = new Intent();
@@ -1179,12 +1166,17 @@ public class MainActivity extends BaseActivity
                                         getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME, System.currentTimeMillis());
                                     }
                                     startChattingActivity(chatRoomItem);
-                                } else if(response.getStatusCode() == 428) {
+                                } else if(response.code() == 428) {
                                     Log.d(TAG, "ssom 진행 중, 더이상 쏨타기 못함");
                                     showToastMessageShort(R.string.ssom_progress_message);
                                 } else {
                                     showErrorMessage();
                                 }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ChatRoomCreateResult> call, Throwable t) {
+
                             }
                         });
             }
@@ -1233,8 +1225,7 @@ public class MainActivity extends BaseActivity
             return;
         }
 
-        if(fragmentManager.findFragmentById(R.id.top_container) != null ||
-                fragmentManager.findFragmentById(R.id.whole_container) != null) {
+        if(fragmentManager.findFragmentById(R.id.whole_container) != null) {
             super.onBackPressed();
             return;
         }
@@ -1306,7 +1297,7 @@ public class MainActivity extends BaseActivity
         if(mainPager.getCurrentItem() == BOTTOM_CHAT) updateToolbarToChatList();
     }
 
-    class MainPagerAdapter extends FragmentPagerAdapter {
+    private class MainPagerAdapter extends FragmentPagerAdapter {
         Fragment[] tabFragments;
 
         MainPagerAdapter(FragmentManager fm) {

@@ -7,14 +7,12 @@ import android.content.DialogInterface.OnDismissListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
-import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
-import com.ssomcompany.ssomclient.network.model.BaseResponse;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 
 import java.io.File;
@@ -153,65 +151,11 @@ public class NetworkUtil {
 
     }
 
-    /**
-     * @param ctx Activity
-     * @param response the BaseResponse which contains NetworkOffLineException
-     */
-    public static void showNetworkOfflineMessage(Activity ctx, BaseResponse response) {
-        showNetworkOfflineMessage(ctx, response, null, null);
-    }
-
-    /**
-     * @param ctx Activity
-     * @param response the BaseResponse which contains NetworkOffLineException
-     * @param negativeRun the runnable which invoked when pressing negative button
-     */
-    public static void showNetworkOfflineMessage(Activity ctx, BaseResponse response, Runnable negativeRun) {
-        showNetworkOfflineMessage(ctx, response, null, negativeRun);
-    }
-
-    /**
-     * @param ctx Activity
-     * @param response the BaseResponse which contains NetworkOffLineException
-     * @param positiveRun the runnable which invoked when pressing positive button. default behavior is retrying if this value is null.
-     * @param negativeRun the runnable which invoked when pressing negative button
-     */
-    public static void showNetworkOfflineMessage(Activity ctx, final BaseResponse response, Runnable positiveRun, Runnable negativeRun) {
-        if (null == ctx || null == response || !response.isOfflineError()) {
-            Log.w(TAG, "invalid parameter. skip to display network offline message");
-        }
-
-        Runnable retryRunnable = positiveRun;
-
-        if (null == retryRunnable && response != null) {
-            retryRunnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    response.retry();
-                }
-            };
-        }
-
-//        UiUtils.showCommomAlertDialog(ctx, R.string.notice, R.string.network_connect_error, R.string.ok_upper, R.string.cancel, retryRunnable,
-//                negativeRun);
-    }
-
     static boolean isExternalStorageRemovable() {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD || Environment.isExternalStorageRemovable();
+        return Environment.isExternalStorageRemovable();
     }
 
     static File getExternalCacheDir(Context context) {
-        if (hasExternalCacheDir()) {
-            return context.getExternalCacheDir();
-        }
-
-        // Before Froyo we need to construct the external cache dir ourselves
-        final String cacheDir = "/Android/data/" + context.getPackageName() + "/cache/";
-        return new File(Environment.getExternalStorageDirectory().getPath() + cacheDir);
-    }
-
-    private static boolean hasExternalCacheDir() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
+        return context.getExternalCacheDir();
     }
 }

@@ -24,7 +24,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.ssomcompany.ssomclient.BaseApplication;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.network.model.SsomItem;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 
 import java.io.File;

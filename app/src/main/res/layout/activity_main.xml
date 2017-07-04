@@ -91,12 +91,6 @@
         </RelativeLayout>
 
         <FrameLayout
-            android:id="@+id/top_container"
-            android:layout_above="@id/bottom_tab"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <FrameLayout
             android:id="@+id/whole_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

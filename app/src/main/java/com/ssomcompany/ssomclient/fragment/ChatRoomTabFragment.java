@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +20,9 @@ import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
-import com.ssomcompany.ssomclient.network.APICaller;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.DeleteChattingRoom;
-import com.ssomcompany.ssomclient.network.api.GetChattingRoomList;
-import com.ssomcompany.ssomclient.network.api.model.ChatRoomItem;
-import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.network.RetrofitManager;
+import com.ssomcompany.ssomclient.network.api.ChatService;
+import com.ssomcompany.ssomclient.network.model.ChatRoomItem;
 import com.ssomcompany.ssomclient.widget.dialog.CommonDialog;
 import com.ssomcompany.ssomclient.widget.swipelistview.SwipeMenu;
 import com.ssomcompany.ssomclient.widget.swipelistview.SwipeMenuCreator;
@@ -34,6 +30,10 @@ import com.ssomcompany.ssomclient.widget.swipelistview.SwipeMenuItem;
 import com.ssomcompany.ssomclient.widget.swipelistview.SwipeMenuListView;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A fragment representing a list of Items.
@@ -47,7 +47,6 @@ import java.util.ArrayList;
 public class ChatRoomTabFragment extends RetainedStateFragment {
     private static final String TAG = ChatRoomTabFragment.class.getSimpleName();
 
-    private Context mContext;
     /**
      * The fragment's ListView/GridView.
      */
@@ -76,33 +75,48 @@ public class ChatRoomTabFragment extends RetainedStateFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new ChatRoomListAdapter(mContext);
+        mAdapter = new ChatRoomListAdapter(getActivity());
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        requestChatRoomList();
+    }
+
+    private void requestChatRoomList() {
         showProgressDialog();
-        APICaller.getChattingRoomList(getToken(), new NetworkManager.NetworkListener<SsomResponse<GetChattingRoomList.Response>>() {
-            @Override
-            public void onResponse(SsomResponse<GetChattingRoomList.Response> response) {
-                if(response.isSuccess()) {
-                    if(response.getData() != null) {
-                        chatRoomList = response.getData().getChattingRoomList();
-                        mAdapter.setChatRoomList(chatRoomList);
-                        mAdapter.notifyDataSetChanged();
-                        // 채팅방으로 바로 보내기 위함
-                        if(mLoadingListener != null) mLoadingListener.onFinishLoadingRoomList(chatRoomList);
-                    } else {
-                        Log.e(TAG, "unexpected error, data is null");
-                        showErrorMessage();
+        RetrofitManager.getInstance().create(ChatService.class)
+                .requestChatRoomList()
+                .enqueue(new Callback<ArrayList<ChatRoomItem>>() {
+                    @Override
+                    public void onResponse(Call<ArrayList<ChatRoomItem>> call, Response<ArrayList<ChatRoomItem>> response) {
+                        if(response.isSuccessful()) {
+                            if(response.body() != null) {
+                                chatRoomList = response.body();
+                                mAdapter.setChatRoomList(chatRoomList);
+                                mAdapter.notifyDataSetChanged();
+                                // 채팅방으로 바로 보내기 위함
+                                if(mLoadingListener != null) mLoadingListener.onFinishLoadingRoomList(chatRoomList);
+                            } else {
+                                Log.e(TAG, "unexpected error, data is null");
+                                showErrorMessage();
+                            }
+                        } else {
+                            showErrorMessage();
+                        }
+                        dismissProgressDialog();
                     }
-                } else {
-                    showErrorMessage();
-                }
-                dismissProgressDialog();
-            }
-        });
+
+                    @Override
+                    public void onFailure(Call<ArrayList<ChatRoomItem>> call, Throwable t) {
+
+                    }
+                });
+    }
+
+    public void notifyChatRoomAdapter() {
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -136,16 +150,22 @@ public class ChatRoomTabFragment extends RetainedStateFragment {
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    APICaller.deleteChattingRoom(getToken(), chatRoomList.get(position).getId(),
-                                            new NetworkManager.NetworkListener<SsomResponse<DeleteChattingRoom.Response>>() {
+                                    RetrofitManager.getInstance().create(ChatService.class)
+                                            .deleteChatRoom(chatRoomList.get(position).getId())
+                                            .enqueue(new Callback<Void>() {
                                                 @Override
-                                                public void onResponse(SsomResponse<DeleteChattingRoom.Response> response) {
-                                                    if(response.isSuccess()) {
+                                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                                    if(response.isSuccessful()) {
                                                         chatRoomList.remove(position);
                                                         mAdapter.notifyDataSetChanged();
                                                     } else {
                                                         showErrorMessage();
                                                     }
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Void> call, Throwable t) {
+
                                                 }
                                             });
                                 }
@@ -177,7 +197,6 @@ public class ChatRoomTabFragment extends RetainedStateFragment {
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             try {
-                mContext = activity;
                 mLoadingListener = (ViewListener.OnChatRoomListLoadingFinished) activity;
             } catch (ClassCastException e) {
                 throw new ClassCastException(activity.toString()
@@ -191,7 +210,6 @@ public class ChatRoomTabFragment extends RetainedStateFragment {
         super.onAttach(context);
 
         try {
-            mContext = context;
             mLoadingListener = (ViewListener.OnChatRoomListLoadingFinished) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()

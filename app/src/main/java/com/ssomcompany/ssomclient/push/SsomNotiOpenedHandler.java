@@ -40,7 +40,8 @@ public class SsomNotiOpenedHandler implements OneSignal.NotificationOpenedHandle
 
         // The following can be used to open an Activity of your choice.
 
-        if(BaseApplication.getInstance().getCurrentActivityCount() == null ||
+        if(BaseApplication.getInstance().getCurrentActivity() == null ||
+                BaseApplication.getInstance().getCurrentActivityCount() == null ||
                 BaseApplication.getInstance().getCurrentActivityCount().get() == 0) {
             Log.i("OneSignalTabListener", "go to chatting tab!");
             Intent intent = new Intent(BaseApplication.getInstance(), IntroActivity.class);

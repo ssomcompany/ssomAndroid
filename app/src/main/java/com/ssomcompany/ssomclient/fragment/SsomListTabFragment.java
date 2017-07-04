@@ -18,7 +18,7 @@ import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.activity.MainActivity;
 import com.ssomcompany.ssomclient.adapter.SsomItemListAdapter;
 import com.ssomcompany.ssomclient.control.ViewListener;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.network.model.SsomItem;
 import com.ssomcompany.ssomclient.widget.pulltorefresh.PullToRefreshBase;
 import com.ssomcompany.ssomclient.widget.pulltorefresh.PullToRefreshListView;
 

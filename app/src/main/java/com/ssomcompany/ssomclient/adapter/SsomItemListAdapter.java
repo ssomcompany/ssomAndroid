@@ -9,14 +9,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.ImageLoader;
 import com.bumptech.glide.Glide;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.network.model.SsomItem;
 
 import java.util.ArrayList;
 
@@ -26,7 +24,6 @@ public class SsomItemListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
     private Context context;
-    private ImageLoader mImageLoader;
 
     private ArrayList<SsomItem> itemList;
 
@@ -34,8 +31,6 @@ public class SsomItemListAdapter extends BaseAdapter {
         this.context = context;
         this.mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-
-        this.mImageLoader = NetworkManager.getInstance().getImageLoader();
     }
 
     public void setItemList(ArrayList<SsomItem> itemList) {
@@ -63,7 +58,7 @@ public class SsomItemListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final PostItemViewHolder holder;
+        PostItemViewHolder holder;
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.ssom_list_item, null);

@@ -68,20 +68,8 @@
 
 -keepattributes InnerClasses
 
--dontwarn org.apache.**
--keep class org.apache.** { *; }
--dontwarn org.apache.**
--keep class android.net.** { *; }
--dontwarn android.net.**
-
 -keep class com.onesignal.** { *; }
 -dontwarn com.onesignal.**
-
--keep class com.google.gson.** { *; }
--dontwarn com.google.gson.**
-
--keep class com.crashlytics.** { *; }
--dontwarn com.crashlytics.**
 
 -keepnames class com.google.android.maps.** {*;}
 -keep public class com.google.android.maps.** {*;}
@@ -91,12 +79,6 @@
 
 -keep class android.support.** { *; }
 -dontwarn android.support.**
-
--keep public class * extends android.app.Activity
--keep public class * extends android.app.Application
--keep public class * extends android.app.Service
--keep public class * extends android.content.BroadcastReceiver
--keep public class * extends android.content.ContentProvider
 
 -keep public class * extends android.view.View {
     public <init>(android.content.Context);
@@ -130,23 +112,6 @@
   public static final android.os.Parcelable$Creator *;
 }
 
--keep class com.ssomcompany.ssomclient.network.api.** { *; }
-
--keep class com.android.volley.** { *; }
--dontwarn com.android.volley.**
-
--keep class org-apache-commons.** { *; }
--dontwarn org-apache-commons.**
-
--keep class com.loopj.android.http.** { *; }
--dontwarn com.loopj.android.http.**
-
--keep class com.nineoldandroid.** { *; }
--dontwarn com.nineoldandroid.**
-
--keep class com.imagezoom.** { *; }
--dontwarn com.imagezoom.**
-
 -keep class udk.android.** { *; }
 -dontwarn udk.android.**
 
@@ -157,16 +122,15 @@
 -keep class okio.** { *; }
 -dontwarn okio.**
 
+# fabric for crashlytics
+-keep class com.crashlytics.** { *; }
+-dontwarn com.crashlytics.**
+
 # glide for image loading
+-keep class com.bumptech.** { *; }
+-dontwarn com.bumptech.**
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
   **[] $VALUES;
   public *;
-}
-
--assumenosideeffects class com.android.volley.VolleyLog {
-    public static *** e(...);
-    public static *** wtf(...);
-    public static *** d(...);
-    public static *** v(...);
 }

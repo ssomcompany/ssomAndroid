@@ -26,15 +26,18 @@ import com.ssomcompany.ssomclient.common.SsomPreferences;
 import com.ssomcompany.ssomclient.common.UiUtils;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.InAppBillingHelper;
-import com.ssomcompany.ssomclient.network.APICaller;
-import com.ssomcompany.ssomclient.network.NetworkManager;
-import com.ssomcompany.ssomclient.network.api.AddHeartCount;
-import com.ssomcompany.ssomclient.network.model.SsomResponse;
+import com.ssomcompany.ssomclient.network.RetrofitManager;
+import com.ssomcompany.ssomclient.network.api.UserService;
+import com.ssomcompany.ssomclient.network.model.HeartResult;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.MessageManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HeartStoreTabFragment extends RetainedStateFragment implements View.OnClickListener, MessageCountCheck {
     private static final String TAG = HeartStoreTabFragment.class.getSimpleName();
@@ -132,22 +135,28 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
                     Log.d(TAG, "timerTask is finished");
                     timerIsRunning = false;
                     setHeartRefillTime("00:00");
-                    APICaller.addHeartCount(getToken(), 1, "automatic",
-                            new NetworkManager.NetworkListener<SsomResponse<AddHeartCount.Response>>() {
+                    RetrofitManager.getInstance().create(UserService.class)
+                            .addHeart(String.valueOf(1), "android", "automatic")
+                            .enqueue(new Callback<HeartResult>() {
                                 @Override
-                                public void onResponse(SsomResponse<AddHeartCount.Response> response) {
-                                    if(response.isSuccess()) {
+                                public void onResponse(Call<HeartResult> call, Response<HeartResult> response) {
+                                    if(response.isSuccessful()) {
                                         Log.d(TAG, "success... to 4hour's heart");
                                         getSession().put(SsomPreferences.PREF_SESSION_HEART_REFILL_TIME,
-                                                response.getData() != null && response.getData().getHeartsCount() < 2 ? System.currentTimeMillis() : 0);
+                                                response.body() != null && response.body().getHeartsCount() < 2 ? System.currentTimeMillis() : 0);
 
                                         Intent intent = new Intent();
                                         intent.setAction(MessageManager.BROADCAST_HEART_COUNT_CHANGE);
-                                        intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.getData().getHeartsCount());
+                                        intent.putExtra(MessageManager.EXTRA_KEY_HEART_COUNT, response.body().getHeartsCount());
                                         LocalBroadcastManager.getInstance(BaseApplication.getInstance()).sendBroadcast(intent);
                                     } else {
                                         showErrorMessage();
                                     }
+                                }
+
+                                @Override
+                                public void onFailure(Call<HeartResult> call, Throwable t) {
+
                                 }
                             });
                 }

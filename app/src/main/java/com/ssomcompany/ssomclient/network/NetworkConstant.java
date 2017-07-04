@@ -14,21 +14,7 @@ public class NetworkConstant {
 
 
     public static class HeaderParam {
-        public static final String CACHE_CONTROL = "Cache-Control";
-        public static final String CONTENT_TYPE = "Content-Type";
-        public static final String ACCEPT = "Accept";
-        public static final String APPLICATION_TYPE = "Application-Type";
         public static final String AUTHORIZATION = "Authorization";
-        public static final String CONTENT_TEXT = "content-text";
-        public static final String CONNECTION = "Connection";
-        public static final String KEEP_ALIVE = "keep-alive";
-    }
-
-    public static class Method {
-        public static final int GET = com.android.volley.Request.Method.GET;
-        public static final int POST = com.android.volley.Request.Method.POST;
-        public static final int PUT = com.android.volley.Request.Method.PUT;
-        public static final int DELETE = com.android.volley.Request.Method.DELETE;
     }
 
     public static class NetworkErrorCode {
@@ -45,22 +31,21 @@ public class NetworkConstant {
         public static final String SSOM_LOGIN = "/login";
         public static final String SSOM_LOGIN_WITHOUT_ID = "/loginWithoutId";
         public static final String SSOM_LOGOUT = "/logout";
-        public static final String FACE_BOOK_LOGIN = "/facebook";
         public static final String SSOM_REGISTER_USER = "/users";
         public static final String CHAT_TOTAL_UNREAD_COUNT = "/chatroom/unreadcount";
         public static final String CHAT_ROOM = "/chatroom";
-        public static final String SSOM_POST_DELETE = "/posts/%s";
+        public static final String SSOM_POST_DELETE = "/posts/{postId}";
         public static final String MEETING_REQUEST = "/request";
         public static final String PROFILE_IMAGE = "/users/profileImgUrl";
 
         // $1 : roomId, $2 : currentTimeStamp
-        public static final String SEND_MESSAGE = "/chatroom/%s/chats?lastTimestamp=%d";
+        public static final String SEND_MESSAGE = "/chatroom/{roomId}/chats";
         // $1 : roomId
-        public static final String CHAT_LIST = "/chatroom/%s/chats";
+        public static final String CHAT_LIST = "/chatroom/{roomId}/chats";
         // 하트관련
         public static final String USER_HEART = "/users/hearts";
         // user profile
-        public static final String USER_PROFILE = "/users/%s";
+        public static final String USER_PROFILE = "/users/{userId}";
         // get app version
         public static final String APP_VERSION = "/version/android";
         // get user count

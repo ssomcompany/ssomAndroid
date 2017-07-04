@@ -25,7 +25,7 @@ import com.ssomcompany.ssomclient.common.CommonConst;
 import com.ssomcompany.ssomclient.common.LocationTracker;
 import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.control.ViewListener;
-import com.ssomcompany.ssomclient.network.api.model.SsomItem;
+import com.ssomcompany.ssomclient.network.model.SsomItem;
 import com.ssomcompany.ssomclient.widget.RoundedImageView;
 
 import java.util.ArrayList;
