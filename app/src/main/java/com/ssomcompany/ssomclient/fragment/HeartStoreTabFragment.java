@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.skplanet.dodo.IapPlugin;
 import com.skplanet.dodo.IapResponse;
+import com.skplanet.dodo.helper.PaymentParams;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
 import com.ssomcompany.ssomclient.common.CommonConst;
@@ -247,8 +248,8 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
                     break;
             }
 
-            mPlugin.sendPaymentRequest("appid=" + oneAppId + "&product_id=" + itemId,
-                    new IapPlugin.RequestCallback() {
+            PaymentParams params = new PaymentParams.Builder("appid=" + oneAppId, "product_id=" + itemId).build();
+            mPlugin.sendPaymentRequest(new IapPlugin.RequestCallback() {
                         @Override
                         public void onError(String s, String s1, String s2) {
                             Log.e(TAG, s1);
@@ -298,7 +299,7 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
                                         });
                             }
                         }
-                    });
+                    }, params);
         } catch (IllegalStateException e) {
             UiUtils.makeToastMessage(getActivity(), "결제가 진행 중 입니다.");
             e.printStackTrace();
@@ -351,7 +352,7 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
         super.onAttach(context);
 
         // injection plugin
-        mPlugin = IapPlugin.getPlugin(context, "release");
+        mPlugin = IapPlugin.getPlugin(context, IapPlugin.RELEASE_MODE);
     }
 
     @SuppressWarnings("deprecation")
@@ -360,7 +361,7 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
         super.onAttach(activity);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            mPlugin = IapPlugin.getPlugin(activity, "release");
+            mPlugin = IapPlugin.getPlugin(activity, IapPlugin.RELEASE_MODE);
         }
     }
 
