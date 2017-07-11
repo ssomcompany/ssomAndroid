@@ -62,6 +62,10 @@
 -keepclassmembers class android.support.v7.** { *; }
 -keep interface android.support.v7.** { *; }
 
+# Don't note duplicate definition (Legacy Apche Http Client)
+-dontnote android.net.http.*
+-dontnote org.apache.http.**
+
 -keep class com.facebook.** { *; }
 -keepclassmembers class com.facebook.** { *; }
 -dontwarn com.facebook.**
@@ -115,12 +119,36 @@
 -keep class udk.android.** { *; }
 -dontwarn udk.android.**
 
-# okhttp for stetho library
--keep class com.squareup.okhttp.** { *; }
--dontwarn com.squareup.okhttp.**
-# okhttp for stetho library
--keep class okio.** { *; }
+# okhttp3
+-dontnote okhttp3.**
 -dontwarn okio.**
+-dontwarn okhttp3.**
+
+# retrofit2 proguard warning
+-dontwarn retrofit2.**
+-dontwarn org.codehaus.mojo.**
+-keep class retrofit2.** { *; }
+-dontnote retrofit2.Platform
+-dontwarn retrofit2.Platform$Java8
+
+-keepattributes RuntimeVisibleAnnotations
+-keepattributes RuntimeInvisibleAnnotations
+-keepattributes RuntimeVisibleParameterAnnotations
+-keepattributes RuntimeInvisibleParameterAnnotations
+
+-keepclassmembernames interface * {
+    @retrofit2.http.* <methods>;
+}
+
+-keepclasseswithmembers class * {
+    @retrofit2.http.* <methods>;
+}
+
+-keep class com.ssomcompany.ssomclient.network.api.** { *; }
+-dontwarn com.ssomcompany.ssomclient.network.api.**
+
+-keep class com.ssomcompany.ssomclient.network.model.** { *; }
+-dontwarn com.ssomcompany.ssomclient.network.model.**
 
 # fabric for crashlytics
 -keep class com.crashlytics.** { *; }
