@@ -10,10 +10,10 @@ dependencies {
     // for one signal
     compile 'com.onesignal:OneSignal:3.+@aar'
     // Required for OneSignal, even if you have added FCM.
-    compile 'com.google.android.gms:play-services-gcm:10.2.6'
+    compile 'com.google.android.gms:play-services-gcm:11.0.2'
     // Required for geo tagging
-    compile "com.google.android.gms:play-services-location:10.2.6"
-    compile "com.google.android.gms:play-services-maps:10.2.6"
+    compile "com.google.android.gms:play-services-location:11.0.2"
+    compile "com.google.android.gms:play-services-maps:11.0.2"
 
     // this is for network (okhttp3)
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
