@@ -68,6 +68,7 @@
             android:exported="false"
             android:launchMode="singleTop"
             android:alwaysRetainTaskState="true"
+            android:configChanges="orientation|screenSize|keyboardHidden|locale|layoutDirection"
             android:screenOrientation="portrait"/>
 
         <activity android:name=".activity.SsomWriteActivity"
@@ -101,12 +102,6 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/FullScreenTheme"/>
-
-        <activity
-            android:name="com.skplanet.dodo.IapWeb"
-            android:configChanges="orientation|screenSize|keyboardHidden|locale|layoutDirection"
-            android:excludeFromRecents="true"
-            android:windowSoftInputMode="stateHidden" />
 
     </application>
 

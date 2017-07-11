@@ -19,9 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.skplanet.dodo.IapPlugin;
-import com.skplanet.dodo.IapResponse;
+import com.skplanet.dodo.ProcessType;
 import com.skplanet.dodo.helper.PaymentParams;
 import com.ssomcompany.ssomclient.BaseApplication;
 import com.ssomcompany.ssomclient.R;
@@ -32,14 +31,9 @@ import com.ssomcompany.ssomclient.common.Util;
 import com.ssomcompany.ssomclient.network.RetrofitManager;
 import com.ssomcompany.ssomclient.network.api.UserService;
 import com.ssomcompany.ssomclient.network.model.HeartResult;
-import com.ssomcompany.ssomclient.purchase.StoreProductListRequest;
-import com.ssomcompany.ssomclient.purchase.StorePurchaseResponse;
-import com.ssomcompany.ssomclient.purchase.model.StoreParam;
-import com.ssomcompany.ssomclient.purchase.model.StoreProduct;
 import com.ssomcompany.ssomclient.push.MessageCountCheck;
 import com.ssomcompany.ssomclient.push.MessageManager;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -84,55 +78,44 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
         thirdPrice = (TextView) view.findViewById(R.id.heart_price_third);
         fourthPrice = (TextView) view.findViewById(R.id.heart_price_fourth);
 
-        StoreProductListRequest request = new StoreProductListRequest();
-        request.setMethod("request_product_info");
-        request.setParam(new StoreParam().setAppid(oneAppId).setProduct_id(new ArrayList<String>()));
-        mPlugin.sendCommandRequest(new Gson().toJson(request),
-                new IapPlugin.RequestCallback() {
-                    @Override
-                    public void onError(String s, String s1, String s2) {
-                        Log.e(TAG, s1);
-                        UiUtils.makeToastMessage(getActivity(), s2);
-                    }
+        mPlugin.sendCommandProductInfo(new IapPlugin.AbsRequestCallback() {
+            @Override
+            public void onError(String s, String s1, String s2) {
+                Log.e(TAG, s1);
+                UiUtils.makeToastMessage(getActivity(), s2);
+            }
 
-                    @Override
-                    public void onResponse(IapResponse data) {
-                        if (data == null || data.getContentLength() == 0) {
-                            UiUtils.makeToastMessage(getActivity(), "스토어에서 조회된 결과가 없습니다.");
-                            return;
-                        }
+            @Override
+            public void onResponse(com.skplanet.dodo.pdu.Response response) {
+                if (response == null || response.result == null) {
+                    UiUtils.makeToastMessage(getActivity(), "스토어에서 조회된 결과가 없습니다.");
+                    return;
+                }
 
-                        Gson gson = new Gson();
-                        StorePurchaseResponse response = gson.fromJson(data.getContentToString(), StorePurchaseResponse.class);
-                        if(response == null || response.getResult() == null) {
-                            UiUtils.makeToastMessage(getActivity(), "데이터 변환에 실패하였습니다.");
-                            return;
-                        }
-
-                        if("0000".equals(response.getResult().getCode())) {
-                            String price;
-                            for(StoreProduct product : response.getResult().getProduct()) {
-                                price = String.format(Locale.getDefault(), "￦%,d", Math.round(product.getPrice()));
-                                switch (product.getId()) {
-                                    case CommonConst.HEART_2 :
-                                        firstPrice.setText(price);
-                                        break;
-                                    case CommonConst.HEART_8 :
-                                        secondPrice.setText(price);
-                                        break;
-                                    case CommonConst.HEART_17 :
-                                        thirdPrice.setText(price);
-                                        break;
-                                    case CommonConst.HEART_28 :
-                                        fourthPrice.setText(price);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
+                if("0000".equals(response.result.code)) {
+                    String price;
+                    for(com.skplanet.dodo.pdu.Response.Product product : response.result.product) {
+                        price = String.format(Locale.getDefault(), "￦%,d", Math.round(product.price));
+                        switch (product.id) {
+                            case CommonConst.HEART_2 :
+                                firstPrice.setText(price);
+                                break;
+                            case CommonConst.HEART_8 :
+                                secondPrice.setText(price);
+                                break;
+                            case CommonConst.HEART_17 :
+                                thirdPrice.setText(price);
+                                break;
+                            case CommonConst.HEART_28 :
+                                fourthPrice.setText(price);
+                                break;
+                            default:
+                                break;
                         }
                     }
-                });
+                }
+            }
+        }, ProcessType.FOREGROUND_IF_NEEDED, oneAppId);
 
         view.findViewById(R.id.layout_heart_first).setOnClickListener(this);
         view.findViewById(R.id.layout_heart_second).setOnClickListener(this);
@@ -248,8 +231,8 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
                     break;
             }
 
-            PaymentParams params = new PaymentParams.Builder("appid=" + oneAppId, "product_id=" + itemId).build();
-            mPlugin.sendPaymentRequest(new IapPlugin.RequestCallback() {
+            PaymentParams params = new PaymentParams.Builder(oneAppId, itemId).build();
+            mPlugin.sendPaymentRequest(new IapPlugin.AbsRequestCallback() {
                         @Override
                         public void onError(String s, String s1, String s2) {
                             Log.e(TAG, s1);
@@ -257,23 +240,16 @@ public class HeartStoreTabFragment extends RetainedStateFragment implements View
                         }
 
                         @Override
-                        public void onResponse(IapResponse data) {
-                            if (data == null || data.getContentLength() == 0) {
+                        public void onResponse(com.skplanet.dodo.pdu.Response response) {
+                            if (response == null || response.result == null) {
                                 UiUtils.makeToastMessage(getActivity(), "스토어에서 조회된 결과가 없습니다.");
                                 return;
                             }
 
-                            Gson gson = new Gson();
-                            StorePurchaseResponse response = gson.fromJson(data.getContentToString(), StorePurchaseResponse.class);
-                            if(response == null || response.getResult() == null) {
-                                UiUtils.makeToastMessage(getActivity(), "데이터 변환에 실패하였습니다.");
-                                return;
-                            }
-
-                            if("0000".equals(response.getResult().getCode())) {
+                            if("0000".equals(response.result.code)) {
                                 showProgressDialog(false);
                                 RetrofitManager.getInstance().create(UserService.class)
-                                        .addHeart(String.valueOf(getHeartCount(itemId)), "android", response.getResult().getTxid())
+                                        .addHeart(String.valueOf(getHeartCount(itemId)), "android", response.result.txid)
                                         .enqueue(new Callback<HeartResult>() {
                                             @Override
                                             public void onResponse(Call<HeartResult> call, Response<HeartResult> response) {
